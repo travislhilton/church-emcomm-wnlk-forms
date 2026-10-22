@@ -1,0 +1,1178 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Church EMCOMM — EOC Message Center</title>
+<style>
+:root {
+  --bg:#f2f4f7; --surface:#ffffff; --border:#d4d9e1; --fg:#0f172a; --muted:#64748b;
+  --accent:#1e40af; --accent-lt:#dbeafe; --danger:#be123c; --danger-bg:#fff1f2;
+  --warn:#92400e; --warn-bg:#fffbeb; --ok:#065f46; --ok-bg:#ecfdf5;
+  --hdr:#1e3a8a; --hdr-fg:#e0e7ff; --tab-act:#ffffff; --tab-in:#e2e8f0;
+  --overdue:#c2410c; --overdue-bg:#fff7ed;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:#0f172a; --surface:#1e293b; --border:#334155; --fg:#f1f5f9;
+    --muted:#94a3b8; --accent:#60a5fa; --accent-lt:#1e3a8a;
+    --danger:#fb7185; --danger-bg:#1c0014; --warn:#fbbf24; --warn-bg:#1c1400;
+    --ok:#4ade80; --ok-bg:#052e16; --hdr:#0f2a6e; --hdr-fg:#c7d2fe;
+    --tab-act:#1e293b; --tab-in:#0f172a; --overdue:#fb923c; --overdue-bg:#1c0a00;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:#0f172a; --surface:#1e293b; --border:#334155; --fg:#f1f5f9;
+  --muted:#94a3b8; --accent:#60a5fa; --accent-lt:#1e3a8a;
+  --danger:#fb7185; --danger-bg:#1c0014; --warn:#fbbf24; --warn-bg:#1c1400;
+  --ok:#4ade80; --ok-bg:#052e16; --hdr:#0f2a6e; --hdr-fg:#c7d2fe;
+  --tab-act:#1e293b; --tab-in:#0f172a; --overdue:#fb923c; --overdue-bg:#1c0a00;
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:border-box;}
+body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,sans-serif;font-size:13px;margin:0;padding:0 0 40px;}
+/* Header */
+.site-header{background:var(--hdr);color:var(--hdr-fg);position:sticky;top:0;z-index:30;padding:10px 16px 0;}
+.hdr-top{display:flex;align-items:center;gap:12px;padding-bottom:8px;flex-wrap:wrap;}
+.logo-block{font-family:Georgia,serif;line-height:1.15;flex-shrink:0;}
+.logo-block .s{font-size:7px;letter-spacing:.14em;opacity:.8;display:block;text-transform:uppercase;}
+.logo-block .b{font-size:16px;font-weight:700;display:block;}
+.hdr-center{flex:1;min-width:0;}
+.hdr-center h1{font-size:15px;font-weight:700;margin:0;}
+.hdr-incident{font-size:11px;opacity:.75;margin:2px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hdr-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;font-size:11px;opacity:.85;}
+#live-clock{font-size:14px;font-weight:700;letter-spacing:.05em;font-variant-numeric:tabular-nums;}
+#op-timer{font-size:10px;opacity:.8;}
+.tabs{display:flex;gap:2px;overflow-x:auto;}
+.tab-btn{padding:6px 14px;border:none;cursor:pointer;font-size:12px;font-weight:600;border-radius:6px 6px 0 0;background:var(--tab-in);color:var(--muted);font-family:inherit;transition:background .1s;white-space:nowrap;flex-shrink:0;}
+.tab-btn.active{background:var(--tab-act);color:var(--accent);}
+.cnt{display:inline-block;background:var(--accent);color:#fff;border-radius:10px;font-size:10px;padding:0 5px;margin-left:4px;line-height:15px;}
+.cnt.empty{background:var(--muted);}
+/* Miss bar */
+#miss-bar{padding:6px 16px;font-size:12px;font-weight:600;text-align:center;transition:background .3s,color .3s;}
+#miss-bar.ok{background:var(--ok-bg);color:var(--ok);}
+#miss-bar.alert{background:var(--danger);color:#fff;}
+/* Drop zone */
+#drop-wrap{padding:0 16px 4px;}
+.drop-zone{border:2px dashed var(--border);border-radius:10px;padding:20px;text-align:center;cursor:pointer;background:var(--surface);transition:border-color .15s,background .15s;margin-bottom:12px;}
+.drop-zone.drag-over{border-color:var(--accent);background:var(--accent-lt);}
+.drop-zone input{display:none;}
+.drop-zone p{margin:4px 0 0;color:var(--muted);font-size:12px;}
+.drop-zone .ico{font-size:26px;}
+#drop-mini{display:none;padding:8px 0 4px;text-align:center;}
+/* Main content */
+#main{padding:0 16px;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+/* Cards / tiles */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px;}
+.card h2{font-size:13px;font-weight:700;margin:0 0 12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);}
+.stat-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;min-width:100px;flex:1;}
+.stat .n{font-size:26px;font-weight:700;line-height:1;}
+.stat .l{font-size:11px;color:var(--muted);margin-top:2px;}
+.stat.danger{border-color:var(--danger);background:var(--danger-bg);}
+.stat.danger .n{color:var(--danger);}
+.stat.warn{border-color:var(--warn);background:var(--warn-bg);}
+.stat.warn .n{color:var(--warn);}
+.stat.ok{border-color:var(--ok);background:var(--ok-bg);}
+.stat.ok .n{color:var(--ok);}
+/* Stake tracker grid */
+.tracker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;}
+.tracker-card{background:var(--surface);border:2px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px;}
+.tracker-card.green{border-color:#16a34a;background:var(--ok-bg);}
+.tracker-card.yellow{border-color:#ca8a04;background:var(--warn-bg);}
+.tracker-card.red{border-color:var(--danger);background:var(--danger-bg);}
+.tracker-card.overdue{border-color:var(--overdue);background:var(--overdue-bg);}
+.tracker-card .tk-name{font-weight:700;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tracker-card .tk-status{font-size:11px;color:var(--muted);}
+.tracker-card .tk-time{font-size:10px;color:var(--muted);margin-top:3px;}
+/* Alerts */
+.alert-box{background:var(--danger-bg);border:1px solid var(--danger);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;}
+.alert-box.warn{background:var(--warn-bg);border-color:var(--warn);}
+.alert-box.overdue{background:var(--overdue-bg);border-color:var(--overdue);}
+.alert-box h3{font-size:12px;margin:0 0 4px;font-weight:700;}
+/* Tables */
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{background:var(--bg);padding:6px 10px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;}
+td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--bg);}
+.cat-hdr td{background:var(--bg);font-weight:700;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding:4px 10px;}
+.qty-cell{font-weight:700;font-size:14px;text-align:right;}
+/* Chips */
+.chip{display:inline-block;border-radius:5px;padding:1px 7px;font-size:10px;font-weight:700;}
+.chip.dr{background:var(--warn-bg);color:var(--warn);}
+.chip.so{background:var(--ok-bg);color:var(--ok);}
+.chip.miss-no{background:var(--danger);color:#fff;}
+.chip.miss-yes{background:var(--ok-bg);color:var(--ok);}
+/* Buttons */
+button{cursor:pointer;font-family:inherit;}
+.btn{padding:6px 14px;border:none;border-radius:6px;font-size:12px;font-weight:600;background:var(--accent);color:#fff;transition:opacity .1s;}
+.btn:hover{opacity:.85;}
+.btn.secondary{background:var(--surface);color:var(--fg);border:1px solid var(--border);}
+.btn.danger{background:var(--danger);}
+.btn.sm{padding:3px 9px;font-size:11px;}
+.btn-ghost{background:none;border:none;color:var(--muted);font-size:13px;padding:2px 6px;border-radius:4px;}
+.btn-ghost:hover{background:var(--bg);color:var(--danger);}
+/* Forms */
+.form-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;align-items:flex-end;}
+.form-group{display:flex;flex-direction:column;gap:4px;flex:1;min-width:120px;}
+label{font-size:11px;font-weight:600;color:var(--muted);}
+input[type=text],input[type=date],input[type=time],input[type=number],select,textarea{
+  padding:6px 9px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:inherit;
+  background:var(--surface);color:var(--fg);width:100%;}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:-1px;}
+textarea{resize:vertical;min-height:120px;}
+/* Pre / rollup */
+.rollup-wrap{position:relative;margin-top:12px;}
+.rollup-pre{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;font-family:'Courier New',monospace;font-size:11px;white-space:pre;overflow-x:auto;max-height:400px;overflow-y:auto;line-height:1.5;}
+.rollup-copy{position:absolute;top:8px;right:8px;}
+/* Modal */
+#modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center;}
+#modal-bg.open{display:flex;}
+#modal-box{background:var(--surface);border-radius:12px;padding:24px;max-width:480px;width:90%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+#modal-title{font-size:16px;font-weight:700;margin:0 0 16px;}
+#modal-body{margin-bottom:16px;}
+#modal-footer{display:flex;gap:8px;justify-content:flex-end;}
+/* Toast */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:#1e293b;color:#f1f5f9;padding:8px 20px;border-radius:20px;font-size:12px;font-weight:600;opacity:0;transition:transform .25s,opacity .25s;z-index:200;pointer-events:none;}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+/* Toolbar */
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
+.toolbar .spacer{flex:1;}
+/* Notes */
+.note-input-row{display:flex;gap:8px;margin-bottom:12px;}
+.note-input-row textarea{flex:1;min-height:50px;resize:vertical;}
+/* Sitrep options */
+.sitrep-opts{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px;}
+.sitrep-opts label{font-size:12px;color:var(--fg);}
+/* Filter bar */
+.filter-bar{display:flex;gap:6px;margin-bottom:10px;}
+.filter-btn{padding:4px 12px;border:1px solid var(--border);border-radius:20px;background:var(--surface);color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;}
+.filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+/* Empty states */
+.empty{text-align:center;padding:40px;color:var(--muted);}
+.empty .ico{font-size:36px;margin-bottom:8px;}
+/* Scrollbars */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<!-- ── Site Header ── -->
+<div class="site-header">
+  <div class="hdr-top">
+    <div class="logo-block">
+      <span class="s">The Church of Jesus Christ</span>
+      <span class="b">of Latter-day Saints</span>
+    </div>
+    <div class="hdr-center">
+      <h1>EOC Message Center</h1>
+      <p class="hdr-incident" id="hdr-incident">No incident open — go to Setup tab</p>
+    </div>
+    <div class="hdr-right">
+      <div id="live-clock">--:--:--</div>
+      <div id="op-timer"></div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('overview')">Overview</button>
+    <button class="tab-btn" onclick="switchTab('roster')">Roster <span class="cnt empty" id="cnt-roster">0</span></button>
+    <button class="tab-btn" onclick="switchTab('dr')">Disaster Reports <span class="cnt empty" id="cnt-dr">0</span></button>
+    <button class="tab-btn" onclick="switchTab('so')">Supply Orders <span class="cnt empty" id="cnt-so">0</span></button>
+    <button class="tab-btn" onclick="switchTab('messages')">Messages <span class="cnt empty" id="cnt-msgs">0</span></button>
+    <button class="tab-btn" onclick="switchTab('notes')">Notes <span class="cnt empty" id="cnt-notes">0</span></button>
+    <button class="tab-btn" onclick="switchTab('setup')">&#9881; Setup</button>
+  </div>
+</div>
+
+<!-- ── Missionary Status Bar ── -->
+<div id="miss-bar" class="ok">MISSIONARY STATUS: All accounted for &#10003;</div>
+
+<!-- ── Drop Zone ── -->
+<div id="drop-wrap">
+  <div class="drop-zone" id="drop-zone" ondragover="doDragOver(event)" ondragleave="doDragLeave(event)" ondrop="doDrop(event)" onclick="document.getElementById('file-input').click()">
+    <input type="file" id="file-input" multiple accept=".mime,.msg,.eml,.txt" onchange="doFileInput(event)">
+    <div class="ico">&#128229;</div>
+    <strong>Drop Winlink .mime files here</strong> or click to browse
+    <p>Accepts .mime .msg .eml .txt — scans for [Church-DR|...] and [Church-SO|...] tags</p>
+  </div>
+  <div id="drop-mini">
+    <button class="btn secondary sm" onclick="document.getElementById('file-input').click()">&#128229; Drop / Add More Files</button>
+  </div>
+</div>
+
+<!-- ── Tab Panels ── -->
+<div id="main">
+
+  <!-- OVERVIEW -->
+  <div id="tab-overview" class="tab-panel active">
+    <div id="ov-alerts"></div>
+    <div class="stat-row" id="ov-stats"></div>
+    <div class="card">
+      <h2>Stake Tracker</h2>
+      <div id="tracker-grid" class="tracker-grid"></div>
+      <div id="tracker-empty" class="empty" style="display:none"><div class="ico">&#127975;</div><p>No stakes in roster. Add stakes in the Roster tab.</p></div>
+    </div>
+  </div>
+
+  <!-- ROSTER -->
+  <div id="tab-roster" class="tab-panel">
+    <div class="toolbar">
+      <button class="btn" onclick="openAddStake()">+ Add Stake</button>
+      <span class="spacer"></span>
+      <span style="font-size:11px;color:var(--muted)" id="roster-count">0 stakes</span>
+    </div>
+    <div class="card" style="padding:0">
+      <div class="tbl-wrap">
+        <table id="roster-table">
+          <thead><tr>
+            <th>Stake Name</th><th>Stake President</th><th>SP Phone</th>
+            <th>Expected By</th><th>Status</th><th>Last Report</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="roster-tbody"></tbody>
+        </table>
+        <div id="roster-empty" class="empty"><div class="ico">&#127975;</div><p>No stakes added yet.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DISASTER REPORTS -->
+  <div id="tab-dr" class="tab-panel">
+    <div class="stat-row" id="dr-agg-stats"></div>
+    <div class="toolbar">
+      <span style="font-size:12px;font-weight:600">ICS-209 SITREP</span>
+      <label style="font-size:12px;color:var(--fg)">Next report in:
+        <select id="sitrep-interval" style="width:auto;margin-left:4px">
+          <option value="4">4 hours</option>
+          <option value="6">6 hours</option>
+          <option value="8" selected>8 hours</option>
+          <option value="12">12 hours</option>
+        </select>
+      </label>
+      <button class="btn" onclick="buildSitrep()">Generate SITREP</button>
+      <span class="spacer"></span>
+      <button class="btn secondary sm" onclick="copyTableDR()">Copy as TSV</button>
+    </div>
+    <div id="sitrep-wrap" style="display:none" class="rollup-wrap">
+      <pre class="rollup-pre" id="sitrep-pre"></pre>
+      <button class="btn sm rollup-copy" onclick="copyEl('sitrep-pre')">Copy</button>
+    </div>
+    <div class="card" style="padding:0;margin-top:12px">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr>
+            <th>Received</th><th>Stake</th><th>Date</th><th>Type</th>
+            <th>Miss.Safe</th><th>Inj</th><th>Dead</th><th>HomeDmg</th><th>HomeDest</th>
+            <th>Vols</th><th>VolHrs</th><th>LocalFac</th><th>NbrUnits</th><th>HQAsst</th>
+            <th>Submitter</th><th></th>
+          </tr></thead>
+          <tbody id="dr-tbody"></tbody>
+        </table>
+        <div id="dr-empty" class="empty"><div class="ico">&#128203;</div><p>No disaster reports loaded yet.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUPPLY ORDERS -->
+  <div id="tab-so" class="tab-panel">
+    <div class="toolbar">
+      <button class="btn" onclick="buildPhoneScript()">Generate Phone Script</button>
+      <span class="spacer"></span>
+      <button class="btn secondary sm" onclick="copyTableSO()">Copy Items as TSV</button>
+    </div>
+    <div id="so-script-wrap" style="display:none" class="rollup-wrap">
+      <pre class="rollup-pre" id="so-script-pre"></pre>
+      <button class="btn sm rollup-copy" onclick="copyEl('so-script-pre')">Copy</button>
+    </div>
+    <div class="card" style="padding:0;margin-top:12px">
+      <h2 style="padding:12px 16px 0;margin:0;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">Consolidated Items</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Item #</th><th>Description</th><th>Unit</th><th>Total Qty</th><th>From Stakes</th></tr></thead>
+          <tbody id="so-items-tbody"></tbody>
+        </table>
+        <div id="so-empty" class="empty"><div class="ico">&#128230;</div><p>No supply orders loaded yet.</p></div>
+      </div>
+    </div>
+    <div id="so-stake-detail"></div>
+  </div>
+
+  <!-- MESSAGES -->
+  <div id="tab-messages" class="tab-panel">
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="setMsgFilter('all',this)">All</button>
+      <button class="filter-btn" onclick="setMsgFilter('dr',this)">DR Only</button>
+      <button class="filter-btn" onclick="setMsgFilter('so',this)">SO Only</button>
+    </div>
+    <div class="card" style="padding:0">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Received</th><th>Type</th><th>Stake</th><th>Date</th><th>Summary</th><th></th></tr></thead>
+          <tbody id="msgs-tbody"></tbody>
+        </table>
+        <div id="msgs-empty" class="empty"><div class="ico">&#128236;</div><p>No messages loaded yet.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTES -->
+  <div id="tab-notes" class="tab-panel">
+    <div class="note-input-row">
+      <textarea id="note-input" placeholder="Enter action log note..." rows="2"></textarea>
+      <button class="btn" style="align-self:flex-end" onclick="addNote()">Add Note</button>
+    </div>
+    <div class="toolbar">
+      <span class="spacer"></span>
+      <button class="btn secondary sm" onclick="exportNotes()">Export as TXT</button>
+    </div>
+    <div class="card" style="padding:0">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Timestamp</th><th>Note</th><th></th></tr></thead>
+          <tbody id="notes-tbody"></tbody>
+        </table>
+        <div id="notes-empty" class="empty"><div class="ico">&#128221;</div><p>No notes yet.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETUP -->
+  <div id="tab-setup" class="tab-panel">
+    <div class="card">
+      <h2>Incident Information</h2>
+      <div class="form-row">
+        <div class="form-group"><label>Incident Name</label><input type="text" id="inc-name" placeholder="e.g., Utah County Earthquake Response"></div>
+        <div class="form-group"><label>Area / Location</label><input type="text" id="inc-area" placeholder="e.g., Utah County, UT"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Incident Type</label><input type="text" id="inc-type" placeholder="e.g., Earthquake, Flood, Wildfire"></div>
+        <div class="form-group"><label>Incident Start Date</label><input type="date" id="inc-date"></div>
+        <div class="form-group"><label>Start Time (local)</label><input type="time" id="inc-time"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Incident Commander (IC)</label><input type="text" id="inc-ic" placeholder="Name / Callsign"></div>
+        <div class="form-group"><label>Your Name / Callsign</label><input type="text" id="inc-op" placeholder="EOC Operator name"></div>
+        <div class="form-group"><label>Operational Period (hours)</label>
+          <select id="inc-op-hrs">
+            <option value="4">4 hours</option>
+            <option value="6">6 hours</option>
+            <option value="8" selected>8 hours</option>
+            <option value="12">12 hours</option>
+            <option value="24">24 hours</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn" onclick="saveIncident()" id="inc-btn">Open Incident</button>
+    </div>
+
+    <div class="card">
+      <h2>Shift Handoff</h2>
+      <div class="toolbar" style="flex-wrap:wrap;gap:10px">
+        <button class="btn secondary" onclick="exportHandoff()">&#128229; Export Handoff JSON</button>
+        <label class="btn secondary" style="cursor:pointer">
+          &#128228; Import Handoff JSON
+          <input type="file" accept=".json" style="display:none" onchange="importHandoff(event)">
+        </label>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin:8px 0 0">Export saves all messages, roster, notes, and incident data. Import restores a full handoff package from an outgoing shift.</p>
+    </div>
+
+    <div class="card">
+      <h2>Danger Zone</h2>
+      <button class="btn danger" onclick="confirmClearAll()">&#9888; Clear All Data — New Incident</button>
+      <p style="font-size:11px;color:var(--muted);margin:8px 0 0">This permanently clears all messages, roster, notes, and incident info. Export a handoff first if needed.</p>
+    </div>
+  </div>
+
+</div><!-- /#main -->
+
+<!-- ── Modal ── -->
+<div id="modal-bg">
+  <div id="modal-box">
+    <div id="modal-title"></div>
+    <div id="modal-body"></div>
+    <div id="modal-footer">
+      <button class="btn secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn" id="modal-confirm-btn" onclick="modalConfirm()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Toast ── -->
+<div id="toast"></div>
+
+<script>
+// ── Catalog ──────────────────────────────────────────────────────────────────
+var CAT = {
+  '10001':['Water, purified, 1 gal bottle','case/6'],
+  '10002':['Water purification tablets','pkg/50'],
+  '10003':['Water filter, personal','each'],
+  '10004':['Water storage container, 5 gal','each'],
+  '10005':['Water storage drum, 55 gal','each'],
+  '20001':['Food bucket, freeze-dried 1-mo supply','each'],
+  '20002':['MRE, case','case/12'],
+  '20003':['Infant formula, powdered','case/6'],
+  '20004':['Baby food, assorted','case/12'],
+  '20005':['Shelf-stable milk, 1 qt','case/12'],
+  '30001':['Blanket, emergency mylar','each'],
+  '30002':['Blanket, wool','each'],
+  '30003':['Tarp, 10x12 ft','each'],
+  '30004':['Bucket, plastic 5 gal w/ lid','each'],
+  '30005':['Shovel, round-point','each'],
+  '30006':['Broom, push','each'],
+  '30007':['Mop with bucket','set'],
+  '30008':['Trash bags, heavy duty 55 gal','box/25'],
+  '30009':['Trash bags, 30 gal','box/100'],
+  '30010':['Gloves, work leather','pair'],
+  '30011':['Gloves, latex/nitrile','box/100'],
+  '30012':['Safety glasses','each'],
+  '30013':['N95 masks','box/20'],
+  '30014':['Tyvek suit','each'],
+  '30015':['Hard hat','each'],
+  '30016':['Safety vest, hi-vis','each'],
+  '30017':['First aid kit, large','each'],
+  '40001':['Generator, portable 3500W','each'],
+  '40002':['Generator, portable 6500W','each'],
+  '40003':['Extension cord, 100 ft 12 ga','each'],
+  '40004':['Fuel can, 5 gal','each'],
+  '40005':['Lantern, battery LED','each'],
+  '40006':['Flashlight, LED','each'],
+  '40007':['Batteries, AA','pkg/24'],
+  '40008':['Batteries, D','pkg/12'],
+  '40009':['Battery pack, portable USB','each'],
+  '50001':['Cot, folding','each'],
+  '50002':['Sleeping bag','each'],
+  '50003':['Pillow','each'],
+  '50004':['Towel, large','each'],
+  '50005':['Soap, bar','pkg/12'],
+  '50006':['Hand sanitizer, 1 gal','each'],
+  '50007':['Toilet paper','case/96 rolls'],
+  '50008':['Baby wipes','case/12'],
+  '50009':['Feminine hygiene products, assorted','case'],
+  '50010':['Diapers, size 1-2','case'],
+  '50011':['Diapers, size 3-4','case'],
+  '50012':['Diapers, size 5+','case'],
+  '60001':['Portable toilet, 5 gal','each'],
+  '60002':['Waste bags for portable toilet','box/30'],
+  '60003':['Hand-washing station, portable','each'],
+  '60004':['Portable shower tent','each'],
+  '60005':['Bleach, liquid 1 gal','each'],
+  '70001':['Tent, 6-person','each'],
+  '70002':['Tent, 10x10 canopy','each'],
+  '70003':['Table, folding 8 ft','each'],
+  '70004':['Chair, folding','each'],
+  '70005':['Cooler, 60 qt','each'],
+  '70006':['Propane stove, 2-burner','each'],
+  '70007':['Propane, 1 lb canister','case/12'],
+  '70008':['Cook set, camping','set'],
+  '70009':['Paper plates','pkg/100'],
+  '70010':['Cups, disposable','pkg/100'],
+  '70011':['Utensils, plastic','pkg/100'],
+  '80001':['Cash, small bills','$100 increment'],
+  '80002':['Fuel card','$50 increment']
+};
+var CAT_NAMES = {'10':'Water & Sanitation','20':'Food & Nutrition','30':'Supplies & PPE','40':'Power & Lighting','50':'Shelter & Hygiene','60':'Sanitation','70':'Field Equipment','80':'Financial'};
+
+// ── State ─────────────────────────────────────────────────────────────────────
+var msgs = [], roster = [], incident = {}, notes = [];
+var msgFilter = 'all';
+var editingRosterId = null;
+var pendingConfirm = null;
+
+// ── Persistence ───────────────────────────────────────────────────────────────
+function save() {
+  try { localStorage.setItem('church_eoc_v2', JSON.stringify({msgs:msgs,roster:roster,incident:incident,notes:notes})); } catch(e){}
+}
+function load() {
+  try {
+    var raw = localStorage.getItem('church_eoc_v2');
+    if (!raw) return;
+    var d = JSON.parse(raw);
+    msgs = d.msgs || [];
+    roster = d.roster || [];
+    incident = d.incident || {};
+    notes = d.notes || [];
+  } catch(e) { msgs=[]; roster=[]; incident={}; notes=[]; }
+}
+
+// ── Utilities ─────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function ni(v) { var n=parseInt(v,10); return isNaN(n)?0:n; }
+function pad2(n) { return n<10?'0'+n:''+n; }
+function fmtTs(ts) {
+  if (!ts) return '—';
+  var d=new Date(ts);
+  return (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear()+' '+pad2(d.getHours())+':'+pad2(d.getMinutes());
+}
+function yn(v) {
+  if (!v) return '?';
+  var u=String(v).toUpperCase().trim();
+  if (u==='YES'||u==='Y') return 'YES';
+  if (u==='NO'||u==='N') return 'NO';
+  return v;
+}
+function isNo(v) {
+  var u=String(v||'').toUpperCase().trim();
+  return u==='NO'||u==='N';
+}
+function isYes(v) {
+  var u=String(v||'').toUpperCase().trim();
+  return u==='YES'||u==='Y';
+}
+function padR(s,w) { s=String(s||''); while(s.length<w) s+=' '; return s.length>w?s.slice(0,w-1)+'…':s; }
+function padL(s,w) { s=String(s||''); while(s.length<w) s=' '+s; return s.length>w?s.slice(0,w-1)+'…':s; }
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+var curTab = 'overview';
+function switchTab(t) {
+  curTab = t;
+  document.querySelectorAll('.tab-btn').forEach(function(b,i){
+    var tabs=['overview','roster','dr','so','messages','notes','setup'];
+    b.classList.toggle('active', tabs[i]===t);
+  });
+  document.querySelectorAll('.tab-panel').forEach(function(p){
+    p.classList.toggle('active', p.id==='tab-'+t);
+  });
+}
+
+// ── Clock ─────────────────────────────────────────────────────────────────────
+function tickClock() {
+  var now = new Date();
+  document.getElementById('live-clock').textContent = pad2(now.getHours())+':'+pad2(now.getMinutes())+':'+pad2(now.getSeconds());
+  var timerEl = document.getElementById('op-timer');
+  if (incident && incident.startTs && incident.opPeriodHrs) {
+    var elapsed = (Date.now() - incident.startTs) / 3600000;
+    var total = parseFloat(incident.opPeriodHrs)||8;
+    var rem = total - elapsed;
+    if (rem > 0) {
+      var rh = Math.floor(rem), rm = Math.round((rem-rh)*60);
+      timerEl.textContent = 'OP: '+Math.floor(elapsed*10)/10+'h elapsed | '+rh+'h '+pad2(rm)+'m remaining';
+    } else {
+      timerEl.textContent = 'OP PERIOD EXPIRED';
+      timerEl.style.color = 'var(--danger)';
+    }
+  } else {
+    timerEl.textContent = '';
+  }
+}
+setInterval(tickClock, 1000);
+tickClock();
+
+// ── File Handling ─────────────────────────────────────────────────────────────
+function doDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function doDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+function doDrop(e) {
+  e.preventDefault(); e.currentTarget.classList.remove('drag-over');
+  var files = e.dataTransfer.files;
+  processFiles(files);
+}
+function doFileInput(e) { processFiles(e.target.files); e.target.value=''; }
+
+function processFiles(files) {
+  var loaded=0, skipped=0, errors=0;
+  var total = files.length;
+  if (!total) return;
+  Array.from(files).forEach(function(f){
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var result = parseText(ev.target.result, f.name);
+      loaded += result.loaded; skipped += result.skipped; errors += result.errors;
+      total--;
+      if (total===0) {
+        save(); render();
+        var msg = 'Loaded '+loaded+' message'+(loaded!==1?'s':'');
+        if (skipped) msg += ', '+skipped+' duplicate'+(skipped!==1?'s':'')+' skipped';
+        if (errors) msg += ', '+errors+' error'+(errors!==1?'s':'');
+        toast(msg);
+        if (loaded>0) updateDropZone();
+      }
+    };
+    reader.onerror = function(){ total--; errors++; };
+    reader.readAsText(f);
+  });
+}
+
+function parseText(text, filename) {
+  var loaded=0, skipped=0, errors=0;
+  // DR tags
+  var drRe = /\[Church-DR\|([^\]]+)\]/g;
+  var m;
+  while ((m=drRe.exec(text))!==null) {
+    var fields = parseFields(m[1]);
+    var dupKey = (fields.stake||'')+'|'+(fields.date||'')+'|'+(fields.submitter||'');
+    if (msgs.some(function(x){return x.type==='dr'&&x.dupKey===dupKey;})) { skipped++; continue; }
+    msgs.push({id:uid(),ts:Date.now(),type:'dr',dr:fields,so:{},filename:filename||'',dupKey:dupKey});
+    loaded++;
+  }
+  // SO tags
+  var soRe = /\[Church-SO\|([^\]]+)\]/g;
+  while ((m=soRe.exec(text))!==null) {
+    var fields = parseFields(m[1]);
+    var dupKey = (fields.stake||'')+'|'+(fields.order_date||'');
+    if (msgs.some(function(x){return x.type==='so'&&x.dupKey===dupKey;})) { skipped++; continue; }
+    msgs.push({id:uid(),ts:Date.now(),type:'so',dr:{},so:fields,filename:filename||'',dupKey:dupKey});
+    loaded++;
+  }
+  return {loaded:loaded,skipped:skipped,errors:errors};
+}
+
+function parseFields(s) {
+  var obj = {};
+  s.split('|').forEach(function(part){
+    var eq = part.indexOf('=');
+    if (eq>0) obj[part.slice(0,eq).trim()] = part.slice(eq+1).trim();
+  });
+  return obj;
+}
+
+function updateDropZone() {
+  var hasData = msgs.length > 0;
+  document.getElementById('drop-zone').style.display = hasData ? 'none' : '';
+  document.getElementById('drop-mini').style.display = hasData ? 'block' : 'none';
+}
+
+// ── Main Render ───────────────────────────────────────────────────────────────
+function render() {
+  var drs = msgs.filter(function(m){return m.type==='dr';});
+  var sos = msgs.filter(function(m){return m.type==='so';});
+
+  // Counts
+  document.getElementById('cnt-roster').textContent = roster.length;
+  document.getElementById('cnt-roster').className = 'cnt'+(roster.length?'':' empty');
+  document.getElementById('cnt-dr').textContent = drs.length;
+  document.getElementById('cnt-dr').className = 'cnt'+(drs.length?'':' empty');
+  document.getElementById('cnt-so').textContent = sos.length;
+  document.getElementById('cnt-so').className = 'cnt'+(sos.length?'':' empty');
+  document.getElementById('cnt-msgs').textContent = msgs.length;
+  document.getElementById('cnt-msgs').className = 'cnt'+(msgs.length?'':' empty');
+  document.getElementById('cnt-notes').textContent = notes.length;
+  document.getElementById('cnt-notes').className = 'cnt'+(notes.length?'':' empty');
+  document.getElementById('roster-count').textContent = roster.length+' stake'+(roster.length!==1?'s':'');
+
+  // Incident header
+  if (incident && incident.name) {
+    document.getElementById('hdr-incident').textContent = incident.name + (incident.area ? ' — '+incident.area : '') + (incident.type ? ' ('+incident.type+')' : '');
+    document.getElementById('inc-btn').textContent = 'Update Incident';
+  }
+
+  // Miss bar
+  var missNo = drs.filter(function(m){return isNo(m.dr.miss_safe);}).map(function(m){return m.dr.stake||'?';});
+  var missBar = document.getElementById('miss-bar');
+  if (missNo.length) {
+    missBar.className='alert';
+    missBar.innerHTML='&#9888; MISSIONARIES NOT ACCOUNTED FOR &mdash; Stakes: <strong>'+missNo.map(esc).join(', ')+'</strong>';
+  } else {
+    missBar.className='ok';
+    missBar.innerHTML='MISSIONARY STATUS: All accounted for &#10003;';
+  }
+
+  renderOverview(drs, sos);
+  renderRoster(drs);
+  renderDR(drs);
+  renderSO(sos);
+  renderMessages();
+  renderNotes();
+  updateSetupForm();
+  updateDropZone();
+}
+
+// ── Overview ──────────────────────────────────────────────────────────────────
+function renderOverview(drs, sos) {
+  var totInj=0,totDead=0,totDmg=0,totDest=0,totVol=0;
+  drs.forEach(function(m){ totInj+=ni(m.dr.mem_inj); totDead+=ni(m.dr.mem_dead); totDmg+=ni(m.dr.homes_dmg); totDest+=ni(m.dr.homes_dest); totVol+=ni(m.dr.vol_count); });
+
+  var now = Date.now();
+  var missNoList = drs.filter(function(m){return isNo(m.dr.miss_safe);}).map(function(m){return m.dr.stake||'?';});
+  var hqList = drs.filter(function(m){return isYes(m.dr.need_hq);}).map(function(m){return m.dr.stake||'?';});
+  var overdueList = roster.filter(function(r){
+    if (r.voiceContact) return false;
+    var hasDR = drs.some(function(m){return (m.dr.stake||'').toLowerCase()===(r.name||'').toLowerCase();});
+    if (hasDR) return false;
+    if (!r.expectedMinutes||!incident.startTs) return false;
+    return (now - incident.startTs) > r.expectedMinutes*60000;
+  }).map(function(r){return r.name;});
+
+  var alerts = document.getElementById('ov-alerts');
+  var html = '';
+  if (missNoList.length) html += '<div class="alert-box"><h3>&#9888; Missionaries Not Accounted For</h3>Stakes: <strong>'+missNoList.map(esc).join(', ')+'</strong><br><em>Contact stake presidents immediately. Call 1-801-240-0450 if needed.</em></div>';
+  if (overdueList.length) html += '<div class="alert-box overdue"><h3>&#8987; Overdue — No Report Received</h3>'+overdueList.map(esc).join(', ')+'</div>';
+  if (hqList.length) html += '<div class="alert-box warn"><h3>&#128222; Stakes Requesting HQ Assistance</h3>'+hqList.map(esc).join(', ')+'<br><em>Contact Area Welfare Administration: 1-801-240-0450</em></div>';
+  alerts.innerHTML = html;
+
+  var accounted = drs.filter(function(m){return isYes(m.dr.miss_safe);}).length;
+  var statsEl = document.getElementById('ov-stats');
+  function tile(n,l,cls){return '<div class="stat'+(cls?' '+cls:'')+'"><div class="n">'+n+'</div><div class="l">'+esc(l)+'</div></div>';}
+  statsEl.innerHTML =
+    tile(drs.length,'Stakes Reporting') +
+    tile(missNoList.length>0?'NO':'YES','Miss. Accounted', missNoList.length>0?'danger':'ok') +
+    tile(totInj,'Injuries', totInj>0?'warn':'') +
+    tile(totDead,'Deaths', totDead>0?'danger':'') +
+    tile(totDmg,'Homes Damaged', totDmg>0?'warn':'') +
+    tile(totDest,'Homes Destroyed', totDest>0?'danger':'') +
+    tile(totVol,'Volunteers');
+
+  // Tracker grid
+  var grid = document.getElementById('tracker-grid');
+  var emptyEl = document.getElementById('tracker-empty');
+  if (roster.length===0) {
+    grid.innerHTML=''; emptyEl.style.display='';
+    return;
+  }
+  emptyEl.style.display='none';
+  grid.innerHTML = roster.map(function(r){
+    var drForStake = drs.filter(function(m){return (m.dr.stake||'').toLowerCase()===(r.name||'').toLowerCase();});
+    var lastDR = drForStake.sort(function(a,b){return b.ts-a.ts;})[0];
+    var isOverdue = !r.voiceContact && !lastDR && r.expectedMinutes && incident.startTs && (now - incident.startTs) > r.expectedMinutes*60000;
+    var cls = 'tracker-card';
+    var statusLabel = 'No report';
+    if (r.voiceContact) { cls+=' green'; statusLabel='Voice contact &#9742;'; }
+    else if (lastDR) {
+      var isMissNo = isNo(lastDR.dr.miss_safe);
+      var hasNeed = isYes(lastDR.dr.need_local)||isYes(lastDR.dr.need_neighbor)||isYes(lastDR.dr.need_hq);
+      if (isMissNo) { cls+=' red'; statusLabel='&#9888; Miss. not safe'; }
+      else if (hasNeed) { cls+=' yellow'; statusLabel='Reported — has needs'; }
+      else { cls+=' green'; statusLabel='Reported OK &#10003;'; }
+    } else if (isOverdue) { cls+=' overdue'; statusLabel='OVERDUE'; }
+    var timeStr = lastDR ? fmtTs(lastDR.ts) : (r.voiceContact ? fmtTs(r.voiceContactTs) : '');
+    return '<div class="'+cls+'"><div class="tk-name" title="'+esc(r.name)+'">'+esc(r.name)+'</div><div class="tk-status">'+statusLabel+'</div>'+(timeStr?'<div class="tk-time">'+esc(timeStr)+'</div>':'')+'</div>';
+  }).join('');
+}
+
+// ── Roster ────────────────────────────────────────────────────────────────────
+function renderRoster(drs) {
+  if (!drs) drs = msgs.filter(function(m){return m.type==='dr';});
+  var tbody = document.getElementById('roster-tbody');
+  var emptyEl = document.getElementById('roster-empty');
+  if (roster.length===0) { tbody.innerHTML=''; emptyEl.style.display=''; return; }
+  emptyEl.style.display='none';
+  var now = Date.now();
+  tbody.innerHTML = roster.map(function(r){
+    var drForStake = drs.filter(function(m){return (m.dr.stake||'').toLowerCase()===(r.name||'').toLowerCase();});
+    var lastDR = drForStake.sort(function(a,b){return b.ts-a.ts;})[0];
+    var isOverdue = !r.voiceContact && !lastDR && r.expectedMinutes && incident.startTs && (now - incident.startTs) > r.expectedMinutes*60000;
+    var statusHtml;
+    if (r.voiceContact) statusHtml='<span class="chip so">Voice &#9742;</span>';
+    else if (lastDR) {
+      var isMissNo = isNo(lastDR.dr.miss_safe);
+      statusHtml = isMissNo ? '<span class="chip miss-no">MISS NO</span>' : '<span class="chip miss-yes">Reported</span>';
+    } else statusHtml = isOverdue ? '<span style="color:var(--overdue);font-weight:700">OVERDUE</span>' : '<span style="color:var(--muted)">Waiting</span>';
+    var expected = r.expectedMinutes ? (r.expectedMinutes >= 60 ? Math.round(r.expectedMinutes/60)+'h' : r.expectedMinutes+'m') + ' after start' : '—';
+    return '<tr><td><strong>'+esc(r.name)+'</strong></td><td>'+esc(r.spName||'—')+'</td><td>'+esc(r.spPhone||'—')+'</td><td>'+esc(expected)+'</td><td>'+statusHtml+'</td><td>'+esc(lastDR?fmtTs(lastDR.ts):(r.voiceContact?fmtTs(r.voiceContactTs):'—'))+'</td><td style="white-space:nowrap">'
+      +'<button class="btn-ghost" title="Edit" onclick="openEditStake(\''+r.id+'\')">&#9998;</button>'
+      +'<button class="btn-ghost" title="Voice Contact" onclick="markVoice(\''+r.id+'\')" style="color:var(--ok)">&#9742;</button>'
+      +'<button class="btn-ghost" title="Delete" onclick="deleteRoster(\''+r.id+'\')">&#10005;</button>'
+      +'</td></tr>';
+  }).join('');
+}
+
+function openAddStake() {
+  editingRosterId = null;
+  showModalForm('Add Stake to Roster', {name:'',spName:'',spPhone:'',expectedMinutes:''});
+}
+function openEditStake(id) {
+  editingRosterId = id;
+  var r = roster.find(function(x){return x.id===id;});
+  if (!r) return;
+  showModalForm('Edit Stake', r);
+}
+function showModalForm(title, r) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML =
+    '<div class="form-row"><div class="form-group"><label>Stake Name *</label><input type="text" id="mf-name" value="'+esc(r.name||'')+'"></div></div>'+
+    '<div class="form-row"><div class="form-group"><label>Stake President Name</label><input type="text" id="mf-sp" value="'+esc(r.spName||'')+'"></div><div class="form-group"><label>SP Phone</label><input type="text" id="mf-phone" value="'+esc(r.spPhone||'')+'"></div></div>'+
+    '<div class="form-row"><div class="form-group"><label>Expected Report Window (minutes after incident start)</label><input type="number" id="mf-mins" value="'+esc(r.expectedMinutes||'')+'"></div></div>';
+  document.getElementById('modal-confirm-btn').textContent = editingRosterId ? 'Save Changes' : 'Add Stake';
+  pendingConfirm = function(){
+    var name = document.getElementById('mf-name').value.trim();
+    if (!name) { toast('Stake name is required'); return; }
+    var entry = {id:editingRosterId||uid(),name:name,spName:document.getElementById('mf-sp').value.trim(),spPhone:document.getElementById('mf-phone').value.trim(),expectedMinutes:parseInt(document.getElementById('mf-mins').value)||0,voiceContact:false,voiceContactTs:null};
+    if (editingRosterId) {
+      var existing = roster.find(function(x){return x.id===editingRosterId;});
+      if (existing) { entry.voiceContact=existing.voiceContact; entry.voiceContactTs=existing.voiceContactTs; }
+      roster = roster.map(function(x){return x.id===editingRosterId?entry:x;});
+    } else {
+      roster.push(entry);
+    }
+    save(); render(); closeModal(); toast(editingRosterId?'Stake updated':'Stake added');
+  };
+  document.getElementById('modal-bg').classList.add('open');
+}
+function markVoice(id) {
+  roster = roster.map(function(r){ return r.id===id?Object.assign({},r,{voiceContact:true,voiceContactTs:Date.now()}):r; });
+  save(); render(); toast('Voice contact recorded');
+}
+function deleteRoster(id) {
+  pendingConfirm = function(){
+    roster = roster.filter(function(r){return r.id!==id;});
+    save(); render(); closeModal(); toast('Stake removed');
+  };
+  document.getElementById('modal-title').textContent = 'Remove Stake';
+  document.getElementById('modal-body').innerHTML = '<p>Remove this stake from the roster? This does not delete received messages.</p>';
+  document.getElementById('modal-confirm-btn').textContent = 'Remove';
+  document.getElementById('modal-confirm-btn').className = 'btn danger';
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+// ── Disaster Reports ──────────────────────────────────────────────────────────
+function renderDR(drs) {
+  var emptyEl = document.getElementById('dr-empty');
+  var tbody = document.getElementById('dr-tbody');
+  if (drs.length===0) { tbody.innerHTML=''; emptyEl.style.display=''; renderDRAgg(drs); return; }
+  emptyEl.style.display='none';
+  renderDRAgg(drs);
+  tbody.innerHTML = drs.slice().sort(function(a,b){return b.ts-a.ts;}).map(function(m){
+    var r=m.dr;
+    var missClass = isNo(r.miss_safe)?'miss-no':'miss-yes';
+    return '<tr><td>'+fmtTs(m.ts)+'</td><td><strong>'+esc(r.stake||'?')+'</strong></td><td>'+esc(r.date||'')+'</td><td>'+esc(r.type||'')+'</td>'
+      +'<td><span class="chip '+missClass+'">'+esc(yn(r.miss_safe))+'</span></td>'
+      +'<td>'+ni(r.mem_inj)+'</td><td>'+ni(r.mem_dead)+'</td><td>'+ni(r.homes_dmg)+'</td><td>'+ni(r.homes_dest)+'</td>'
+      +'<td>'+ni(r.vol_count)+'</td><td>'+ni(r.vol_hrs)+'</td>'
+      +'<td>'+esc(yn(r.need_local))+'</td><td>'+esc(yn(r.need_neighbor))+'</td><td>'+esc(yn(r.need_hq))+'</td>'
+      +'<td style="white-space:nowrap">'+esc(r.submitter||'')+(r.phone?'<br><span style="color:var(--muted)">'+esc(r.phone)+'</span>':'')+'</td>'
+      +'<td><button class="btn-ghost" onclick="removeMsg(\''+m.id+'\')">&#10005;</button></td></tr>';
+  }).join('');
+}
+function renderDRAgg(drs) {
+  var totInj=0,totDead=0,totDmg=0,totDest=0,totVol=0,totHrs=0;
+  drs.forEach(function(m){ totInj+=ni(m.dr.mem_inj); totDead+=ni(m.dr.mem_dead); totDmg+=ni(m.dr.homes_dmg); totDest+=ni(m.dr.homes_dest); totVol+=ni(m.dr.vol_count); totHrs+=ni(m.dr.vol_hrs); });
+  function tile(n,l,c){return '<div class="stat'+(c?' '+c:'')+'"><div class="n">'+n+'</div><div class="l">'+esc(l)+'</div></div>';}
+  document.getElementById('dr-agg-stats').innerHTML =
+    tile(drs.length,'Stakes Reporting')+tile(totInj,'Injuries',totInj>0?'warn':'')+tile(totDead,'Deaths',totDead>0?'danger':'')+tile(totDmg,'Homes Damaged',totDmg>0?'warn':'')+tile(totDest,'Homes Destroyed',totDest>0?'danger':'')+tile(totVol,'Volunteers')+tile(totHrs,'Volunteer Hours');
+}
+
+function buildSitrep() {
+  var drs = msgs.filter(function(m){return m.type==='dr';});
+  if (!drs.length) { toast('No disaster reports loaded'); return; }
+  var interval = parseInt(document.getElementById('sitrep-interval').value)||8;
+  var now = new Date();
+  var nextRpt = new Date(now.getTime() + interval*3600000);
+  var ds = (now.getMonth()+1)+'/'+now.getDate()+'/'+now.getFullYear()+' '+pad2(now.getHours())+':'+pad2(now.getMinutes());
+  var nextDs = (nextRpt.getMonth()+1)+'/'+nextRpt.getDate()+'/'+nextRpt.getFullYear()+' '+pad2(nextRpt.getHours())+':'+pad2(nextRpt.getMinutes());
+  var incName = (incident&&incident.name)||'(Unnamed Incident)';
+  var incArea = (incident&&incident.area)||'';
+  var incType = (incident&&incident.type)||'';
+  var icName = (incident&&incident.ic)||'(Unknown)';
+  var op = (incident&&incident.op)||'(Unknown)';
+
+  var totInj=0,totDead=0,totDmg=0,totDest=0,totVol=0,totHrs=0;
+  var needLocal=[],needNbr=[],needHQ=[],missNo=[],missYes=[];
+  drs.forEach(function(m){ var r=m.dr;
+    totInj+=ni(r.mem_inj); totDead+=ni(r.mem_dead); totDmg+=ni(r.homes_dmg); totDest+=ni(r.homes_dest); totVol+=ni(r.vol_count); totHrs+=ni(r.vol_hrs);
+    if(isNo(r.miss_safe)) missNo.push(r.stake||'?'); else if(isYes(r.miss_safe)) missYes.push(r.stake||'?');
+    if(isYes(r.need_local)) needLocal.push(r.stake||'?');
+    if(isYes(r.need_neighbor)) needNbr.push(r.stake||'?');
+    if(isYes(r.need_hq)) needHQ.push(r.stake||'?');
+  });
+  var sos = msgs.filter(function(m){return m.type==='so';});
+
+  var line = '============================================================';
+  var txt = line+'\n     Church EMCOMM — ICS-209 SITUATION REPORT\n     The Church of Jesus Christ of Latter-day Saints\n'+line+'\n\n';
+  txt += 'Incident: '+incName+(incArea?' | '+incArea:'')+'\nType:     '+incType+'\nIC:       '+icName+'\nOp:       '+op+'\nCompiled: '+ds+' local\n\n';
+  txt += '------------------------------------------------------------\nSECTION A: MISSIONARY STATUS\n\n';
+  if (missNo.length) {
+    txt += '  *** MISSIONARIES NOT ACCOUNTED FOR ***\n';
+    txt += '  Stakes: '+missNo.join(', ')+'\n';
+    txt += '  ACTION: Contact stake presidents immediately.\n';
+  } else if (missYes.length) {
+    txt += '  All missionaries accounted for.\n';
+    txt += '  Stakes reporting safe: '+missYes.join(', ')+'\n';
+  } else {
+    txt += '  No missionary status received.\n';
+  }
+  txt += '\n------------------------------------------------------------\nSECTION B: LIFE SAFETY\n\n';
+  txt += '  Members injured:  '+totInj+'\n  Member deaths:    '+totDead+'\n';
+  if (!totInj && !totDead) txt += '  No injuries or fatalities reported.\n';
+  txt += '\n------------------------------------------------------------\nSECTION C: RESOURCES\n\n';
+  txt += '  Total volunteers:      '+totVol+'\n  Total volunteer hours: '+totHrs+'\n';
+  txt += '\n------------------------------------------------------------\nSECTION D: NEEDS SUMMARY\n\n';
+  txt += '  Stakes needing local Church facilities ('+needLocal.length+'):\n    '+(needLocal.join(', ')||'None')+'\n';
+  txt += '  Stakes needing neighboring unit assist ('+needNbr.length+'):\n    '+(needNbr.join(', ')||'None')+'\n';
+  txt += '  Stakes requesting Church HQ support    ('+needHQ.length+'):\n    '+(needHQ.join(', ')||'None')+'\n';
+  if (needHQ.length) txt += '  ACTION: Contact Area Welfare Administration 1-801-240-0450\n';
+  txt += '\n------------------------------------------------------------\nSECTION E: STAKE DETAIL\n\n';
+  drs.slice().sort(function(a,b){return (a.dr.stake||'').localeCompare(b.dr.stake||'');}).forEach(function(m){ var r=m.dr;
+    txt += '  '+padR(r.stake||'Unknown',40)+'\n';
+    txt += '    Missionaries safe: '+yn(r.miss_safe)+'\n';
+    txt += '    Inj/Dead/HomeDmg/HomeDest: '+ni(r.mem_inj)+'/'+ni(r.mem_dead)+'/'+ni(r.homes_dmg)+'/'+ni(r.homes_dest)+'\n';
+    txt += '    Volunteers: '+ni(r.vol_count)+' ('+ni(r.vol_hrs)+' hrs)\n';
+    txt += '    Needs: Local='+yn(r.need_local)+' Neighbor='+yn(r.need_neighbor)+' HQ='+yn(r.need_hq)+'\n';
+    txt += '    Submitter: '+(r.submitter||'?')+(r.phone?' | '+(r.phone||''):'')+'\n';
+    txt += '    Received: '+fmtTs(m.ts)+'\n\n';
+  });
+  txt += '------------------------------------------------------------\nSECTION F: SUPPLY REQUESTS\n\n';
+  if (sos.length) {
+    txt += '  '+sos.length+' supply order(s) received. See Supply Orders tab for details.\n';
+    var agg={};
+    sos.forEach(function(m){(m.so.items||'').split(';').forEach(function(p){var kv=p.split(':');if(kv.length===2&&kv[1]){var n=parseInt(kv[1],10)||0;if(n>0){if(!agg[kv[0]])agg[kv[0]]=0;agg[kv[0]]+=n;}}}); });
+    Object.keys(agg).sort().forEach(function(k){var info=CAT[k];txt+='    '+k+'  '+(info?padR(info[0],35):padR('Item '+k,35))+'  QTY: '+agg[k]+'\n';});
+  } else {
+    txt += '  No supply orders received.\n';
+  }
+  txt += '\n'+line+'\nNEXT SITREP: '+nextDs+' local (in '+interval+' hours)\n'+line+'\nVia Winlink EMCOMM | '+op+' | Church EOC\n'+line+'\n';
+
+  document.getElementById('sitrep-pre').textContent = txt;
+  document.getElementById('sitrep-wrap').style.display = '';
+  toast('SITREP generated');
+}
+
+// ── Supply Orders ─────────────────────────────────────────────────────────────
+function renderSO(sos) {
+  var emptyEl = document.getElementById('so-empty');
+  var tbody = document.getElementById('so-items-tbody');
+  if (sos.length===0) { tbody.innerHTML=''; emptyEl.style.display=''; document.getElementById('so-stake-detail').innerHTML=''; return; }
+  emptyEl.style.display='none';
+
+  var agg={};
+  sos.forEach(function(m){ var stake=m.so.stake||'?';
+    (m.so.items||'').split(';').forEach(function(p){var kv=p.split(':');if(kv.length===2&&kv[1]){var n=parseInt(kv[1],10)||0;if(n>0){if(!agg[kv[0]])agg[kv[0]]={total:0,stakes:[]};agg[kv[0]].total+=n;agg[kv[0]].stakes.push(stake+' (x'+n+')');}}}); });
+
+  var keys=Object.keys(agg).sort(), rows=[], lastCat='';
+  keys.forEach(function(k){
+    var cat=k.slice(0,2);
+    if(cat!==lastCat){rows.push('<tr class="cat-hdr"><td colspan="5">'+(CAT_NAMES[cat]||'Other')+'</td></tr>');lastCat=cat;}
+    var info=CAT[k];
+    rows.push('<tr><td>'+esc(k)+'</td><td>'+esc(info?info[0]:'Item '+k)+'</td><td style="color:var(--muted)">'+esc(info?info[1]:'')+'</td><td class="qty-cell">'+agg[k].total+'</td><td style="font-size:10px;color:var(--muted)">'+esc(agg[k].stakes.join('; '))+'</td></tr>');
+  });
+  tbody.innerHTML=rows.join('');
+
+  // Stake detail
+  var detail='';
+  sos.forEach(function(m){var o=m.so;
+    detail+='<div class="card"><h2>'+esc(o.stake||'Unknown Stake')+'</h2><p style="font-size:12px;color:var(--muted);margin:0 0 8px">Contact: '+esc(o.contact||'—')+' '+esc(o.phone||'')+'<br>Deliver to: '+esc(o.city||'?')+', '+esc(o.state||'')+'<br>Needed by: '+esc(o.del_date||'?')+'<br>Received: '+fmtTs(m.ts)+'</p></div>';
+  });
+  document.getElementById('so-stake-detail').innerHTML=detail;
+}
+
+function buildPhoneScript() {
+  var sos = msgs.filter(function(m){return m.type==='so';});
+  if (!sos.length) { toast('No supply orders loaded'); return; }
+  var agg={};
+  sos.forEach(function(m){(m.so.items||'').split(';').forEach(function(p){var kv=p.split(':');if(kv.length===2&&kv[1]){var n=parseInt(kv[1],10)||0;if(n>0){if(!agg[kv[0]])agg[kv[0]]=0;agg[kv[0]]+=n;}}});});
+  var now=new Date();
+  var ds=(now.getMonth()+1)+'/'+now.getDate()+'/'+now.getFullYear()+' '+pad2(now.getHours())+':'+pad2(now.getMinutes());
+  var incName=(incident&&incident.name)||'(Unnamed Incident)';
+  var stakes=sos.map(function(m){return m.so.stake||'?';});
+  var txt='============================================================\n  Church EMCOMM SUPPLY ORDER\n  Call: 1-801-240-0450 (Area Welfare Administration)\n============================================================\n\n';
+  txt+='Incident:  '+incName+'\nDate/Time: '+ds+'\nStakes:    '+stakes.join(', ')+'\n\n';
+  txt+='------------------------------------------------------------\nITEM LIST (read to operator)\n------------------------------------------------------------\n\n';
+  var lastCat='';
+  Object.keys(agg).sort().forEach(function(k){
+    var cat=k.slice(0,2);
+    if(cat!==lastCat){txt+='\n  --- '+(CAT_NAMES[cat]||'Other')+' ---\n';lastCat=cat;}
+    var info=CAT[k]; var name=info?info[0]:'Item '+k;
+    var dots=name.length<36?'.'.repeat(38-name.length):'  ';
+    txt+='  '+k+'  '+name+'  '+dots+'  QTY: '+padL(String(agg[k]),5)+'\n';
+  });
+  txt+='\n------------------------------------------------------------\n[Receive project number from operator and record below]\nProject Number: _________________________________\n\nOperator Name:  _________________________________\nCall Time:      _________________________________\n------------------------------------------------------------\nVia Winlink | Church EMCOMM EOC | Form PD10052205\n============================================================\n';
+  document.getElementById('so-script-pre').textContent=txt;
+  document.getElementById('so-script-wrap').style.display='';
+  toast('Phone script generated');
+}
+
+// ── Messages ──────────────────────────────────────────────────────────────────
+function setMsgFilter(f, btn) {
+  msgFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.toggle('active',b===btn);});
+  renderMessages();
+}
+function renderMessages() {
+  var filtered = msgFilter==='all' ? msgs : msgs.filter(function(m){return m.type===msgFilter;});
+  var emptyEl = document.getElementById('msgs-empty');
+  var tbody = document.getElementById('msgs-tbody');
+  if (filtered.length===0) { tbody.innerHTML=''; emptyEl.style.display=''; return; }
+  emptyEl.style.display='none';
+  tbody.innerHTML = filtered.slice().sort(function(a,b){return b.ts-a.ts;}).map(function(m){
+    var label, stake, date, summary;
+    if(m.type==='dr'){ label='<span class="chip dr">DR</span>'; stake=m.dr.stake||'?'; date=m.dr.date||''; summary='Inj:'+ni(m.dr.mem_inj)+' Dead:'+ni(m.dr.mem_dead)+' Dmg:'+ni(m.dr.homes_dmg)+' Dest:'+ni(m.dr.homes_dest); }
+    else { label='<span class="chip so">SO</span>'; stake=m.so.stake||'?'; date=m.so.order_date||''; summary=(m.so.items||'').split(';').filter(Boolean).length+' item types'; }
+    return '<tr><td>'+fmtTs(m.ts)+'</td><td>'+label+'</td><td>'+esc(stake)+'</td><td>'+esc(date)+'</td><td style="color:var(--muted)">'+esc(summary)+'</td><td><button class="btn-ghost" onclick="removeMsg(\''+m.id+'\')">&#10005;</button></td></tr>';
+  }).join('');
+}
+function removeMsg(id) {
+  pendingConfirm = function(){ msgs=msgs.filter(function(m){return m.id!==id;}); save(); render(); closeModal(); toast('Message removed'); };
+  document.getElementById('modal-title').textContent='Remove Message';
+  document.getElementById('modal-body').innerHTML='<p>Remove this message from the EOC record? This cannot be undone.</p>';
+  document.getElementById('modal-confirm-btn').textContent='Remove';
+  document.getElementById('modal-confirm-btn').className='btn danger';
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+// ── Notes ─────────────────────────────────────────────────────────────────────
+function addNote() {
+  var txt = document.getElementById('note-input').value.trim();
+  if (!txt) return;
+  notes.unshift({id:uid(),ts:Date.now(),text:txt});
+  document.getElementById('note-input').value='';
+  save(); renderNotes(); toast('Note added');
+}
+function renderNotes() {
+  var emptyEl = document.getElementById('notes-empty');
+  var tbody = document.getElementById('notes-tbody');
+  if(notes.length===0){tbody.innerHTML='';emptyEl.style.display='';return;}
+  emptyEl.style.display='none';
+  tbody.innerHTML = notes.map(function(n){
+    return '<tr><td style="white-space:nowrap;color:var(--muted)">'+fmtTs(n.ts)+'</td><td style="white-space:pre-wrap">'+esc(n.text)+'</td><td><button class="btn-ghost" onclick="removeNote(\''+n.id+'\')">&#10005;</button></td></tr>';
+  }).join('');
+}
+function removeNote(id) {
+  notes=notes.filter(function(n){return n.id!==id;}); save(); renderNotes(); toast('Note removed');
+}
+function exportNotes() {
+  if (!notes.length) { toast('No notes to export'); return; }
+  var incName=(incident&&incident.name)||'Unknown Incident';
+  var txt='Church EMCOMM EOC — ACTION LOG\nIncident: '+incName+'\nExported: '+new Date().toLocaleString()+'\n\n';
+  notes.forEach(function(n){txt+=fmtTs(n.ts)+'\n'+n.text+'\n\n';});
+  dlText(txt,'church_eoc_notes_'+new Date().toISOString().slice(0,10)+'.txt');
+}
+
+// ── Setup ─────────────────────────────────────────────────────────────────────
+function updateSetupForm() {
+  if (!incident||!incident.name) return;
+  if (incident.name) document.getElementById('inc-name').value=incident.name;
+  if (incident.area) document.getElementById('inc-area').value=incident.area;
+  if (incident.type) document.getElementById('inc-type').value=incident.type;
+  if (incident.ic) document.getElementById('inc-ic').value=incident.ic;
+  if (incident.op) document.getElementById('inc-op').value=incident.op;
+  if (incident.opPeriodHrs) document.getElementById('inc-op-hrs').value=incident.opPeriodHrs;
+  if (incident.startTs) {
+    var d = new Date(incident.startTs);
+    var yr=d.getFullYear(),mo=pad2(d.getMonth()+1),dy=pad2(d.getDate());
+    document.getElementById('inc-date').value=yr+'-'+mo+'-'+dy;
+    document.getElementById('inc-time').value=pad2(d.getHours())+':'+pad2(d.getMinutes());
+  }
+}
+function saveIncident() {
+  var name = document.getElementById('inc-name').value.trim();
+  if (!name) { toast('Incident name is required'); return; }
+  var dateVal = document.getElementById('inc-date').value;
+  var timeVal = document.getElementById('inc-time').value;
+  var startTs = null;
+  if (dateVal && timeVal) { startTs = new Date(dateVal+'T'+timeVal).getTime(); }
+  else if (dateVal) { startTs = new Date(dateVal).getTime(); }
+  incident = {name:name, area:document.getElementById('inc-area').value.trim(), type:document.getElementById('inc-type').value.trim(), ic:document.getElementById('inc-ic').value.trim(), op:document.getElementById('inc-op').value.trim(), opPeriodHrs:document.getElementById('inc-op-hrs').value, startTs:startTs};
+  save(); render(); toast('Incident saved');
+}
+
+function exportHandoff() {
+  var data = {msgs:msgs,roster:roster,incident:incident,notes:notes,exportedAt:Date.now(),exportedBy:(incident&&incident.op)||'Unknown'};
+  dlText(JSON.stringify(data,null,2),'church_eoc_handoff_'+new Date().toISOString().slice(0,10)+'T'+new Date().toISOString().slice(11,16).replace(':','')+'Z.json');
+  toast('Handoff exported');
+}
+function importHandoff(e) {
+  var file = e.target.files[0]; e.target.value='';
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    var data;
+    try { data = JSON.parse(ev.target.result); } catch(err) { toast('Invalid JSON file'); return; }
+    if (!data.msgs || !data.incident) { toast('File does not look like a handoff export'); return; }
+    pendingConfirm = function(){
+      msgs=data.msgs||[]; roster=data.roster||[]; incident=data.incident||{}; notes=data.notes||[];
+      save(); render(); closeModal(); toast('Handoff imported — '+msgs.length+' messages, '+roster.length+' stakes');
+    };
+    var exp = data.exportedAt ? fmtTs(data.exportedAt) : 'unknown time';
+    var by = data.exportedBy || 'unknown';
+    document.getElementById('modal-title').textContent='Import Handoff';
+    document.getElementById('modal-body').innerHTML='<p>Import handoff from <strong>'+esc(by)+'</strong> at '+esc(exp)+'?<br><br>This will replace ALL current EOC data ('+msgs.length+' messages, '+notes.length+' notes). Export first if you want to preserve current data.</p>';
+    document.getElementById('modal-confirm-btn').textContent='Import';
+    document.getElementById('modal-confirm-btn').className='btn';
+    document.getElementById('modal-bg').classList.add('open');
+  };
+  reader.readAsText(file);
+}
+
+function confirmClearAll() {
+  pendingConfirm = function(){
+    msgs=[]; roster=[]; incident={}; notes=[];
+    save(); render(); closeModal(); toast('All data cleared — ready for new incident');
+    document.getElementById('inc-name').value=''; document.getElementById('inc-area').value='';
+    document.getElementById('inc-type').value=''; document.getElementById('inc-ic').value='';
+    document.getElementById('inc-op').value=''; document.getElementById('inc-date').value='';
+    document.getElementById('inc-time').value='';
+    document.getElementById('inc-btn').textContent='Open Incident';
+    document.getElementById('hdr-incident').textContent='No incident open — go to Setup tab';
+    document.getElementById('sitrep-wrap').style.display='none';
+    document.getElementById('so-script-wrap').style.display='none';
+  };
+  document.getElementById('modal-title').textContent='Clear All Data';
+  document.getElementById('modal-body').innerHTML='<p><strong>This will permanently delete all messages, roster entries, notes, and incident information.</strong><br><br>Export a handoff first if you need to preserve this data. This cannot be undone.</p>';
+  document.getElementById('modal-confirm-btn').textContent='Yes, Clear Everything';
+  document.getElementById('modal-confirm-btn').className='btn danger';
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+// ── Clipboard / Download ──────────────────────────────────────────────────────
+function copyEl(id) {
+  var txt = document.getElementById(id).textContent;
+  copyText(txt);
+}
+function copyText(txt) {
+  function fb(){ var ta=document.createElement('textarea');ta.value=txt;ta.style.cssText='position:fixed;opacity:0;';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta); }
+  try { if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(function(){toast('Copied');}).catch(function(){fb();toast('Copied');}); } else { fb(); toast('Copied'); } } catch(e){ fb(); toast('Copied'); }
+}
+function copyTableDR() {
+  var drs = msgs.filter(function(m){return m.type==='dr';});
+  if(!drs.length){toast('No DR data to copy');return;}
+  var lines=['Received\tStake\tDate\tType\tMiss.Safe\tInj\tDead\tHomeDmg\tHomeDest\tVols\tVolHrs\tLocalFac\tNbrUnits\tHQAsst\tSubmitter'];
+  drs.forEach(function(m){var r=m.dr;lines.push([fmtTs(m.ts),r.stake,r.date,r.type,r.miss_safe,ni(r.mem_inj),ni(r.mem_dead),ni(r.homes_dmg),ni(r.homes_dest),ni(r.vol_count),ni(r.vol_hrs),r.need_local,r.need_neighbor,r.need_hq,r.submitter].join('\t'));});
+  copyText(lines.join('\n'));
+}
+function copyTableSO() {
+  var sos = msgs.filter(function(m){return m.type==='so';});
+  if(!sos.length){toast('No SO data to copy');return;}
+  var agg={};
+  sos.forEach(function(m){var stake=m.so.stake||'?';(m.so.items||'').split(';').forEach(function(p){var kv=p.split(':');if(kv.length===2&&kv[1]){var n=parseInt(kv[1],10)||0;if(n>0){if(!agg[kv[0]])agg[kv[0]]={total:0,stakes:[]};agg[kv[0]].total+=n;agg[kv[0]].stakes.push(stake+' (x'+n+')');}}}); });
+  var lines=['Item#\tDescription\tUnit\tTotalQty\tFromStakes'];
+  Object.keys(agg).sort().forEach(function(k){var info=CAT[k];lines.push([k,info?info[0]:'Item '+k,info?info[1]:'',agg[k].total,agg[k].stakes.join('; ')].join('\t'));});
+  copyText(lines.join('\n'));
+}
+function dlText(txt, filename) {
+  var blob = new Blob([txt],{type:'text/plain'});
+  if(window.navigator&&window.navigator.msSaveBlob){window.navigator.msSaveBlob(blob,filename);return;}
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;a.style.display='none';document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+
+// ── Modal ─────────────────────────────────────────────────────────────────────
+function closeModal() {
+  document.getElementById('modal-bg').classList.remove('open');
+  document.getElementById('modal-confirm-btn').className='btn';
+  pendingConfirm=null;
+}
+function modalConfirm() { if(pendingConfirm) pendingConfirm(); }
+document.getElementById('modal-bg').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+var toastTimer;
+function toast(msg) {
+  var el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){el.classList.remove('show');},2400);
+}
+
+// ── Keyboard shortcuts ────────────────────────────────────────────────────────
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape') closeModal();
+  if(e.key==='Enter'&&document.getElementById('modal-bg').classList.contains('open')){
+    var focused=document.activeElement;
+    if(focused&&(focused.tagName==='INPUT'||focused.tagName==='SELECT')&&focused.closest('#modal-box')) modalConfirm();
+  }
+});
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+load();
+render();
+</script>
+</body>
+</html>
+
