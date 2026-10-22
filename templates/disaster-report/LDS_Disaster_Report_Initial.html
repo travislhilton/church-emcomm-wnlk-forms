@@ -1,0 +1,487 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>LDS Disaster Report</title>
+<style type="text/css">
+body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; margin: 4px; background: #fff; }
+table { border-collapse: collapse; }
+table.outer { width: 750px; border: 2px solid #000; }
+table.outer td { padding: 4px 6px; vertical-align: top; }
+table.fields { width: 100%; border: 1px solid #999; }
+table.fields td { border: 1px solid #999; padding: 3px 5px; vertical-align: bottom; }
+.hdr { background-color: #c8d8f0; font-weight: bold; font-size: 13px; text-align: center; border-bottom: 2px solid #000; }
+.sechdr { background-color: #dee9f9; font-weight: bold; font-style: italic; font-size: 12px; }
+.lbl { font-size: 10px; color: #444; }
+input[type=text], input[type=tel], input[type=email] { width: 98%; border: none; border-bottom: 1px solid #888; font-size: 12px; font-family: Arial, Helvetica, sans-serif; background: transparent; }
+textarea { width: 99%; border: 1px solid #999; font-size: 12px; font-family: Arial, Helvetica, sans-serif; resize: vertical; }
+input[type=submit] { border: 2px solid green; border-radius: 3px; background-color: #fff; padding: 3px 10px; font-size: 13px; cursor: pointer; }
+input[type=reset]  { border: 2px solid red;   border-radius: 3px; background-color: #fff; padding: 3px 10px; font-size: 13px; cursor: pointer; }
+input[type=button] { border: 2px solid #0f88f2; border-radius: 3px; background-color: #fff; padding: 3px 10px; font-size: 13px; cursor: pointer; }
+.logo { line-height: 1.25; font-family: Georgia, 'Times New Roman', serif; color: #000; }
+.logo .top { font-size: 9px; letter-spacing: 0.12em; font-weight: normal; text-transform: uppercase; display: block; }
+.logo .mid { font-size: 20px; font-weight: bold; letter-spacing: 0.02em; display: block; }
+.logo .bot { font-size: 9px; letter-spacing: 0.12em; font-weight: normal; text-transform: uppercase; display: block; }
+</style>
+<script type="text/javascript">
+
+function AutoGrow(el) {
+  if (el.clientHeight < el.scrollHeight) {
+    el.style.height = el.scrollHeight + "px";
+    if (el.clientHeight < el.scrollHeight)
+      el.style.height = (el.scrollHeight * 2 - el.clientHeight) + "px";
+  }
+}
+
+function fv(id) { var e = document.getElementById(id); return e ? e.value.replace(/\s+$/, '').trim() : ''; }
+
+function rb(name) {
+  var els = document.getElementsByName(name);
+  for (var i = 0; i < els.length; i++) { if (els[i].checked) return els[i].value; }
+  return '(not selected)';
+}
+
+function pad(s, w) { s = String(s); while (s.length < w) s += ' '; return s; }
+function row(label, val) { return pad(label + ':', 38) + ' ' + (val || '(blank)') + '\n'; }
+function line(n) { var s=''; for(var i=0;i<n;i++) s+='-'; return s+'\n'; }
+
+function buildMsg() {
+  var m = '';
+  m += '============================================================\n';
+  m += '     LDS DISASTER REPORT\n';
+  m += '     The Church of Jesus Christ of Latter-day Saints\n';
+  m += '============================================================\n\n';
+  m += 'REPORTING PERIOD\n';
+  m += row('  From', fv('period_from'));
+  m += row('  To', fv('period_to'));
+  m += '\n';
+  m += line(60);
+  m += 'INCIDENT\n';
+  m += row('  Date', fv('inc_date'));
+  m += row('  Location', fv('inc_location'));
+  m += row('  Type', fv('inc_type'));
+  m += row('  Stake', fv('inc_stake'));
+  m += '\n';
+  m += row('  Stake President', fv('sp_name'));
+  m += row('    Phone', fv('sp_phone'));
+  m += row('    Email', fv('sp_email'));
+  m += '\n';
+  m += row('  Person Submitting Report', fv('sub_name'));
+  m += row('    Phone', fv('sub_phone'));
+  m += row('    Email', fv('sub_email'));
+  m += '\n';
+  m += line(60);
+  m += 'REPORT DETAILS\n\n';
+  m += 'Full-Time Missionaries\n';
+  m += row('  All missionaries safe and accounted for', rb('miss_safe'));
+  if (fv('miss_details')) m += '  Additional details: ' + fv('miss_details') + '\n';
+  m += '\n';
+  m += 'Church Members\n';
+  m += row('  Member injuries', fv('mem_injuries') || '0');
+  m += row('  Member deaths', fv('mem_deaths') || '0');
+  m += row('  Member homes damaged', fv('mem_damaged') || '0');
+  m += row('  Member homes destroyed', fv('mem_destroyed') || '0');
+  if (fv('mem_details')) m += '  Additional details: ' + fv('mem_details') + '\n';
+  m += '\n';
+  m += 'Church Buildings\n';
+  m += '  Damage to facilities:\n  ' + (fv('bldg_damage') || '(none reported)') + '\n\n';
+  m += 'Community\n';
+  m += '  ' + (fv('community') || '(not provided)') + '\n\n';
+  m += 'Volunteers\n';
+  m += row('  Number of volunteers', fv('vol_count') || '0');
+  m += row('  Total volunteer hours', fv('vol_hours') || '0');
+  if (fv('vol_activities')) m += '  Activities: ' + fv('vol_activities') + '\n';
+  m += row('  Volunteer injuries or accidents', rb('vol_injuries'));
+  if (fv('vol_inj_details')) m += '  Additional details: ' + fv('vol_inj_details') + '\n';
+  m += '\n';
+  m += 'Anticipated Needs\n';
+  m += row('  Local Church facilities needed', rb('need_local'));
+  m += row('  Assistance from neighboring units needed', rb('need_neighbor'));
+  m += row('  Assistance from Church HQ needed', rb('need_hq'));
+  if (fv('needs_details')) m += '  Additional details: ' + fv('needs_details') + '\n';
+  m += '\n';
+  m += line(60);
+  m += 'Sender: ' + fv('testCall') + ' | Form: PD60000184 | Via Winlink\n';
+  m += '============================================================\n';
+  // Machine-parseable data line for EOC rollup tools — do not edit
+  // CSV rollup line (Oregon/Winlink standard — paste into spreadsheet column A)
+  m += '\nCSV,' + fv('inc_stake') + ',' + fv('inc_date') + ',' + fv('inc_location') + ',' +
+       fv('inc_type') + ',' + rb('miss_safe') + ',' + (fv('mem_injuries')||'0') + ',' +
+       (fv('mem_deaths')||'0') + ',' + (fv('mem_damaged')||'0') + ',' +
+       (fv('mem_destroyed')||'0') + ',' + (fv('vol_count')||'0') + ',' +
+       (fv('vol_hours')||'0') + ',' + rb('need_local') + ',' + rb('need_neighbor') + ',' +
+       rb('need_hq') + ',' + fv('sub_name') + ',' + fv('sub_phone') + '\n';
+  m += '\n[LDS-DR|stake=' + fv('inc_stake') +
+       '|date=' + fv('inc_date') +
+       '|location=' + fv('inc_location') +
+       '|type=' + fv('inc_type') +
+       '|miss_safe=' + rb('miss_safe') +
+       '|mem_inj=' + (fv('mem_injuries')||'0') +
+       '|mem_dead=' + (fv('mem_deaths')||'0') +
+       '|homes_dmg=' + (fv('mem_damaged')||'0') +
+       '|homes_dest=' + (fv('mem_destroyed')||'0') +
+       '|vol_count=' + (fv('vol_count')||'0') +
+       '|vol_hrs=' + (fv('vol_hours')||'0') +
+       '|need_local=' + rb('need_local') +
+       '|need_neighbor=' + rb('need_neighbor') +
+       '|need_hq=' + rb('need_hq') +
+       '|submitter=' + fv('sub_name') +
+       '|phone=' + fv('sub_phone') +
+       '|sp=' + fv('sp_name') + ']\n';
+  return m;
+}
+
+function formDataToObject(elForm) {
+  var fields = elForm.querySelectorAll('input, select, textarea'), o = {};
+  for (var i = 0; i < fields.length; i++) {
+    var f = fields[i], k = f.name || f.id;
+    if (!k || f.type === 'button' || f.type === 'submit' || f.type === 'reset') continue;
+    if (k === 'parseme' || k === 'attached_text') continue;
+    switch (f.type) {
+      case 'checkbox': o[k] = +f.checked; break;
+      case 'radio': if (o[k] === undefined) o[k] = ''; if (f.checked) o[k] = f.value; break;
+      default: o[k] = f.value;
+    }
+  }
+  document.getElementById('parseme').value = JSON.stringify(o, null, 2);
+}
+
+function populateForm() {
+  try {
+    var o = JSON.parse(document.getElementById('parseme').value);
+    if (typeof o !== 'object') return;
+    for (var k in o) {
+      var el = document.getElementById(k) || document.querySelector('[name="' + k + '"]');
+      if (!el) continue;
+      if (el.type === 'radio') {
+        var rads = document.querySelectorAll('[name="' + k + '"]');
+        for (var j = 0; j < rads.length; j++) rads[j].checked = (rads[j].value === o[k]);
+      } else if (typeof o[k] === 'number') {
+        el.checked = !!o[k];
+      } else {
+        el.value = o[k];
+      }
+    }
+  } catch(e) {}
+}
+
+function SaveData() {
+  formDataToObject(document.getElementById('myform'));
+  var title = 'LDS_Disaster_Report_' + DateStr() + '.txt';
+  title = prompt('Save as:', title);
+  if (!title) return;
+  var txt = document.getElementById('parseme').value;
+  var blob = new Blob([txt], {type: 'text/plain'});
+  if (window.navigator.msSaveBlob) { window.navigator.msSaveBlob(blob, title); return; }
+  var a = document.createElement('a');
+  a.href = window.URL.createObjectURL(blob);
+  a.download = title;
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+function DateStr() {
+  var d = new Date();
+  var y = d.getFullYear(), mo = ('0'+(d.getMonth()+1)).slice(-2), day = ('0'+d.getDate()).slice(-2);
+  var h = ('0'+d.getHours()).slice(-2), mi = ('0'+d.getMinutes()).slice(-2);
+  return y+'-'+mo+'-'+day+'_'+h+mi;
+}
+
+function importFromPDF() {
+  var txt = document.getElementById('pdf_paste').value;
+  if (!txt) { alert('Please paste the copied PDF text first.'); return; }
+  function ex(pattern, flags) {
+    var m = txt.match(new RegExp(pattern, flags || 'i'));
+    return m ? m[1].trim() : '';
+  }
+  // Extract fields using patterns matching the LDS Disaster Report PDF layout
+  var pf = document.getElementById('period_from'), pt = document.getElementById('period_to');
+  var rpMatch = txt.match(/Reporting Period[\s\S]{0,40}?From\s*\(date\)\s*([^\n\r]+)/i);
+  var rpTo = txt.match(/To\s*\(date\)\s*([^\n\r]+)/i);
+  if (rpMatch) pf.value = rpMatch[1].trim();
+  if (rpTo) pt.value = rpTo[1].trim();
+  // Incident block
+  var dateM = txt.match(/(?:^|\n)Date\s+([0-9\/\-]+)/i); if (dateM) document.getElementById('inc_date').value = dateM[1].trim();
+  var locM  = txt.match(/Location\s+([^\n\r]+)/i);        if (locM)  document.getElementById('inc_location').value = locM[1].trim();
+  var typeM = txt.match(/(?:^|\n)Type\s+([^\n\r]+)/i);    if (typeM) document.getElementById('inc_type').value = typeM[1].trim();
+  var stakeM = txt.match(/(?:^|\n)Stake\s+([^\n\r]+)/i);  if (stakeM) document.getElementById('inc_stake').value = stakeM[1].trim();
+  var spM = txt.match(/Stake president\s+([^\n\r]+)/i);   if (spM) document.getElementById('sp_name').value = spM[1].trim();
+  var spPhM = txt.match(/Stake president[^\n\r]+\n[^\n\r]*?Phone number\s+([^\n\r]+)/i) ||
+              txt.match(/Phone number\s+([0-9\-\(\) ]+)/i); if (spPhM) document.getElementById('sp_phone').value = spPhM[1].trim();
+  var spEmM = txt.match(/Email address\s+([^\s]+@[^\s]+)/i); if (spEmM) document.getElementById('sp_email').value = spEmM[1].trim();
+  var subM = txt.match(/Person submitting report\s+([^\n\r]+)/i); if (subM) document.getElementById('sub_name').value = subM[1].trim();
+  // Missionaries
+  if (/missionaries are safe[\s\S]{0,10}Yes/i.test(txt)) {
+    var r = document.querySelector('input[name="miss_safe"][value="YES"]'); if (r) r.checked = true;
+  } else if (/missionaries are safe[\s\S]{0,10}No/i.test(txt)) {
+    var r = document.querySelector('input[name="miss_safe"][value="NO"]'); if (r) r.checked = true;
+  }
+  // Members
+  var injM  = txt.match(/Number of member injuries\s+([0-9]+)/i);    if (injM)  document.getElementById('mem_injuries').value = injM[1];
+  var dthM  = txt.match(/Number of member deaths\s+([0-9]+)/i);      if (dthM)  document.getElementById('mem_deaths').value = dthM[1];
+  var dmgM  = txt.match(/Number of member homes damaged\s+([0-9]+)/i); if (dmgM) document.getElementById('mem_damaged').value = dmgM[1];
+  var dstM  = txt.match(/Number of member homes destroyed\s+([0-9]+)/i); if (dstM) document.getElementById('mem_destroyed').value = dstM[1];
+  // Volunteers
+  var vcM = txt.match(/Number of volunteers\s+([0-9]+)/i);         if (vcM) document.getElementById('vol_count').value = vcM[1];
+  var vhM = txt.match(/Total number of volunteer hours\s+([0-9]+)/i); if (vhM) document.getElementById('vol_hours').value = vhM[1];
+  var vaM = txt.match(/Description of volunteer activities\s+([^\n\r]+)/i); if (vaM) document.getElementById('vol_activities').value = vaM[1].trim();
+  // Volunteer injuries
+  if (/Volunteer injuries[\s\S]{0,10}Yes/i.test(txt)) {
+    var r = document.querySelector('input[name="vol_injuries"][value="YES"]'); if (r) r.checked = true;
+  } else if (/Volunteer injuries[\s\S]{0,10}No/i.test(txt)) {
+    var r = document.querySelector('input[name="vol_injuries"][value="NO"]'); if (r) r.checked = true;
+  }
+  // Anticipated needs
+  function setRadio(name, val) { var r = document.querySelector('input[name="'+name+'"][value="'+val+'"]'); if (r) r.checked = true; }
+  if (/Local Church facilities[\s\S]{0,6}Yes/i.test(txt)) setRadio('need_local','YES');
+  else if (/Local Church facilities[\s\S]{0,6}No/i.test(txt)) setRadio('need_local','NO');
+  if (/neighboring Church units[\s\S]{0,6}Yes/i.test(txt)) setRadio('need_neighbor','YES');
+  else if (/neighboring Church units[\s\S]{0,6}No/i.test(txt)) setRadio('need_neighbor','NO');
+  if (/Church headquarters[\s\S]{0,6}Yes/i.test(txt)) setRadio('need_hq','YES');
+  else if (/Church headquarters[\s\S]{0,6}No/i.test(txt)) setRadio('need_hq','NO');
+  document.getElementById('pdf_import_section').style.display = 'none';
+  alert('PDF data imported. Please review all fields before submitting.');
+}
+
+function Checkifinbrowser() {
+  var x = document.getElementById('testCall').value;
+  if (x.indexOf('{Msg') > -1) {
+    document.getElementById('submitbtn').style.visibility = 'hidden';
+    alert('Running outside Winlink Express.\n\nFill in the form, then use Save Data to save a file. Give that file to your radio operator to load and transmit.');
+  }
+}
+
+window.onload = function() {
+  Checkifinbrowser();
+  document.getElementById('fileToLoad').addEventListener('change', function(e) {
+    var f = e.target.files[0]; if (!f) return;
+    var r = new FileReader();
+    r.onload = function(ev) {
+      document.getElementById('parseme').value = ev.target.result;
+      populateForm();
+    };
+    r.readAsText(f, 'UTF-8');
+  });
+};
+
+</script>
+</head>
+
+<body>
+<form id="myform" method="post" enctype="multipart/form-data"
+      action="http://{FormServer}:{FormPort}"
+      onsubmit="
+        var msg = buildMsg();
+        document.getElementById('attached_text').value = msg;
+        formDataToObject(this);
+        return confirm('Submit Disaster Report via Winlink?\n\nClick OK, then close the form window to return to the message editor.');
+      ">
+
+<!-- HIDDEN WINLINK FIELDS -->
+<input type="hidden" name="testCall"      id="testCall"      value="{MsgSender}" />
+<input type="hidden" name="parseme"       id="parseme"       value="" />
+<input type="hidden" name="attached_file" id="attached_file" value="LDS_Disaster_Report.txt" />
+<input type="hidden" name="attached_text" id="attached_text" value="" />
+
+<table class="outer" cellspacing="0" cellpadding="0">
+
+  <!-- HEADER -->
+  <tr>
+    <td width="160" style="border-right:1px solid #999; padding:6px;">
+      <div class="logo">
+        <span class="top">The Church of</span>
+        <span class="mid">Jesus Christ</span>
+        <span class="bot">of Latter-day Saints</span>
+      </div>
+    </td>
+    <td>
+      <div class="hdr">DISASTER REPORT</div>
+      <table class="fields" style="border:none;">
+        <tr>
+          <td style="border:none; border-bottom:1px solid #999; width:50%;">
+            <div class="lbl">Reporting Period — From (date)</div>
+            <input type="text" id="period_from" name="period_from" placeholder="MM/DD/YYYY" />
+          </td>
+          <td style="border:none; border-bottom:1px solid #999;">
+            <div class="lbl">To (date)</div>
+            <input type="text" id="period_to" name="period_to" placeholder="MM/DD/YYYY" />
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- INCIDENT -->
+  <tr><td colspan="2" class="sechdr">Incident</td></tr>
+  <tr><td colspan="2" style="padding:0;">
+    <table class="fields">
+      <tr>
+        <td width="40%"><div class="lbl">Date</div><input type="text" id="inc_date" name="inc_date" placeholder="MM/DD/YYYY" /></td>
+        <td><div class="lbl">Location</div><input type="text" id="inc_location" name="inc_location" placeholder="City, State" /></td>
+      </tr>
+      <tr>
+        <td><div class="lbl">Type (e.g. earthquake, flood, fire)</div><input type="text" id="inc_type" name="inc_type" /></td>
+        <td><div class="lbl">Stake</div><input type="text" id="inc_stake" name="inc_stake" /></td>
+      </tr>
+      <tr>
+        <td><div class="lbl">Stake President</div><input type="text" id="sp_name" name="sp_name" /></td>
+        <td width="30%"><div class="lbl">Phone Number</div><input type="tel" id="sp_phone" name="sp_phone" /></td>
+        <td><div class="lbl">Email Address</div><input type="email" id="sp_email" name="sp_email" /></td>
+      </tr>
+      <tr>
+        <td><div class="lbl">Person Submitting Report</div><input type="text" id="sub_name" name="sub_name" /></td>
+        <td><div class="lbl">Phone Number</div><input type="tel" id="sub_phone" name="sub_phone" /></td>
+        <td><div class="lbl">Email Address</div><input type="email" id="sub_email" name="sub_email" /></td>
+      </tr>
+    </table>
+  </td></tr>
+
+  <!-- REPORT DETAILS HEADER -->
+  <tr><td colspan="2" class="sechdr" style="background:#e0e8e0;">Report Details</td></tr>
+
+  <!-- FULL-TIME MISSIONARIES -->
+  <tr><td colspan="2" style="padding:0;">
+    <table class="fields">
+      <tr><td colspan="3" class="sechdr">Full-Time Missionaries</td></tr>
+      <tr>
+        <td width="55%">
+          <div class="lbl">All missionaries are safe and accounted for:</div>
+          <label><input type="radio" name="miss_safe" value="YES" /> Yes</label> &nbsp;
+          <label><input type="radio" name="miss_safe" value="NO" /> No</label>
+        </td>
+        <td>
+          <div class="lbl">Additional details</div>
+          <textarea id="miss_details" name="miss_details" rows="2" onkeyup="AutoGrow(this)"></textarea>
+        </td>
+      </tr>
+    </table>
+  </td></tr>
+
+  <!-- CHURCH MEMBERS -->
+  <tr><td colspan="2" style="padding:0;">
+    <table class="fields">
+      <tr><td colspan="4" class="sechdr">Church Members</td></tr>
+      <tr>
+        <td><div class="lbl">Member Injuries</div><input type="text" id="mem_injuries" name="mem_injuries" placeholder="0" style="width:60px;" /></td>
+        <td><div class="lbl">Member Deaths</div><input type="text" id="mem_deaths" name="mem_deaths" placeholder="0" style="width:60px;" /></td>
+        <td><div class="lbl">Homes Damaged</div><input type="text" id="mem_damaged" name="mem_damaged" placeholder="0" style="width:60px;" /></td>
+        <td><div class="lbl">Homes Destroyed</div><input type="text" id="mem_destroyed" name="mem_destroyed" placeholder="0" style="width:60px;" /></td>
+      </tr>
+      <tr>
+        <td colspan="4"><div class="lbl">Additional details</div>
+        <textarea id="mem_details" name="mem_details" rows="2" onkeyup="AutoGrow(this)"></textarea></td>
+      </tr>
+    </table>
+  </td></tr>
+
+  <!-- CHURCH BUILDINGS -->
+  <tr><td colspan="2" style="padding:0;">
+    <table class="fields">
+      <tr><td class="sechdr">Church Buildings</td></tr>
+      <tr><td><div class="lbl">Damage to Church facilities</div>
+        <textarea id="bldg_damage" name="bldg_damage" rows="3" onkeyup="AutoGrow(this)"></textarea></td></tr>
+    </table>
+  </td></tr>
+
+  <!-- COMMUNITY -->
+  <tr><td colspan="2" style="padding:0;">
+    <table class="fields">
+      <tr><td class="sechdr">Community</td></tr>
+      <tr><td><div class="lbl">Effect on community, including infrastructure such as power, water supplies, and communications</div>
+        <textarea id="community" name="community" rows="3" onkeyup="AutoGrow(this)"></textarea></td></tr>
+    </table>
+  </td></tr>
+
+  <!-- VOLUNTEERS -->
+  <tr><td colspan="2" style="padding:0;">
+    <table class="fields">
+      <tr><td colspan="3" class="sechdr">Volunteers</td></tr>
+      <tr>
+        <td width="40%"><div class="lbl">Number of Volunteers</div><input type="text" id="vol_count" name="vol_count" placeholder="0" /></td>
+        <td><div class="lbl">Total Number of Volunteer Hours</div><input type="text" id="vol_hours" name="vol_hours" placeholder="0" /></td>
+      </tr>
+      <tr>
+        <td colspan="2"><div class="lbl">Description of volunteer activities</div>
+          <textarea id="vol_activities" name="vol_activities" rows="2" onkeyup="AutoGrow(this)"></textarea></td>
+      </tr>
+      <tr>
+        <td>
+          <div class="lbl">Volunteer injuries or accidents:</div>
+          <label><input type="radio" name="vol_injuries" value="YES" /> Yes</label> &nbsp;
+          <label><input type="radio" name="vol_injuries" value="NO" /> No</label>
+        </td>
+        <td><div class="lbl">Additional details</div>
+          <textarea id="vol_inj_details" name="vol_inj_details" rows="2" onkeyup="AutoGrow(this)"></textarea></td>
+      </tr>
+    </table>
+  </td></tr>
+
+  <!-- ANTICIPATED NEEDS -->
+  <tr><td colspan="2" style="padding:0;">
+    <table class="fields">
+      <tr><td colspan="3" class="sechdr">Anticipated Needs</td></tr>
+      <tr>
+        <td width="33%">
+          <div class="lbl">Local Church facilities are needed:</div>
+          <label><input type="radio" name="need_local" value="YES" /> Yes</label> &nbsp;
+          <label><input type="radio" name="need_local" value="NO" /> No</label>
+        </td>
+        <td width="33%">
+          <div class="lbl">Assistance from neighboring Church units is needed:</div>
+          <label><input type="radio" name="need_neighbor" value="YES" /> Yes</label> &nbsp;
+          <label><input type="radio" name="need_neighbor" value="NO" /> No</label>
+        </td>
+        <td>
+          <div class="lbl">Assistance from Church headquarters is needed:</div>
+          <label><input type="radio" name="need_hq" value="YES" /> Yes</label> &nbsp;
+          <label><input type="radio" name="need_hq" value="NO" /> No</label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3"><div class="lbl">Additional details</div>
+          <textarea id="needs_details" name="needs_details" rows="2" onkeyup="AutoGrow(this)"></textarea></td>
+      </tr>
+    </table>
+  </td></tr>
+
+  <!-- BUTTONS -->
+  <tr><td colspan="2" style="background:#f0f0f0; padding:6px;">
+    <input type="submit" id="submitbtn" value="Submit via Winlink" />
+    &nbsp;
+    <input type="button" value="Save Data" onclick="SaveData()" />
+    &nbsp;
+    <input type="button" value="Load Data" onclick="document.getElementById('fileToLoad').click()" />
+    <input type="file" id="fileToLoad" accept=".txt" style="display:none;" />
+    &nbsp;
+    <input type="button" value="Load from PDF" style="border-color:#888;"
+      onclick="var s=document.getElementById('pdf_import_section'); s.style.display=(s.style.display==='none'?'':'none');" />
+    &nbsp;
+    <input type="reset" value="Reset Form" />
+    &nbsp;&nbsp;
+    <small>Version 1.0 | Form PD60000184 | LDS EMCOMM</small>
+  </td></tr>
+
+  <!-- PDF IMPORT PANEL -->
+  <tr id="pdf_import_section" style="display:none;">
+    <td colspan="2" style="background:#fffbe6; border-top:2px solid #c8a800; padding:8px;">
+      <div style="font-weight:bold; margin-bottom:4px;">&#8615; Load from PDF — paste copied PDF text</div>
+      <div style="font-size:10px; color:#555; margin-bottom:4px;">
+        In Acrobat Reader: open the filled PDF, press Ctrl+A to select all, Ctrl+C to copy, then paste below.
+        Fields that can be matched will be populated automatically. Review all fields after import.
+      </div>
+      <textarea id="pdf_paste" rows="8" style="width:99%; font-family:monospace; font-size:10px; border:1px solid #c8a800;"
+        placeholder="Paste the copied text from your filled Disaster Report PDF here..."></textarea>
+      <br/>
+      <input type="button" value="Parse and Populate Form" style="border-color:green;" onclick="importFromPDF()" />
+      &nbsp;
+      <input type="button" value="Cancel"
+        onclick="document.getElementById('pdf_import_section').style.display='none'; document.getElementById('pdf_paste').value='';" />
+    </td>
+  </tr>
+
+</table>
+</form>
+</body>
+</html>

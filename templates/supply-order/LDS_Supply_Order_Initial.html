@@ -1,0 +1,478 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>LDS Emergency Response Supply Order</title>
+<style type="text/css">
+body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; margin: 4px; background: #fff; }
+table { border-collapse: collapse; }
+table.outer { width: 860px; border: 2px solid #000; }
+table.outer td { padding: 3px 5px; vertical-align: top; }
+table.fields { width: 100%; border: 1px solid #999; }
+table.fields td { border: 1px solid #999; padding: 3px 5px; vertical-align: bottom; }
+table.items { width: 100%; border: 1px solid #999; }
+table.items th { border: 1px solid #999; padding: 3px 5px; background: #dee9f9; font-size: 11px; text-align: left; }
+table.items td { border: 1px solid #999; padding: 2px 4px; font-size: 11px; vertical-align: middle; }
+.hdr { background-color: #c8d8f0; font-weight: bold; font-size: 13px; text-align: center; border-bottom: 2px solid #000; }
+.sechdr { background-color: #dee9f9; font-weight: bold; font-style: italic; font-size: 12px; padding: 3px 6px; }
+.subsechdr { background-color: #eef3f0; font-weight: bold; font-size: 11px; padding: 2px 4px; }
+.lbl { font-size: 10px; color: #444; }
+input[type=text], input[type=tel], input[type=date] { border: none; border-bottom: 1px solid #888; font-size: 12px; font-family: Arial, Helvetica, sans-serif; background: transparent; }
+input.qty { width: 52px; border: 1px solid #999; padding: 1px 3px; text-align: center; background: #fffde8; }
+textarea { width: 99%; border: 1px solid #999; font-size: 12px; font-family: Arial, Helvetica, sans-serif; resize: vertical; }
+input[type=submit] { border: 2px solid green; border-radius: 3px; background-color: #fff; padding: 3px 10px; font-size: 13px; cursor: pointer; }
+input[type=reset]  { border: 2px solid red;   border-radius: 3px; background-color: #fff; padding: 3px 10px; font-size: 13px; cursor: pointer; }
+input[type=button] { border: 2px solid #0f88f2; border-radius: 3px; background-color: #fff; padding: 3px 10px; font-size: 13px; cursor: pointer; }
+.logo { line-height: 1.25; font-family: Georgia, 'Times New Roman', serif; color: #000; }
+.logo .top { font-size: 9px; letter-spacing: 0.12em; font-weight: normal; text-transform: uppercase; display: block; }
+.logo .mid { font-size: 20px; font-weight: bold; letter-spacing: 0.02em; display: block; }
+.logo .bot { font-size: 9px; letter-spacing: 0.12em; font-weight: normal; text-transform: uppercase; display: block; }
+</style>
+<script type="text/javascript">
+
+function fv(id) { var e = document.getElementById(id); return e ? e.value.replace(/\s+$/, '').trim() : ''; }
+function pad(s, w) { s = String(s); while (s.length < w) s += ' '; return s; }
+function line(n) { var s = ''; for (var i = 0; i < n; i++) s += '-'; return s + '\n'; }
+
+var ITEMS = [
+  // [id, description, itemNum, unit]
+  // General Supplies
+  ['gs01','Blanket—3-lb. poly fleece (10 per case)','008092','case'],
+  ['gs02','Card stock ERS dashboard signs (25 per package)','007126','package'],
+  ['gs03','Chalk line with chalk','007002','each'],
+  ['gs04','Duct tape roll, 60 yd. x 2" wide','007250','roll'],
+  ['gs05','First aid kit (basic)','007058','each'],
+  ['gs06','Furring strips','007017','each'],
+  ['gs07','Magnetic Emergency Response Services sign','007125','each'],
+  ['gs08','Nails, 8d (8-penny) (25 lbs. per case)','007201','case'],
+  ['gs09','Tarp (20\' x 30\')','009021','each'],
+  ['gs10','Trash bags, 45-gallon (200 per case)','007008','case'],
+  // Tools
+  ['tl01','Bow saw, 21"','007205','each'],
+  ['tl02','Box fan','007213','each'],
+  ['tl03','Chain oil (1 quart)','007086','each'],
+  ['tl04','Chain saw','007078','each'],
+  ['tl05','Chain saw chain','007082','each'],
+  ['tl06','Chain saw file','007084','each'],
+  ['tl07','Chain saw safety kit (helmet, face mask, hearing protection)','007089','each'],
+  ['tl08','Chaps','007230','each'],
+  ['tl09','Engine oil, 2-cycle (1 quart)','007088','each'],
+  ['tl10','Extension cord, 100\'','007072','each'],
+  ['tl11','Garden rake','007203','each'],
+  ['tl12','Gas can, 1-gallon','007080','each'],
+  ['tl13','Gas can, 5-gallon','007074','each'],
+  ['tl14','Gas funnel','007075','each'],
+  ['tl15','Generator, 5 kW','007070','each'],
+  ['tl16','Hammers, claw (36 per case)','007200','each'],
+  ['tl17','Ice sled (for hauling debris)','007091','each'],
+  ['tl18','Pallet jack','007231','each'],
+  ['tl19','Pry bar, 12" x 15"','009048','each'],
+  ['tl20','Pump, .5 hp submersible residential (110V) with 50\' garden hose','007216','each'],
+  ['tl21','Push broom with handle','007081','each'],
+  ['tl22','Rope, 100\' x 1/4"','007010','each'],
+  ['tl23','Shovel, round','007071','each'],
+  ['tl24','Shovel, square','007062','each'],
+  ['tl25','Shovel, wide-scoop','007054','each'],
+  ['tl26','Wheelbarrows with non-flat tires (pallet of 25+)','007090','pallet'],
+  ['tl27','Utility knife with blades','007212','each'],
+  ['tl28','Wet/dry vacuum','007211','each'],
+  ['tl29','Wrecking bar, gooseneck, 30" x 36"','009046','each'],
+  // Personal Items
+  ['pi01','Body bags (12 per case)','007140','case'],
+  ['pi02','Gloves, all-purpose','007102','pair'],
+  ['pi03','Heavy rubber gloves (M) (144 pairs per case)','003381','case'],
+  ['pi04','Heavy rubber gloves (L) (144 pairs per case)','003375','case'],
+  ['pi05','Heavy rubber gloves (XL) (144 pairs per case)','003376','case'],
+  ['pi06','Helping Hands T-shirt (M), short-sleeve','007130','each'],
+  ['pi07','Helping Hands T-shirt (L), short-sleeve','007131','each'],
+  ['pi08','Helping Hands T-shirt (XL), short-sleeve','007132','each'],
+  ['pi09','Helping Hands T-shirt (XXL), short-sleeve','007133','each'],
+  ['pi10','Helping Hands T-shirt (XXXL), short-sleeve','007134','each'],
+  ['pi11','Helping Hands vests (72 per case)','007155','case'],
+  ['pi12','Hooded disposable coveralls (L)','007232','each'],
+  ['pi13','Hooded disposable coveralls (XL)','007233','each'],
+  ['pi14','Hooded disposable coveralls (XXL)','007234','each'],
+  ['pi15','N95 masks with ventilation (160 masks per case)','007120','case'],
+  ['pi16','Rubber boots (size 8)','007240','pair'],
+  ['pi17','Rubber boots (size 10)','007242','pair'],
+  ['pi18','Rubber boots (size 12)','007244','pair'],
+  ['pi19','Rubber-coated gloves (M), 1 pair','007108','pair'],
+  ['pi20','Rubber-coated gloves (L), 1 pair','007107','pair'],
+  ['pi21','Rubber-coated gloves (XL), 1 pair','007109','pair'],
+  ['pi22','Safety glasses','007208','each'],
+  // Water
+  ['wa01','Bottled water (24 bottles per case)','007098','case'],
+  // Kits and Food Boxes
+  ['kb01','Cleaning kits (84 kits per pallet)','007110','kit'],
+  ['kb02','Hygiene kits (5 per case, 560 per pallet)','008096','kit'],
+  ['kb03','Food boxes (56 boxes per pallet)','007175','box']
+];
+
+var SECTIONS = [
+  {name:'General Supplies', prefix:'gs'},
+  {name:'Tools', prefix:'tl'},
+  {name:'Personal Items', prefix:'pi'},
+  {name:'Water', prefix:'wa'},
+  {name:'Kits and Food Boxes', prefix:'kb'}
+];
+
+function buildMsg() {
+  var m = '';
+  m += '============================================================\n';
+  m += '     LDS EMERGENCY RESPONSE SUPPLY ORDER\n';
+  m += '     The Church of Jesus Christ of Latter-day Saints\n';
+  m += '     Form PD10052205\n';
+  m += '============================================================\n\n';
+  m += 'DELIVERY INFORMATION\n';
+  m += line(60);
+  m += 'Requesting Stake:   ' + fv('req_stake') + '\n';
+  m += 'Stake President:    ' + fv('stake_pres') + '\n';
+  m += 'Delivery Contact:   ' + fv('del_contact') + '\n';
+  m += 'Phone:              ' + fv('del_phone') + '\n';
+  m += 'Order Date:         ' + fv('order_date') + '\n';
+  m += 'Delivery Address:   ' + fv('del_addr') + '\n';
+  m += 'City / State / Zip: ' + fv('del_city') + ', ' + fv('del_state') + ' ' + fv('del_zip') + '\n\n';
+  m += 'SUPPLIES ORDERED\n';
+  m += line(60);
+  m += pad('ITEM', 52) + pad('ITEM#', 9) + pad('UNIT', 10) + 'QTY\n';
+  m += line(75);
+  var hasItems = false;
+  var dataItems = [];
+  for (var s = 0; s < SECTIONS.length; s++) {
+    var secItems = [];
+    for (var i = 0; i < ITEMS.length; i++) {
+      if (ITEMS[i][0].indexOf(SECTIONS[s].prefix) === 0) {
+        var qty = fv(ITEMS[i][0]);
+        if (qty && qty !== '0' && qty !== '') {
+          secItems.push({desc: ITEMS[i][1], num: ITEMS[i][2], unit: ITEMS[i][3], qty: qty});
+          dataItems.push(ITEMS[i][2] + ':' + qty);
+          hasItems = true;
+        }
+      }
+    }
+    if (secItems.length > 0) {
+      m += '  ' + SECTIONS[s].name.toUpperCase() + '\n';
+      for (var j = 0; j < secItems.length; j++) {
+        m += '  ' + pad(secItems[j].desc, 50) + pad(secItems[j].num, 9) + pad(secItems[j].unit, 10) + secItems[j].qty + '\n';
+      }
+      m += '\n';
+    }
+  }
+  if (!hasItems) m += '  (No items ordered)\n\n';
+  var otherItems = [];
+  for (var k = 1; k <= 5; k++) {
+    var od = fv('other_desc' + k), on = fv('other_num' + k), ou = fv('other_unit' + k), oq = fv('other_qty' + k);
+    if (od && oq) {
+      otherItems.push({desc: od, num: on||'LOCAL', unit: ou, qty: oq});
+      dataItems.push('LOCAL-' + od.substring(0,20) + ':' + oq);
+    }
+  }
+  if (otherItems.length > 0) {
+    m += '  OTHER ITEMS (not in catalog — contact area welfare manager: 1-801-240-0450)\n';
+    for (var j = 0; j < otherItems.length; j++) {
+      m += '  ' + pad(otherItems[j].desc, 50) + pad(otherItems[j].num, 9) + pad(otherItems[j].unit, 10) + otherItems[j].qty + '\n';
+    }
+    m += '\n';
+  }
+  m += line(60);
+  m += 'SIGNATURES\n';
+  m += 'Requester:              ' + fv('req_sig') + '\n';
+  m += 'Date:                   ' + fv('req_sig_date') + '\n';
+  m += 'Requested Delivery:     ' + fv('req_del_date') + '\n';
+  m += 'Area Welfare Mgr:       ' + fv('awm_sig') + '\n\n';
+  m += line(60);
+  m += 'Sender: ' + fv('testCall') + ' | Form PD10052205 | Via Winlink\n';
+  m += '============================================================\n';
+  // CSV rollup line — paste into spreadsheet for EOC aggregation
+  m += '\nCSV,' + fv('req_stake') + ',' + fv('order_date') + ',' +
+       fv('del_contact') + ',' + fv('del_phone') + ',' +
+       fv('del_city') + ',' + fv('del_state') + ',' +
+       fv('req_del_date') + ',' + dataItems.join(';') + '\n';
+  // Machine-parseable line for EOC rollup
+  m += '\n[LDS-SO|stake=' + fv('req_stake') +
+       '|contact=' + fv('del_contact') +
+       '|phone=' + fv('del_phone') +
+       '|city=' + fv('del_city') +
+       '|state=' + fv('del_state') +
+       '|order_date=' + fv('order_date') +
+       '|del_date=' + fv('req_del_date') +
+       '|items=' + dataItems.join(';') + ']\n';
+  return m;
+}
+
+function formDataToObject(elForm) {
+  var fields = elForm.querySelectorAll('input, select, textarea'), o = {};
+  for (var i = 0; i < fields.length; i++) {
+    var f = fields[i], k = f.name || f.id;
+    if (!k || f.type === 'button' || f.type === 'submit' || f.type === 'reset') continue;
+    if (k === 'parseme' || k === 'attached_text') continue;
+    o[k] = f.value;
+  }
+  document.getElementById('parseme').value = JSON.stringify(o, null, 2);
+}
+
+function populateForm() {
+  try {
+    var o = JSON.parse(document.getElementById('parseme').value);
+    if (typeof o !== 'object') return;
+    for (var k in o) {
+      var el = document.getElementById(k);
+      if (el) el.value = o[k];
+    }
+  } catch(e) {}
+}
+
+function SaveData() {
+  formDataToObject(document.getElementById('myform'));
+  var d = new Date(), title = 'LDS_Supply_Order_' + fv('req_stake').replace(/\s/g,'-') + '_' +
+    d.getFullYear() + ('0'+(d.getMonth()+1)).slice(-2) + ('0'+d.getDate()).slice(-2) + '.txt';
+  title = prompt('Save as:', title);
+  if (!title) return;
+  var blob = new Blob([document.getElementById('parseme').value], {type: 'text/plain'});
+  if (window.navigator.msSaveBlob) { window.navigator.msSaveBlob(blob, title); return; }
+  var a = document.createElement('a'); a.href = window.URL.createObjectURL(blob);
+  a.download = title; a.style.display = 'none'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+function Checkifinbrowser() {
+  var x = document.getElementById('testCall').value;
+  if (x.indexOf('{Msg') > -1) {
+    document.getElementById('submitbtn').style.visibility = 'hidden';
+    alert('Running outside Winlink Express.\n\nFill in the form, then use Save Data to save a file. Give that file to your radio operator to load and transmit.');
+  }
+}
+
+window.onload = function() {
+  Checkifinbrowser();
+  document.getElementById('fileToLoad').addEventListener('change', function(e) {
+    var f = e.target.files[0]; if (!f) return;
+    var r = new FileReader();
+    r.onload = function(ev) { document.getElementById('parseme').value = ev.target.result; populateForm(); };
+    r.readAsText(f, 'UTF-8');
+  });
+};
+</script>
+</head>
+
+<body>
+<form id="myform" method="post" enctype="multipart/form-data"
+      action="http://{FormServer}:{FormPort}"
+      onsubmit="
+        var msg = buildMsg();
+        document.getElementById('attached_text').value = msg;
+        formDataToObject(this);
+        return confirm('Submit Supply Order via Winlink?\n\nClick OK, then close the form window to return to the message editor.');
+      ">
+
+<input type="hidden" name="testCall"      id="testCall"      value="{MsgSender}" />
+<input type="hidden" name="parseme"       id="parseme"       value="" />
+<input type="hidden" name="attached_file" id="attached_file" value="LDS_Supply_Order.txt" />
+<input type="hidden" name="attached_text" id="attached_text" value="" />
+
+<table class="outer" cellspacing="0" cellpadding="0">
+
+  <!-- HEADER -->
+  <tr>
+    <td width="160" style="border-right:1px solid #999; padding:6px;">
+      <div class="logo">
+        <span class="top">The Church of</span>
+        <span class="mid">Jesus Christ</span>
+        <span class="bot">of Latter-day Saints</span>
+      </div>
+    </td>
+    <td>
+      <div class="hdr">EMERGENCY RESPONSE SUPPLY ORDER FORM</div>
+    </td>
+  </tr>
+
+  <!-- DELIVERY INFO -->
+  <tr><td colspan="2" class="sechdr">Delivery Information</td></tr>
+  <tr><td colspan="2" style="padding:0;">
+    <table class="fields">
+      <tr>
+        <td width="55%"><div class="lbl">Requesting Stake</div><input type="text" id="req_stake" name="req_stake" style="width:98%;" /></td>
+        <td><div class="lbl">Stake President</div><input type="text" id="stake_pres" name="stake_pres" style="width:98%;" /></td>
+      </tr>
+      <tr>
+        <td><div class="lbl">Delivery Contact</div><input type="text" id="del_contact" name="del_contact" style="width:98%;" /></td>
+        <td><div class="lbl">Phone (with area code)</div><input type="tel" id="del_phone" name="del_phone" style="width:180px;" /></td>
+        <td><div class="lbl">Order Date</div><input type="text" id="order_date" name="order_date" placeholder="MM/DD/YYYY" style="width:110px;" /></td>
+      </tr>
+      <tr>
+        <td><div class="lbl">Delivery Address</div><input type="text" id="del_addr" name="del_addr" style="width:98%;" /></td>
+        <td><div class="lbl">City</div><input type="text" id="del_city" name="del_city" style="width:140px;" /></td>
+        <td><div class="lbl">State</div><input type="text" id="del_state" name="del_state" style="width:35px;" /></td>
+        <td><div class="lbl">Zip</div><input type="text" id="del_zip" name="del_zip" style="width:70px;" /></td>
+      </tr>
+    </table>
+  </td></tr>
+
+  <!-- SUPPLIES TABLE -->
+  <tr><td colspan="2" class="sechdr">Supplies Information — Enter quantities in the Qty column (leave blank if not ordering)</td></tr>
+  <tr><td colspan="2" style="padding:0;">
+    <table class="items">
+      <thead>
+        <tr>
+          <th style="width:55%;">Item</th>
+          <th style="width:9%;">Item #</th>
+          <th style="width:10%;">Unit</th>
+          <th style="width:8%; background:#fffde8;">Qty</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr><td colspan="4" class="subsechdr">General Supplies</td></tr>
+        <tr><td>Blanket—3-lb. poly fleece (10 per case)</td><td>008092</td><td>case</td><td><input type="text" class="qty" id="gs01" name="gs01" /></td></tr>
+        <tr><td>Card stock Emergency Response Services dashboard signs (25 per package)</td><td>007126</td><td>package</td><td><input type="text" class="qty" id="gs02" name="gs02" /></td></tr>
+        <tr><td>Chalk line with chalk</td><td>007002</td><td>each</td><td><input type="text" class="qty" id="gs03" name="gs03" /></td></tr>
+        <tr><td>Duct tape roll, 60 yd. x 2" wide</td><td>007250</td><td>roll</td><td><input type="text" class="qty" id="gs04" name="gs04" /></td></tr>
+        <tr><td>First aid kit (basic)</td><td>007058</td><td>each</td><td><input type="text" class="qty" id="gs05" name="gs05" /></td></tr>
+        <tr><td>Furring strips</td><td>007017</td><td>each</td><td><input type="text" class="qty" id="gs06" name="gs06" /></td></tr>
+        <tr><td>Magnetic Emergency Response Services sign</td><td>007125</td><td>each</td><td><input type="text" class="qty" id="gs07" name="gs07" /></td></tr>
+        <tr><td>Nails, 8d (8-penny) (25 lbs. per case)</td><td>007201</td><td>case</td><td><input type="text" class="qty" id="gs08" name="gs08" /></td></tr>
+        <tr><td>Tarp (20' x 30')</td><td>009021</td><td>each</td><td><input type="text" class="qty" id="gs09" name="gs09" /></td></tr>
+        <tr><td>Trash bags, 45-gallon (200 per case)</td><td>007008</td><td>case</td><td><input type="text" class="qty" id="gs10" name="gs10" /></td></tr>
+
+        <tr><td colspan="4" class="subsechdr">Tools</td></tr>
+        <tr><td>Bow saw, 21"</td><td>007205</td><td>each</td><td><input type="text" class="qty" id="tl01" name="tl01" /></td></tr>
+        <tr><td>Box fan</td><td>007213</td><td>each</td><td><input type="text" class="qty" id="tl02" name="tl02" /></td></tr>
+        <tr><td>Chain oil (1 quart)</td><td>007086</td><td>each</td><td><input type="text" class="qty" id="tl03" name="tl03" /></td></tr>
+        <tr><td>Chain saw</td><td>007078</td><td>each</td><td><input type="text" class="qty" id="tl04" name="tl04" /></td></tr>
+        <tr><td>Chain saw chain</td><td>007082</td><td>each</td><td><input type="text" class="qty" id="tl05" name="tl05" /></td></tr>
+        <tr><td>Chain saw file</td><td>007084</td><td>each</td><td><input type="text" class="qty" id="tl06" name="tl06" /></td></tr>
+        <tr><td>Chain saw safety kit (helmet and face mask with hearing protection)</td><td>007089</td><td>each</td><td><input type="text" class="qty" id="tl07" name="tl07" /></td></tr>
+        <tr><td>Chaps</td><td>007230</td><td>each</td><td><input type="text" class="qty" id="tl08" name="tl08" /></td></tr>
+        <tr><td>Engine oil, 2-cycle (1 quart)</td><td>007088</td><td>each</td><td><input type="text" class="qty" id="tl09" name="tl09" /></td></tr>
+        <tr><td>Extension cord, 100'</td><td>007072</td><td>each</td><td><input type="text" class="qty" id="tl10" name="tl10" /></td></tr>
+        <tr><td>Garden rake</td><td>007203</td><td>each</td><td><input type="text" class="qty" id="tl11" name="tl11" /></td></tr>
+        <tr><td>Gas can, 1-gallon</td><td>007080</td><td>each</td><td><input type="text" class="qty" id="tl12" name="tl12" /></td></tr>
+        <tr><td>Gas can, 5-gallon</td><td>007074</td><td>each</td><td><input type="text" class="qty" id="tl13" name="tl13" /></td></tr>
+        <tr><td>Gas funnel</td><td>007075</td><td>each</td><td><input type="text" class="qty" id="tl14" name="tl14" /></td></tr>
+        <tr><td>Generator, 5 kW</td><td>007070</td><td>each</td><td><input type="text" class="qty" id="tl15" name="tl15" /></td></tr>
+        <tr><td>Hammers, claw (36 per case)</td><td>007200</td><td>each</td><td><input type="text" class="qty" id="tl16" name="tl16" /></td></tr>
+        <tr><td>Ice sled (for hauling debris)</td><td>007091</td><td>each</td><td><input type="text" class="qty" id="tl17" name="tl17" /></td></tr>
+        <tr><td>Pallet jack</td><td>007231</td><td>each</td><td><input type="text" class="qty" id="tl18" name="tl18" /></td></tr>
+        <tr><td>Pry bar, 12" x 15"</td><td>009048</td><td>each</td><td><input type="text" class="qty" id="tl19" name="tl19" /></td></tr>
+        <tr><td>Pump, .5 hp submersible residential (110 V) with 50' garden hose</td><td>007216</td><td>each</td><td><input type="text" class="qty" id="tl20" name="tl20" /></td></tr>
+        <tr><td>Push broom with handle</td><td>007081</td><td>each</td><td><input type="text" class="qty" id="tl21" name="tl21" /></td></tr>
+        <tr><td>Rope, 100' x 1/4"</td><td>007010</td><td>each</td><td><input type="text" class="qty" id="tl22" name="tl22" /></td></tr>
+        <tr><td>Shovel, round</td><td>007071</td><td>each</td><td><input type="text" class="qty" id="tl23" name="tl23" /></td></tr>
+        <tr><td>Shovel, square</td><td>007062</td><td>each</td><td><input type="text" class="qty" id="tl24" name="tl24" /></td></tr>
+        <tr><td>Shovel, wide-scoop</td><td>007054</td><td>each</td><td><input type="text" class="qty" id="tl25" name="tl25" /></td></tr>
+        <tr><td>Unassembled wheelbarrows with non-flat tires (pallet of 25+; fewer: purchase locally)</td><td>007090</td><td>pallet</td><td><input type="text" class="qty" id="tl26" name="tl26" /></td></tr>
+        <tr><td>Utility knife with blades</td><td>007212</td><td>each</td><td><input type="text" class="qty" id="tl27" name="tl27" /></td></tr>
+        <tr><td>Wet/dry vacuum</td><td>007211</td><td>each</td><td><input type="text" class="qty" id="tl28" name="tl28" /></td></tr>
+        <tr><td>Wrecking bar, gooseneck, 30" x 36"</td><td>009046</td><td>each</td><td><input type="text" class="qty" id="tl29" name="tl29" /></td></tr>
+
+        <tr><td colspan="4" class="subsechdr">Personal Items</td></tr>
+        <tr><td>Body bags (12 per case)</td><td>007140</td><td>case</td><td><input type="text" class="qty" id="pi01" name="pi01" /></td></tr>
+        <tr><td>Gloves, all-purpose</td><td>007102</td><td>pair</td><td><input type="text" class="qty" id="pi02" name="pi02" /></td></tr>
+        <tr><td>Heavy rubber gloves (M) (144 pairs per case)</td><td>003381</td><td>case</td><td><input type="text" class="qty" id="pi03" name="pi03" /></td></tr>
+        <tr><td>Heavy rubber gloves (L) (144 pairs per case)</td><td>003375</td><td>case</td><td><input type="text" class="qty" id="pi04" name="pi04" /></td></tr>
+        <tr><td>Heavy rubber gloves (XL) (144 pairs per case)</td><td>003376</td><td>case</td><td><input type="text" class="qty" id="pi05" name="pi05" /></td></tr>
+        <tr><td>Helping Hands T-shirt (M), short-sleeve</td><td>007130</td><td>each</td><td><input type="text" class="qty" id="pi06" name="pi06" /></td></tr>
+        <tr><td>Helping Hands T-shirt (L), short-sleeve</td><td>007131</td><td>each</td><td><input type="text" class="qty" id="pi07" name="pi07" /></td></tr>
+        <tr><td>Helping Hands T-shirt (XL), short-sleeve</td><td>007132</td><td>each</td><td><input type="text" class="qty" id="pi08" name="pi08" /></td></tr>
+        <tr><td>Helping Hands T-shirt (XXL), short-sleeve</td><td>007133</td><td>each</td><td><input type="text" class="qty" id="pi09" name="pi09" /></td></tr>
+        <tr><td>Helping Hands T-shirt (XXXL), short-sleeve</td><td>007134</td><td>each</td><td><input type="text" class="qty" id="pi10" name="pi10" /></td></tr>
+        <tr><td>Helping Hands vests (72 per case)</td><td>007155</td><td>case</td><td><input type="text" class="qty" id="pi11" name="pi11" /></td></tr>
+        <tr><td>Hooded disposable coveralls (L)</td><td>007232</td><td>each</td><td><input type="text" class="qty" id="pi12" name="pi12" /></td></tr>
+        <tr><td>Hooded disposable coveralls (XL)</td><td>007233</td><td>each</td><td><input type="text" class="qty" id="pi13" name="pi13" /></td></tr>
+        <tr><td>Hooded disposable coveralls (XXL)</td><td>007234</td><td>each</td><td><input type="text" class="qty" id="pi14" name="pi14" /></td></tr>
+        <tr><td>N95 masks with ventilation (160 masks per case)</td><td>007120</td><td>case</td><td><input type="text" class="qty" id="pi15" name="pi15" /></td></tr>
+        <tr><td>Rubber boots (size 8)</td><td>007240</td><td>pair</td><td><input type="text" class="qty" id="pi16" name="pi16" /></td></tr>
+        <tr><td>Rubber boots (size 10)</td><td>007242</td><td>pair</td><td><input type="text" class="qty" id="pi17" name="pi17" /></td></tr>
+        <tr><td>Rubber boots (size 12)</td><td>007244</td><td>pair</td><td><input type="text" class="qty" id="pi18" name="pi18" /></td></tr>
+        <tr><td>Rubber-coated gloves (M), 1 pair</td><td>007108</td><td>pair</td><td><input type="text" class="qty" id="pi19" name="pi19" /></td></tr>
+        <tr><td>Rubber-coated gloves (L), 1 pair</td><td>007107</td><td>pair</td><td><input type="text" class="qty" id="pi20" name="pi20" /></td></tr>
+        <tr><td>Rubber-coated gloves (XL), 1 pair</td><td>007109</td><td>pair</td><td><input type="text" class="qty" id="pi21" name="pi21" /></td></tr>
+        <tr><td>Safety glasses</td><td>007208</td><td>each</td><td><input type="text" class="qty" id="pi22" name="pi22" /></td></tr>
+
+        <tr><td colspan="4" class="subsechdr">Water</td></tr>
+        <tr><td>Bottled water (24 bottles per case)</td><td>007098</td><td>case</td><td><input type="text" class="qty" id="wa01" name="wa01" /></td></tr>
+
+        <tr><td colspan="4" class="subsechdr">Kits and Food Boxes</td></tr>
+        <tr><td>Cleaning kits — 84 kits/pallet (hand soap, cleaning rags, dish soap, dust masks, bleach, brushes, gloves, bucket, etc.)</td><td>007110</td><td>kit</td><td><input type="text" class="qty" id="kb01" name="kb01" /></td></tr>
+        <tr><td>Hygiene kits — 5 per case, 560/pallet (soap, combs, towels, toothbrush, toothpaste, bag)</td><td>008096</td><td>kit</td><td><input type="text" class="qty" id="kb02" name="kb02" /></td></tr>
+        <tr><td>Food boxes — 56/pallet (stew, chili, soup, applesauce, PB, jam, tuna, cereal, milk, can opener, water bottle, etc.)</td><td>007175</td><td>box</td><td><input type="text" class="qty" id="kb03" name="kb03" /></td></tr>
+
+        <tr><td colspan="4" class="subsechdr">Other Items — Not in catalog; contact area welfare manager (1-801-240-0450) for direction and budget approval</td></tr>
+        <tr>
+          <td><input type="text" id="other_desc1" name="other_desc1" style="width:98%;" placeholder="Item description" /></td>
+          <td><input type="text" id="other_num1" name="other_num1" style="width:70px;" placeholder="Item #" /></td>
+          <td><input type="text" id="other_unit1" name="other_unit1" style="width:60px;" placeholder="unit" /></td>
+          <td><input type="text" class="qty" id="other_qty1" name="other_qty1" /></td>
+        </tr>
+        <tr>
+          <td><input type="text" id="other_desc2" name="other_desc2" style="width:98%;" placeholder="Item description" /></td>
+          <td><input type="text" id="other_num2" name="other_num2" style="width:70px;" placeholder="Item #" /></td>
+          <td><input type="text" id="other_unit2" name="other_unit2" style="width:60px;" placeholder="unit" /></td>
+          <td><input type="text" class="qty" id="other_qty2" name="other_qty2" /></td>
+        </tr>
+        <tr>
+          <td><input type="text" id="other_desc3" name="other_desc3" style="width:98%;" placeholder="Item description" /></td>
+          <td><input type="text" id="other_num3" name="other_num3" style="width:70px;" placeholder="Item #" /></td>
+          <td><input type="text" id="other_unit3" name="other_unit3" style="width:60px;" placeholder="unit" /></td>
+          <td><input type="text" class="qty" id="other_qty3" name="other_qty3" /></td>
+        </tr>
+        <tr>
+          <td><input type="text" id="other_desc4" name="other_desc4" style="width:98%;" placeholder="Item description" /></td>
+          <td><input type="text" id="other_num4" name="other_num4" style="width:70px;" placeholder="Item #" /></td>
+          <td><input type="text" id="other_unit4" name="other_unit4" style="width:60px;" placeholder="unit" /></td>
+          <td><input type="text" class="qty" id="other_qty4" name="other_qty4" /></td>
+        </tr>
+        <tr>
+          <td><input type="text" id="other_desc5" name="other_desc5" style="width:98%;" placeholder="Item description" /></td>
+          <td><input type="text" id="other_num5" name="other_num5" style="width:70px;" placeholder="Item #" /></td>
+          <td><input type="text" id="other_unit5" name="other_unit5" style="width:60px;" placeholder="unit" /></td>
+          <td><input type="text" class="qty" id="other_qty5" name="other_qty5" /></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </td></tr>
+
+  <!-- SIGNATURES -->
+  <tr><td colspan="2" class="sechdr">Signatures</td></tr>
+  <tr><td colspan="2" style="padding:0;">
+    <table class="fields">
+      <tr>
+        <td width="55%"><div class="lbl">Requester's Signature / Name</div><input type="text" id="req_sig" name="req_sig" style="width:98%;" /></td>
+        <td><div class="lbl">Date</div><input type="text" id="req_sig_date" name="req_sig_date" placeholder="MM/DD/YYYY" style="width:110px;" /></td>
+      </tr>
+      <tr>
+        <td><div class="lbl">Area Welfare Manager's Signature / Name</div><input type="text" id="awm_sig" name="awm_sig" style="width:98%;" /></td>
+        <td><div class="lbl">Requested Delivery Date</div><input type="text" id="req_del_date" name="req_del_date" placeholder="MM/DD/YYYY" style="width:110px;" /></td>
+      </tr>
+    </table>
+  </td></tr>
+
+  <!-- INTERNAL USE ONLY -->
+  <tr><td colspan="2" class="sechdr" style="background:#f5f5f5;">Internal Use Only</td></tr>
+  <tr><td colspan="2" style="padding:0;">
+    <table class="fields">
+      <tr>
+        <td width="50%"><div class="lbl">Project Number</div><input type="text" id="proj_num" name="proj_num" style="width:98%;" /></td>
+        <td><div class="lbl">Project Name</div><input type="text" id="proj_name" name="proj_name" style="width:98%;" /></td>
+      </tr>
+    </table>
+  </td></tr>
+
+  <!-- BUTTONS -->
+  <tr><td colspan="2" style="background:#f0f0f0; padding:6px;">
+    <input type="submit" id="submitbtn" value="Submit via Winlink" />
+    &nbsp;
+    <input type="button" value="Save Data" onclick="SaveData()" />
+    &nbsp;
+    <input type="button" value="Load Data" onclick="document.getElementById('fileToLoad').click()" />
+    <input type="file" id="fileToLoad" accept=".txt" style="display:none;" />
+    &nbsp;
+    <input type="reset" value="Reset Form" />
+    &nbsp;&nbsp;
+    <small>Version 1.0 | Form PD10052205 | LDS EMCOMM</small>
+  </td></tr>
+
+</table>
+</form>
+</body>
+</html>
