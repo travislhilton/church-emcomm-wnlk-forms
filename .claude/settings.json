@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Write",
+      "Edit",
+      "PowerShell(git add *)",
+      "PowerShell(git commit *)",
+      "PowerShell(git push *)",
+      "PowerShell(Copy-Item *)",
+      "PowerShell(Remove-Item *)",
+      "PowerShell(Set-Content *)",
+      "PowerShell(Get-Content *)",
+      "PowerShell(New-Item *)",
+      "PowerShell(Move-Item *)"
+    ]
+  }
+}

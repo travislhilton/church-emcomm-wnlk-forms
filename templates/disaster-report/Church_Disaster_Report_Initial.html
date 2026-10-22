@@ -1,8 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>LDS Disaster Report</title>
+<title>Church Disaster Report</title>
 <style type="text/css">
 body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; margin: 4px; background: #fff; }
 table { border-collapse: collapse; }
@@ -48,7 +48,7 @@ function line(n) { var s=''; for(var i=0;i<n;i++) s+='-'; return s+'\n'; }
 function buildMsg() {
   var m = '';
   m += '============================================================\n';
-  m += '     LDS DISASTER REPORT\n';
+  m += '     Church Disaster Report\n';
   m += '     The Church of Jesus Christ of Latter-day Saints\n';
   m += '============================================================\n\n';
   m += 'REPORTING PERIOD\n';
@@ -111,7 +111,7 @@ function buildMsg() {
        (fv('mem_destroyed')||'0') + ',' + (fv('vol_count')||'0') + ',' +
        (fv('vol_hours')||'0') + ',' + rb('need_local') + ',' + rb('need_neighbor') + ',' +
        rb('need_hq') + ',' + fv('sub_name') + ',' + fv('sub_phone') + '\n';
-  m += '\n[LDS-DR|stake=' + fv('inc_stake') +
+  m += '\n[Church-DR|stake=' + fv('inc_stake') +
        '|date=' + fv('inc_date') +
        '|location=' + fv('inc_location') +
        '|type=' + fv('inc_type') +
@@ -167,7 +167,7 @@ function populateForm() {
 
 function SaveData() {
   formDataToObject(document.getElementById('myform'));
-  var title = 'LDS_Disaster_Report_' + DateStr() + '.txt';
+  var title = 'Church_Disaster_Report_' + DateStr() + '.txt';
   title = prompt('Save as:', title);
   if (!title) return;
   var txt = document.getElementById('parseme').value;
@@ -196,7 +196,7 @@ function importFromPDF() {
     var m = txt.match(new RegExp(pattern, flags || 'i'));
     return m ? m[1].trim() : '';
   }
-  // Extract fields using patterns matching the LDS Disaster Report PDF layout
+  // Extract fields using patterns matching the Church Disaster Report PDF layout
   var pf = document.getElementById('period_from'), pt = document.getElementById('period_to');
   var rpMatch = txt.match(/Reporting Period[\s\S]{0,40}?From\s*\(date\)\s*([^\n\r]+)/i);
   var rpTo = txt.match(/To\s*\(date\)\s*([^\n\r]+)/i);
@@ -282,7 +282,7 @@ window.onload = function() {
 <!-- HIDDEN WINLINK FIELDS -->
 <input type="hidden" name="testCall"      id="testCall"      value="{MsgSender}" />
 <input type="hidden" name="parseme"       id="parseme"       value="" />
-<input type="hidden" name="attached_file" id="attached_file" value="LDS_Disaster_Report.txt" />
+<input type="hidden" name="attached_file" id="attached_file" value="Church_Disaster_Report.txt" />
 <input type="hidden" name="attached_text" id="attached_text" value="" />
 
 <table class="outer" cellspacing="0" cellpadding="0">
@@ -460,7 +460,7 @@ window.onload = function() {
     &nbsp;
     <input type="reset" value="Reset Form" />
     &nbsp;&nbsp;
-    <small>Version 1.0 | Form PD60000184 | LDS EMCOMM</small>
+    <small>Version 1.0 | Form PD60000184 | Church EMCOMM</small>
   </td></tr>
 
   <!-- PDF IMPORT PANEL -->
@@ -485,3 +485,4 @@ window.onload = function() {
 </form>
 </body>
 </html>
+

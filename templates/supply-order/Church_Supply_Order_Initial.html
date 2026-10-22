@@ -1,8 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>LDS Emergency Response Supply Order</title>
+<title>Church Emergency Response Supply Order</title>
 <style type="text/css">
 body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; margin: 4px; background: #fff; }
 table { border-collapse: collapse; }
@@ -119,7 +119,7 @@ var SECTIONS = [
 function buildMsg() {
   var m = '';
   m += '============================================================\n';
-  m += '     LDS EMERGENCY RESPONSE SUPPLY ORDER\n';
+  m += '     Church Emergency Response Supply Order\n';
   m += '     The Church of Jesus Christ of Latter-day Saints\n';
   m += '     Form PD10052205\n';
   m += '============================================================\n\n';
@@ -189,7 +189,7 @@ function buildMsg() {
        fv('del_city') + ',' + fv('del_state') + ',' +
        fv('req_del_date') + ',' + dataItems.join(';') + '\n';
   // Machine-parseable line for EOC rollup
-  m += '\n[LDS-SO|stake=' + fv('req_stake') +
+  m += '\n[Church-SO|stake=' + fv('req_stake') +
        '|contact=' + fv('del_contact') +
        '|phone=' + fv('del_phone') +
        '|city=' + fv('del_city') +
@@ -224,7 +224,7 @@ function populateForm() {
 
 function SaveData() {
   formDataToObject(document.getElementById('myform'));
-  var d = new Date(), title = 'LDS_Supply_Order_' + fv('req_stake').replace(/\s/g,'-') + '_' +
+  var d = new Date(), title = 'Church_Supply_Order_' + fv('req_stake').replace(/\s/g,'-') + '_' +
     d.getFullYear() + ('0'+(d.getMonth()+1)).slice(-2) + ('0'+d.getDate()).slice(-2) + '.txt';
   title = prompt('Save as:', title);
   if (!title) return;
@@ -266,7 +266,7 @@ window.onload = function() {
 
 <input type="hidden" name="testCall"      id="testCall"      value="{MsgSender}" />
 <input type="hidden" name="parseme"       id="parseme"       value="" />
-<input type="hidden" name="attached_file" id="attached_file" value="LDS_Supply_Order.txt" />
+<input type="hidden" name="attached_file" id="attached_file" value="Church_Supply_Order.txt" />
 <input type="hidden" name="attached_text" id="attached_text" value="" />
 
 <table class="outer" cellspacing="0" cellpadding="0">
@@ -469,10 +469,11 @@ window.onload = function() {
     &nbsp;
     <input type="reset" value="Reset Form" />
     &nbsp;&nbsp;
-    <small>Version 1.0 | Form PD10052205 | LDS EMCOMM</small>
+    <small>Version 1.0 | Form PD10052205 | Church EMCOMM</small>
   </td></tr>
 
 </table>
 </form>
 </body>
 </html>
+
