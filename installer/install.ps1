@@ -311,7 +311,7 @@ foreach ($d in $dirsToCreate) {
 # -- Read-me and the PACE plan (every role) -------------------------------------
 # README.md (what the system is) and PACE_PLAN.md (Primary, Alternate, Contingency, Emergency: which path a report
 # takes when cellular or internet is down) in the top folder, readable with no internet.
-foreach ($doc in @(@('README.md', 'README.md'), @('docs\PACE_PLAN.md', 'PACE_PLAN.md'))) {
+foreach ($doc in @(@('README.md', 'README.md'), @('docs\PACE_PLAN.md', 'PACE_PLAN.md'), @('LICENSE', 'LICENSE'))) {
     $src = Join-Path $RepoRoot $doc[0]
     if (Test-Path $src) {
         Copy-Item $src (Join-Path $installBase $doc[1]) -Force

@@ -37,6 +37,31 @@ $ErrorActionPreference = 'Stop'
 # ---- Embedded files (base64, 76-char chunks) ---------------------------
 $EmbeddedFiles = @(
     @{
+        Name = 'LICENSE'
+        Dir  = '.'
+        Chunks = @(
+            'TUlUIExpY2Vuc2UKCkNvcHlyaWdodCAoYykgMjAyNiBUcmF2aXMgSGlsdG9uCgpQZXJtaXNzaW9u'
+            'IGlzIGhlcmVieSBncmFudGVkLCBmcmVlIG9mIGNoYXJnZSwgdG8gYW55IHBlcnNvbiBvYnRhaW5p'
+            'bmcgYSBjb3B5Cm9mIHRoaXMgc29mdHdhcmUgYW5kIGFzc29jaWF0ZWQgZG9jdW1lbnRhdGlvbiBm'
+            'aWxlcyAodGhlICJTb2Z0d2FyZSIpLCB0byBkZWFsCmluIHRoZSBTb2Z0d2FyZSB3aXRob3V0IHJl'
+            'c3RyaWN0aW9uLCBpbmNsdWRpbmcgd2l0aG91dCBsaW1pdGF0aW9uIHRoZSByaWdodHMKdG8gdXNl'
+            'LCBjb3B5LCBtb2RpZnksIG1lcmdlLCBwdWJsaXNoLCBkaXN0cmlidXRlLCBzdWJsaWNlbnNlLCBh'
+            'bmQvb3Igc2VsbApjb3BpZXMgb2YgdGhlIFNvZnR3YXJlLCBhbmQgdG8gcGVybWl0IHBlcnNvbnMg'
+            'dG8gd2hvbSB0aGUgU29mdHdhcmUgaXMKZnVybmlzaGVkIHRvIGRvIHNvLCBzdWJqZWN0IHRvIHRo'
+            'ZSBmb2xsb3dpbmcgY29uZGl0aW9uczoKClRoZSBhYm92ZSBjb3B5cmlnaHQgbm90aWNlIGFuZCB0'
+            'aGlzIHBlcm1pc3Npb24gbm90aWNlIHNoYWxsIGJlIGluY2x1ZGVkIGluIGFsbApjb3BpZXMgb3Ig'
+            'c3Vic3RhbnRpYWwgcG9ydGlvbnMgb2YgdGhlIFNvZnR3YXJlLgoKVEhFIFNPRlRXQVJFIElTIFBS'
+            'T1ZJREVEICJBUyBJUyIsIFdJVEhPVVQgV0FSUkFOVFkgT0YgQU5ZIEtJTkQsIEVYUFJFU1MgT1IK'
+            'SU1QTElFRCwgSU5DTFVESU5HIEJVVCBOT1QgTElNSVRFRCBUTyBUSEUgV0FSUkFOVElFUyBPRiBN'
+            'RVJDSEFOVEFCSUxJVFksCkZJVE5FU1MgRk9SIEEgUEFSVElDVUxBUiBQVVJQT1NFIEFORCBOT05J'
+            'TkZSSU5HRU1FTlQuIElOIE5PIEVWRU5UIFNIQUxMIFRIRQpBVVRIT1JTIE9SIENPUFlSSUdIVCBI'
+            'T0xERVJTIEJFIExJQUJMRSBGT1IgQU5ZIENMQUlNLCBEQU1BR0VTIE9SIE9USEVSCkxJQUJJTElU'
+            'WSwgV0hFVEhFUiBJTiBBTiBBQ1RJT04gT0YgQ09OVFJBQ1QsIFRPUlQgT1IgT1RIRVJXSVNFLCBB'
+            'UklTSU5HIEZST00sCk9VVCBPRiBPUiBJTiBDT05ORUNUSU9OIFdJVEggVEhFIFNPRlRXQVJFIE9S'
+            'IFRIRSBVU0UgT1IgT1RIRVIgREVBTElOR1MgSU4gVEhFClNPRlRXQVJFLgo='
+        )
+    }
+    @{
         Name = 'README.md'
         Dir  = '.'
         Chunks = @(
@@ -1508,15 +1533,24 @@ $EmbeddedFiles = @(
             'eXN0ZW0uICoqW0NMQVVERS5tZF0oQ0xBVURFLm1kKSoqIGhvbGRzIHRoZSBzdGFuZGluZyBwcm9q'
             'ZWN0IHJ1bGVzIHRoYXQgQ2xhdWRlIENvZGUgcmVhZHMgYXV0b21hdGljYWxseSBpbiBldmVyeSBz'
             'ZXNzaW9uIOKAlCByZWFkIGl0IHlvdXJzZWxmIHRvbzsgdGhlIHJ1bGVzIGFwcGx5IHRvIGh1bWFu'
-            'IGNvbnRyaWJ1dG9ycyBhcyB3ZWxsLgoKIyMgQWJvdXQKClRoaXMgc3lzdGVtIOKAlCB0aGUgdGhy'
-            'ZWUgZm9ybXMsIHRoZSBXaW5saW5rIHRlbXBsYXRlcywgdGhlIEVPQyBNZXNzYWdlIENlbnRlciwg'
-            'dGhlIGluc3RhbGxlciwgdGhlIFBBQ0UgcGxhbiBhbmQgdGhlIG92ZXJ2aWV3IGRlY2sg4oCUIHdh'
-            'cyBjcmVhdGVkIGJ5ICoqVHJhdmlzIEhpbHRvbiAoVzlUTEgpKiogYXMgYSBjb250cmlidXRpb24g'
-            'dG8gdGhlIEVNQ09NTSBjb21tdW5pdHkuIEl0IGlzIG9mZmVyZWQgZnJlZWx5IHRvIGFueSBzdGFr'
-            'ZSwgd2FyZCBvciBhbWF0ZXVyIHJhZGlvIGdyb3VwIHRoYXQgY2FuIHVzZSBpdC4gSXQgaXMgYW4g'
-            'aW5kZXBlbmRlbnQgdm9sdW50ZWVyIHByb2plY3QsIG5vdCBhbiBvZmZpY2lhbCBwcm9kdWN0IG9y'
-            'IHB1YmxpY2F0aW9uIG9mIFRoZSBDaHVyY2ggb2YgSmVzdXMgQ2hyaXN0IG9mIExhdHRlci1kYXkg'
-            'U2FpbnRzLgo='
+            'IGNvbnRyaWJ1dG9ycyBhcyB3ZWxsLgoKIyMgTGljZW5zZQoKVGhlIGNvZGUgYW5kIGRvY3VtZW50'
+            'YXRpb24gYXJlIHVuZGVyIHRoZSBbTUlUIExpY2Vuc2VdKExJQ0VOU0UpOiB5b3UgbWF5IHVzZSwg'
+            'Y29weSBhbmQgY2hhbmdlIHRoZW0sIGZvciB5b3VyIG93biBjb21tdW5pdHkgb3IgYW55dGhpbmcg'
+            'ZWxzZSwgYXMgbG9uZyBhcyB0aGUgbGljZW5zZSBub3RpY2Ugc3RheXMgd2l0aCB0aGVtLiBgZm9y'
+            'bXMvdmVuZG9yL2pzUVIuanNgIGtlZXBzIGl0cyBvd24gQXBhY2hlLTIuMCBsaWNlbnNlIChbZm9y'
+            'bXMvdmVuZG9yL2pzUVItTElDRU5TRS50eHRdKGZvcm1zL3ZlbmRvci9qc1FSLUxJQ0VOU0UudHh0'
+            'KSkuCgpUaGUgbGljZW5zZSBjb3ZlcnMgdGhpcyBwcm9qZWN0J3Mgb3duIHdvcmsgb25seS4gSXQg'
+            'Z2l2ZXMgbm8gcmlnaHRzIHRvIHRoZSBDaHVyY2gncyBuYW1lLCB0cmFkZW1hcmtzIG9yIGZvcm1z'
+            'LCB3aGljaCBiZWxvbmcgdG8gdGhlaXIgb3duZXIuIFRoaXMgaXMgYW4gaW5kZXBlbmRlbnQgdm9s'
+            'dW50ZWVyIHByb2plY3QsIG5vdCBhbiBvZmZpY2lhbCBDaHVyY2ggcHJvZHVjdC4KCiMjIEFib3V0'
+            'CgpUaGlzIHN5c3RlbSDigJQgdGhlIHRocmVlIGZvcm1zLCB0aGUgV2lubGluayB0ZW1wbGF0ZXMs'
+            'IHRoZSBFT0MgTWVzc2FnZSBDZW50ZXIsIHRoZSBpbnN0YWxsZXIsIHRoZSBQQUNFIHBsYW4gYW5k'
+            'IHRoZSBvdmVydmlldyBkZWNrIOKAlCB3YXMgY3JlYXRlZCBieSAqKlRyYXZpcyBIaWx0b24gKFc5'
+            'VExIKSoqIGFzIGEgY29udHJpYnV0aW9uIHRvIHRoZSBFTUNPTU0gY29tbXVuaXR5LiBJdCBpcyBv'
+            'ZmZlcmVkIGZyZWVseSB0byBhbnkgc3Rha2UsIHdhcmQgb3IgYW1hdGV1ciByYWRpbyBncm91cCB0'
+            'aGF0IGNhbiB1c2UgaXQuIEl0IGlzIGFuIGluZGVwZW5kZW50IHZvbHVudGVlciBwcm9qZWN0LCBu'
+            'b3QgYW4gb2ZmaWNpYWwgcHJvZHVjdCBvciBwdWJsaWNhdGlvbiBvZiBUaGUgQ2h1cmNoIG9mIEpl'
+            'c3VzIENocmlzdCBvZiBMYXR0ZXItZGF5IFNhaW50cy4K'
         )
     }
     @{
@@ -99891,7 +99925,7 @@ foreach ($d in $dirsToCreate) {
 # -- Read-me and the PACE plan (every role) -------------------------------------
 # README.md (what the system is) and PACE_PLAN.md (Primary, Alternate, Contingency, Emergency: which path a report
 # takes when cellular or internet is down) in the top folder, readable with no internet.
-foreach ($doc in @(@('README.md', 'README.md'), @('docs\PACE_PLAN.md', 'PACE_PLAN.md'))) {
+foreach ($doc in @(@('README.md', 'README.md'), @('docs\PACE_PLAN.md', 'PACE_PLAN.md'), @('LICENSE', 'LICENSE'))) {
     $src = Join-Path $RepoRoot $doc[0]
     if (Test-Path $src) {
         Copy-Item $src (Join-Path $installBase $doc[1]) -Force

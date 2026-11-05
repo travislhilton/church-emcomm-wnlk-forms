@@ -95,6 +95,11 @@ forms\, sw.js                   -- The volunteer web app as GitHub Pages serves 
 README.md                       -- What the system is and how it fits together
 docs\PACE_PLAN.md               -- The PACE (Primary, Alternate, Contingency, Emergency) communications plan
 
+LICENSE
+-------
+MIT License: see the LICENSE file. forms\vendor\jsQR.js keeps its own Apache-2.0 license.
+Independent volunteer project, not an official Church product.
+
 SUPPORT
 -------
 Contact your Stake EMCOMM coordinator or Emergency Response Director.

@@ -62,6 +62,7 @@ copy() {  # copy <src relative to package> <dest>
 # -- Read-me and the PACE (Primary, Alternate, Contingency, Emergency) plan, every role --
 copy "README.md"          "$BASE/README.md"
 copy "docs/PACE_PLAN.md"  "$BASE/PACE_PLAN.md"
+copy "LICENSE"  "$BASE/LICENSE"
 
 # -- Field Worker forms (every role) -----------------------------------------
 echo

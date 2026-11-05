@@ -18,7 +18,8 @@
 2. **Winlink over the air** (two stations): B2–B9 with THIS IS AN EXERCISE ticked and a practice form. First close every old `localhost:8001` tab (B10). Then send the CCD-1 messages (N34) and a live ICS 213RR from a partner agency's station (N32).
 3. **iPhone and Mac checks:** print from the app (L15, L18), offline app, Home and no-dead-ends taps (L11, L16, L17); `install.sh` on a Mac (N25).
 4. **Machines:** EOC discovery between two separate computers with a Mac; a second Mac; Playwright on a Mac for the browser tests.
-5. **Held:** the remaining outline scenarios (catalog in `docs/SIMULATOR_SCENARIOS.md`; write them with `docs/SCENARIO_AUTHORING.md` and check them with `simulation/scenario_check.py`).
+5. **Small fix:** the installer copies practice forms over the old ones and never removes them, so Winlink's Practice folder keeps forms from earlier builds. Clear the installer's own old files, the way it already retires old public training sets.
+6. **Held:** the remaining outline scenarios (catalog in `docs/SIMULATOR_SCENARIOS.md`; write them with `docs/SCENARIO_AUTHORING.md` and check them with `simulation/scenario_check.py`).
 
 ## Machine notes
 

@@ -509,6 +509,12 @@ Anyone with a GitHub account can **[open an issue](https://github.com/travislhil
 
 Volunteers are welcome to improve the forms, the EOC Message Center, the docs and the deck. Start with **[CONTRIBUTING.md](CONTRIBUTING.md)**: setup on Windows, a map of the repository, how to run and test everything, the release routine, and how to use **Claude Code** (Anthropic's coding assistant) to develop and evolve the system. **[CLAUDE.md](CLAUDE.md)** holds the standing project rules that Claude Code reads automatically in every session — read it yourself too; the rules apply to human contributors as well.
 
+## License
+
+The code and documentation are under the [MIT License](LICENSE): you may use, copy and change them, for your own community or anything else, as long as the license notice stays with them. `forms/vendor/jsQR.js` keeps its own Apache-2.0 license ([forms/vendor/jsQR-LICENSE.txt](forms/vendor/jsQR-LICENSE.txt)).
+
+The license covers this project's own work only. It gives no rights to the Church's name, trademarks or forms, which belong to their owner. This is an independent volunteer project, not an official Church product.
+
 ## About
 
 This system — the three forms, the Winlink templates, the EOC Message Center, the installer, the PACE plan and the overview deck — was created by **Travis Hilton (W9TLH)** as a contribution to the EMCOMM community. It is offered freely to any stake, ward or amateur radio group that can use it. It is an independent volunteer project, not an official product or publication of The Church of Jesus Christ of Latter-day Saints.
