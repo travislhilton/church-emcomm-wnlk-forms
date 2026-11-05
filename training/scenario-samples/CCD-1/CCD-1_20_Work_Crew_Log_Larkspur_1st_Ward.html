@@ -1,0 +1,519 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Church Cleanup Work Crew Log (CCD-1 20)</title>
+<style type="text/css">
+body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; margin: 4px; background: #fff; }
+table { border-collapse: collapse; }
+table.outer { width: 860px; border: 2px solid #000; }
+table.outer td { padding: 3px 5px; vertical-align: top; }
+table.fields { width: 100%; border: 1px solid #999; }
+table.fields td { border: 1px solid #999; padding: 3px 5px; vertical-align: bottom; }
+table.crew { width: 100%; border: 1px solid #999; }
+table.crew th { border: 1px solid #999; padding: 3px 5px; background: #dee9f9; font-size: 11px; text-align: left; }
+table.crew td { border: 1px solid #999; padding: 2px 3px; font-size: 11px; vertical-align: middle; }
+.hdr { background-color: #c8d8f0; font-weight: bold; font-size: 13px; text-align: center; border-bottom: 2px solid #000; }
+.sechdr { background-color: #dee9f9; font-weight: bold; font-style: italic; font-size: 12px; padding: 3px 6px; }
+.lbl { font-size: 10px; color: #444; }
+.rn { font-size: 10px; color: #888; text-align: center; font-weight: bold; }
+input[type=text], input[type=date], input[type=tel] { border: none; border-bottom: 1px solid #888; font-size: 12px; font-family: Arial, Helvetica, sans-serif; background: transparent; }
+input[type=date] { width: auto; }
+input.cr { width: 98%; border: 1px solid #bbb; padding: 1px 2px; font-size: 11px; background: #fafeff; }
+input.hrs { width: 44px; border: 1px solid #bbb; padding: 1px 2px; text-align: center; background: #fffde8; font-size: 11px; }
+input[readonly] { background: #e8e8e8; cursor: default; color: #444; }
+textarea { width: 99%; border: 1px solid #999; font-size: 12px; font-family: Arial, Helvetica, sans-serif; resize: vertical; }
+input[type=submit] { border: 2px solid green; border-radius: 3px; background-color: #fff; padding: 3px 10px; font-size: 13px; cursor: pointer; }
+input[type=reset]  { border: 2px solid red;   border-radius: 3px; background-color: #fff; padding: 3px 10px; font-size: 13px; cursor: pointer; }
+input[type=button] { border: 2px solid #0f88f2; border-radius: 3px; background-color: #fff; padding: 3px 10px; font-size: 13px; cursor: pointer; }
+.logo { line-height: 1.25; font-family: 'Times New Roman', Times, Georgia, serif; color: #000; text-align: center; }
+.logo .top { font-size: 11px; letter-spacing: 0.20em; font-weight: normal; text-transform: uppercase; display: block; }
+.logo .mid { font-size: 27px; font-weight: normal; letter-spacing: 0.03em; text-transform: uppercase; display: block; white-space: nowrap; line-height: 1.1; }
+.logo .bot { font-size: 12px; letter-spacing: 0.12em; font-weight: normal; text-transform: uppercase; display: block; }
+.safety-note { font-size: 10px; font-style: italic; color: #555; padding: 4px 6px; background: #fffde8; border: 1px solid #e0c050; border-radius: 2px; }
+.exbox { border:2px solid #b00000; background:#fff3f3; padding:4px 8px; margin:4px 0 6px; font-size:13px; font-weight:bold; color:#b00000; }
+.exbox small { font-weight:normal; color:#444; }
+</style>
+<script type="text/javascript">
+
+var NUM_CREW = 16;   // PD10052209 has 16 crew lines
+
+// Winlink sends the message body as ISO-8859-1 and the form data as plain-text XML:
+// swap the smart quotes, dashes and non-breaking spaces a phone keyboard inserts for plain ASCII.
+function asciiClean(s) {
+  return String(s == null ? '' : s)
+    .replace(/[\u2018\u2019\u201A\u2032\u00B4]/g, "'").replace(/[\u201C\u201D\u201E\u2033]/g, '"')
+    .replace(/[\u2013\u2014\u2015\u2212]/g, '-').replace(/\u2026/g, '...').replace(/[\u00A0\u2007\u202F]/g, ' ')
+    .replace(/[\u2022\u25CF\u25AA]/g, '*').replace(/\r\n?/g, '\n');
+}
+// The message body Winlink sends: plain ASCII with CRLF line ends
+function winlinkBody(s) { return asciiClean(s).replace(/\n/g, '\r\n'); }
+function cleanAllFields() {
+  var els = document.querySelectorAll('#myform input[type=text], #myform input[type=tel], #myform input[type=email], #myform textarea');
+  for (var i = 0; i < els.length; i++) { var c = asciiClean(els[i].value); if (c !== els[i].value) els[i].value = c; }
+}
+// Fields Load Data must never overwrite: Winlink fills them when the form opens
+var LOAD_SKIP = {testCall:1, parseme:1, msg_body:1, attached_text:1, attached_file:1, GPS:1, stn_lat:1, stn_lon:1, stn_grid:1, op_callsign:1, fileToLoad:1, loc_src:1, subj_prefix:1};
+function fv(id) { var e = document.getElementById(id); return e ? asciiClean(e.value).replace(/\s+$/, '').trim() : ''; }
+function pad(s, w) { s = String(s); while (s.length < w) s += ' '; return s; }
+function line(n) { var s = ''; for (var i = 0; i < n; i++) s += '-'; return s + '\n'; }
+
+function updateCrewTotal() {
+  var tot = 0;
+  for (var i = 1; i <= NUM_CREW; i++) {
+    tot += parseFloat(document.getElementById('crew_hrs' + i).value) || 0;
+  }
+  document.getElementById('chief_hrs').value = tot > 0 ? tot : '';
+}
+
+function totalHours() {
+  return parseFloat(fv('chief_hrs')) || 0;
+}
+
+function crewCount() {
+  var n = 0;
+  for (var i = 1; i <= NUM_CREW; i++) {
+    if (fv('crew_name' + i)) n++;
+  }
+  return n;
+}
+
+// THIS IS AN EXERCISE (like the ICS 213): banner at the top of the message, EXERCISE- subject prefix, |exercise=YES in the tag
+function exOn() { var e = document.getElementById('exercise'); return !!(e && e.checked); }
+function exChanged() { var p = document.getElementById('subj_prefix'); if (p) p.value = exOn() ? 'EXERCISE - ' : ''; }
+function exBanner() { exChanged(); return exOn() ? '*** THIS IS AN EXERCISE *** THIS IS AN EXERCISE *** THIS IS AN EXERCISE ***\n\n' : ''; }
+function buildMsg() {
+  var m = exBanner();
+  m += '============================================================\n';
+  m += '     Cleanup Work Crew Volunteer Hours\n';
+  m += '     The Church of Jesus Christ of Latter-day Saints\n';
+  m += '     Form PD10052209\n';
+  m += '============================================================\n\n';
+  m += 'Date:     ' + fmtDate(fv('log_date')) + '\n';
+  m += 'Location: ' + fv('log_location') + '\n\n';
+  m += line(60);
+  m += 'CREW CHIEF\n\n';
+  m += pad('Name:', 22) + fv('chief_name') + '\n';
+  m += pad('Stake:', 22) + fv('chief_stake') + '\n';
+  m += pad('Ward:', 22) + fv('chief_ward') + '\n';
+  m += pad('Hours Worked:', 22) + (fv('chief_hrs') || '0') + '\n';
+  m += pad('Cell Phone:', 22) + fv('chief_phone') + '\n';
+  m += '\n';
+  m += line(60);
+  m += 'CREW MEMBERS\n\n';
+  m += pad('#', 3) + pad('Name', 25) + pad('Stake', 22) + pad('Ward', 18) + pad('Hrs', 5) + pad('WO#', 8) + 'Address\n';
+  m += line(90);
+  var crewData = [];
+  for (var i = 1; i <= NUM_CREW; i++) {
+    var cn = fv('crew_name' + i);
+    if (!cn) continue;
+    var cs = fv('crew_stake' + i), cw = fv('crew_ward' + i);
+    var ch = fv('crew_hrs' + i) || '0';
+    var cwo = fv('crew_wo' + i), caddr = fv('crew_addr' + i);
+    m += pad(String(i), 3) + pad(cn, 25) + pad(cs, 22) + pad(cw, 18) + pad(ch, 5) + pad(cwo, 8) + caddr + '\n';
+    // encode: name:stake:ward:hours:wo_num:wo_addr (colons in values replaced with semicolons)
+    var enc = [cn, cs, cw, ch, cwo, caddr].map(function(v){ return v.replace(/:/g, ';'); }).join(':');
+    crewData.push(enc);
+  }
+  m += '\n';
+  m += line(60);
+  m += pad('Crew members reported:', 30) + crewCount() + '\n';
+  m += pad('Total volunteer hours:', 30) + totalHours() + '\n\n';
+  m += 'Safety certification: ';
+  m += (document.getElementById('safety_cert').checked ? 'YES — All crew members received safety orientation' : 'NOT CONFIRMED') + '\n\n';
+  var sLat=fv('stn_lat_d'), sLon=fv('stn_lon_d'), sGrid=fv('stn_grid_d');
+  if (sLat || sLon) {
+    m += line(60);
+    m += 'SENDER LOCATION\n';
+    if (sLat) m += pad('  Latitude:', 30) + sLat + '\n';
+    if (sLon) m += pad('  Longitude:', 30) + sLon + '\n';
+    if (sGrid) m += pad('  Grid Square:', 30) + sGrid + '\n';
+    if (fv('loc_src')) m += pad('  Source:', 30) + fv('loc_src') + '\n';
+    m += '\n';
+  }
+  m += line(60);
+  m += 'SUBMITTED BY\n';
+  if (fv('op_callsign')) m += '  Callsign:     ' + fv('op_callsign') + '\n';
+  if (fv('op_name'))     m += '  Name:         ' + fv('op_name') + '\n';
+  if (fv('op_position')) m += '  Position:     ' + fv('op_position') + '\n';
+  m += '\n';
+  m += line(60);
+  m += 'Submitted by: ' + fv('testCall') + ' | Form PD10052209 | Via Winlink\n';
+  m += '============================================================\n';
+
+  // CSV rollup
+  m += '\nCSV,' + fmtDate(fv('log_date')) + ',' + fv('log_location') + ',' +
+       fv('chief_name') + ',' + fv('chief_stake') + ',' + fv('chief_ward') + ',' +
+       crewCount() + ',' + totalHours() + '\n';
+
+  // Machine-parseable tag
+  m += '\n[Church-WCL' + (exOn() ? '|exercise=YES' : '') +
+       '|date=' + fmtDate(fv('log_date')) +
+       '|location=' + fv('log_location') +
+       '|chief=' + fv('chief_name') +
+       '|chief_stake=' + fv('chief_stake') +
+       '|chief_ward=' + fv('chief_ward') +
+       '|chief_hrs=' + (fv('chief_hrs') || '0') +
+       '|chief_phone=' + fv('chief_phone') +
+       '|crew_count=' + crewCount() +
+       '|total_hrs=' + totalHours() +
+       '|safety=' + (document.getElementById('safety_cert').checked ? 'YES' : 'NO') +
+       '|crew=' + crewData.join(';') +
+       '|submitter=' + fv('testCall') +
+       (fv('stn_lat_d') ? '|lat=' + fv('stn_lat_d') : '') +
+       (fv('stn_lon_d') ? '|lon=' + fv('stn_lon_d') : '') +
+       (fv('stn_grid_d') ? '|grid=' + fv('stn_grid_d') : '') +
+       (fv('op_callsign') ? '|op_call=' + fv('op_callsign') : '') +
+       (fv('op_name')     ? '|op_name=' + fv('op_name')     : '') +
+       (fv('op_position') ? '|op_pos='  + fv('op_position') : '') + ']\n';
+  return m;
+}
+
+function formDataToObject(elForm) {
+  var fields = elForm.querySelectorAll('input, select, textarea'), o = {};
+  for (var i = 0; i < fields.length; i++) {
+    var f = fields[i], k = f.name || f.id;
+    if (!k || f.type === 'button' || f.type === 'submit' || f.type === 'reset') continue;
+    if (k === 'parseme' || k === 'msg_body' || f.type === 'file') continue;
+    switch (f.type) {
+      case 'checkbox': o[k] = +f.checked; break;
+      default: o[k] = f.value;
+    }
+  }
+  document.getElementById('parseme').value = JSON.stringify(o, null, 2);
+}
+
+function todayIso() {
+  var d = new Date();
+  return d.getFullYear() + '-' + ('0'+(d.getMonth()+1)).slice(-2) + '-' + ('0'+d.getDate()).slice(-2);
+}
+function fmtDate(v) {
+  if (!v) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v.slice(5,7) + '/' + v.slice(8,10) + '/' + v.slice(0,4);
+  return v;
+}
+function toIsoDate(v) {
+  if (!v) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+  var p = v.split('/');
+  if (p.length === 3 && p[2].length === 4) return p[2] + '-' + p[0].padStart(2,'0') + '-' + p[1].padStart(2,'0');
+  return '';
+}
+
+function populateForm() {
+  var o = null;
+  try {
+    o = JSON.parse(document.getElementById('parseme').value.replace(/^\uFEFF/, ''));
+    if (!o || typeof o !== 'object') return;
+    for (var k in o) {
+      var el = document.getElementById(k);
+      if (!el) continue;
+      if (LOAD_SKIP[k]) continue;
+      if (el.type === 'date' && !o[k] && el.value) continue;   // keep today's default when the file has no date
+      if (el.type === 'checkbox') { el.checked = !!o[k]; }
+      else if (el.type === 'date') { el.value = toIsoDate(o[k]); }
+      else { el.value = o[k]; }
+    }
+    updateCrewTotal();
+  } catch(e) {}
+  reconcileGPS(o);
+}
+
+function SaveData() {
+  formDataToObject(document.getElementById('myform'));
+  var d = new Date();
+  var title = 'Church_Work_Crew_Log_' +
+    d.getFullYear() + ('0'+(d.getMonth()+1)).slice(-2) + ('0'+d.getDate()).slice(-2) + '.txt';
+  saveTextFile(document.getElementById('parseme').value, title);
+}
+// Chrome / Edge: a real Save As dialog so the operator chooses the folder; other browsers: name prompt + download
+function saveTextFile(txt, title) {
+  if (window.showSaveFilePicker) {
+    window.showSaveFilePicker({suggestedName: title, types: [{description: 'Church form data (.txt)', accept: {'text/plain': ['.txt']}}]})
+      .then(function(h) { return h.createWritable().then(function(w) { return w.write(txt).then(function() { return w.close(); }); }); })
+      .catch(function(e) { if (!e || e.name !== 'AbortError') legacySave(txt, title); });
+    return;
+  }
+  title = prompt('Save as:', title);
+  if (!title) return;
+  legacySave(txt, title);
+}
+function legacySave(txt, title) {
+  var blob = new Blob([txt], {type: 'text/plain'});
+  if (window.navigator.msSaveBlob) { window.navigator.msSaveBlob(blob, title); return; }
+  var a = document.createElement('a'); a.href = window.URL.createObjectURL(blob);
+  a.download = title; a.style.display = 'none'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+function Checkifinbrowser() {
+  var x = document.getElementById('testCall').value;
+  if (x.indexOf('{Msg') > -1) {
+    document.getElementById('submitbtn').style.visibility = 'hidden';
+    document.getElementById('browser-warning').style.display = '';
+  }
+}
+
+// ---- GPS / Sender Location ----
+function latLonToGridSquare(lat, lon) {
+  var U = 'ABCDEFGHIJKLMNOPQRSTUVWX';
+  lat = parseFloat(lat); lon = parseFloat(lon);
+  if (isNaN(lat) || isNaN(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) return '';
+  var aLat = lat + 90, aLon = lon + 180;
+  return U[Math.trunc(aLon/20)] + U[Math.trunc(aLat/10)] +
+         Math.trunc((aLon/2) % 10) + '' + Math.trunc(aLat % 10);
+}
+function updateGrid() {
+  var gs = latLonToGridSquare(document.getElementById('stn_lat_d').value,
+                               document.getElementById('stn_lon_d').value);
+  document.getElementById('stn_grid_d').value = gs;
+}
+function initGPS() {
+  var gps  = document.getElementById('GPS').value;
+  var lat0 = document.getElementById('stn_lat').value;
+  var lon0 = document.getElementById('stn_lon').value;
+  var gr0  = document.getElementById('stn_grid').value;
+  // {GPS_SIGNED_DECIMAL} is a live GPS fix when Winlink has a receiver,
+  // otherwise the literal "(Not available)" -- only use it if both halves
+  // are numbers; else fall back to the station lat/lon from Winlink setup.
+  if (gps && gps.indexOf('{') < 0) {
+    var p = gps.trim().split(/[\s,]+/);
+    if (p.length >= 2 && !isNaN(parseFloat(p[0])) && !isNaN(parseFloat(p[1]))) { lat0 = p[0]; lon0 = p[1]; }
+  }
+  var ld = document.getElementById('stn_lat_d'), ll = document.getElementById('stn_lon_d');
+  if (lat0 && lat0.indexOf('{') < 0 && !isNaN(parseFloat(lat0))) ld.value = parseFloat(lat0).toFixed(4);
+  if (lon0 && lon0.indexOf('{') < 0 && !isNaN(parseFloat(lon0))) ll.value = parseFloat(lon0).toFixed(4);
+  if (gr0 && gr0.indexOf('{') < 0 && gr0.trim()) document.getElementById('stn_grid_d').value = gr0.trim();
+  else updateGrid();
+  setLocSrc(ld.value && ll.value ? 'STATION' : '');
+}
+// Where the Sender Location came from -- shown under the fields and sent in
+// the message body so the EOC knows whether it is the field worker's position
+// or the HAM operator's station.
+var LOC_SRC = {
+  FIELD:         'Field worker device GPS (from loaded form)',
+  STATION:       'HAM operator station (Winlink setup)',
+  STATION_NOGPS: 'HAM operator station (Winlink setup) - loaded form had no GPS',
+  MANUAL:        'Entered by operator'
+};
+function setLocSrc(code) {
+  var txt = LOC_SRC[code] || '';
+  document.getElementById('loc_src').value = txt;
+  var n = document.getElementById('loc_src_note');
+  if (n) n.textContent = txt ? 'Source: ' + txt : '';
+}
+// After Load Data: keep the field worker's GPS if the loaded file carried a
+// usable lat/lon; otherwise stamp the form with this station's location.
+function reconcileGPS(o) {
+  var ld = document.getElementById('stn_lat_d'), ll = document.getElementById('stn_lon_d');
+  var fileHasFix = o && !isNaN(parseFloat(o.stn_lat_d)) && !isNaN(parseFloat(o.stn_lon_d));
+  if (fileHasFix) {
+    ld.value = o.stn_lat_d; ll.value = o.stn_lon_d;
+    if (!document.getElementById('stn_grid_d').value) updateGrid();
+    setLocSrc('FIELD');
+  } else {
+    ld.value = ''; ll.value = ''; document.getElementById('stn_grid_d').value = '';
+    initGPS();
+    if (ld.value && ll.value) setLocSrc('STATION_NOGPS');
+  }
+}
+// ---- end GPS ----
+
+window.onload = function() {
+  Checkifinbrowser();
+  initGPS();
+  var tc = document.getElementById('testCall').value;
+  if (tc && tc.indexOf('{') < 0) document.getElementById('op_callsign').value = tc;
+  document.getElementById('log_date').value = todayIso();
+  document.getElementById('fileToLoad').addEventListener('change', function(e) {
+    var f = e.target.files[0]; if (!f) return;
+    var r = new FileReader();
+    r.onload = function(ev) { document.getElementById('parseme').value = ev.target.result; populateForm(); };
+    r.readAsText(f, 'UTF-8');
+    e.target.value = '';   // forget the file so nothing rides along with the submit
+  });
+};
+</script>
+</head>
+
+<body>
+<form id="myform" method="post" enctype="multipart/form-data"
+      action="http://{FormServer}:{FormPort}"
+      onsubmit="
+        if (!document.getElementById('safety_cert').checked) {
+          alert('Safety certification is required before submitting.');
+          return false;
+        }
+        cleanAllFields();
+        var msg = winlinkBody(buildMsg());
+        document.getElementById('msg_body').value = msg;
+        formDataToObject(this);
+        return confirm('Submit Work Crew Log via Winlink?\n\nClick OK, then close the form window to return to the message editor.');
+      ">
+
+<input type="hidden" name="testCall"      id="testCall"      value="{MsgSender}" />
+<input type="hidden" id="parseme"       value="" />
+<input type="hidden" name="msg_body" id="msg_body" value="" />
+<input type="hidden" name="subj_prefix" id="subj_prefix" value="EXERCISE - " />
+<input type="hidden" name="GPS"      id="GPS"      value="{GPS_SIGNED_DECIMAL}" />
+<input type="hidden" name="stn_lat"  id="stn_lat"  value="{Latitude}" />
+<input type="hidden" name="stn_lon"  id="stn_lon"  value="{Longitude}" />
+<input type="hidden" name="stn_grid" id="stn_grid"  value="{GridSquare}" />
+
+<table class="outer" cellspacing="0" cellpadding="0">
+
+  <!-- HEADER -->
+  <tr>
+    <td width="160" style="border-right:1px solid #999; padding:6px;">
+      <div class="logo">
+        <span class="top">The Church of</span>
+        <span class="mid">Jesus Christ</span>
+        <span class="bot">of Latter-day Saints</span>
+      </div>
+    </td>
+    <td style="vertical-align:top;">
+      <div class="hdr">Cleanup Work Crew Volunteer Hours</div>
+      <div class="exbox" style="color:#1a3a5c;border-color:#1a3a5c;background:#eef3fa">TRAINING FORM CCD-1 20 &mdash; Copper Creek Dam failure drill, Larkspur Stake, 11:20 on the drill day. The crew that ran the warming centre at the 1250 North 200 East meetinghouse from 08:15. Logs the hours even though nobody worked outdoors. Change anything, then Submit and send it to your EOC.</div>
+      <div class="exbox" id="exbox"><label><input type="checkbox" id="exercise" name="exercise" value="YES" onchange="exChanged()" checked="checked" /> THIS IS AN EXERCISE</label> <small>&mdash; tick for every drill, test or training message; the EOC (Emergency Operations Center) marks it as an exercise</small></div>
+      <div style="font-size:11px; padding:4px 4px 2px;">Use this form to record cleanup work crew volunteer hours and manage the assignment of work orders to crews.</div>
+    </td>
+  </tr>
+
+  <!-- DATE / LOCATION -->
+  <tr><td colspan="2" class="sechdr">Log Information</td></tr>
+  <tr><td colspan="2" style="padding:0;">
+    <table class="fields">
+      <tr>
+        <td width="30%"><div class="lbl">Date</div><input type="date"  id="log_date" name="log_date" value="2027-03-21" /></td>
+        <td><div class="lbl">Location (city, state, and zip code)</div><input type="text"  id="log_location" name="log_location" style="width:98%;" value="Warming centre, Larkspur Meetinghouse, 1250 North 200 East" /></td>
+      </tr>
+    </table>
+  </td></tr>
+
+  <!-- CREW CHIEF -->
+  <tr><td colspan="2" class="sechdr">Crew Chief</td></tr>
+  <tr><td colspan="2" style="padding:0;">
+    <table class="fields">
+      <tr>
+        <td width="30%"><div class="lbl">Name</div><input type="text"  id="chief_name" name="chief_name" style="width:98%;" value="Rachel Trane" /></td>
+        <td width="25%"><div class="lbl">Stake</div><input type="text"  id="chief_stake" name="chief_stake" style="width:98%;" value="Larkspur Stake" /></td>
+        <td width="18%"><div class="lbl">Ward</div><input type="text"  id="chief_ward" name="chief_ward" style="width:98%;" value="Larkspur 1st Ward" /></td>
+        <td width="10%"><div class="lbl">Hours worked (auto)</div><input type="text"  id="chief_hrs" name="chief_hrs" placeholder="0" class="hrs" style="width:60px;" readonly="readonly" value="3" /></td>
+        <td><div class="lbl">Cell Phone (with area code)</div><input type="tel"  id="chief_phone" name="chief_phone" style="width:98%;" value="555-0143" /></td>
+      </tr>
+    </table>
+  </td></tr>
+
+  <!-- CREW MEMBERS -->
+  <tr><td colspan="2" class="sechdr">Crew</td></tr>
+  <tr><td colspan="2" style="padding:0;">
+    <table class="crew">
+      <thead>
+        <tr>
+          <th style="width:3%;">#</th>
+          <th style="width:20%;">Name</th>
+          <th style="width:18%;">Stake</th>
+          <th style="width:13%;">Ward</th>
+          <th style="width:6%; background:#fffde8;">Hours worked</th>
+          <th style="width:8%;">Work order number</th>
+          <th>Work order address</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="rn">1</td><td><input type="text" class="cr"  id="crew_name1" name="crew_name1" value="Rachel Trane" /></td><td><input type="text" class="cr"  id="crew_stake1" name="crew_stake1" value="Larkspur Stake" /></td><td><input type="text" class="cr"  id="crew_ward1" name="crew_ward1" value="Larkspur 1st Ward" /></td><td><input type="text" class="hrs"  id="crew_hrs1" name="crew_hrs1" onchange="updateCrewTotal()" onkeyup="updateCrewTotal()" value="3" /></td><td><input type="text" class="cr"  id="crew_wo1" name="crew_wo1" value="Building lead, sign-in sheet" /></td><td><input type="text" class="cr"  id="crew_addr1" name="crew_addr1" value="1250 North 200 East" /></td></tr>
+        <tr><td class="rn">2</td><td><input type="text" class="cr"  id="crew_name2" name="crew_name2" value="Paul Ingram" /></td><td><input type="text" class="cr"  id="crew_stake2" name="crew_stake2" value="Larkspur Stake" /></td><td><input type="text" class="cr"  id="crew_ward2" name="crew_ward2" value="Larkspur 1st Ward" /></td><td><input type="text" class="hrs"  id="crew_hrs2" name="crew_hrs2" onchange="updateCrewTotal()" onkeyup="updateCrewTotal()" value="3" /></td><td><input type="text" class="cr"  id="crew_wo2" name="crew_wo2" value="Cots and blankets" /></td><td><input type="text" class="cr"  id="crew_addr2" name="crew_addr2" value="1250 North 200 East" /></td></tr>
+        <tr><td class="rn">3</td><td><input type="text" class="cr"  id="crew_name3" name="crew_name3" value="Ellen Ingram" /></td><td><input type="text" class="cr"  id="crew_stake3" name="crew_stake3" value="Larkspur Stake" /></td><td><input type="text" class="cr"  id="crew_ward3" name="crew_ward3" value="Larkspur 1st Ward" /></td><td><input type="text" class="hrs"  id="crew_hrs3" name="crew_hrs3" onchange="updateCrewTotal()" onkeyup="updateCrewTotal()" value="3" /></td><td><input type="text" class="cr"  id="crew_wo3" name="crew_wo3" value="Hot drinks and meals" /></td><td><input type="text" class="cr"  id="crew_addr3" name="crew_addr3" value="1250 North 200 East" /></td></tr>
+        <tr><td class="rn">4</td><td><input type="text" class="cr"  id="crew_name4" name="crew_name4" value="Rosa Delgado" /></td><td><input type="text" class="cr"  id="crew_stake4" name="crew_stake4" value="Larkspur Stake" /></td><td><input type="text" class="cr"  id="crew_ward4" name="crew_ward4" value="Larkspur 1st Ward" /></td><td><input type="text" class="hrs"  id="crew_hrs4" name="crew_hrs4" onchange="updateCrewTotal()" onkeyup="updateCrewTotal()" value="2.5" /></td><td><input type="text" class="cr"  id="crew_wo4" name="crew_wo4" value="Registration in Spanish" /></td><td><input type="text" class="cr"  id="crew_addr4" name="crew_addr4" value="1250 North 200 East" /></td></tr>
+        <tr><td class="rn">5</td><td><input type="text" class="cr"  id="crew_name5" name="crew_name5" value="Thomas Kerr" /></td><td><input type="text" class="cr"  id="crew_stake5" name="crew_stake5" value="Larkspur Stake" /></td><td><input type="text" class="cr"  id="crew_ward5" name="crew_ward5" value="Larkspur 1st Ward" /></td><td><input type="text" class="hrs"  id="crew_hrs5" name="crew_hrs5" onchange="updateCrewTotal()" onkeyup="updateCrewTotal()" value="2" /></td><td><input type="text" class="cr"  id="crew_wo5" name="crew_wo5" value="Parking and runner to the stake center" /></td><td><input type="text" class="cr"  id="crew_addr5" name="crew_addr5" value="1250 North 200 East" /></td></tr>
+        <tr><td class="rn">6</td><td><input type="text" class="cr"  id="crew_name6" name="crew_name6" value="Hannah Kerr" /></td><td><input type="text" class="cr"  id="crew_stake6" name="crew_stake6" value="Larkspur Stake" /></td><td><input type="text" class="cr"  id="crew_ward6" name="crew_ward6" value="Larkspur 1st Ward" /></td><td><input type="text" class="hrs"  id="crew_hrs6" name="crew_hrs6" onchange="updateCrewTotal()" onkeyup="updateCrewTotal()" value="2" /></td><td><input type="text" class="cr"  id="crew_wo6" name="crew_wo6" value="Children&#x27;s corner" /></td><td><input type="text" class="cr"  id="crew_addr6" name="crew_addr6" value="1250 North 200 East" /></td></tr>
+        <tr><td class="rn">7</td><td><input type="text" class="cr" id="crew_name7" name="crew_name7" /></td><td><input type="text" class="cr" id="crew_stake7" name="crew_stake7" /></td><td><input type="text" class="cr" id="crew_ward7" name="crew_ward7" /></td><td><input type="text" class="hrs" id="crew_hrs7" name="crew_hrs7" onchange="updateCrewTotal()" onkeyup="updateCrewTotal()" /></td><td><input type="text" class="cr" id="crew_wo7" name="crew_wo7" /></td><td><input type="text" class="cr" id="crew_addr7" name="crew_addr7" /></td></tr>
+        <tr><td class="rn">8</td><td><input type="text" class="cr" id="crew_name8" name="crew_name8" /></td><td><input type="text" class="cr" id="crew_stake8" name="crew_stake8" /></td><td><input type="text" class="cr" id="crew_ward8" name="crew_ward8" /></td><td><input type="text" class="hrs" id="crew_hrs8" name="crew_hrs8" onchange="updateCrewTotal()" onkeyup="updateCrewTotal()" /></td><td><input type="text" class="cr" id="crew_wo8" name="crew_wo8" /></td><td><input type="text" class="cr" id="crew_addr8" name="crew_addr8" /></td></tr>
+        <tr><td class="rn">9</td><td><input type="text" class="cr" id="crew_name9" name="crew_name9" /></td><td><input type="text" class="cr" id="crew_stake9" name="crew_stake9" /></td><td><input type="text" class="cr" id="crew_ward9" name="crew_ward9" /></td><td><input type="text" class="hrs" id="crew_hrs9" name="crew_hrs9" onchange="updateCrewTotal()" onkeyup="updateCrewTotal()" /></td><td><input type="text" class="cr" id="crew_wo9" name="crew_wo9" /></td><td><input type="text" class="cr" id="crew_addr9" name="crew_addr9" /></td></tr>
+        <tr><td class="rn">10</td><td><input type="text" class="cr" id="crew_name10" name="crew_name10" /></td><td><input type="text" class="cr" id="crew_stake10" name="crew_stake10" /></td><td><input type="text" class="cr" id="crew_ward10" name="crew_ward10" /></td><td><input type="text" class="hrs" id="crew_hrs10" name="crew_hrs10" onchange="updateCrewTotal()" onkeyup="updateCrewTotal()" /></td><td><input type="text" class="cr" id="crew_wo10" name="crew_wo10" /></td><td><input type="text" class="cr" id="crew_addr10" name="crew_addr10" /></td></tr>
+        <tr><td class="rn">11</td><td><input type="text" class="cr" id="crew_name11" name="crew_name11" /></td><td><input type="text" class="cr" id="crew_stake11" name="crew_stake11" /></td><td><input type="text" class="cr" id="crew_ward11" name="crew_ward11" /></td><td><input type="text" class="hrs" id="crew_hrs11" name="crew_hrs11" onchange="updateCrewTotal()" onkeyup="updateCrewTotal()" /></td><td><input type="text" class="cr" id="crew_wo11" name="crew_wo11" /></td><td><input type="text" class="cr" id="crew_addr11" name="crew_addr11" /></td></tr>
+        <tr><td class="rn">12</td><td><input type="text" class="cr" id="crew_name12" name="crew_name12" /></td><td><input type="text" class="cr" id="crew_stake12" name="crew_stake12" /></td><td><input type="text" class="cr" id="crew_ward12" name="crew_ward12" /></td><td><input type="text" class="hrs" id="crew_hrs12" name="crew_hrs12" onchange="updateCrewTotal()" onkeyup="updateCrewTotal()" /></td><td><input type="text" class="cr" id="crew_wo12" name="crew_wo12" /></td><td><input type="text" class="cr" id="crew_addr12" name="crew_addr12" /></td></tr>
+        <tr><td class="rn">13</td><td><input type="text" class="cr" id="crew_name13" name="crew_name13" /></td><td><input type="text" class="cr" id="crew_stake13" name="crew_stake13" /></td><td><input type="text" class="cr" id="crew_ward13" name="crew_ward13" /></td><td><input type="text" class="hrs" id="crew_hrs13" name="crew_hrs13" onchange="updateCrewTotal()" onkeyup="updateCrewTotal()" /></td><td><input type="text" class="cr" id="crew_wo13" name="crew_wo13" /></td><td><input type="text" class="cr" id="crew_addr13" name="crew_addr13" /></td></tr>
+        <tr><td class="rn">14</td><td><input type="text" class="cr" id="crew_name14" name="crew_name14" /></td><td><input type="text" class="cr" id="crew_stake14" name="crew_stake14" /></td><td><input type="text" class="cr" id="crew_ward14" name="crew_ward14" /></td><td><input type="text" class="hrs" id="crew_hrs14" name="crew_hrs14" onchange="updateCrewTotal()" onkeyup="updateCrewTotal()" /></td><td><input type="text" class="cr" id="crew_wo14" name="crew_wo14" /></td><td><input type="text" class="cr" id="crew_addr14" name="crew_addr14" /></td></tr>
+        <tr><td class="rn">15</td><td><input type="text" class="cr" id="crew_name15" name="crew_name15" /></td><td><input type="text" class="cr" id="crew_stake15" name="crew_stake15" /></td><td><input type="text" class="cr" id="crew_ward15" name="crew_ward15" /></td><td><input type="text" class="hrs" id="crew_hrs15" name="crew_hrs15" onchange="updateCrewTotal()" onkeyup="updateCrewTotal()" /></td><td><input type="text" class="cr" id="crew_wo15" name="crew_wo15" /></td><td><input type="text" class="cr" id="crew_addr15" name="crew_addr15" /></td></tr>
+        <tr><td class="rn">16</td><td><input type="text" class="cr" id="crew_name16" name="crew_name16" /></td><td><input type="text" class="cr" id="crew_stake16" name="crew_stake16" /></td><td><input type="text" class="cr" id="crew_ward16" name="crew_ward16" /></td><td><input type="text" class="hrs" id="crew_hrs16" name="crew_hrs16" onchange="updateCrewTotal()" onkeyup="updateCrewTotal()" /></td><td><input type="text" class="cr" id="crew_wo16" name="crew_wo16" /></td><td><input type="text" class="cr" id="crew_addr16" name="crew_addr16" /></td></tr>
+      </tbody>
+    </table>
+  </td></tr>
+
+  <!-- SAFETY CERTIFICATION -->
+  <tr><td colspan="2" style="padding:6px; background:#fffde8;">
+    <p class="safety-note">By submitting this log, the crew chief certifies that all crew members have received safety orientation and training specific to the tasks and projects assigned, and that each member is physically able to perform the assigned tasks (per form PD10052209 safety acknowledgment).</p>
+    <label style="font-size:12px; font-weight:bold;">
+      <input type="checkbox" id="safety_cert" name="safety_cert" value="1" checked="checked" />
+      &nbsp;I certify that all crew members received safety orientation
+    </label>
+  </td></tr>
+
+  <!-- SENDER LOCATION -->
+  <tr><td colspan="2" class="sechdr">Sender Location</td></tr>
+  <tr><td colspan="2" style="padding:0;">
+    <table class="fields">
+      <tr>
+        <td width="30%">
+          <div class="lbl">Latitude (decimal)</div>
+          <input type="text"  id="stn_lat_d" name="stn_lat_d" placeholder="e.g. 38.5567" style="width:130px;" onchange="updateGrid(); setLocSrc('MANUAL')" value="40.34506" />
+        </td>
+        <td width="30%">
+          <div class="lbl">Longitude (decimal)</div>
+          <input type="text"  id="stn_lon_d" name="stn_lon_d" placeholder="e.g. -111.0937" style="width:130px;" onchange="updateGrid(); setLocSrc('MANUAL')" value="-117.55707" />
+        </td>
+        <td>
+          <div class="lbl">Grid Square</div>
+          <input type="text"  id="stn_grid_d" name="stn_grid_d" style="width:60px;" readonly="readonly" value="DN10fi" />
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" style="padding:2px 4px;">
+          <div id="loc_src_note" class="lbl" style="font-style:italic;"></div>
+          <input type="hidden" id="loc_src" name="loc_src" value="" />
+        </td>
+      </tr>
+    </table>
+  </td></tr>
+
+  <!-- SUBMITTED BY -->
+  <tr><td colspan="2" class="sechdr">Submitted By (Winlink Operator)</td></tr>
+  <tr><td colspan="2" style="padding:0;">
+    <table class="fields">
+      <tr>
+        <td width="18%">
+          <div class="lbl">Callsign (auto)</div>
+          <input type="text" id="op_callsign" name="op_callsign" style="width:90px;" readonly="readonly" />
+        </td>
+        <td width="35%">
+          <div class="lbl">Operator Name</div>
+          <input type="text"  id="op_name" name="op_name" style="width:98%;" value="Janet Kimura" />
+        </td>
+        <td>
+          <div class="lbl">Position / Title</div>
+          <input type="text"  id="op_position" name="op_position" style="width:98%;" value="Ward emergency communications (HAM) operator" />
+        </td>
+      </tr>
+    </table>
+  </td></tr>
+
+  <!-- BUTTONS -->
+  <tr><td colspan="2" style="background:#f0f0f0; padding:6px;">
+    <input type="submit" id="submitbtn" value="Submit via Winlink" />
+    &nbsp;
+    <input type="button" value="Save Data" onclick="SaveData()" />
+    &nbsp;
+    <input type="button" value="Load Data" onclick="document.getElementById('fileToLoad').click()" />
+    <input type="file" id="fileToLoad" accept=".txt" style="display:none;" />
+    &nbsp;
+    <input type="reset" value="Reset Form" />
+    <br/><small style="color:#555;">&#9432; <b>Load Data</b> opens the <b>.txt</b> file a crew chief saved from the browser Worker form (<em>Save to My Phone</em>) and fills every field automatically. Review, then click <em>Submit via Winlink</em>. Address it to your EOC's Winlink address (stake Comms Sheet). <b>Save Data</b> writes the same kind of file from this form.</small>
+    <br/><small>Version 1.0 | Form PD10052209 | Church of Jesus Christ EMCOMM (Emergency Communications)</small>
+  </td></tr>
+  <tr id="browser-warning" style="display:none;"><td colspan="2" style="background:#fffde8; border:2px solid #c8a800; padding:8px; font-size:12px; font-weight:bold; color:#7a5c00;">
+    &#9888; Running outside Winlink Express &mdash; Submit is disabled. Fill the form, then use <em>Save Data</em> to save a file for your radio operator.
+  </td></tr>
+
+</table>
+</form>
+</body>
+</html>

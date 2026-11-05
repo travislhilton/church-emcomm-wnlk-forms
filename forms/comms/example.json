@@ -1,0 +1,37 @@
+{
+ "kind": "church_comms_sheet",
+ "v": 1,
+ "from": {"name": "Example Stake EOC", "level": "stake"},
+ "org": "Example Utah Stake",
+ "updatedMs": 1793300000000,
+ "exportedAt": 1793300000000,
+ "sheet": {
+  "org": "Example Utah Stake",
+  "contacts": [
+   {"role": "Stake President", "name": "President Example", "phone": "435-555-0100", "email": "sp@example.org", "winlink": ""},
+   {"role": "Stake Welfare and Self-Reliance Specialist (emergency communications)", "name": "Jane Example, K7EXA", "phone": "435-555-0101", "email": "k7exa@example.org", "winlink": "K7EXA"},
+   {"role": "Emergency Response Director, Example 1st Ward", "name": "John Example", "phone": "435-555-0102", "email": "", "winlink": ""},
+   {"role": "Council line: Area Seventy, Example Coordinating Council", "name": "Elder Example", "phone": "", "email": "areaseventy@example.org", "winlink": ""},
+   {"role": "Welfare line: local Welfare and Self-Reliance Manager (WSRM)", "name": "Pat Example", "phone": "435-555-0120", "email": "wsrm@example.org", "winlink": ""},
+   {"role": "Welfare line: Area Welfare and Self-Reliance Manager (AWSRM)", "name": "Area office", "phone": "801-555-0100", "email": "awsrm@example.org", "winlink": "N7AWS"}
+  ],
+  "eocs": [
+   {"level": "Stake EOC", "name": "Example Stake Center, 100 N Main", "winlink": "K7EXA-3", "email": "example.stake.eoc@example.org", "phone": "435-555-0110"},
+   {"level": "Satellite EOC", "name": "North — Example 2nd Ward building", "winlink": "K7EXB-3", "email": "example.north.eoc@example.org", "phone": ""},
+   {"level": "Council / Area EOC", "name": "Only if the council or welfare region opens one (Area Specialist station)", "winlink": "N7AWS", "email": "awsrm@example.org", "phone": "801-555-0100"}
+  ],
+  "gateways": [
+   {"call": "W7EXA-10", "freq": "145.070", "mode": "VARA FM", "loc": "Example Peak", "notes": "24 h, wide VARA FM"},
+   {"call": "K7EXC-10", "freq": "145.630", "mode": "VARA FM", "loc": "City hall", "notes": "narrow VARA FM"},
+   {"call": "W7EXH", "freq": "7.102 / 3.588", "mode": "VARA HF", "loc": "Regional", "notes": "HF when no VHF gateway answers"}
+  ],
+  "nets": [
+   {"name": "Stake amateur net (repeater)", "freq": "146.720", "offset": "-0.600", "tone": "100.0", "mode": "repeater", "when": "Top of every hour during activation; practice net Tue 19:00"},
+   {"name": "Stake simplex fallback", "freq": "146.520", "offset": "", "tone": "", "mode": "simplex", "when": "If the repeater is down"},
+   {"name": "HF voice (Area)", "freq": "3.925 LSB", "offset": "", "tone": "", "mode": "HF", "when": "Even hours + 15"},
+   {"name": "Example 1st Ward FRS/GMRS", "freq": "Ch 3 (462.6125)", "offset": "", "tone": "", "mode": "FRS-GMRS", "when": "Block captains to Team Leader"}
+  ],
+  "schedule": "Activation: stake net at the top of every hour, SITREP to the AWSRM on the interval EOC leadership sets (Setup tab).\nPractice: monthly net first Tuesday 19:00, annual PACE drill in October.",
+  "notes": "County EOC liaison: Example Stake liaison K7EXD. Starlink at the stake center and at the north Satellite EOC. Repeater owner: Example Amateur Radio Club."
+ }
+}

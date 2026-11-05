@@ -1,0 +1,1119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quick Reference Cards — all roles</title>
+<style>
+:root {
+  --red: #C8102E;
+  --navy: #1A2744;
+  --blue: #4A7FC1;
+  --green: #5BAD8A;
+  --amber: #D4850A;
+  --light: #F7F8FA;
+  --muted: #4A5568;
+  --border: #CBD5E0;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --light: #111827; }
+}
+:root[data-theme="dark"] { --light: #111827; }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #F0F4F8;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  color: #2D3748;
+  padding: 32px 24px 64px;
+}
+
+h1 {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 6px;
+}
+.page-intro {
+  font-size: 17px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.print-btn {
+  background: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  margin-bottom: 32px;
+}
+.print-btn:hover { background: #9a0020; }
+
+.section-label {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 32px 0 12px;
+}
+
+.card-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px 28px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.10);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 340px;
+  flex: 1;
+}
+.card-front { border-top: 5px solid var(--red); max-width: 540px; }
+.card-back { border-top: 5px solid var(--navy); max-width: 540px; }
+.card-overview { border-top: 5px solid var(--blue); max-width: 680px; flex: 2; }
+
+.card-role {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.card-title {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1.1;
+}
+.card-side {
+  display: inline-block;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--red);
+  color: #fff;
+  padding: 2px 10px;
+  border-radius: 4px;
+  margin-bottom: 2px;
+}
+.card-side.back { background: var(--navy); }
+.card-head { display: flex; gap: 12px; align-items: flex-start; }
+.card-head > div:first-child { flex: 1; min-width: 0; }
+.card-qr { flex: none; width: 100px; text-align: center; font-size: 13.5px; line-height: 1.15; color: var(--muted); }
+.card-qr canvas { display: block; width: 96px; height: 96px; margin: 0 auto 2px; image-rendering: pixelated; }
+
+.steps { display: flex; flex-direction: column; gap: 10px; }
+.card-part {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--red);
+  border-bottom: 1px solid #D5DCE5;
+  padding-bottom: 2px;
+}
+.card-part span { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--muted); font-size: 13.5px; }
+.step { display: flex; gap: 12px; align-items: flex-start; }
+.step-num {
+  background: var(--red);
+  color: #fff;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+}
+.step-text { font-size: 17px; line-height: 1.5; padding-top: 3px; }
+.step-text b { color: var(--navy); }
+.step-text small { color: var(--muted); font-size: 15px; display: block; }
+
+.note-box {
+  background: #F0F4F8;
+  border-left: 4px solid var(--blue);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px;
+  font-size: 17px;
+  line-height: 1.5;
+}
+.note-box.warning { border-color: var(--amber); background: #FFF8E1; }
+.note-box.tip { border-color: var(--green); background: #E8F8F0; }
+
+.checklist { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 17px;
+  line-height: 1.4;
+}
+.checklist li::before {
+  content: "☐";
+  font-size: 18px;
+  color: var(--blue);
+  min-width: 20px;
+}
+
+.tier-table { width: 100%; border-collapse: collapse; font-size: 16px; }
+.tier-table th {
+  background: var(--navy);
+  color: #fff;
+  padding: 8px 12px;
+  text-align: left;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+.tier-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.tier-table tr:nth-child(even) td { background: #F7F9FC; }
+.tier-label { font-weight: 600; white-space: nowrap; }
+.tier-t1 { color: #2D8B69; }
+.tier-t2 { color: var(--blue); }
+.tier-t3 { color: #5A44A8; }
+.tier-t4 { color: var(--amber); }
+.tier-t5 { color: var(--red); }
+
+.phrase-box {
+  background: var(--navy);
+  color: #BFD8D5;
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-size: 17px;
+  line-height: 1.5;
+}
+.phrase-box b { color: #fff; }
+
+.divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+.bishop-section { display: flex; flex-direction: column; gap: 16px; }
+.bishop-flow {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr auto 1.15fr;
+  gap: 6px;
+  align-items: stretch;
+}
+.bishop-flow .bishop-arrow { align-self: center; }
+.bishop-node {
+  background: var(--navy);
+  color: #BFD8D5;
+  border-radius: 8px;
+  padding: 10px 16px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+}
+.bishop-arrow { font-size: 20px; color: var(--muted); }
+.role-table { width: 100%; border-collapse: collapse; font-size: 15px; line-height: 1.35; }
+.role-table td { padding: 5px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+
+.col-2 { display: flex; gap: 20px; }
+.col-2 > * { flex: 1; }
+
+.pace-table { width: 100%; border-collapse: collapse; font-size: 15px; line-height: 1.35; }
+.pace-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.pace-table td:first-child { width: 34px; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 20px; font-weight: 700; text-align: center; }
+.pace-table td:nth-child(2) { width: 26%; font-weight: 600; color: var(--navy); }
+.pace-table .p { color: #2D8B69; } .pace-table .a { color: var(--blue); } .pace-table .c { color: var(--amber); } .pace-table .e { color: var(--red); }
+.box-title { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 6px; text-transform: uppercase; }
+.turn-over { margin-top: auto; text-align: right; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); }
+.card-disclaimer { margin-top: auto; padding-top: 6px; border-top: 1px solid #e2e8f0; font-size: 13.5px; line-height: 1.35; color: var(--muted); }
+/* Printing this page: every card side is one US Letter page, front then back, so a sheet printed
+   double-sided ("flip on long edge") is one card. Nothing flows from one side onto the next. */
+.home-link{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 6px;font:600 17px/1 Arial,Helvetica,sans-serif;color:#1a3a5c;text-decoration:none}.home-link span{font-size:28px;line-height:1;margin-top:-3px}
+@media print {
+  .home-link { display: none !important; }
+  @page { size: letter; margin: 0.5in; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html, body { background: #fff; padding: 0; margin: 0; }
+  .print-btn, .section-label, .page-header { display: none; }
+  .card-row { display: block; margin: 0; }
+  .card { max-width: none !important; width: 100%; min-width: 0; flex: none; box-shadow: none;
+          border: 1px solid #b8c2cc; border-top-width: 6px; border-radius: 10px;
+          min-height: 9.8in; padding: 16px 22px; gap: 8px;
+          break-after: page; page-break-after: always; break-inside: avoid; page-break-inside: avoid; }
+  .card-row:last-of-type .card:last-child { break-after: auto; page-break-after: auto; }
+  .card-title { font-size: 22px; }
+  .step-text { font-size: 15px; line-height: 1.45; }
+  .step-text small { font-size: 13.5px; }
+  .note-box { font-size: 15px; line-height: 1.45; }
+  .checklist li { font-size: 15px; }
+  .tier-table { font-size: 14.5px; }
+  .tier-table td { padding: 6px 10px; }
+  .phrase-box { font-size: 15px; }
+  .bishop-node { font-size: 14.5px; padding: 8px 10px; }
+  .steps { gap: 5px; }
+  .step-text { line-height: 1.38; }
+}
+@media (max-width: 600px) {
+  .card { min-width: 0; }
+  .bishop-flow { grid-template-columns: 1fr; }
+  .bishop-flow .bishop-arrow { transform: rotate(90deg); justify-self: center; }
+  .col-2 { flex-direction: column; }
+}
+
+@page { size: letter; margin: 0.5in; }
+* { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+html, body { background: #fff; padding: 0; margin: 0; }
+.page-header, .section-label, .print-btn { display: none; }
+.card-row { display: block; margin: 0; }
+.card { max-width: none !important; width: 100%; min-width: 0; flex: none; box-shadow: none;
+        border: 1px solid #b8c2cc; border-top-width: 6px; border-radius: 10px;
+        break-after: page; page-break-after: always; break-inside: avoid; page-break-inside: avoid; }
+.card:last-child { break-after: auto; page-break-after: auto; }
+.pdf-foot { font-size: 13.5px; color: #4A5568; margin-top: auto; padding-top: 8px; border-top: 1px solid #e2e8f0; }
+.pdf-foot.pdf-url { margin-top: 0; padding-top: 0; border-top: none; }
+/* Print sizes: a touch smaller than the screen card so every side fits one Letter page */
+.card { padding: 16px 22px; gap: 8px; min-height: 9.8in; }  /* every side fills its page; never spills onto the next */
+.card-title { font-size: 22px; }
+.step-text { font-size: 15px; line-height: 1.45; }
+.step-text small { font-size: 13.5px; }
+.note-box { font-size: 15px; line-height: 1.45; }
+.checklist li { font-size: 15px; }
+.tier-table { font-size: 14.5px; }
+.tier-table td { padding: 6px 10px; }
+.phrase-box { font-size: 15px; }
+.bishop-node { font-size: 14.5px; padding: 8px 10px; }
+.steps { gap: 5px; }
+.step-text { line-height: 1.38; }
+</style>
+</head>
+<body>
+<div class="card-row">
+
+  <div style="zoom:1" class="card card-front">
+    <div class="card-head"><div>
+      <p class="card-role">Helping Hands Volunteer</p>
+      <span class="card-side">Card 1 &#183; Front &#183; side 1 of 2</span>
+      <h2 class="card-title">Reporting Damage or Needs</h2>
+    </div><div class="card-qr"><canvas data-card="1"></canvas>Share this card</div></div>
+
+    <div class="note-box warning" style="font-size:15px;padding:8px 14px"><b>Safety first.</b> Your family and yourself first. Never enter a damaged building. Then report.</div>
+
+    <!-- SCAN TO START -->
+    <div style="display:flex;gap:14px;align-items:center;background:#EEF2F8;border-radius:10px;padding:10px 14px">
+      <div style="text-align:center;flex-shrink:0">
+        <p style="font-size:13.5px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Scan to Start</p>
+        <div id="qr-vol-main" style="width:110px;height:110px;background:#fff;border-radius:4px;padding:3px"></div>
+      </div>
+      <div>
+        <p style="font-size:13.5px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px">Or go to this address:</p>
+        <p style="font-size:13.5px;font-weight:700;color:var(--navy);font-family:'Courier New',monospace;word-break:break-all;line-height:1.5">travislhilton.github.io/<wbr>church-emcomm-wnlk-forms/<wbr>forms/</p>
+        <p style="font-size:13.5px;color:var(--muted);margin-top:5px;line-height:1.5">The same QR (Quick Response) code is on posters at staging areas and sign-in tables. No account needed. Works on any phone.</p>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text"><b>Scan the QR code</b> or go to the address. Tap your form.<small>Disaster Report · Supply Order · Work Crew Log</small></div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text"><b>In a drill, tick THIS IS AN EXERCISE</b> at the top of the form.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text"><b>Fill in the form:</b> address, damage, people who need help.<small>Allow location: your GPS (Global Positioning System) position fills in by itself. Box grayed out? Tap Enter coordinates manually.</small></div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-text"><b>Tap Save to Outbox.</b> The report waits on your phone, even with no signal.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-text"><b>Send it.</b> At the EOC (Emergency Operations Center), on its Wi-Fi: tap <b>Send to EOC</b> and scan the QR code on the wall. Anywhere else: the table below, top row first.<small>iPhone: after the green receipt, switch back to the app and tap <b>Yes</b>.</small></div>
+      </div>
+    </div>
+    <div>
+      <p class="box-title">Not at the EOC? Try P, then A, then C, then E</p>
+      <p style="font-size:13.5px;color:var(--muted);margin:-4px 0 4px">The PACE plan: Primary, Alternate, Contingency, Emergency.</p>
+      <table class="pace-table">
+        <tr><td class="p">P</td><td>Cell signal</td><td>Tap <b>Share by text or email</b>. Send it to your Team Leader or your Stake or Satellite EOC.</td></tr>
+        <tr><td class="a">A</td><td>Any internet, anywhere</td><td>The same, over any Wi-Fi with internet: home, a shelter, a business, a meetinghouse, Starlink.</td></tr>
+        <tr><td class="c">C</td><td>No internet</td><td>Find a HAM (amateur radio) operator. Tap <b>Save to My Phone</b> to make a file and give it to them on a USB (Universal Serial Bus) drive. Or carry your phone to the EOC Wi-Fi.</td></tr>
+        <tr><td class="e">E</td><td>Nothing works</td><td>Paper by hand. Tap <b>Print</b> under the form, or fill in a blank paper form. Give it to your Crew Chief or a runner.</td></tr>
+      </table>
+    </div>
+    <p class="turn-over">Turn over &#8594; Card 1, side 2: Before the Emergency &#8212; Do These Now</p>
+  </div>
+
+  <div style="zoom:1" class="card card-back">
+    <div>
+      <p class="card-role">Helping Hands Volunteer</p>
+      <span class="card-side back">Card 1 &#183; Back &#183; side 2 of 2</span>
+      <h2 class="card-title">Before the Emergency &#8212; Do These Now</h2>
+    </div>
+    <ul class="checklist">
+      <li>Install the app now, with internet: iPhone Safari &#8594; Share &#8594; Add to Home Screen; Android Chrome &#8594; Install app. Open each form once.</li>
+      <li>Load your stake&#8217;s Comms Sheet (portal &#8594; Comms sheet &#8594; Load sheet file). It holds the numbers and addresses to send to. It works with no signal.</li>
+      <li>Fill in one practice form with your home address. Tick THIS IS AN EXERCISE. Tap Save to Outbox and check it is there.</li>
+      <li>Print 3 blank copies of each form (portal &#8594; Paper forms). Keep them with a pen in your go-bag.</li>
+    </ul>
+
+    <div class="divider"></div>
+
+    <!-- Three forms with individual QR codes -->
+    <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:8px">Direct Links &#8212; Each Form</p>
+    <div style="display:flex;gap:10px;text-align:center">
+      <div style="flex:1;background:#FFF0F2;border-radius:8px;padding:8px 6px">
+        <div id="qr-vol-dr" style="width:100px;height:100px;margin:0 auto;background:#fff;border-radius:3px;padding:2px"></div>
+        <p style="font-size:13.5px;font-weight:700;color:var(--red);margin-top:5px">Disaster Report</p>
+        <p style="font-size:13.5px;color:var(--muted);line-height:1.3">Damaged home, injuries, immediate needs</p>
+      </div>
+      <div style="flex:1;background:#EFF4FF;border-radius:8px;padding:8px 6px">
+        <div id="qr-vol-so" style="width:100px;height:100px;margin:0 auto;background:#fff;border-radius:3px;padding:2px"></div>
+        <p style="font-size:13.5px;font-weight:700;color:var(--blue);margin-top:5px">Supply Order</p>
+        <p style="font-size:13.5px;color:var(--muted);line-height:1.3">Food, equipment, or supplies needed</p>
+      </div>
+      <div style="flex:1;background:#EDFAF3;border-radius:8px;padding:8px 6px">
+        <div id="qr-vol-wc" style="width:100px;height:100px;margin:0 auto;background:#fff;border-radius:3px;padding:2px"></div>
+        <p style="font-size:13.5px;font-weight:700;color:var(--green);margin-top:5px">Work Crew Log</p>
+        <p style="font-size:13.5px;color:var(--muted);line-height:1.3">Crew hours &amp; tasks (Crew Chief fills)</p>
+      </div>
+    </div>
+
+    <div class="note-box tip" style="margin-top:10px">
+      <b>Not sure? Ask your Team Leader.</b> A late report is better than none. A wrong number can be fixed: send a new report that says what changed.
+    </div>
+    <div class="note-box" style="font-size:14px">
+      <b>Printing on paper (Emergency):</b> the printer must be on your Wi-Fi, or offer its own Wi-Fi (Wi-Fi Direct): join it in Settings &#8594; Wi-Fi first. Keep the report in your Outbox too.
+    </div>
+    <p style="font-size:13.5px;color:var(--muted);line-height:1.4"><b>Something not working, or feedback after a drill?</b> Tell your Team Leader or the stake specialist: the stake Welfare and Self-Reliance Specialist (emergency communications). Say what you did, what you saw, and which phone.</p>
+    <p class="card-disclaimer">Church of Jesus Christ EMCOMM is an independent volunteer project created by Travis Hilton (W9TLH), not an official product of The Church of Jesus Christ of Latter-day Saints.</p>
+  <p class="pdf-foot pdf-url">travislhilton.github.io/church-emcomm-wnlk-forms/forms/</p></div>
+</div>
+<div class="card-row">
+
+  <div style="zoom:1" class="card card-front">
+    <div class="card-head"><div>
+      <p class="card-role">EMCOMM (emergency communications) HAM (amateur radio) Operator</p>
+      <span class="card-side">Card 2 &#183; Front &#183; side 1 of 2</span>
+      <h2 class="card-title">Sending a Church Form via Winlink</h2>
+    </div><div class="card-qr"><canvas data-card="2"></canvas>Share this card</div></div>
+    <p class="card-part">A &#183; Create the form yourself <span>(report given by voice on the net, in person or on paper)</span></p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text"><b>Winlink Express &#8594; New Message &#8594; Select Template &#8594; Global Templates &#8594; Church of Jesus Christ EMCOMM Forms</b> &#8594; pick the form<small>Disaster Report · Supply Order · Work Crew Log. To practice: <i>…EMCOMM Practice</i> has seven pre-filled exercise forms</small></div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text"><b>Fill in the form</b> that opens in your browser<small>Drill or test? Tick <b>THIS IS AN EXERCISE</b> at the top. Your callsign and station fill in from Winlink. <b>Save Data</b> keeps a copy.</small></div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text"><b>Submit &#8594; address it to <i>your</i> EOC (Emergency Operations Center) &#8594; Open Session &#8594; Telnet</b>, or VARA FM / VARA HF (VARA: the radio modem Winlink uses) when the internet is down (back)<small>Your Satellite or Stake Center EOC&#8217;s Winlink address is on the stake Comms Sheet.</small></div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-text"><b>Confirm</b> it is in Sent Items, then report on the net</div>
+      </div>
+    </div>
+    <p class="card-part">B &#183; Send a form a volunteer filled in <span>(a .txt save file from the portal)</span></p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-text"><b>Receive the .txt file</b> &#8212; text, email or USB (Universal Serial Bus) drive</div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-text"><b>Step 1, then Load Data</b> &#8594; select the file &#8594; every field fills in. Review, then send as in steps 3&#8211;4<small>Your callsign and station are never overwritten. No GPS (Global Positioning System) position in the file? Your station&#8217;s fills in.</small></div>
+      </div>
+    </div>
+    <div class="phrase-box">
+      <b>Key phrase up:</b> &#8220;Stake EOC, this is [callsign], I have transmitted [N] forms via [PACE level]. Receipt confirmed.&#8221;<br>PACE: Primary, Alternate, Contingency, Emergency.
+    </div>
+    <div class="note-box warning" style="font-size:14px">
+      <b>Submit says &#8220;localhost refused&#8221;?</b> Nothing was sent. Close every localhost:8001 tab and the message, Select Template again, Load Data, Submit. One form open at a time.
+    </div>
+    <div class="note-box" style="font-size:14px">
+      <b>Before every event:</b> Winlink Express (<code style="font-size:13.5px">winlink.org</code>) and VARA FM / VARA HF (<code style="font-size:13.5px">downloads.winlink.org/VARA Products/</code>) installed and tested &#183; templates in <code style="font-size:13.5px">Global Folders\Templates\Church of Jesus Christ EMCOMM Forms\</code> &#183; Telnet tested within 30 days &#183; nearest RMS (Radio Message Server) gateway programmed (winlink.org/RMSChannels). Send a monthly test message, a different PACE level each month.
+    </div>
+    <p class="turn-over">Turn over &#8594; Card 2, side 2: PACE Levels: Which Path, When to Step Down</p>
+  </div>
+
+  <div style="zoom:1" class="card card-back">
+    <div>
+      <p class="card-role">EMCOMM HAM Operator</p>
+      <span class="card-side back">Card 2 &#183; Back &#183; side 2 of 2</span>
+      <h2 class="card-title">PACE Levels: Which Path, When to Step Down</h2>
+    </div>
+    <table class="tier-table">
+      <tr>
+        <th>PACE</th>
+        <th>Situation</th>
+        <th>Winlink Connection</th>
+      </tr>
+      <tr>
+        <td><b style="color:#2D8B69">P</b></td>
+        <td>Cell + internet up</td>
+        <td>Volunteers text/email files to the EOC. You: Open Session &#8594; <b>Telnet</b></td>
+      </tr>
+      <tr>
+        <td><b style="color:var(--blue)">A</b></td>
+        <td>Cell down, any internet anywhere</td>
+        <td>Home, a shelter, a business, Starlink: any connection that still reaches the internet. Files arrive by email or USB drive. Open Session &#8594; <b>Telnet</b></td>
+      </tr>
+      <tr>
+        <td><b style="color:var(--amber)">C</b></td>
+        <td>No internet; a gateway answers</td>
+        <td><b>Data:</b> Open Session &#8594; <b>VARA FM Winlink</b> &#8594; [pre-programmed VHF/UHF gateway freq] (very/ultra high frequency); no local gateway: <b>VARA HF</b> (high frequency) &#8594; 40m or 80m freq<br><b>Voice:</b> stake VHF/UHF net (repeater, then simplex); volunteers on FRS/GMRS (Family Radio Service / General Mobile Radio Service) to Team Leaders. Type voice reports into the template.</td>
+      </tr>
+      <tr>
+        <td><b style="color:var(--amber)">C</b></td>
+        <td>No gateway works</td>
+        <td><b>Winlink peer-to-peer (P2P)</b> over VARA FM straight to a nearby EOC&#8217;s station. <b>iPhone reports:</b> a USB-C/Lightning thumb drive in the go-kit, or the EOC Wi-Fi <b>Send to EOC</b>.</td>
+      </tr>
+      <tr>
+        <td><b style="color:var(--red)">E</b></td>
+        <td>Nothing connects, no one answers the net</td>
+        <td><b>Runner:</b> the volunteer's printed form (<b>Print</b> under the form) or a blank paper form filled by hand, carried to the EOC; operator types it in. Hold saved files and send when any path returns.</td>
+      </tr>
+    </table>
+    <div class="note-box">
+      <b>Addresses, gateways, nets:</b> from the stake <b>Comms Sheet</b> &#8212; printed copy in the go-bag, or load the sheet file on your phone at <code style="font-size:13.5px">…/forms/comms.html</code> (works without service). The EOC sends a new one when anything changes.
+    </div>
+    <div class="note-box">
+      <b>PACE rule:</b> step down a level after two failed attempts in 15 minutes, or when the Stake President decides it. Do not go back to a path that failed until a test message gets through. The stake Welfare and Self-Reliance Specialist (emergency communications) recommends the level, the Stake President decides, and the Emergency Response Director (ERD) or the specialist announces the level in force on the net. The county may call ARES (Amateur Radio Emergency Service) operators to county duty at its Emergency level; agree beforehand who stays with the stake.
+    </div>
+    <p class="card-disclaimer">Church of Jesus Christ EMCOMM is an independent volunteer project created by Travis Hilton (W9TLH), not an official product of The Church of Jesus Christ of Latter-day Saints.</p>
+  <p class="pdf-foot pdf-url">travislhilton.github.io/church-emcomm-wnlk-forms/forms/</p></div>
+</div>
+<div class="card-row">
+  <div style="zoom:1" class="card card-front">
+    <div class="card-head"><div>
+      <p class="card-role">EOC Operator &#8212; Satellite, Stake Center or Council / Area EOC</p>
+      <span class="card-side">Card 3 &#183; Front &#183; side 1 of 2</span>
+      <h2 class="card-title">Running the EOC (Emergency Operations Center) Message Center</h2>
+    </div><div class="card-qr"><canvas data-card="3"></canvas>Share this card</div></div>
+      <div>
+        <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:8px">STARTING UP</p>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num" style="background:var(--green)">1</div>
+            <div class="step-text"><b>Double-click the EOC Server icon</b> on the Desktop<small>Window shows: <span style="font-family:'Courier New',monospace;color:#1A6B4A">http://10.x.x.x:8080</span> — note this IP (Internet Protocol) address</small></div>
+          </div>
+          <div class="step">
+            <div class="step-num" style="background:var(--green)">2</div>
+            <div class="step-text"><b>Share the URL (web address)</b> with the EOC operators on the Wi-Fi. A green banner = networked.</div>
+          </div>
+        </div>
+        <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin:6px 0 6px">RECEIVING MESSAGES</p>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num" style="background:var(--navy)">3</div>
+            <div class="step-text">Open Winlink Express &#8594; check for new mail<small>During an activation, set Telnet to check every 5 minutes.</small></div>
+          </div>
+          <div class="step">
+            <div class="step-num" style="background:var(--blue)">4</div>
+            <div class="step-text"><b>Watch the blue &#8220;AUTO-INGEST ACTIVE&#8221; bar</b> in the EOC<small>Church forms appear on every screen within 10 seconds.</small></div>
+          </div>
+          <div class="step">
+            <div class="step-num" style="background:var(--navy)">5</div>
+            <div class="step-text">Once: <b>choose the Winlink callsign</b> that feeds the EOC<small>Click the blue bar and type it (it lists the ones found). Auto-ingest off? Drag the .mime from C:\RMS Express\&lt;callsign&gt;\Messages onto the page.</small></div>
+          </div>
+          <div class="step">
+            <div class="step-num" style="background:var(--navy)">6</div>
+            <div class="step-text"><b>SITREP (situation report):</b> Disaster Reports tab &#8594; <b>Generate SITREP</b> (toolbar above the table) &#8594; <b>Copy</b> &#8594; send it up<small>Satellite &#8594; Stake Center EOC. Stake &#8594; council line (Area Seventy) and welfare line: Welfare and Self-Reliance Manager (WSRM), then Area Welfare and Self-Reliance Manager (AWSRM).</small></div>
+          </div>
+          <div class="step">
+            <div class="step-num" style="background:var(--navy)">7</div>
+            <div class="step-text"><b>Stake EOC: forward the forms up the welfare line</b><small>Winlink Express: open the form message &#8594; Forward &#8594; the welfare line&#8217;s Winlink address &#8594; Send. Every Disaster Report and Supply Order.</small></div>
+          </div>
+        </div>
+        <div class="phrase-box" style="margin-top:8px">
+          <b>Every work item (Work Items tab):</b> give it an owner now (HIGH items at once), move it (In work, Up, Done), and write the decision in.
+        </div>
+        <div class="note-box tip" style="font-size:14px">
+          <b>Reports without Winlink.</b> Phones: volunteers on the EOC Wi-Fi tap <b>Send to EOC</b> (the wall code). Other reports arrive as <code>.txt</code> files: save them into the <b>EOC Drop Folder</b> on the Desktop.
+          <div style="margin-top:4px"><b>Paper by runner (Emergency):</b> type it in at <code style="font-size:13.5px">http://&lt;server-ip&gt;:8080/forms/dr</code> (<code style="font-size:13.5px">so</code>, <code style="font-size:13.5px">wcl</code>) and tap <b>Send</b>.</div>
+        </div>
+        <div class="note-box" style="font-size:14px">
+          <b>Before the event:</b> Python 3 from <code style="font-size:13.5px">python.org/downloads</code> (not the Microsoft Store placeholder) and Winlink Express &#183; USB (Universal Serial Bus) thumb drives, one USB-C/Lightning for iPhones &#183; <b>Comms Sheet</b> typed on the Setup tab; <b>Export sheet JSON</b> (JavaScript Object Notation file) to every EOC &#183; blank paper forms (form address + <code style="font-size:13.5px">?blank=1</code>, <b>Print</b>).
+        </div>
+      </div>
+    <p class="turn-over">Turn over &#8594; Card 3, side 2: Tabs, Status, Shift Handoff, Roll-up &amp; SITREP</p>
+  </div>
+
+  <div style="zoom:1" class="card card-back">
+    <div>
+      <p class="card-role">EOC Operator &#8212; Satellite, Stake Center or Council / Area EOC</p>
+      <span class="card-side back">Card 3 &#183; Back &#183; side 2 of 2</span>
+      <h2 class="card-title">Tabs, Status, Shift Handoff, Roll-up &amp; SITREP</h2>
+    </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div>
+          <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:8px">TABS &#8212; WHAT GOES WHERE</p>
+          <div style="display:flex;flex-direction:column;gap:3px;font-size:15px">
+            <div><span style="color:var(--red);font-weight:600">Disaster Reports</span> &#8212; per-address damage records</div>
+            <div><span style="color:var(--blue);font-weight:600">Supply Orders</span> &#8212; requests + the welfare line&#8217;s approval status</div>
+            <div><span style="color:var(--green);font-weight:600">Work Crew Logs</span> &#8212; crews, hours, homes completed</div>
+            <div><span style="color:var(--amber);font-weight:600">Roster</span> &#8212; wards (stakes at a Council / Area EOC) and who has reported</div>
+            <div><span style="font-weight:600">Work Items</span> &#8212; what the reports ask you to do or decide: owner, status, next action, decision</div>
+            <div><span style="font-weight:600">Messages</span> &#8212; every record, <b>Via</b> = the EOC it came through &#183; <span style="font-weight:600">Notes</span> &#8212; shift log</div>
+          </div>
+        </div>
+        <div style="background:#e8f5e9;border-left:3px solid #5BAD8A;border-radius:4px;padding:10px 14px;font-size:15px">
+          <b>Status badges</b> (click one to move it on; every screen updates): <span style="background:#C8102E;color:#fff;padding:1px 6px;border-radius:3px;font-size:13.5px">NEW</span> just arrived, nobody has read it &#183; <span style="background:#4A7FC1;color:#fff;padding:1px 6px;border-radius:3px;font-size:13.5px">ACK</span> acknowledged: someone read it &#183; <span style="background:#D4850A;color:#fff;padding:1px 6px;border-radius:3px;font-size:13.5px">ASSGN</span> assigned: someone is acting on it &#183; <span style="background:#5BAD8A;color:#fff;padding:1px 6px;border-radius:3px;font-size:13.5px">DONE</span> handled.
+        </div>
+        <div class="note-box">
+          <b>Shift Handoff:</b> Export Handoff JSON &#8594; USB drive &#8594; the incoming operator clicks Import Handoff JSON (it <i>replaces</i> the event&#8217;s records: shift change only). <b>New emergency?</b> Setup tab &#8594; <b>Open a New Event</b> (the old event keeps its reports).
+        </div>
+        <div class="note-box tip" style="font-size:14px">
+          <b>Roll-up to the EOC above you</b> (Satellite &#8594; Stake &#8594; Council / Area EOC, if open): Setup tab: level, name and parent once &#8594; <b>Export Roll-up JSON</b> ("only new" ticked) with every SITREP, by the PACE (Primary, Alternate, Contingency, Emergency) level: <b>P/A</b> email to the parent's drop email &#183; <b>C</b> Winlink attachment &#183; <b>E</b> USB drive with the printed SITREP. The parent merges it by itself; nothing counts twice.<br><b>No Council / Area EOC open?</b> Items set Up go up only in the SITREP; phone or email the welfare line for anything urgent.
+        </div>
+        <div class="phrase-box">
+          <b>SITREP:</b> first as soon as possible, then regular status reports on the interval leadership sets (Setup tab), to the Stake President, the council line (Area Seventy) and the welfare line (WSRM, AWSRM). Header: the <b>PACE level in force</b>; log each change with the time. Send by email at P/A, Winlink radio (VARA FM or VARA HF, the radio modem) at C, county EOC liaison or courier at E.
+        </div>
+        <div class="note-box" style="margin-top:8px;font-size:14px">
+          <b>Wall display (TV):</b> open <code style="font-size:13.5px">http://&lt;server-ip&gt;:8080/wall</code>, press <b>F</b>. <b>Drill:</b> press <b>I am ready</b> on the drill bar; new to drills: card 9. Your level: cards 6&#8211;8.
+        </div>
+      </div>
+    <p class="card-disclaimer">Church of Jesus Christ EMCOMM (emergency communications) is an independent volunteer project created by Travis Hilton (W9TLH), not an official product of The Church of Jesus Christ of Latter-day Saints.</p>
+  <p class="pdf-foot pdf-url">travislhilton.github.io/church-emcomm-wnlk-forms/forms/</p></div>
+</div>
+<div class="card-row">
+  <div style="zoom:1" class="card card-front" style="border-top-color:var(--blue)">
+    <div class="card-head"><div>
+      <p class="card-role">For Bishops, Stake Presidents &amp; Emergency Response Directors</p>
+      <span class="card-side" style="background:var(--blue)">Card 4 &#183; Front &#183; side 1 of 2</span>
+      <h2 class="card-title">Church of Jesus Christ EMCOMM &#8212; How It Works</h2>
+    </div><div class="card-qr"><canvas data-card="4"></canvas>Share this card</div></div>
+    <p style="font-size:15px;line-height:1.5;color:#2D3748">EMCOMM (emergency communications): Helping Hands volunteers fill in the three Church forms on their phones. Phones, the internet or HAM (amateur radio) operators carry them to the Stake EOC (Emergency Operations Center) and the lines above, even when cell and internet are down.</p>
+    <div>
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:10px">HOW INFORMATION FLOWS</p>
+      <div class="bishop-flow">
+        <div class="bishop-node">Volunteer<br><small style="font-size:13.5px;font-weight:400">fills form on phone</small></div>
+        <div class="bishop-arrow">&#8594;</div>
+        <div class="bishop-node">Team Leader<br><small style="font-size:13.5px;font-weight:400">collects, hands to HAM</small></div>
+        <div class="bishop-arrow">&#8594;</div>
+        <div class="bishop-node">HAM Operator<br><small style="font-size:13.5px;font-weight:400">radio or internet</small></div>
+        <div class="bishop-arrow">&#8594;</div>
+        <div class="bishop-node">Stake EOC<br><small style="font-size:13.5px;font-weight:400">tracks it all</small></div>
+        <div class="bishop-arrow">&#8594;</div>
+        <div class="bishop-node">Council + welfare<br><small style="font-size:13.5px;font-weight:400">Area Seventy; the welfare line</small></div>
+      </div>
+    </div>
+    <div>
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">THE PACE PLAN &#8212; FOUR INDEPENDENT PATHS, USED IN ORDER</p>
+      <table class="pace-table">
+        <tr><td class="p">P</td><td>Primary &#8212; cell</td><td>Volunteers text or email the form file</td></tr>
+        <tr><td class="a">A</td><td>Alternate &#8212; any internet</td><td>The same over any Wi-Fi that still has internet: home, shelter, business, meetinghouse, Starlink</td></tr>
+        <tr><td class="c">C</td><td>Contingency &#8212; radio</td><td>HAM operators send forms by Winlink radio (VARA FM first, then VARA HF: the radio modems Winlink uses); voice on FRS/GMRS (Family Radio Service / General Mobile Radio Service) and the stake net</td></tr>
+        <tr><td class="e">E</td><td>Emergency &#8212; runner</td><td>Paper form carried by hand: printed from the phone, or a blank form filled in</td></tr>
+      </table>
+      <p style="font-size:13.5px;color:var(--muted);margin-top:3px">Matches the county ARES (Amateur Radio Emergency Service) plan where the stake sits.</p>
+    </div>
+    <div class="note-box" style="font-size:15px">
+      <b>Who decides:</b> the stake <b>Welfare and Self-Reliance Specialist</b> (emergency communications) recommends the level, the <b>Stake President decides</b> (the bishop for a single-ward net), and the <b>Emergency Response Director (ERD)</b> or the specialist announces it on the net.
+    </div>
+    <div class="note-box" style="font-size:15px">
+      <b>Above the stake:</b> the Stake EOC reports to the <b>council line</b> (the Area Seventy) and the <b>welfare line</b> (the Welfare and Self-Reliance Manager, WSRM, then the Area Welfare and Self-Reliance Manager, AWSRM) by the same ladder: email, any internet or a landline, Winlink radio, then a satellite phone or the stake liaison at the county EOC.<br><b>Part of the stake cut off?</b> A <b>Satellite EOC</b> in a ward building covers those wards and rolls up to the Stake EOC.
+    </div>
+    <p class="turn-over">Turn over &#8594; Card 4, side 2: The Three Forms &amp; What the Bishop Does</p>
+  </div>
+
+  <div style="zoom:1" class="card card-back" style="border-top-color:var(--blue)">
+    <div>
+      <p class="card-role">For Bishops, Stake Presidents &amp; Emergency Response Directors</p>
+      <span class="card-side back">Card 4 &#183; Back &#183; side 2 of 2</span>
+      <h2 class="card-title">The Three Forms &amp; What the Bishop Does</h2>
+    </div>
+    <div class="col-2">
+      <div>
+        <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:8px">THE THREE FORMS</p>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:16px;line-height:1.5">
+          <div><span style="color:var(--red);font-weight:700">Disaster Report</span><br>Documents a damaged home or injured member. Routes to the Stake EOC, then up the welfare line (WSRM, AWSRM).</div>
+          <div><span style="color:var(--blue);font-weight:700">Supply Order</span><br>Requests food, equipment, or supplies. Needs ERD and welfare line approval (WSRM, then AWSRM) before it is filled.</div>
+          <div><span style="color:var(--green);font-weight:700">Work Crew Log</span><br>Records volunteer crew hours and tasks completed. Gives the Stake President accountability data for reporting.</div>
+        </div>
+      </div>
+      <div>
+        <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:8px">WHAT THE BISHOP NEEDS TO DO</p>
+        <ul class="checklist">
+          <li>Ensure at least one ward member is trained as Emergency Response Director</li>
+          <li>Identify your EMCOMM HAM operator (may be a ward or stake calling)</li>
+          <li>Put the forms&#8217; web address (URL) and QR (Quick Response) code in ward emergency preparedness materials</li>
+          <li>Give the stake specialist your ward&#8217;s FRS/GMRS channel, HAM operator and Satellite EOC building for the stake PACE sheet</li>
+          <li>See that every volunteer keeps blank paper forms and a pen in the go-bag (portal &#8594; Paper forms)</li>
+          <li>Take part in the yearly 2-hour practice drill (card 9 explains a drill)</li>
+        </ul>
+        <div class="note-box" style="margin-top:12px">
+          <b>You do not need to understand the technology.</b> The system is designed so that the Bishop gives direction and volunteers do the rest. The Stake EOC gives you accurate totals for your reports to the Stake President.
+        </div>
+      </div>
+    </div>
+    <div class="note-box" style="font-size:15px">
+      <b>The Stake President decides:</b> the PACE level (on the specialist&#8217;s recommendation); the SITREP (situation report) interval; opening a Satellite EOC; moving to the backup EOC; approving the stake PACE sheet; consent before a drill uses real contacts.
+    </div>
+    <div style="background:var(--navy);border-radius:8px;padding:14px 20px;display:flex;gap:24px;align-items:center">
+      <p style="font-size:16px;color:#BFD8D5;font-weight:600">Forms align with the Church PDF (Portable Document Format) forms:</p>
+      <p style="font-size:15px;color:#8BA8C4">PD60000184 Disaster Report &nbsp;&#8226;&nbsp; PD10052205 Supply Order &nbsp;&#8226;&nbsp; PD10052209 Work Crew Log</p>
+    </div>
+    <p class="card-disclaimer">Church of Jesus Christ EMCOMM is an independent volunteer project created by Travis Hilton (W9TLH), not an official product of The Church of Jesus Christ of Latter-day Saints.</p>
+  <p class="pdf-foot pdf-url">travislhilton.github.io/church-emcomm-wnlk-forms/forms/</p></div>
+</div>
+<div class="card-row">
+  <div style="zoom:1" class="card card-front" style="border-top-color:var(--green)">
+    <div class="card-head"><div>
+      <p class="card-role">Drill Controller &#8212; Welfare and Self-Reliance Specialist (emergency communications) or Emergency Response Director (ERD)</p>
+      <span class="card-side" style="background:var(--green)">Card 5 &#183; Front &#183; side 1 of 2</span>
+      <h2 class="card-title">Running a Drill with the Church of Jesus Christ EMCOMM Simulator</h2>
+    </div><div class="card-qr"><canvas data-card="5"></canvas>Share this card</div></div>
+    <div>
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:8px">BEFORE THE ROOM FILLS</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num" style="background:var(--green)">1</div>
+          <div class="step-text">Start the EOC (Emergency Operations Center) server and set it up<small>Setup tab: EOC level, name and roster (the playing wards). <b>Reset for the session</b> (step 4) opens the drill event. Wall display on the TV.</small></div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:var(--green)">2</div>
+          <div class="step-text">Start the simulator on the EOC laptop<small>Double-click <b>Church of Jesus Christ EMCOMM Simulator</b> on the Desktop (installer role 3), then open <code style="font-size:13.5px">http://&lt;this laptop&gt;:8090</code>. The organization pack and map data stay on this laptop.</small></div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:var(--green)">3</div>
+          <div class="step-text">Setup tab: pack &#8594; privacy &#8594; what this simulator plays &#8594; EOC &#8594; scenario &#8594; speed<small><b>Pseudonymized</b> (invented names) unless the Stake President agreed to real contacts. Add missing callings under the pack. Plays <b>this Stake EOC</b>, <b>a Satellite EOC</b> or <b>a Council / Area EOC</b>. Speed 2&#215; for a two-hour room, 1&#215; for four hours.</small></div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:var(--green)">4</div>
+          <div class="step-text">Session tab: rehearse, then <b>Reset for the session</b><small>Reset opens a fresh drill event; the EOC screens show <i>waiting for the trainer&#8217;s GO</i>. Print the Roles tab.</small></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:8px">DURING THE RUN</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num" style="background:var(--navy)">5</div>
+          <div class="step-text">Hand each newcomer <b>card 9</b> (Your First Drill). Give the instructions, then <b>GO</b> on the Session tab. Hand out each card as it comes due<small>Reports reach the EOC by the path the PACE (Primary, Alternate, Contingency, Emergency) level selects. Net cards to the HAM (amateur radio) operators, prompts to the role named, paper to a runner. After a restart: <b>Resume</b> on the Session tab.</small></div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:var(--navy)">6</div>
+          <div class="step-text">PACE changes follow the scenario&#8217;s triggers<small>The specialist recommends, the Stake President decides, the ERD or the specialist announces it on the net; then you set the level on the Run tab and it reaches the EOC header. Never change it for them.</small></div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:var(--navy)">7</div>
+          <div class="step-text">Watch the scoreboard; at the end open the after-action report<small>Run tab: needs met, overdue, score. Needs tab: <b>Waive</b> what the room is not playing. Hot wash tab (the after-drill review): mark each line, then <b>After-action report</b>. Results on any phone: <code style="font-size:13.5px">http://&lt;laptop&gt;:8090/results</code>.</small></div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:var(--navy)">8</div>
+          <div class="step-text"><b>Debrief for the room</b><small>Session tab step 5 &#8594; projector slides (&#8592; &#8594; move, F full screen): what went well, the score, one thing per role, the date of the next drill. Pick the date before people leave.</small></div>
+        </div>
+      </div>
+    </div>
+    <div class="note-box tip" style="font-size:14px">
+      <b>Several EOC laptops: one simulator each,</b> same scenario and seed. Operators press <b>I am ready</b> on the drill bar (remote sites say so by voice). On every laptop&#8217;s Session tab, step 3: enter the agreed time in <b>or start every laptop at</b>, then <b>Schedule</b>. The clocks start together.
+    </div>
+    <p class="turn-over">Turn over &#8594; Card 5, side 2: What the Simulator Sends, Who Plays, What the Hot Wash Reads</p>
+  </div>
+
+  <div style="zoom:1" class="card card-back" style="border-top-color:var(--green)">
+    <div>
+      <p class="card-role">Drill Controller &#8212; Welfare and Self-Reliance Specialist (emergency communications) or ERD</p>
+      <span class="card-side back">Card 5 &#183; Back &#183; side 2 of 2</span>
+      <h2 class="card-title">What the Simulator Sends, Who Plays, What the Hot Wash Reads</h2>
+    </div>
+    <div>
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:8px">INJECTS &#8212; WHAT YOU DO WITH EACH</p>
+      <div style="display:flex;flex-direction:column;gap:6px;font-size:15px;line-height:1.45">
+        <div><span style="color:var(--red);font-weight:600">Report</span> &#8212; sent to the EOC by the level in force: <b>P / A</b> phone upload &#183; <b>C</b> a Winlink <code style="font-size:13.5px">.mime</code> into the EOC&#8217;s simulated Winlink inbox; the EOC files it by itself (a paper card if the EOC has no Winlink) &#183; <b>E</b> paper card for a runner to carry</div>
+        <div><span style="color:var(--muted);font-weight:600">Note</span> &#8212; lands in the EOC notes log prefixed SIM: (roads, weather, the county)</div>
+        <div><span style="color:#8e44ad;font-weight:600">Net card</span> &#8212; hand it to the ward&#8217;s HAM to read on the stake net</div>
+        <div><span style="color:var(--blue);font-weight:600">Prompt</span> &#8212; hand it to the role named: a recommendation, a decision, a SITREP (situation report) that is due</div>
+        <div><span style="color:#1b7f5a;font-weight:600">Work item</span> &#8212; lands on the EOC&#8217;s Work Items list (mission office, county, welfare line, Stake President); the EOC owns it, acts, records the decision</div>
+        <div><span style="color:#b03a2e;font-weight:600">Consequence</span> &#8212; fires when a need is met (the resolution) or overdue (the caller comes back). <span style="color:#0b6e99;font-weight:600">Reply</span> &#8212; the welfare line closes an item set UP, DONE with the decision</div>
+      </div>
+    </div>
+    <div class="note-box tip" style="font-size:14px">
+      <b>Role players:</b> Stake President &#183; Welfare and Self-Reliance Specialist &#183; Emergency Response Director (ERD) &#183; a bishop per playing ward &#183; Team Leaders &#183; ward HAM operators &#183; Stake EOC operators &#183; a Satellite EOC operator &#183; the welfare line (the Welfare and Self-Reliance Managers) &#183; the Area Seventy (email only) &#183; a Council / Area EOC if the drill opens one &#183; you, the controller.
+    </div>
+    <div class="phrase-box">
+      <b>The scoreboard reads the Work Items list:</b> every need owned in time (HIGH within 10 minutes), closed or set UP in time, leadership questions answered as a recorded decision, paper and net reports typed in within 25 minutes with the numbers as on the card; SITREP #1 by the time the scenario sets; nothing HIGH left without an owner. Tell the EOC operators on day one: <b>own it, move it, write the decision in.</b>
+    </div>
+    <div class="note-box warning" style="font-size:14px">
+      <b>Privacy:</b> pseudonymized runs still show real unit and building names. For an issue or screenshot, use the invented Juniper Plains Area or &#8220;Report as text, units redacted&#8221;. A real-contacts run never leaves the room. The mode is stamped on every run and export.
+    </div>
+    <div class="note-box" style="font-size:14px">
+      <b>Tabletop without the room:</b> one controller, one EOC operator, 10&#215; speed, the invented Juniper Plains Area: forty minutes shows every path and the hot wash.
+    </div>
+    <p class="card-disclaimer">Church of Jesus Christ EMCOMM is an independent volunteer project created by Travis Hilton (W9TLH), not an official product of The Church of Jesus Christ of Latter-day Saints.</p>
+  <p class="pdf-foot pdf-url">travislhilton.github.io/church-emcomm-wnlk-forms/forms/</p></div>
+</div>
+<div class="card-row">
+  <div style="zoom:1" class="card card-front" style="border-top-color:var(--amber)">
+    <div class="card-head"><div>
+      <p class="card-role">Satellite EOC (Emergency Operations Center) &#8212; Card 6 of the EOC set</p>
+      <span class="card-side" style="background:var(--amber)">Card 6 &#183; Front &#183; side 1 of 2</span>
+      <h2 class="card-title">Satellite EOC &#8212; Closer to the Damage, Reporting to the Stake Center</h2>
+    </div><div class="card-qr"><canvas data-card="6"></canvas>Share this card</div></div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:15px">
+<div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">WHEN AND WHERE</p><div style="display:flex;flex-direction:column;gap:5px"><div>The stake specialist (Welfare and Self-Reliance Specialist, emergency communications) recommends, the <b>Stake President decides</b>: open one when a group of wards cannot reach the Stake Center in reasonable time (roads cut, the river between, the Stake Center damaged or dark). A ward building with power, a HAM (amateur radio) station and Wi-Fi.</div><div>It covers the wards or the part of the community the Stake President assigns to it. One stake can have several.</div></div></div><div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">SETUP TAB, ONCE</p><div style="display:flex;flex-direction:column;gap:5px"><div>Level <b>Satellite</b> &#183; this EOC&#8217;s name &#183; the wards it covers &#183; parent = the <b>Stake Center EOC</b> (name, drop email, Winlink address) &#183; the SITREP (situation report) interval leadership set.</div><div>Comms sheet: your Winlink address and net frequency, so the stake sheet sends your wards to <i>you</i>.</div></div></div><div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">WHAT COMES IN</p><div style="display:flex;flex-direction:column;gap:5px"><div>Disaster Reports, Supply Orders and Work Crew Logs from your wards: phones on your Wi-Fi (the wall QR (Quick Response) code), Winlink auto-ingest, the Drop Folder (email, text, USB (Universal Serial Bus) drive).</div><div>Roster tab: which of your wards have reported, which are overdue, missionaries not accounted for.</div></div></div><div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">WHAT GOES UP, WITH EVERY SITREP</p><div style="display:flex;flex-direction:column;gap:5px"><div>The <b>SITREP</b> text to the Stake Center EOC (and anything the Stake President asked for by voice on the net).</div><div><b>Export Roll-up JSON</b> (JavaScript Object Notation, a data file) to the Stake Center EOC by the path the PACE (Primary, Alternate, Contingency, Emergency) level allows (back of this card). The stake merges it; your wards then count in the stake&#8217;s SITREP without re-keying.</div><div>Supply Orders are not approved here: they ride up in the roll-up and the welfare line answers through the Stake Center.</div></div></div><div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">WORK ITEMS</p><div style="display:flex;flex-direction:column;gap:5px"><div>Own what the satellite can do (a shelter check, a crew, a headcount). Anything for the Stake President or the welfare line: set it <b>Up</b>; it rides in the roll-up and arrives open at the Stake Center.</div></div></div>
+        <div class="note-box tip" style="font-size:14px"><b>Card 3</b> is how to run the Message Center (start-up, auto-ingest, tabs, status, handoff). This card is what your level does and what it owes the level above.</div>
+      </div>
+    <p class="turn-over">Turn over &#8594; Card 6, side 2: The Chain, the Roll-up Path, Phones and Drills</p>
+  </div>
+
+  <div style="zoom:1" class="card card-back" style="border-top-color:var(--amber)">
+    <div>
+      <p class="card-role">Satellite EOC (Emergency Operations Center) &#8212; Card 6 of the EOC set</p>
+      <span class="card-side back" style="background:var(--amber)">Card 6 &#183; Back &#183; side 2 of 2</span>
+      <h2 class="card-title">The Chain, the Roll-up Path, Phones and Drills</h2>
+    </div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:15px">
+        <div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">THE CHAIN AT A GLANCE</p>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <tr style="background:#eef2f6"><th style="text-align:left;padding:4px 6px">EOC</th><th style="text-align:left;padding:4px 6px">Reports from</th><th style="text-align:left;padding:4px 6px">SITREP to</th><th style="text-align:left;padding:4px 6px">Roll-up JSON to</th></tr><tr style="background:#fff7e0"><td style="padding:4px 6px;border-top:1px solid #d7dee6"><b>Satellite</b> &#9664; you</td><td style="padding:4px 6px;border-top:1px solid #d7dee6">its wards</td><td style="padding:4px 6px;border-top:1px solid #d7dee6">Stake Center EOC</td><td style="padding:4px 6px;border-top:1px solid #d7dee6">Stake Center EOC</td></tr><tr><td style="padding:4px 6px;border-top:1px solid #d7dee6"><b>Stake Center</b></td><td style="padding:4px 6px;border-top:1px solid #d7dee6">wards + satellites</td><td style="padding:4px 6px;border-top:1px solid #d7dee6">Stake President, council line, welfare line</td><td style="padding:4px 6px;border-top:1px solid #d7dee6">Council / Area EOC, if open</td></tr><tr><td style="padding:4px 6px;border-top:1px solid #d7dee6"><b>Council / Area</b></td><td style="padding:4px 6px;border-top:1px solid #d7dee6">stakes</td><td style="padding:4px 6px;border-top:1px solid #d7dee6">Area Presidency / Church headquarters, as directed</td><td style="padding:4px 6px;border-top:1px solid #d7dee6">&#8212;</td></tr>
+          </table>
+          <div style="font-size:13.5px;color:var(--muted);margin-top:4px">SITREP = situation report. The council line is the Area Seventy; the welfare line is the Welfare and Self-Reliance Manager (WSRM), then the Area Welfare and Self-Reliance Manager (AWSRM). A Council / Area EOC exists only when the council or the welfare region opens one.</div>
+        </div>
+        <div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">ROLL-UP: HOW THE FILE TRAVELS</p><div style="display:flex;flex-direction:column;gap:5px"><div>Setup tab &#8594; <b>Export Roll-up JSON</b> (&#8220;only new since last roll-up&#8221; ticked) &#8594; send it with every SITREP.</div><div><b>P / A</b> (cellular, any internet): attach it to an email to the parent EOC&#8217;s drop email. <b>C</b> (radio): attach it to a Winlink message to the parent&#8217;s Winlink address. First Winlink peer-to-peer (P2P) over VARA FM straight to a nearby parent station, then VARA FM through a gateway, then VARA HF (VARA: the sound-card radio modem Winlink uses). <b>E</b> (runner): on a USB drive with the printed SITREP.</div><div>At the parent nothing is clicked: the Drop Folder and Winlink watchers merge it within 10 seconds and log &#8220;Roll-up received from &#8230;&#8221;. From USB: drop it in the Drop Folder. Nothing is counted twice.</div></div></div>
+        <div class="note-box" style="font-size:14px">
+          <b>Phones in the room:</b> scan the wall QR code (or open <code style="font-size:13.5px">http://&lt;server-ip&gt;:8080/m</code>): new reports, <b>Send to EOC</b>, the <b>Work items</b> list (tap an item: <b>Take it</b>, In work, Up, Done; your name goes in its log). <b>Paper by runner (Emergency):</b> type it in at <code style="font-size:13.5px">/forms/dr</code>, <code style="font-size:13.5px">/forms/so</code> or <code style="font-size:13.5px">/forms/wcl</code> and tap <b>Send</b>; keep blank paper forms on hand (add <code style="font-size:13.5px">?blank=1</code>, <b>Print</b>).
+        </div>
+        <div class="note-box tip" style="font-size:14px">
+          <b>In a drill:</b> one simulator per EOC. The purple <b>drill bar</b> on every screen says what this EOC plays, the clock or the start time, and who is ready: press <b>I am ready</b>. Every simulated report says SIMULATED; real reports still go through. New to drills? Read <b>card 9</b>.
+        </div>
+      </div>
+    <p class="card-disclaimer">Church of Jesus Christ EMCOMM (emergency communications) is an independent volunteer project created by Travis Hilton (W9TLH), not an official product of The Church of Jesus Christ of Latter-day Saints.</p>
+  <p class="pdf-foot pdf-url">travislhilton.github.io/church-emcomm-wnlk-forms/forms/</p></div>
+</div>
+<div class="card-row">
+  <div style="zoom:1" class="card card-front" style="border-top-color:var(--amber)">
+    <div class="card-head"><div>
+      <p class="card-role">Stake Center EOC (Emergency Operations Center) &#8212; Card 7 of the EOC set</p>
+      <span class="card-side" style="background:var(--amber)">Card 7 &#183; Front &#183; side 1 of 2</span>
+      <h2 class="card-title">Stake Center EOC &#8212; The Stake&#8217;s Picture, Reporting to the Two Lines Above</h2>
+    </div><div class="card-qr"><canvas data-card="7"></canvas>Share this card</div></div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:15px">
+<div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">WHO DECIDES</p><div style="display:flex;flex-direction:column;gap:5px"><div>The stake <b>Welfare and Self-Reliance Specialist (emergency communications)</b> recommends the PACE (Primary, Alternate, Contingency, Emergency) level and when to open a Satellite EOC; the <b>Stake President decides</b>; the ERD (Emergency Response Director) or the specialist announces it. Set the PACE level on the Setup tab the moment it changes and log the time.</div></div></div><div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">SETUP TAB, ONCE</p><div style="display:flex;flex-direction:column;gap:5px"><div>Level <b>Stake</b> &#183; this EOC&#8217;s name &#183; parent = the two lines above the stake: the <b>council line</b> (Area Seventy; decisions) and the <b>welfare line</b> (the Welfare and Self-Reliance Manager, WSRM, then the Area Welfare and Self-Reliance Manager, AWSRM; supplies, approvals, reporting), or a <b>Council / Area EOC</b> when one is open &#183; the SITREP (situation report) interval leadership set.</div><div>Comms sheet: every EOC&#8217;s Winlink address, gateways in order, net frequencies; <b>Export sheet JSON</b> (JavaScript Object Notation, a data file) to every Satellite EOC.</div></div></div><div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">WHAT COMES IN</p><div style="display:flex;flex-direction:column;gap:5px"><div>Every ward not covered by a satellite (phones, Winlink, Drop Folder; USB (Universal Serial Bus) drives too) and each <b>Satellite EOC&#8217;s roll-up</b> (merges itself; <b>Via</b> on the Messages tab shows which EOC it came through; nothing is counted twice).</div><div>Roster tab: wards and bishops, who has reported, who is overdue, missionaries not accounted for.</div></div></div><div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">WHAT GOES UP, WITH EVERY SITREP</p><div style="display:flex;flex-direction:column;gap:5px"><div><b>SITREP</b> to the Stake President, the council line and the welfare line: first as soon as possible, then on the interval leadership set. PACE level in force in the header.</div><div><b>Supply Orders</b> to the welfare line for approval; record the AWSRM&#8217;s answer on the order. <b>Headquarters assistance</b> requests go up the same way.</div><div><b>Export Roll-up JSON</b> only to a Council / Area EOC when one is open (back of this card). Otherwise the SITREP is the stake&#8217;s report upward.</div></div></div><div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">WORK ITEMS</p><div style="display:flex;flex-direction:column;gap:5px"><div>The mission office, the county, the Stake President and the welfare line ask through this list; the reports add their own. Give every HIGH item an owner at once. <b>Up</b> = sent to the line above; write the <b>decision</b> when it comes back. The same list is on every phone in the room.</div></div></div>
+        <div class="note-box tip" style="font-size:14px"><b>Card 3</b> is how to run the Message Center (start-up, auto-ingest, tabs, status, handoff). This card is what your level does and what it owes the level above.</div>
+      </div>
+    <p class="turn-over">Turn over &#8594; Card 7, side 2: The Chain, the Roll-up Path, Phones and Drills</p>
+  </div>
+
+  <div style="zoom:1" class="card card-back" style="border-top-color:var(--amber)">
+    <div>
+      <p class="card-role">Stake Center EOC (Emergency Operations Center) &#8212; Card 7 of the EOC set</p>
+      <span class="card-side back" style="background:var(--amber)">Card 7 &#183; Back &#183; side 2 of 2</span>
+      <h2 class="card-title">The Chain, the Roll-up Path, Phones and Drills</h2>
+    </div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:15px">
+        <div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">THE CHAIN AT A GLANCE</p>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <tr style="background:#eef2f6"><th style="text-align:left;padding:4px 6px">EOC</th><th style="text-align:left;padding:4px 6px">Reports from</th><th style="text-align:left;padding:4px 6px">SITREP to</th><th style="text-align:left;padding:4px 6px">Roll-up JSON to</th></tr><tr><td style="padding:4px 6px;border-top:1px solid #d7dee6"><b>Satellite</b></td><td style="padding:4px 6px;border-top:1px solid #d7dee6">its wards</td><td style="padding:4px 6px;border-top:1px solid #d7dee6">Stake Center EOC</td><td style="padding:4px 6px;border-top:1px solid #d7dee6">Stake Center EOC</td></tr><tr style="background:#fff7e0"><td style="padding:4px 6px;border-top:1px solid #d7dee6"><b>Stake Center</b> &#9664; you</td><td style="padding:4px 6px;border-top:1px solid #d7dee6">wards + satellites</td><td style="padding:4px 6px;border-top:1px solid #d7dee6">Stake President, council line, welfare line</td><td style="padding:4px 6px;border-top:1px solid #d7dee6">Council / Area EOC, if open</td></tr><tr><td style="padding:4px 6px;border-top:1px solid #d7dee6"><b>Council / Area</b></td><td style="padding:4px 6px;border-top:1px solid #d7dee6">stakes</td><td style="padding:4px 6px;border-top:1px solid #d7dee6">Area Presidency / Church headquarters, as directed</td><td style="padding:4px 6px;border-top:1px solid #d7dee6">&#8212;</td></tr>
+          </table>
+          <div style="font-size:13.5px;color:var(--muted);margin-top:4px">SITREP = situation report. The council line is the Area Seventy; the welfare line is the Welfare and Self-Reliance Manager (WSRM), then the Area Welfare and Self-Reliance Manager (AWSRM). A Council / Area EOC exists only when the council or the welfare region opens one.</div>
+        </div>
+        <div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">ROLL-UP: HOW THE FILE TRAVELS</p><div style="display:flex;flex-direction:column;gap:5px"><div>Setup tab &#8594; <b>Export Roll-up JSON</b> (&#8220;only new since last roll-up&#8221; ticked) &#8594; send it with every SITREP.</div><div><b>P / A</b> (cellular, any internet): attach it to an email to the parent EOC&#8217;s drop email. <b>C</b> (radio): attach it to a Winlink message to the parent&#8217;s Winlink address. First Winlink peer-to-peer (P2P) over VARA FM straight to a nearby parent station, then VARA FM through a gateway, then VARA HF (VARA: the sound-card radio modem Winlink uses). <b>E</b> (runner): on a USB drive with the printed SITREP.</div><div>At the parent nothing is clicked: the Drop Folder and Winlink watchers merge it within 10 seconds and log &#8220;Roll-up received from &#8230;&#8221;. From USB: drop it in the Drop Folder. Nothing is counted twice.</div></div></div>
+        <div class="note-box" style="font-size:14px">
+          <b>Phones in the room:</b> scan the wall QR (Quick Response) code (or open <code style="font-size:13.5px">http://&lt;server-ip&gt;:8080/m</code>): new reports, <b>Send to EOC</b>, the <b>Work items</b> list (tap an item: <b>Take it</b>, In work, Up, Done; your name goes in its log). <b>Paper by runner (Emergency):</b> type it in at <code style="font-size:13.5px">/forms/dr</code>, <code style="font-size:13.5px">/forms/so</code> or <code style="font-size:13.5px">/forms/wcl</code> and tap <b>Send</b>; keep blank paper forms on hand (add <code style="font-size:13.5px">?blank=1</code>, <b>Print</b>).
+        </div>
+        <div class="note-box tip" style="font-size:14px">
+          <b>In a drill:</b> one simulator per EOC. The purple <b>drill bar</b> on every screen says what this EOC plays, the clock or the start time, and who is ready: press <b>I am ready</b>. Every simulated report says SIMULATED; real reports still go through. New to drills? Read <b>card 9</b>.
+        </div>
+      </div>
+    <p class="card-disclaimer">Church of Jesus Christ EMCOMM (emergency communications) is an independent volunteer project created by Travis Hilton (W9TLH), not an official product of The Church of Jesus Christ of Latter-day Saints.</p>
+  <p class="pdf-foot pdf-url">travislhilton.github.io/church-emcomm-wnlk-forms/forms/</p></div>
+</div>
+<div class="card-row">
+  <div style="zoom:1" class="card card-front" style="border-top-color:var(--amber)">
+    <div class="card-head"><div>
+      <p class="card-role">Council / Area EOC (Emergency Operations Center) &#8212; Card 8 of the EOC set</p>
+      <span class="card-side" style="background:var(--amber)">Card 8 &#183; Front &#183; side 1 of 2</span>
+      <h2 class="card-title">Council / Area EOC &#8212; Only When the Council or the Welfare Region Opens One</h2>
+    </div><div class="card-qr"><canvas data-card="8"></canvas>Share this card</div></div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:15px">
+<div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">WHEN IT EXISTS</p><div style="display:flex;flex-direction:column;gap:5px"><div>There is no standing Area EOC. The coordinating council (Area Seventy) or the welfare region opens one when several stakes are hit, usually at the station of the Area Welfare and Self-Reliance Specialist (often a HAM, amateur radio operator, who works both the council line and the welfare line).</div><div>Until then each Stake EOC reports straight to the two lines above it, and this card is not in use.</div></div></div><div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">SETUP TAB, ONCE</p><div style="display:flex;flex-direction:column;gap:5px"><div>Level <b>Council / Area</b> &#183; this EOC&#8217;s name &#183; the stakes it covers (the Roster tab then lists stakes, not wards) &#183; its drop email and Winlink address, given to every Stake EOC on the comms sheet.</div></div></div><div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">WHAT COMES IN</p><div style="display:flex;flex-direction:column;gap:5px"><div>Each Stake EOC&#8217;s <b>SITREP</b> (situation report) and <b>roll-up</b> (a JSON, JavaScript Object Notation, data file). Roll-ups by email or Winlink file themselves; from a USB (Universal Serial Bus) drive, drop the file in the Drop Folder. <b>Via</b> shows the Stake EOC.</div><div>Roster tab: which stakes have reported, which are overdue; totals across stakes on the wall display.</div></div></div><div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">WHAT IT DOES</p><div style="display:flex;flex-direction:column;gap:5px"><div><b>Supply Order totals by stake</b> for the Area Welfare and Self-Reliance Manager (AWSRM) and the storehouse (water, blankets, cleaning kits; which stake center receives); record the approval on each order.</div><div><b>Answering a Supply Order:</b> open the item &#8594; <b>Reply to &lt;stake EOC&gt;</b> &#8594; send the .json to that stake&#8217;s drop email or Winlink address; their item closes DONE with your decision.</div><div><b>Headquarters assistance</b> requests from the stakes, consolidated. Its own SITREP (every stake&#8217;s totals) to the Area Presidency and Church headquarters, as directed, on the interval they set.</div></div></div><div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">WORK ITEMS</p><div style="display:flex;flex-direction:column;gap:5px"><div>Stake items marked <b>Up</b> arrive here open, named with the stake; give each an owner. Items from the welfare line (totals by a deadline) land only on the Council / Area EOC&#8217;s list, not the stakes&#8217;.</div></div></div><div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">IN A DRILL</p><div style="display:flex;flex-direction:column;gap:5px"><div>The Area simulator plays the councils. Stakes nobody plays arrive as roll-up files at the SITREP times. New to drills? Card 9.</div></div></div>
+        <div class="note-box tip" style="font-size:14px"><b>Card 3</b> is how to run the Message Center (start-up, auto-ingest, tabs, status, handoff). This card is what your level does and what it owes the level above.</div>
+      </div>
+    <p class="turn-over">Turn over &#8594; Card 8, side 2: The Chain, the Roll-up Path, Phones and Drills</p>
+  </div>
+
+  <div style="zoom:1" class="card card-back" style="border-top-color:var(--amber)">
+    <div>
+      <p class="card-role">Council / Area EOC (Emergency Operations Center) &#8212; Card 8 of the EOC set</p>
+      <span class="card-side back" style="background:var(--amber)">Card 8 &#183; Back &#183; side 2 of 2</span>
+      <h2 class="card-title">The Chain, the Roll-up Path, Phones and Drills</h2>
+    </div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:15px">
+        <div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">THE CHAIN AT A GLANCE</p>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <tr style="background:#eef2f6"><th style="text-align:left;padding:4px 6px">EOC</th><th style="text-align:left;padding:4px 6px">Reports from</th><th style="text-align:left;padding:4px 6px">SITREP to</th><th style="text-align:left;padding:4px 6px">Roll-up JSON to</th></tr><tr><td style="padding:4px 6px;border-top:1px solid #d7dee6"><b>Satellite</b></td><td style="padding:4px 6px;border-top:1px solid #d7dee6">its wards</td><td style="padding:4px 6px;border-top:1px solid #d7dee6">Stake Center EOC</td><td style="padding:4px 6px;border-top:1px solid #d7dee6">Stake Center EOC</td></tr><tr><td style="padding:4px 6px;border-top:1px solid #d7dee6"><b>Stake Center</b></td><td style="padding:4px 6px;border-top:1px solid #d7dee6">wards + satellites</td><td style="padding:4px 6px;border-top:1px solid #d7dee6">Stake President, council line, welfare line</td><td style="padding:4px 6px;border-top:1px solid #d7dee6">Council / Area EOC, if open</td></tr><tr style="background:#fff7e0"><td style="padding:4px 6px;border-top:1px solid #d7dee6"><b>Council / Area</b> &#9664; you</td><td style="padding:4px 6px;border-top:1px solid #d7dee6">stakes</td><td style="padding:4px 6px;border-top:1px solid #d7dee6">Area Presidency / Church headquarters, as directed</td><td style="padding:4px 6px;border-top:1px solid #d7dee6">&#8212;</td></tr>
+          </table>
+          <div style="font-size:13.5px;color:var(--muted);margin-top:4px">SITREP = situation report. The council line is the Area Seventy; the welfare line is the Welfare and Self-Reliance Manager (WSRM), then the Area Welfare and Self-Reliance Manager (AWSRM). A Council / Area EOC exists only when the council or the welfare region opens one.</div>
+        </div>
+        <div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">ROLL-UP: HOW THE FILE TRAVELS</p><div style="display:flex;flex-direction:column;gap:5px"><div>Setup tab &#8594; <b>Export Roll-up JSON</b> (&#8220;only new since last roll-up&#8221; ticked) &#8594; send it with every SITREP.</div><div><b>P / A</b> (cellular, any internet): attach it to an email to the parent EOC&#8217;s drop email. <b>C</b> (radio): attach it to a Winlink message to the parent&#8217;s Winlink address. First Winlink peer-to-peer (P2P) over VARA FM straight to a nearby parent station, then VARA FM through a gateway, then VARA HF (VARA: the sound-card radio modem Winlink uses). <b>E</b> (runner): on a USB drive with the printed SITREP.</div><div>At the parent nothing is clicked: the Drop Folder and Winlink watchers merge it within 10 seconds and log &#8220;Roll-up received from &#8230;&#8221;. From USB: drop it in the Drop Folder. Nothing is counted twice.</div></div></div>
+        <div class="note-box" style="font-size:14px">
+          <b>Phones in the room:</b> scan the wall QR (Quick Response) code (or open <code style="font-size:13.5px">http://&lt;server-ip&gt;:8080/m</code>): new reports, <b>Send to EOC</b>, the <b>Work items</b> list (tap an item: <b>Take it</b>, In work, Up, Done; your name goes in its log). <b>Paper by runner (Emergency):</b> type it in at <code style="font-size:13.5px">/forms/dr</code>, <code style="font-size:13.5px">/forms/so</code> or <code style="font-size:13.5px">/forms/wcl</code> and tap <b>Send</b>; keep blank paper forms on hand (add <code style="font-size:13.5px">?blank=1</code>, <b>Print</b>).
+        </div>
+        <div class="note-box tip" style="font-size:14px">
+          <b>In a drill:</b> one simulator per EOC. The purple <b>drill bar</b> on every screen says what this EOC plays, the clock or the start time, and who is ready: press <b>I am ready</b>. Every simulated report says SIMULATED; real reports still go through. New to drills? Read <b>card 9</b>.
+        </div>
+      </div>
+    <p class="card-disclaimer">Church of Jesus Christ EMCOMM (emergency communications) is an independent volunteer project created by Travis Hilton (W9TLH), not an official product of The Church of Jesus Christ of Latter-day Saints.</p>
+  <p class="pdf-foot pdf-url">travislhilton.github.io/church-emcomm-wnlk-forms/forms/</p></div>
+</div>
+<div class="card-row">
+  <div style="zoom:1" class="card card-front" style="border-top-color:#5A44A8">
+    <div class="card-head"><div>
+      <p class="card-role">Every drill participant &#8212; any role</p>
+      <span class="card-side" style="background:#5A44A8">Card 9 &#183; Front &#183; side 1 of 2</span>
+      <h2 class="card-title">Your First Drill</h2>
+    </div><div class="card-qr"><canvas data-card="9"></canvas>Share this card</div></div>
+    <div>
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">WHAT A DRILL IS</p>
+      <ul style="margin:0 0 0 22px;padding:0;font-size:15px;line-height:1.5">
+        <li>A drill is practice. The events are invented.</li>
+        <li><span>Every simulated report says <b>SIMULATED</b>.</span></li>
+        <li><span>Anything you send: tick <b>THIS IS AN EXERCISE</b> at the top of the form.</span></li>
+      </ul>
+    </div>
+    <div class="note-box warning"><b>Real emergencies always come first.</b> If a real one happens, say &#8220;<b>real world</b>&#8221;. The drill stops.</div>
+    <div>
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">WHAT HAPPENS IN THE ROOM</p>
+      <div class="steps">
+        <div class="step"><div class="step-num" style="background:#5A44A8">1</div><div class="step-text"><b>The controller gives a short briefing.</b> Listen for your role and your EOC (Emergency Operations Center).<small>EOC operators: press <b>I am ready</b> on the purple drill bar.</small></div></div>
+        <div class="step"><div class="step-num" style="background:#5A44A8">2</div><div class="step-text"><b>The controller says GO.</b> The drill clock starts.</div></div>
+        <div class="step"><div class="step-num" style="background:#5A44A8">3</div><div class="step-text"><b>Slips of paper arrive during the drill.</b> Do what each one says (table below).</div></div>
+        <div class="step"><div class="step-num" style="background:#5A44A8">4</div><div class="step-text"><b>The controller says when the drill ends.</b> Stop, then join the debrief (side 2).</div></div>
+      </div>
+      <table class="role-table" style="margin-top:6px">
+        <tr><td style="width:30%;font-weight:700;color:var(--navy)">Net card</td><td>For a HAM (amateur radio) operator: read it aloud on the radio net.</td></tr>
+        <tr><td style="font-weight:700;color:var(--navy)">Prompt card</td><td>A decision or a job for the role named on it.</td></tr>
+        <tr><td style="font-weight:700;color:var(--navy)">Paper card</td><td>A report on paper. Carry it to the EOC; an operator types it in.</td></tr>
+      </table>
+      <p style="font-size:14px;margin-top:6px">Other reports reach the EOC screens by themselves: from phones, by Winlink radio email, or as files.</p>
+    </div>
+    <div class="note-box"><b>What to bring:</b> your phone, charged, with the app installed (card 1); a pen; the card for your role (side 2).</div>
+    <div class="note-box tip">
+      <b>Not sure what to do?</b> Ask the controller. Write down what you did and the time. Do your best: mistakes are how a drill teaches.
+    </div>
+    <p class="turn-over">Turn over &#8594; Card 9, side 2: Your Role, Five Words, After the Drill</p>
+  </div>
+
+  <div style="zoom:1" class="card card-back" style="border-top-color:#5A44A8">
+    <div>
+      <p class="card-role">Every drill participant &#8212; any role</p>
+      <span class="card-side back">Card 9 &#183; Back &#183; side 2 of 2</span>
+      <h2 class="card-title">Your Role, Five Words, After the Drill</h2>
+    </div>
+    <div>
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">YOUR ROLE AND YOUR CARD</p>
+      <table class="role-table">
+        <tr><td style="width:38%;font-weight:700;color:var(--navy)">Helping Hands volunteer</td><td><b>Card 1.</b> Fill in forms on your phone and send them.</td></tr>
+        <tr><td style="font-weight:700;color:var(--navy)">HAM operator</td><td><b>Card 2.</b> Send forms by Winlink; talk on the net.</td></tr>
+        <tr><td style="font-weight:700;color:var(--navy)">EOC operator</td><td><b>Cards 3 and 6&#8211;8.</b> Log reports, own work items, write the SITREP (situation report).</td></tr>
+        <tr><td style="font-weight:700;color:var(--navy)">Bishop or other leader</td><td><b>Card 4.</b> Give direction and make decisions.</td></tr>
+        <tr><td style="font-weight:700;color:var(--navy)">Team Leader or Crew Chief</td><td><b>Card 10.</b> Lead a crew; get its reports to the EOC.</td></tr>
+        <tr><td style="font-weight:700;color:var(--navy)">Drill controller</td><td><b>Card 5.</b> Runs the simulator and the clock.</td></tr>
+      </table>
+      <p style="font-size:14px;margin-top:6px">Playing a leader (Stake President, specialist, welfare line)? Answer each prompt card as that person would.</p>
+    </div>
+    <div>
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">FIVE WORDS TO KNOW</p>
+      <div style="display:flex;flex-direction:column;gap:5px;font-size:15px;line-height:1.4">
+        <div><b>EOC</b> &#8212; Emergency Operations Center: the room with a laptop, a radio and Wi-Fi that collects every report.</div>
+        <div><b>PACE</b> &#8212; the order of ways to send: <b>P</b> Primary, cell phone &#183; <b>A</b> Alternate, any internet anywhere &#183; <b>C</b> Contingency, radio (Winlink by VARA FM, then VARA HF: the radio modems Winlink uses) &#183; <b>E</b> Emergency, a runner with paper.</div>
+        <div><b>SITREP</b> &#8212; situation report: the EOC&#8217;s summary for leaders. The first as soon as possible, then on the interval leaders set.</div>
+        <div><b>ERD</b> &#8212; Emergency Response Director: leads the response. The stake specialist recommends the PACE level, the Stake President decides, the ERD or the specialist announces it.</div>
+        <div><b>HAM / Winlink</b> &#8212; a HAM is a licensed amateur radio operator. Winlink is email by radio: it carries the forms when phones and internet are down.</div>
+      </div>
+    </div>
+    <div class="phrase-box">
+      <b>After the drill: the debrief.</b> What went well. One thing to do better. The date of the next drill. <b>Results on your phone:</b> the controller gives the address.
+    </div>
+    <p style="font-size:14px">Feedback? Tell your Team Leader or the stake Welfare and Self-Reliance Specialist (emergency communications).</p>
+    <p class="card-disclaimer">Church of Jesus Christ EMCOMM is an independent volunteer project created by Travis Hilton (W9TLH), not an official product of The Church of Jesus Christ of Latter-day Saints.</p>
+  <p class="pdf-foot pdf-url">travislhilton.github.io/church-emcomm-wnlk-forms/forms/</p></div>
+</div>
+<div class="card-row">
+  <div style="zoom:1" class="card card-front">
+    <div class="card-head"><div>
+      <p class="card-role">Helping Hands Team Leader and Crew Chief</p>
+      <span class="card-side">Card 10 &#183; Front &#183; side 1 of 2</span>
+      <h2 class="card-title">Leading a Crew</h2>
+    </div><div class="card-qr"><canvas data-card="10"></canvas>Share this card</div></div>
+    <div>
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">BEFORE YOU GO OUT</p>
+      <ul class="checklist">
+        <li>Give a safety briefing. Check that everyone can do the work.</li>
+        <li>Tell your ERD (Emergency Response Director) where the crew is going and when it will be back.</li>
+        <li>Everyone has the app and the three forms on the phone (card 1).</li>
+        <li><span>Everyone knows the order to send, the PACE plan: <b>P</b> Primary, cell &#183; <b>A</b> Alternate, any internet &#183; <b>C</b> Contingency, radio by a HAM (amateur radio) operator &#183; <b>E</b> Emergency, paper by runner.</span></li>
+        <li>Know your EOC (Emergency Operations Center): its address, email and Winlink address are on the stake Comms Sheet.</li>
+      </ul>
+    </div>
+    <div>
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">IN THE FIELD</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-text"><b>Check in every volunteer:</b> name, ward, start time.</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-text"><b>Volunteers fill</b> Disaster Reports (damage, injuries, needs) and Supply Orders (what is needed).</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-text"><b>The Crew Chief fills the Work Crew Log</b> at the end of the shift.<small>Crew Chief section, then each Crew Member: Name, Ward, Hours Worked, Work Order Address. Tick the Safety Certification box only if every member had the safety orientation and is able to do the work.</small></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-text"><b>Collect the reports.</b> Get them to the EOC by the first PACE path that works.</div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-text"><b>Paper only (E)?</b> Carry it to the EOC, or hand it to a runner or a HAM operator.</div></div>
+      </div>
+    </div>
+    <div class="note-box warning">
+      <b>Safety.</b> Stop work if it is unsafe. No one works alone. Never enter a damaged building. Report every injury on a Disaster Report (Volunteer injuries or accidents).
+    </div>
+    <p class="turn-over">Turn over &#8594; Card 10, side 2: Sharing the Forms, What the EOC Needs, End of Shift</p>
+  </div>
+
+  <div style="zoom:1" class="card card-back">
+    <div>
+      <p class="card-role">Helping Hands Team Leader and Crew Chief</p>
+      <span class="card-side back">Card 10 &#183; Back &#183; side 2 of 2</span>
+      <h2 class="card-title">Sharing the Forms, What the EOC Needs, End of Shift</h2>
+    </div>
+    <div>
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">SHARE THE FORMS WITH YOUR CREW</p>
+      <ul class="checklist">
+        <li><span>Post the QR (Quick Response) code posters at staging areas and sign-in tables. Print them from <code style="font-size:13.5px">travislhilton.github.io/church-emcomm-wnlk-forms/forms/qr-posters.html</code></span></li>
+        <li><span>Or give out the portal address: <code style="font-size:13.5px">travislhilton.github.io/church-emcomm-wnlk-forms/forms/</code></span></li>
+        <li><span>In a drill, everyone ticks <b>THIS IS AN EXERCISE</b> (card 9 explains a drill).</span></li>
+      </ul>
+    </div>
+    <div>
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">WHAT THE EOC NEEDS FROM YOU, AND WHEN</p>
+      <div style="display:flex;flex-direction:column;gap:5px;font-size:15px;line-height:1.4">
+        <div><b>First report as soon as possible:</b> where you are, what you see, who is hurt.</div>
+        <div><b>Then reports on the schedule your ERD (Emergency Response Director) gives.</b></div>
+        <div><b>Supply Orders</b> as soon as a need is known. The ERD and the welfare line approve them before they are filled.</div>
+        <div><b>A Work Crew Log</b> at the end of every shift.</div>
+      </div>
+    </div>
+    <div class="note-box">
+      <b>Who you report to:</b> your ERD, then the Stake EOC (or the Satellite EOC that covers your ward). Send forms to the EOC on the stake Comms Sheet.
+    </div>
+    <div>
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">END OF SHIFT</p>
+      <ul class="checklist">
+        <li>Every volunteer checked out; hours written down.</li>
+        <li>Work Crew Log filled in, Safety Certification box ticked, sent.</li>
+        <li>Every phone&#8217;s Outbox empty (nothing waiting), or the paper copies handed in.</li>
+        <li>Injuries and unsafe places reported.</li>
+        <li>Tell your ERD what is left to do tomorrow.</li>
+      </ul>
+    </div>
+    <p style="font-size:14px">Something not working? Tell your ERD or the stake Welfare and Self-Reliance Specialist (emergency communications).</p>
+    <p class="card-disclaimer">Church of Jesus Christ EMCOMM is an independent volunteer project created by Travis Hilton (W9TLH), not an official product of The Church of Jesus Christ of Latter-day Saints.</p>
+  <p class="pdf-foot pdf-url">travislhilton.github.io/church-emcomm-wnlk-forms/forms/</p></div>
+</div>
+<script>
+var BASE = 'https://travislhilton.github.io/church-emcomm-wnlk-forms';
+  var QR=(function(){
+    var EXP=[],LOG=[]; (function(){ var x=1; for(var i=0;i<255;i++){ EXP[i]=x; LOG[x]=i; x<<=1; if(x&256) x^=0x11D; } for(var i=255;i<512;i++) EXP[i]=EXP[i-255]; })();
+    function mul(a,b){ return (a&&b)?EXP[LOG[a]+LOG[b]]:0; }
+    function genPoly(n){ var g=[1]; for(var i=0;i<n;i++){ var ng=new Array(g.length+1); for(var k=0;k<ng.length;k++) ng[k]=0; for(var j=0;j<g.length;j++){ ng[j]^=g[j]; ng[j+1]^=mul(g[j],EXP[i]); } g=ng; } return g; }
+    function rsEC(data,n){ var g=genPoly(n), r=[]; for(var k=0;k<n;k++) r.push(0); for(var i=0;i<data.length;i++){ var f=data[i]^r[0]; r.shift(); r.push(0); if(f) for(var j=0;j<n;j++) r[j]^=mul(g[j+1],f); } return r; }
+    // per version (EC level M): [EC codewords per block, [[blocks, data codewords per block], ...]]
+    var BLK=[null,[10,[[1,16]]],[16,[[1,28]]],[26,[[1,44]]],[18,[[2,32]]],[24,[[2,43]]],[16,[[4,27]]],[18,[[4,31]]],[22,[[2,38],[2,39]]],[22,[[3,36],[2,37]]],[26,[[4,43],[1,44]]]];
+    var ALIGN=[null,[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50]];
+    var MASK=[function(r,c){return (r+c)%2===0;},function(r,c){return r%2===0;},function(r,c){return c%3===0;},function(r,c){return (r+c)%3===0;},
+              function(r,c){return (Math.floor(r/2)+Math.floor(c/3))%2===0;},function(r,c){return (r*c)%2+(r*c)%3===0;},
+              function(r,c){return ((r*c)%2+(r*c)%3)%2===0;},function(r,c){return ((r+c)%2+(r*c)%3)%2===0;}];
+    function fmtBits(mask){ var d=mask; var r=d<<10; for(var i=14;i>=10;i--) if(r&(1<<i)) r^=0x537<<(i-10); return ((d<<10)|r)^0x5412; }
+    function verBits(v){ var r=v<<12; for(var i=17;i>=12;i--) if(r&(1<<i)) r^=0x1F25<<(i-12); return (v<<12)|r; }
+    function penalty(g,N){ var p=0,r,c,k,run;
+      for(r=0;r<N;r++){ run=1; for(c=1;c<N;c++){ if(g[r][c]===g[r][c-1]){ run++; if(run===5) p+=3; else if(run>5) p++; } else run=1; } }
+      for(c=0;c<N;c++){ run=1; for(r=1;r<N;r++){ if(g[r][c]===g[r-1][c]){ run++; if(run===5) p+=3; else if(run>5) p++; } else run=1; } }
+      for(r=0;r<N-1;r++) for(c=0;c<N-1;c++){ var s=g[r][c]+g[r][c+1]+g[r+1][c]+g[r+1][c+1]; if(s===0||s===4) p+=3; }
+      var P1=[1,0,1,1,1,0,1,0,0,0,0], P2=[0,0,0,0,1,0,1,1,1,0,1];
+      for(r=0;r<N;r++) for(c=0;c<=N-11;c++){ var a=true,b=true,a2=true,b2=true; for(k=0;k<11;k++){ if(g[r][c+k]!==P1[k]) a=false; if(g[r][c+k]!==P2[k]) b=false; if(g[c+k][r]!==P1[k]) a2=false; if(g[c+k][r]!==P2[k]) b2=false; } if(a||b) p+=40; if(a2||b2) p+=40; }
+      var dark=0; for(r=0;r<N;r++) for(c=0;c<N;c++) dark+=g[r][c]; var pct=dark*100/(N*N), prev=Math.floor(pct/5)*5; p+=Math.min(Math.abs(prev-50),Math.abs(prev+5-50))/5*10; return p; }
+    return function(text, forceMask){
+      var bytes=Array.prototype.slice.call(new TextEncoder().encode(text)), v, cap, i, j, r, c;
+      for(v=1;v<=10;v++){ cap=0; BLK[v][1].forEach(function(b){cap+=b[0]*b[1];}); if(bytes.length+(v<10?2:3)<=cap) break; }
+      if(v>10) return null;
+      var bits=[]; function put(val,len){ for(var k=len-1;k>=0;k--) bits.push((val>>k)&1); }
+      put(4,4); put(bytes.length, v<10?8:16); bytes.forEach(function(b){ put(b,8); });
+      for(i=0;i<4&&bits.length<cap*8;i++) bits.push(0); while(bits.length%8) bits.push(0);
+      var data=[]; for(i=0;i<bits.length;i+=8){ var by=0; for(j=0;j<8;j++) by=(by<<1)|bits[i+j]; data.push(by); }
+      for(i=0;data.length<cap;i++) data.push(i%2?0x11:0xEC);
+      var ecn=BLK[v][0], blocks=[], ecs=[], pos=0;
+      BLK[v][1].forEach(function(b){ for(var k=0;k<b[0];k++){ var d=data.slice(pos,pos+b[1]); pos+=b[1]; blocks.push(d); ecs.push(rsEC(d,ecn)); } });
+      var out=[], maxD=0; blocks.forEach(function(b){ if(b.length>maxD) maxD=b.length; });
+      for(i=0;i<maxD;i++) blocks.forEach(function(b){ if(i<b.length) out.push(b[i]); });
+      for(i=0;i<ecn;i++) ecs.forEach(function(e){ out.push(e[i]); });
+      var N=v*4+17, m=[], fn=[]; for(r=0;r<N;r++){ var mr=[], fr=[]; for(c=0;c<N;c++){ mr.push(0); fr.push(false); } m.push(mr); fn.push(fr); }
+      function set(rr,cc,val){ if(rr<0||cc<0||rr>=N||cc>=N) return; m[rr][cc]=val?1:0; fn[rr][cc]=true; }
+      function finder(r0,c0){ for(var a=-1;a<=7;a++) for(var b=-1;b<=7;b++){ var on=(a>=0&&a<=6&&b>=0&&b<=6)&&(a===0||a===6||b===0||b===6||(a>=2&&a<=4&&b>=2&&b<=4)); set(r0+a,c0+b,on); } }
+      finder(0,0); finder(0,N-7); finder(N-7,0);
+      for(i=8;i<N-8;i++){ set(6,i,i%2===0); set(i,6,i%2===0); }
+      ALIGN[v].forEach(function(ar){ ALIGN[v].forEach(function(ac){ if((ar<=8&&ac<=8)||(ar<=8&&ac>=N-9)||(ar>=N-9&&ac<=8)) return; for(var dr=-2;dr<=2;dr++) for(var dc=-2;dc<=2;dc++) set(ar+dr,ac+dc, Math.max(Math.abs(dr),Math.abs(dc))!==1); }); });
+      set(4*v+9,8,true);
+      for(i=0;i<9;i++){ fn[8][i]=true; fn[i][8]=true; }
+      for(i=N-8;i<N;i++) fn[8][i]=true; for(i=N-7;i<N;i++) fn[i][8]=true;
+      if(v>=7){ for(i=0;i<6;i++) for(j=N-11;j<=N-9;j++){ fn[i][j]=true; fn[j][i]=true; } }
+      var bi=0, dir=-1, row=N-1;
+      for(var col=N-1;col>0;col-=2){ if(col===6) col--;
+        while(true){ for(c=0;c<2;c++){ var cc=col-c; if(!fn[row][cc]){ var byte=out[bi>>3]; m[row][cc]=(byte===undefined)?0:(byte>>(7-(bi&7)))&1; bi++; } }
+          row+=dir; if(row<0||row>=N){ row-=dir; dir=-dir; break; } } }
+      var best=null, bestP=Infinity;
+      for(var mk=0;mk<8;mk++){ if(forceMask!=null&&mk!==forceMask) continue; var g=m.map(function(rw){ return rw.slice(); });
+        for(r=0;r<N;r++) for(c=0;c<N;c++) if(!fn[r][c]&&MASK[mk](r,c)) g[r][c]^=1;
+        var f=fmtBits(mk);
+        for(i=0;i<15;i++){ var b=(f>>(14-i))&1;
+          if(i<6) g[8][i]=b; else if(i===6) g[8][7]=b; else if(i===7) g[8][8]=b; else if(i===8) g[7][8]=b; else g[14-i][8]=b;
+          if(i<7) g[N-1-i][8]=b; else g[8][N-15+i]=b; }
+        if(v>=7){ var vi=verBits(v); for(i=0;i<18;i++){ var vb=(vi>>i)&1; g[Math.floor(i/3)][N-11+i%3]=vb; g[N-11+i%3][Math.floor(i/3)]=vb; } }
+        var p=penalty(g,N); if(p<bestP){ bestP=p; best=g; } }
+      return best;
+    };
+  })();
+  function drawQR(cv,text){
+    var g=QR(text); if(!g||!cv.getContext){ cv.style.display='none'; return; }
+    var N=g.length, q=4, s=10; cv.width=cv.height=(N+2*q)*s; cv.style.display='';
+    var x=cv.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,cv.width,cv.height); x.fillStyle='#000';
+    for(var r=0;r<N;r++) for(var c=0;c<N;c++) if(g[r][c]) x.fillRect((c+q)*s,(r+q)*s,s,s);
+  }
+function makeQR(id, url, size) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = '';
+  var cv = document.createElement('canvas'); cv.style.width = cv.style.height = size + 'px'; cv.style.display = 'block';
+  el.appendChild(cv);
+  try { drawQR(cv, url); } catch(e) { el.textContent = 'QR unavailable'; }
+}
+// one QR per card front: the card's own PDF on GitHub Pages, so a card can be shared while there is internet
+var CARD_PDFS = ['Quick_Reference_Card_1_Helping_Hands_Volunteer.pdf', 'Quick_Reference_Card_2_EMCOMM_HAM_Operator.pdf', 'Quick_Reference_Card_3_EOC_Operator.pdf',
+                 'Quick_Reference_Card_4_Leaders_Overview.pdf', 'Quick_Reference_Card_5_Drill_Controller.pdf', 'Quick_Reference_Card_6_Satellite_EOC.pdf',
+                 'Quick_Reference_Card_7_Stake_Center_EOC.pdf', 'Quick_Reference_Card_8_Council_Area_EOC.pdf',
+                 'Quick_Reference_Card_9_Your_First_Drill.pdf', 'Quick_Reference_Card_10_Team_Leader_Crew_Chief.pdf'];
+window.addEventListener('load', function() {
+  document.querySelectorAll('.card-qr canvas').forEach(function(cv) { try { drawQR(cv, BASE + '/training/pdf/' + CARD_PDFS[+cv.dataset.card - 1]); } catch(e) {} });
+  makeQR('qr-vol-main', BASE + '/forms/', 110);
+  makeQR('qr-vol-dr',   BASE + '/templates/disaster-report/Church_of_Jesus_Christ_Disaster_Report_Worker.html', 96);
+  makeQR('qr-vol-so',   BASE + '/templates/supply-order/Church_of_Jesus_Christ_Supply_Order_Worker.html', 96);
+  makeQR('qr-vol-wc',   BASE + '/templates/work-crew-log/Church_of_Jesus_Christ_Work_Crew_Log_Worker.html', 96);
+});
+</script>
+</body>
+</html>

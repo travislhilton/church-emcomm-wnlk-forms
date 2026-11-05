@@ -1,0 +1,1640 @@
+[
+ {
+  "image_path": "simulator/overlays/maps/slk-stake-map.png",
+  "image_width_px": 1137,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13090326.423117416,
+   4907529.039170451,
+   -13083508.215625819,
+   4918320.147372043
+  ],
+  "google_maps_bounds": {
+   "west": -117.592403,
+   "south": 40.285579,
+   "east": -117.531154,
+   "north": 40.359486
+  },
+  "file_bytes": 93851,
+  "sha256": "3c81235e0581c3e0becffa6364fb49acbc988311600425a08002c6b32f849e85",
+  "kind": "source_map_artwork",
+  "map_id": "slk-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Larkspur Stake: wards and meetinghouses",
+  "overlay_id": "SLK-slk-stake-map",
+  "org_id": "SLK"
+ },
+ {
+  "image_path": "simulator/overlays/maps/slk-stake-map.png",
+  "image_width_px": 1137,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13090326.423117416,
+   4907529.039170451,
+   -13083508.215625819,
+   4918320.147372043
+  ],
+  "google_maps_bounds": {
+   "west": -117.592403,
+   "south": 40.285579,
+   "east": -117.531154,
+   "north": 40.359486
+  },
+  "file_bytes": 93851,
+  "sha256": "3c81235e0581c3e0becffa6364fb49acbc988311600425a08002c6b32f849e85",
+  "kind": "source_map_artwork",
+  "map_id": "slk-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Larkspur Stake: wards and meetinghouses",
+  "overlay_id": "U-SLK-1-slk-stake-map",
+  "org_id": "U-SLK-1"
+ },
+ {
+  "image_path": "simulator/overlays/maps/slk-stake-map.png",
+  "image_width_px": 1137,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13090326.423117416,
+   4907529.039170451,
+   -13083508.215625819,
+   4918320.147372043
+  ],
+  "google_maps_bounds": {
+   "west": -117.592403,
+   "south": 40.285579,
+   "east": -117.531154,
+   "north": 40.359486
+  },
+  "file_bytes": 93851,
+  "sha256": "3c81235e0581c3e0becffa6364fb49acbc988311600425a08002c6b32f849e85",
+  "kind": "source_map_artwork",
+  "map_id": "slk-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Larkspur Stake: wards and meetinghouses",
+  "overlay_id": "U-SLK-2-slk-stake-map",
+  "org_id": "U-SLK-2"
+ },
+ {
+  "image_path": "simulator/overlays/maps/slk-stake-map.png",
+  "image_width_px": 1137,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13090326.423117416,
+   4907529.039170451,
+   -13083508.215625819,
+   4918320.147372043
+  ],
+  "google_maps_bounds": {
+   "west": -117.592403,
+   "south": 40.285579,
+   "east": -117.531154,
+   "north": 40.359486
+  },
+  "file_bytes": 93851,
+  "sha256": "3c81235e0581c3e0becffa6364fb49acbc988311600425a08002c6b32f849e85",
+  "kind": "source_map_artwork",
+  "map_id": "slk-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Larkspur Stake: wards and meetinghouses",
+  "overlay_id": "U-SLK-3-slk-stake-map",
+  "org_id": "U-SLK-3"
+ },
+ {
+  "image_path": "simulator/overlays/maps/slk-stake-map.png",
+  "image_width_px": 1137,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13090326.423117416,
+   4907529.039170451,
+   -13083508.215625819,
+   4918320.147372043
+  ],
+  "google_maps_bounds": {
+   "west": -117.592403,
+   "south": 40.285579,
+   "east": -117.531154,
+   "north": 40.359486
+  },
+  "file_bytes": 93851,
+  "sha256": "3c81235e0581c3e0becffa6364fb49acbc988311600425a08002c6b32f849e85",
+  "kind": "source_map_artwork",
+  "map_id": "slk-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Larkspur Stake: wards and meetinghouses",
+  "overlay_id": "U-SLK-4-slk-stake-map",
+  "org_id": "U-SLK-4"
+ },
+ {
+  "image_path": "simulator/overlays/maps/slk-stake-map.png",
+  "image_width_px": 1137,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13090326.423117416,
+   4907529.039170451,
+   -13083508.215625819,
+   4918320.147372043
+  ],
+  "google_maps_bounds": {
+   "west": -117.592403,
+   "south": 40.285579,
+   "east": -117.531154,
+   "north": 40.359486
+  },
+  "file_bytes": 93851,
+  "sha256": "3c81235e0581c3e0becffa6364fb49acbc988311600425a08002c6b32f849e85",
+  "kind": "source_map_artwork",
+  "map_id": "slk-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Larkspur Stake: wards and meetinghouses",
+  "overlay_id": "U-SLK-5-slk-stake-map",
+  "org_id": "U-SLK-5"
+ },
+ {
+  "image_path": "simulator/overlays/maps/slk-stake-map.png",
+  "image_width_px": 1137,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13090326.423117416,
+   4907529.039170451,
+   -13083508.215625819,
+   4918320.147372043
+  ],
+  "google_maps_bounds": {
+   "west": -117.592403,
+   "south": 40.285579,
+   "east": -117.531154,
+   "north": 40.359486
+  },
+  "file_bytes": 93851,
+  "sha256": "3c81235e0581c3e0becffa6364fb49acbc988311600425a08002c6b32f849e85",
+  "kind": "source_map_artwork",
+  "map_id": "slk-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Larkspur Stake: wards and meetinghouses",
+  "overlay_id": "U-SLK-6-slk-stake-map",
+  "org_id": "U-SLK-6"
+ },
+ {
+  "image_path": "simulator/overlays/maps/slk-stake-map.png",
+  "image_width_px": 1137,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13090326.423117416,
+   4907529.039170451,
+   -13083508.215625819,
+   4918320.147372043
+  ],
+  "google_maps_bounds": {
+   "west": -117.592403,
+   "south": 40.285579,
+   "east": -117.531154,
+   "north": 40.359486
+  },
+  "file_bytes": 93851,
+  "sha256": "3c81235e0581c3e0becffa6364fb49acbc988311600425a08002c6b32f849e85",
+  "kind": "source_map_artwork",
+  "map_id": "slk-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Larkspur Stake: wards and meetinghouses",
+  "overlay_id": "U-SLK-B1-slk-stake-map",
+  "org_id": "U-SLK-B1"
+ },
+ {
+  "image_path": "simulator/overlays/maps/sle-stake-map.png",
+  "image_width_px": 1137,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13085081.716628179,
+   4907529.039170451,
+   -13078263.509136582,
+   4918320.147372043
+  ],
+  "google_maps_bounds": {
+   "west": -117.545289,
+   "south": 40.285579,
+   "east": -117.48404,
+   "north": 40.359486
+  },
+  "file_bytes": 91370,
+  "sha256": "88019cd1c7ae4f563d7f1f0e9a6562d61c5aa871418ede18f54a9368c40de3bd",
+  "kind": "source_map_artwork",
+  "map_id": "sle-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Larkspur East Stake: wards and meetinghouses",
+  "overlay_id": "SLE-sle-stake-map",
+  "org_id": "SLE"
+ },
+ {
+  "image_path": "simulator/overlays/maps/sle-stake-map.png",
+  "image_width_px": 1137,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13085081.716628179,
+   4907529.039170451,
+   -13078263.509136582,
+   4918320.147372043
+  ],
+  "google_maps_bounds": {
+   "west": -117.545289,
+   "south": 40.285579,
+   "east": -117.48404,
+   "north": 40.359486
+  },
+  "file_bytes": 91370,
+  "sha256": "88019cd1c7ae4f563d7f1f0e9a6562d61c5aa871418ede18f54a9368c40de3bd",
+  "kind": "source_map_artwork",
+  "map_id": "sle-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Larkspur East Stake: wards and meetinghouses",
+  "overlay_id": "U-SLE-1-sle-stake-map",
+  "org_id": "U-SLE-1"
+ },
+ {
+  "image_path": "simulator/overlays/maps/sle-stake-map.png",
+  "image_width_px": 1137,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13085081.716628179,
+   4907529.039170451,
+   -13078263.509136582,
+   4918320.147372043
+  ],
+  "google_maps_bounds": {
+   "west": -117.545289,
+   "south": 40.285579,
+   "east": -117.48404,
+   "north": 40.359486
+  },
+  "file_bytes": 91370,
+  "sha256": "88019cd1c7ae4f563d7f1f0e9a6562d61c5aa871418ede18f54a9368c40de3bd",
+  "kind": "source_map_artwork",
+  "map_id": "sle-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Larkspur East Stake: wards and meetinghouses",
+  "overlay_id": "U-SLE-2-sle-stake-map",
+  "org_id": "U-SLE-2"
+ },
+ {
+  "image_path": "simulator/overlays/maps/sle-stake-map.png",
+  "image_width_px": 1137,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13085081.716628179,
+   4907529.039170451,
+   -13078263.509136582,
+   4918320.147372043
+  ],
+  "google_maps_bounds": {
+   "west": -117.545289,
+   "south": 40.285579,
+   "east": -117.48404,
+   "north": 40.359486
+  },
+  "file_bytes": 91370,
+  "sha256": "88019cd1c7ae4f563d7f1f0e9a6562d61c5aa871418ede18f54a9368c40de3bd",
+  "kind": "source_map_artwork",
+  "map_id": "sle-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Larkspur East Stake: wards and meetinghouses",
+  "overlay_id": "U-SLE-3-sle-stake-map",
+  "org_id": "U-SLE-3"
+ },
+ {
+  "image_path": "simulator/overlays/maps/sle-stake-map.png",
+  "image_width_px": 1137,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13085081.716628179,
+   4907529.039170451,
+   -13078263.509136582,
+   4918320.147372043
+  ],
+  "google_maps_bounds": {
+   "west": -117.545289,
+   "south": 40.285579,
+   "east": -117.48404,
+   "north": 40.359486
+  },
+  "file_bytes": 91370,
+  "sha256": "88019cd1c7ae4f563d7f1f0e9a6562d61c5aa871418ede18f54a9368c40de3bd",
+  "kind": "source_map_artwork",
+  "map_id": "sle-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Larkspur East Stake: wards and meetinghouses",
+  "overlay_id": "U-SLE-4-sle-stake-map",
+  "org_id": "U-SLE-4"
+ },
+ {
+  "image_path": "simulator/overlays/maps/sle-stake-map.png",
+  "image_width_px": 1137,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13085081.716628179,
+   4907529.039170451,
+   -13078263.509136582,
+   4918320.147372043
+  ],
+  "google_maps_bounds": {
+   "west": -117.545289,
+   "south": 40.285579,
+   "east": -117.48404,
+   "north": 40.359486
+  },
+  "file_bytes": 91370,
+  "sha256": "88019cd1c7ae4f563d7f1f0e9a6562d61c5aa871418ede18f54a9368c40de3bd",
+  "kind": "source_map_artwork",
+  "map_id": "sle-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Larkspur East Stake: wards and meetinghouses",
+  "overlay_id": "U-SLE-5-sle-stake-map",
+  "org_id": "U-SLE-5"
+ },
+ {
+  "image_path": "simulator/overlays/maps/sle-stake-map.png",
+  "image_width_px": 1137,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13085081.716628179,
+   4907529.039170451,
+   -13078263.509136582,
+   4918320.147372043
+  ],
+  "google_maps_bounds": {
+   "west": -117.545289,
+   "south": 40.285579,
+   "east": -117.48404,
+   "north": 40.359486
+  },
+  "file_bytes": 91370,
+  "sha256": "88019cd1c7ae4f563d7f1f0e9a6562d61c5aa871418ede18f54a9368c40de3bd",
+  "kind": "source_map_artwork",
+  "map_id": "sle-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Larkspur East Stake: wards and meetinghouses",
+  "overlay_id": "U-SLE-6-sle-stake-map",
+  "org_id": "U-SLE-6"
+ },
+ {
+  "image_path": "simulator/overlays/maps/sle-stake-map.png",
+  "image_width_px": 1137,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13085081.716628179,
+   4907529.039170451,
+   -13078263.509136582,
+   4918320.147372043
+  ],
+  "google_maps_bounds": {
+   "west": -117.545289,
+   "south": 40.285579,
+   "east": -117.48404,
+   "north": 40.359486
+  },
+  "file_bytes": 91370,
+  "sha256": "88019cd1c7ae4f563d7f1f0e9a6562d61c5aa871418ede18f54a9368c40de3bd",
+  "kind": "source_map_artwork",
+  "map_id": "sle-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Larkspur East Stake: wards and meetinghouses",
+  "overlay_id": "U-SLE-B1-sle-stake-map",
+  "org_id": "U-SLE-B1"
+ },
+ {
+  "image_path": "simulator/overlays/maps/slw-stake-map.png",
+  "image_width_px": 1137,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13095571.129606651,
+   4907529.039170451,
+   -13088752.92211505,
+   4918320.147372043
+  ],
+  "google_maps_bounds": {
+   "west": -117.639517,
+   "south": 40.285579,
+   "east": -117.578268,
+   "north": 40.359486
+  },
+  "file_bytes": 74878,
+  "sha256": "0f25f41c64fb9ced6e60c05bbc9dda92c158286cbf746a8d7cdb7eee3866e5f3",
+  "kind": "source_map_artwork",
+  "map_id": "slw-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Larkspur West Stake: wards and meetinghouses",
+  "overlay_id": "SLW-slw-stake-map",
+  "org_id": "SLW"
+ },
+ {
+  "image_path": "simulator/overlays/maps/slw-stake-map.png",
+  "image_width_px": 1137,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13095571.129606651,
+   4907529.039170451,
+   -13088752.92211505,
+   4918320.147372043
+  ],
+  "google_maps_bounds": {
+   "west": -117.639517,
+   "south": 40.285579,
+   "east": -117.578268,
+   "north": 40.359486
+  },
+  "file_bytes": 74878,
+  "sha256": "0f25f41c64fb9ced6e60c05bbc9dda92c158286cbf746a8d7cdb7eee3866e5f3",
+  "kind": "source_map_artwork",
+  "map_id": "slw-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Larkspur West Stake: wards and meetinghouses",
+  "overlay_id": "U-SLW-1-slw-stake-map",
+  "org_id": "U-SLW-1"
+ },
+ {
+  "image_path": "simulator/overlays/maps/slw-stake-map.png",
+  "image_width_px": 1137,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13095571.129606651,
+   4907529.039170451,
+   -13088752.92211505,
+   4918320.147372043
+  ],
+  "google_maps_bounds": {
+   "west": -117.639517,
+   "south": 40.285579,
+   "east": -117.578268,
+   "north": 40.359486
+  },
+  "file_bytes": 74878,
+  "sha256": "0f25f41c64fb9ced6e60c05bbc9dda92c158286cbf746a8d7cdb7eee3866e5f3",
+  "kind": "source_map_artwork",
+  "map_id": "slw-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Larkspur West Stake: wards and meetinghouses",
+  "overlay_id": "U-SLW-2-slw-stake-map",
+  "org_id": "U-SLW-2"
+ },
+ {
+  "image_path": "simulator/overlays/maps/slw-stake-map.png",
+  "image_width_px": 1137,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13095571.129606651,
+   4907529.039170451,
+   -13088752.92211505,
+   4918320.147372043
+  ],
+  "google_maps_bounds": {
+   "west": -117.639517,
+   "south": 40.285579,
+   "east": -117.578268,
+   "north": 40.359486
+  },
+  "file_bytes": 74878,
+  "sha256": "0f25f41c64fb9ced6e60c05bbc9dda92c158286cbf746a8d7cdb7eee3866e5f3",
+  "kind": "source_map_artwork",
+  "map_id": "slw-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Larkspur West Stake: wards and meetinghouses",
+  "overlay_id": "U-SLW-3-slw-stake-map",
+  "org_id": "U-SLW-3"
+ },
+ {
+  "image_path": "simulator/overlays/maps/slw-stake-map.png",
+  "image_width_px": 1137,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13095571.129606651,
+   4907529.039170451,
+   -13088752.92211505,
+   4918320.147372043
+  ],
+  "google_maps_bounds": {
+   "west": -117.639517,
+   "south": 40.285579,
+   "east": -117.578268,
+   "north": 40.359486
+  },
+  "file_bytes": 74878,
+  "sha256": "0f25f41c64fb9ced6e60c05bbc9dda92c158286cbf746a8d7cdb7eee3866e5f3",
+  "kind": "source_map_artwork",
+  "map_id": "slw-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Larkspur West Stake: wards and meetinghouses",
+  "overlay_id": "U-SLW-4-slw-stake-map",
+  "org_id": "U-SLW-4"
+ },
+ {
+  "image_path": "simulator/overlays/maps/slw-stake-map.png",
+  "image_width_px": 1137,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13095571.129606651,
+   4907529.039170451,
+   -13088752.92211505,
+   4918320.147372043
+  ],
+  "google_maps_bounds": {
+   "west": -117.639517,
+   "south": 40.285579,
+   "east": -117.578268,
+   "north": 40.359486
+  },
+  "file_bytes": 74878,
+  "sha256": "0f25f41c64fb9ced6e60c05bbc9dda92c158286cbf746a8d7cdb7eee3866e5f3",
+  "kind": "source_map_artwork",
+  "map_id": "slw-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Larkspur West Stake: wards and meetinghouses",
+  "overlay_id": "U-SLW-5-slw-stake-map",
+  "org_id": "U-SLW-5"
+ },
+ {
+  "image_path": "simulator/overlays/maps/slw-stake-map.png",
+  "image_width_px": 1137,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13095571.129606651,
+   4907529.039170451,
+   -13088752.92211505,
+   4918320.147372043
+  ],
+  "google_maps_bounds": {
+   "west": -117.639517,
+   "south": 40.285579,
+   "east": -117.578268,
+   "north": 40.359486
+  },
+  "file_bytes": 74878,
+  "sha256": "0f25f41c64fb9ced6e60c05bbc9dda92c158286cbf746a8d7cdb7eee3866e5f3",
+  "kind": "source_map_artwork",
+  "map_id": "slw-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Larkspur West Stake: wards and meetinghouses",
+  "overlay_id": "U-SLW-6-slw-stake-map",
+  "org_id": "U-SLW-6"
+ },
+ {
+  "image_path": "simulator/overlays/maps/scr-stake-map.png",
+  "image_width_px": 1574,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13079836.898819456,
+   4906213.865087826,
+   -13070396.449402733,
+   4917003.532871818
+  ],
+  "google_maps_bounds": {
+   "west": -117.498174,
+   "south": 40.276566,
+   "east": -117.413369,
+   "north": 40.350473
+  },
+  "file_bytes": 101965,
+  "sha256": "c075e9eaf46c1e09290b0e805e474a8830f9a3c95586e526c544c413846828e5",
+  "kind": "source_map_artwork",
+  "map_id": "scr-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Copper Ridge Stake: wards and meetinghouses",
+  "overlay_id": "SCR-scr-stake-map",
+  "org_id": "SCR"
+ },
+ {
+  "image_path": "simulator/overlays/maps/scr-stake-map.png",
+  "image_width_px": 1574,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13079836.898819456,
+   4906213.865087826,
+   -13070396.449402733,
+   4917003.532871818
+  ],
+  "google_maps_bounds": {
+   "west": -117.498174,
+   "south": 40.276566,
+   "east": -117.413369,
+   "north": 40.350473
+  },
+  "file_bytes": 101965,
+  "sha256": "c075e9eaf46c1e09290b0e805e474a8830f9a3c95586e526c544c413846828e5",
+  "kind": "source_map_artwork",
+  "map_id": "scr-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Copper Ridge Stake: wards and meetinghouses",
+  "overlay_id": "U-SCR-1-scr-stake-map",
+  "org_id": "U-SCR-1"
+ },
+ {
+  "image_path": "simulator/overlays/maps/scr-stake-map.png",
+  "image_width_px": 1574,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13079836.898819456,
+   4906213.865087826,
+   -13070396.449402733,
+   4917003.532871818
+  ],
+  "google_maps_bounds": {
+   "west": -117.498174,
+   "south": 40.276566,
+   "east": -117.413369,
+   "north": 40.350473
+  },
+  "file_bytes": 101965,
+  "sha256": "c075e9eaf46c1e09290b0e805e474a8830f9a3c95586e526c544c413846828e5",
+  "kind": "source_map_artwork",
+  "map_id": "scr-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Copper Ridge Stake: wards and meetinghouses",
+  "overlay_id": "U-SCR-2-scr-stake-map",
+  "org_id": "U-SCR-2"
+ },
+ {
+  "image_path": "simulator/overlays/maps/scr-stake-map.png",
+  "image_width_px": 1574,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13079836.898819456,
+   4906213.865087826,
+   -13070396.449402733,
+   4917003.532871818
+  ],
+  "google_maps_bounds": {
+   "west": -117.498174,
+   "south": 40.276566,
+   "east": -117.413369,
+   "north": 40.350473
+  },
+  "file_bytes": 101965,
+  "sha256": "c075e9eaf46c1e09290b0e805e474a8830f9a3c95586e526c544c413846828e5",
+  "kind": "source_map_artwork",
+  "map_id": "scr-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Copper Ridge Stake: wards and meetinghouses",
+  "overlay_id": "U-SCR-3-scr-stake-map",
+  "org_id": "U-SCR-3"
+ },
+ {
+  "image_path": "simulator/overlays/maps/scr-stake-map.png",
+  "image_width_px": 1574,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13079836.898819456,
+   4906213.865087826,
+   -13070396.449402733,
+   4917003.532871818
+  ],
+  "google_maps_bounds": {
+   "west": -117.498174,
+   "south": 40.276566,
+   "east": -117.413369,
+   "north": 40.350473
+  },
+  "file_bytes": 101965,
+  "sha256": "c075e9eaf46c1e09290b0e805e474a8830f9a3c95586e526c544c413846828e5",
+  "kind": "source_map_artwork",
+  "map_id": "scr-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Copper Ridge Stake: wards and meetinghouses",
+  "overlay_id": "U-SCR-4-scr-stake-map",
+  "org_id": "U-SCR-4"
+ },
+ {
+  "image_path": "simulator/overlays/maps/scr-stake-map.png",
+  "image_width_px": 1574,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13079836.898819456,
+   4906213.865087826,
+   -13070396.449402733,
+   4917003.532871818
+  ],
+  "google_maps_bounds": {
+   "west": -117.498174,
+   "south": 40.276566,
+   "east": -117.413369,
+   "north": 40.350473
+  },
+  "file_bytes": 101965,
+  "sha256": "c075e9eaf46c1e09290b0e805e474a8830f9a3c95586e526c544c413846828e5",
+  "kind": "source_map_artwork",
+  "map_id": "scr-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Copper Ridge Stake: wards and meetinghouses",
+  "overlay_id": "U-SCR-5-scr-stake-map",
+  "org_id": "U-SCR-5"
+ },
+ {
+  "image_path": "simulator/overlays/maps/scr-stake-map.png",
+  "image_width_px": 1574,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13079836.898819456,
+   4906213.865087826,
+   -13070396.449402733,
+   4917003.532871818
+  ],
+  "google_maps_bounds": {
+   "west": -117.498174,
+   "south": 40.276566,
+   "east": -117.413369,
+   "north": 40.350473
+  },
+  "file_bytes": 101965,
+  "sha256": "c075e9eaf46c1e09290b0e805e474a8830f9a3c95586e526c544c413846828e5",
+  "kind": "source_map_artwork",
+  "map_id": "scr-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Copper Ridge Stake: wards and meetinghouses",
+  "overlay_id": "U-SCR-6-scr-stake-map",
+  "org_id": "U-SCR-6"
+ },
+ {
+  "image_path": "simulator/overlays/maps/scr-stake-map.png",
+  "image_width_px": 1574,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13079836.898819456,
+   4906213.865087826,
+   -13070396.449402733,
+   4917003.532871818
+  ],
+  "google_maps_bounds": {
+   "west": -117.498174,
+   "south": 40.276566,
+   "east": -117.413369,
+   "north": 40.350473
+  },
+  "file_bytes": 101965,
+  "sha256": "c075e9eaf46c1e09290b0e805e474a8830f9a3c95586e526c544c413846828e5",
+  "kind": "source_map_artwork",
+  "map_id": "scr-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Copper Ridge Stake: wards and meetinghouses",
+  "overlay_id": "U-SCR-B1-scr-stake-map",
+  "org_id": "U-SCR-B1"
+ },
+ {
+  "image_path": "simulator/overlays/maps/sjs-stake-map.png",
+  "image_width_px": 1800,
+  "image_height_px": 1647,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13094259.897324596,
+   4918056.898043713,
+   -13079574.741418637,
+   4931496.13322403
+  ],
+  "google_maps_bounds": {
+   "west": -117.627738,
+   "south": 40.357684,
+   "east": -117.495819,
+   "north": 40.449617
+  },
+  "file_bytes": 82834,
+  "sha256": "7c901a82f58dfb961a70de4365802a8af3d3e20e68ac01dbd1cc7cc3b58ce813",
+  "kind": "source_map_artwork",
+  "map_id": "sjs-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Juniper Springs Stake: wards and meetinghouses",
+  "overlay_id": "SJS-sjs-stake-map",
+  "org_id": "SJS"
+ },
+ {
+  "image_path": "simulator/overlays/maps/sjs-stake-map.png",
+  "image_width_px": 1800,
+  "image_height_px": 1647,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13094259.897324596,
+   4918056.898043713,
+   -13079574.741418637,
+   4931496.13322403
+  ],
+  "google_maps_bounds": {
+   "west": -117.627738,
+   "south": 40.357684,
+   "east": -117.495819,
+   "north": 40.449617
+  },
+  "file_bytes": 82834,
+  "sha256": "7c901a82f58dfb961a70de4365802a8af3d3e20e68ac01dbd1cc7cc3b58ce813",
+  "kind": "source_map_artwork",
+  "map_id": "sjs-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Juniper Springs Stake: wards and meetinghouses",
+  "overlay_id": "U-SJS-1-sjs-stake-map",
+  "org_id": "U-SJS-1"
+ },
+ {
+  "image_path": "simulator/overlays/maps/sjs-stake-map.png",
+  "image_width_px": 1800,
+  "image_height_px": 1647,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13094259.897324596,
+   4918056.898043713,
+   -13079574.741418637,
+   4931496.13322403
+  ],
+  "google_maps_bounds": {
+   "west": -117.627738,
+   "south": 40.357684,
+   "east": -117.495819,
+   "north": 40.449617
+  },
+  "file_bytes": 82834,
+  "sha256": "7c901a82f58dfb961a70de4365802a8af3d3e20e68ac01dbd1cc7cc3b58ce813",
+  "kind": "source_map_artwork",
+  "map_id": "sjs-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Juniper Springs Stake: wards and meetinghouses",
+  "overlay_id": "U-SJS-2-sjs-stake-map",
+  "org_id": "U-SJS-2"
+ },
+ {
+  "image_path": "simulator/overlays/maps/sjs-stake-map.png",
+  "image_width_px": 1800,
+  "image_height_px": 1647,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13094259.897324596,
+   4918056.898043713,
+   -13079574.741418637,
+   4931496.13322403
+  ],
+  "google_maps_bounds": {
+   "west": -117.627738,
+   "south": 40.357684,
+   "east": -117.495819,
+   "north": 40.449617
+  },
+  "file_bytes": 82834,
+  "sha256": "7c901a82f58dfb961a70de4365802a8af3d3e20e68ac01dbd1cc7cc3b58ce813",
+  "kind": "source_map_artwork",
+  "map_id": "sjs-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Juniper Springs Stake: wards and meetinghouses",
+  "overlay_id": "U-SJS-3-sjs-stake-map",
+  "org_id": "U-SJS-3"
+ },
+ {
+  "image_path": "simulator/overlays/maps/sjs-stake-map.png",
+  "image_width_px": 1800,
+  "image_height_px": 1647,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13094259.897324596,
+   4918056.898043713,
+   -13079574.741418637,
+   4931496.13322403
+  ],
+  "google_maps_bounds": {
+   "west": -117.627738,
+   "south": 40.357684,
+   "east": -117.495819,
+   "north": 40.449617
+  },
+  "file_bytes": 82834,
+  "sha256": "7c901a82f58dfb961a70de4365802a8af3d3e20e68ac01dbd1cc7cc3b58ce813",
+  "kind": "source_map_artwork",
+  "map_id": "sjs-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Juniper Springs Stake: wards and meetinghouses",
+  "overlay_id": "U-SJS-4-sjs-stake-map",
+  "org_id": "U-SJS-4"
+ },
+ {
+  "image_path": "simulator/overlays/maps/sjs-stake-map.png",
+  "image_width_px": 1800,
+  "image_height_px": 1647,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13094259.897324596,
+   4918056.898043713,
+   -13079574.741418637,
+   4931496.13322403
+  ],
+  "google_maps_bounds": {
+   "west": -117.627738,
+   "south": 40.357684,
+   "east": -117.495819,
+   "north": 40.449617
+  },
+  "file_bytes": 82834,
+  "sha256": "7c901a82f58dfb961a70de4365802a8af3d3e20e68ac01dbd1cc7cc3b58ce813",
+  "kind": "source_map_artwork",
+  "map_id": "sjs-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Juniper Springs Stake: wards and meetinghouses",
+  "overlay_id": "U-SJS-5-sjs-stake-map",
+  "org_id": "U-SJS-5"
+ },
+ {
+  "image_path": "simulator/overlays/maps/sjs-stake-map.png",
+  "image_width_px": 1800,
+  "image_height_px": 1647,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13094259.897324596,
+   4918056.898043713,
+   -13079574.741418637,
+   4931496.13322403
+  ],
+  "google_maps_bounds": {
+   "west": -117.627738,
+   "south": 40.357684,
+   "east": -117.495819,
+   "north": 40.449617
+  },
+  "file_bytes": 82834,
+  "sha256": "7c901a82f58dfb961a70de4365802a8af3d3e20e68ac01dbd1cc7cc3b58ce813",
+  "kind": "source_map_artwork",
+  "map_id": "sjs-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Juniper Springs Stake: wards and meetinghouses",
+  "overlay_id": "U-SJS-6-sjs-stake-map",
+  "org_id": "U-SJS-6"
+ },
+ {
+  "image_path": "simulator/overlays/maps/sks-stake-map.png",
+  "image_width_px": 1800,
+  "image_height_px": 968,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13099504.60381383,
+   4929914.041892776,
+   -13076952.388174022,
+   4942049.532545867
+  ],
+  "google_maps_bounds": {
+   "west": -117.674852,
+   "south": 40.438801,
+   "east": -117.472262,
+   "north": 40.521721
+  },
+  "file_bytes": 58296,
+  "sha256": "762ef57593f599aa819d3506adec07e5b968a363a799141775ebb5ed4899f74a",
+  "kind": "source_map_artwork",
+  "map_id": "sks-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Kestrel Stake: wards and meetinghouses",
+  "overlay_id": "SKS-sks-stake-map",
+  "org_id": "SKS"
+ },
+ {
+  "image_path": "simulator/overlays/maps/sks-stake-map.png",
+  "image_width_px": 1800,
+  "image_height_px": 968,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13099504.60381383,
+   4929914.041892776,
+   -13076952.388174022,
+   4942049.532545867
+  ],
+  "google_maps_bounds": {
+   "west": -117.674852,
+   "south": 40.438801,
+   "east": -117.472262,
+   "north": 40.521721
+  },
+  "file_bytes": 58296,
+  "sha256": "762ef57593f599aa819d3506adec07e5b968a363a799141775ebb5ed4899f74a",
+  "kind": "source_map_artwork",
+  "map_id": "sks-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Kestrel Stake: wards and meetinghouses",
+  "overlay_id": "U-SKS-1-sks-stake-map",
+  "org_id": "U-SKS-1"
+ },
+ {
+  "image_path": "simulator/overlays/maps/sks-stake-map.png",
+  "image_width_px": 1800,
+  "image_height_px": 968,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13099504.60381383,
+   4929914.041892776,
+   -13076952.388174022,
+   4942049.532545867
+  ],
+  "google_maps_bounds": {
+   "west": -117.674852,
+   "south": 40.438801,
+   "east": -117.472262,
+   "north": 40.521721
+  },
+  "file_bytes": 58296,
+  "sha256": "762ef57593f599aa819d3506adec07e5b968a363a799141775ebb5ed4899f74a",
+  "kind": "source_map_artwork",
+  "map_id": "sks-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Kestrel Stake: wards and meetinghouses",
+  "overlay_id": "U-SKS-2-sks-stake-map",
+  "org_id": "U-SKS-2"
+ },
+ {
+  "image_path": "simulator/overlays/maps/sks-stake-map.png",
+  "image_width_px": 1800,
+  "image_height_px": 968,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13099504.60381383,
+   4929914.041892776,
+   -13076952.388174022,
+   4942049.532545867
+  ],
+  "google_maps_bounds": {
+   "west": -117.674852,
+   "south": 40.438801,
+   "east": -117.472262,
+   "north": 40.521721
+  },
+  "file_bytes": 58296,
+  "sha256": "762ef57593f599aa819d3506adec07e5b968a363a799141775ebb5ed4899f74a",
+  "kind": "source_map_artwork",
+  "map_id": "sks-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Kestrel Stake: wards and meetinghouses",
+  "overlay_id": "U-SKS-3-sks-stake-map",
+  "org_id": "U-SKS-3"
+ },
+ {
+  "image_path": "simulator/overlays/maps/sks-stake-map.png",
+  "image_width_px": 1800,
+  "image_height_px": 968,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13099504.60381383,
+   4929914.041892776,
+   -13076952.388174022,
+   4942049.532545867
+  ],
+  "google_maps_bounds": {
+   "west": -117.674852,
+   "south": 40.438801,
+   "east": -117.472262,
+   "north": 40.521721
+  },
+  "file_bytes": 58296,
+  "sha256": "762ef57593f599aa819d3506adec07e5b968a363a799141775ebb5ed4899f74a",
+  "kind": "source_map_artwork",
+  "map_id": "sks-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Kestrel Stake: wards and meetinghouses",
+  "overlay_id": "U-SKS-4-sks-stake-map",
+  "org_id": "U-SKS-4"
+ },
+ {
+  "image_path": "simulator/overlays/maps/sks-stake-map.png",
+  "image_width_px": 1800,
+  "image_height_px": 968,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13099504.60381383,
+   4929914.041892776,
+   -13076952.388174022,
+   4942049.532545867
+  ],
+  "google_maps_bounds": {
+   "west": -117.674852,
+   "south": 40.438801,
+   "east": -117.472262,
+   "north": 40.521721
+  },
+  "file_bytes": 58296,
+  "sha256": "762ef57593f599aa819d3506adec07e5b968a363a799141775ebb5ed4899f74a",
+  "kind": "source_map_artwork",
+  "map_id": "sks-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Kestrel Stake: wards and meetinghouses",
+  "overlay_id": "U-SKS-5-sks-stake-map",
+  "org_id": "U-SKS-5"
+ },
+ {
+  "image_path": "simulator/overlays/maps/sks-stake-map.png",
+  "image_width_px": 1800,
+  "image_height_px": 968,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13099504.60381383,
+   4929914.041892776,
+   -13076952.388174022,
+   4942049.532545867
+  ],
+  "google_maps_bounds": {
+   "west": -117.674852,
+   "south": 40.438801,
+   "east": -117.472262,
+   "north": 40.521721
+  },
+  "file_bytes": 58296,
+  "sha256": "762ef57593f599aa819d3506adec07e5b968a363a799141775ebb5ed4899f74a",
+  "kind": "source_map_artwork",
+  "map_id": "sks-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Kestrel Stake: wards and meetinghouses",
+  "overlay_id": "U-SKS-6-sks-stake-map",
+  "org_id": "U-SKS-6"
+ },
+ {
+  "image_path": "simulator/overlays/maps/saf-stake-map.png",
+  "image_width_px": 1669,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13095571.129606651,
+   4890445.280754622,
+   -13078263.509136582,
+   4909107.5379511425
+  ],
+  "google_maps_bounds": {
+   "west": -117.639517,
+   "south": 40.168409,
+   "east": -117.48404,
+   "north": 40.296395
+  },
+  "file_bytes": 75543,
+  "sha256": "42a155089ab9007e53dfb1f49d88a8ad797c298dab33c472da0c4377da50e3b3",
+  "kind": "source_map_artwork",
+  "map_id": "saf-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Alder Flat Stake: wards and meetinghouses",
+  "overlay_id": "SAF-saf-stake-map",
+  "org_id": "SAF"
+ },
+ {
+  "image_path": "simulator/overlays/maps/saf-stake-map.png",
+  "image_width_px": 1669,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13095571.129606651,
+   4890445.280754622,
+   -13078263.509136582,
+   4909107.5379511425
+  ],
+  "google_maps_bounds": {
+   "west": -117.639517,
+   "south": 40.168409,
+   "east": -117.48404,
+   "north": 40.296395
+  },
+  "file_bytes": 75543,
+  "sha256": "42a155089ab9007e53dfb1f49d88a8ad797c298dab33c472da0c4377da50e3b3",
+  "kind": "source_map_artwork",
+  "map_id": "saf-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Alder Flat Stake: wards and meetinghouses",
+  "overlay_id": "U-SAF-1-saf-stake-map",
+  "org_id": "U-SAF-1"
+ },
+ {
+  "image_path": "simulator/overlays/maps/saf-stake-map.png",
+  "image_width_px": 1669,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13095571.129606651,
+   4890445.280754622,
+   -13078263.509136582,
+   4909107.5379511425
+  ],
+  "google_maps_bounds": {
+   "west": -117.639517,
+   "south": 40.168409,
+   "east": -117.48404,
+   "north": 40.296395
+  },
+  "file_bytes": 75543,
+  "sha256": "42a155089ab9007e53dfb1f49d88a8ad797c298dab33c472da0c4377da50e3b3",
+  "kind": "source_map_artwork",
+  "map_id": "saf-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Alder Flat Stake: wards and meetinghouses",
+  "overlay_id": "U-SAF-2-saf-stake-map",
+  "org_id": "U-SAF-2"
+ },
+ {
+  "image_path": "simulator/overlays/maps/saf-stake-map.png",
+  "image_width_px": 1669,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13095571.129606651,
+   4890445.280754622,
+   -13078263.509136582,
+   4909107.5379511425
+  ],
+  "google_maps_bounds": {
+   "west": -117.639517,
+   "south": 40.168409,
+   "east": -117.48404,
+   "north": 40.296395
+  },
+  "file_bytes": 75543,
+  "sha256": "42a155089ab9007e53dfb1f49d88a8ad797c298dab33c472da0c4377da50e3b3",
+  "kind": "source_map_artwork",
+  "map_id": "saf-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Alder Flat Stake: wards and meetinghouses",
+  "overlay_id": "U-SAF-3-saf-stake-map",
+  "org_id": "U-SAF-3"
+ },
+ {
+  "image_path": "simulator/overlays/maps/saf-stake-map.png",
+  "image_width_px": 1669,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13095571.129606651,
+   4890445.280754622,
+   -13078263.509136582,
+   4909107.5379511425
+  ],
+  "google_maps_bounds": {
+   "west": -117.639517,
+   "south": 40.168409,
+   "east": -117.48404,
+   "north": 40.296395
+  },
+  "file_bytes": 75543,
+  "sha256": "42a155089ab9007e53dfb1f49d88a8ad797c298dab33c472da0c4377da50e3b3",
+  "kind": "source_map_artwork",
+  "map_id": "saf-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Alder Flat Stake: wards and meetinghouses",
+  "overlay_id": "U-SAF-4-saf-stake-map",
+  "org_id": "U-SAF-4"
+ },
+ {
+  "image_path": "simulator/overlays/maps/saf-stake-map.png",
+  "image_width_px": 1669,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13095571.129606651,
+   4890445.280754622,
+   -13078263.509136582,
+   4909107.5379511425
+  ],
+  "google_maps_bounds": {
+   "west": -117.639517,
+   "south": 40.168409,
+   "east": -117.48404,
+   "north": 40.296395
+  },
+  "file_bytes": 75543,
+  "sha256": "42a155089ab9007e53dfb1f49d88a8ad797c298dab33c472da0c4377da50e3b3",
+  "kind": "source_map_artwork",
+  "map_id": "saf-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Alder Flat Stake: wards and meetinghouses",
+  "overlay_id": "U-SAF-5-saf-stake-map",
+  "org_id": "U-SAF-5"
+ },
+ {
+  "image_path": "simulator/overlays/maps/saf-stake-map.png",
+  "image_width_px": 1669,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13095571.129606651,
+   4890445.280754622,
+   -13078263.509136582,
+   4909107.5379511425
+  ],
+  "google_maps_bounds": {
+   "west": -117.639517,
+   "south": 40.168409,
+   "east": -117.48404,
+   "north": 40.296395
+  },
+  "file_bytes": 75543,
+  "sha256": "42a155089ab9007e53dfb1f49d88a8ad797c298dab33c472da0c4377da50e3b3",
+  "kind": "source_map_artwork",
+  "map_id": "saf-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Alder Flat Stake: wards and meetinghouses",
+  "overlay_id": "U-SAF-6-saf-stake-map",
+  "org_id": "U-SAF-6"
+ },
+ {
+  "image_path": "simulator/overlays/maps/ssb-stake-map.png",
+  "image_width_px": 855,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13104749.421622554,
+   4898326.4990047105,
+   -13093997.739923777,
+   4920953.9045288665
+  ],
+  "google_maps_bounds": {
+   "west": -117.721967,
+   "south": 40.222488,
+   "east": -117.625383,
+   "north": 40.377512
+  },
+  "file_bytes": 57400,
+  "sha256": "7a29b133464b208567bcc6c3c70bbdfa16515debedfdb256e292c24daa47bd9c",
+  "kind": "source_map_artwork",
+  "map_id": "ssb-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Saddleback Stake: wards and meetinghouses",
+  "overlay_id": "SSB-ssb-stake-map",
+  "org_id": "SSB"
+ },
+ {
+  "image_path": "simulator/overlays/maps/ssb-stake-map.png",
+  "image_width_px": 855,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13104749.421622554,
+   4898326.4990047105,
+   -13093997.739923777,
+   4920953.9045288665
+  ],
+  "google_maps_bounds": {
+   "west": -117.721967,
+   "south": 40.222488,
+   "east": -117.625383,
+   "north": 40.377512
+  },
+  "file_bytes": 57400,
+  "sha256": "7a29b133464b208567bcc6c3c70bbdfa16515debedfdb256e292c24daa47bd9c",
+  "kind": "source_map_artwork",
+  "map_id": "ssb-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Saddleback Stake: wards and meetinghouses",
+  "overlay_id": "U-SSB-1-ssb-stake-map",
+  "org_id": "U-SSB-1"
+ },
+ {
+  "image_path": "simulator/overlays/maps/ssb-stake-map.png",
+  "image_width_px": 855,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13104749.421622554,
+   4898326.4990047105,
+   -13093997.739923777,
+   4920953.9045288665
+  ],
+  "google_maps_bounds": {
+   "west": -117.721967,
+   "south": 40.222488,
+   "east": -117.625383,
+   "north": 40.377512
+  },
+  "file_bytes": 57400,
+  "sha256": "7a29b133464b208567bcc6c3c70bbdfa16515debedfdb256e292c24daa47bd9c",
+  "kind": "source_map_artwork",
+  "map_id": "ssb-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Saddleback Stake: wards and meetinghouses",
+  "overlay_id": "U-SSB-2-ssb-stake-map",
+  "org_id": "U-SSB-2"
+ },
+ {
+  "image_path": "simulator/overlays/maps/ssb-stake-map.png",
+  "image_width_px": 855,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13104749.421622554,
+   4898326.4990047105,
+   -13093997.739923777,
+   4920953.9045288665
+  ],
+  "google_maps_bounds": {
+   "west": -117.721967,
+   "south": 40.222488,
+   "east": -117.625383,
+   "north": 40.377512
+  },
+  "file_bytes": 57400,
+  "sha256": "7a29b133464b208567bcc6c3c70bbdfa16515debedfdb256e292c24daa47bd9c",
+  "kind": "source_map_artwork",
+  "map_id": "ssb-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Saddleback Stake: wards and meetinghouses",
+  "overlay_id": "U-SSB-3-ssb-stake-map",
+  "org_id": "U-SSB-3"
+ },
+ {
+  "image_path": "simulator/overlays/maps/ssb-stake-map.png",
+  "image_width_px": 855,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13104749.421622554,
+   4898326.4990047105,
+   -13093997.739923777,
+   4920953.9045288665
+  ],
+  "google_maps_bounds": {
+   "west": -117.721967,
+   "south": 40.222488,
+   "east": -117.625383,
+   "north": 40.377512
+  },
+  "file_bytes": 57400,
+  "sha256": "7a29b133464b208567bcc6c3c70bbdfa16515debedfdb256e292c24daa47bd9c",
+  "kind": "source_map_artwork",
+  "map_id": "ssb-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Saddleback Stake: wards and meetinghouses",
+  "overlay_id": "U-SSB-4-ssb-stake-map",
+  "org_id": "U-SSB-4"
+ },
+ {
+  "image_path": "simulator/overlays/maps/ssb-stake-map.png",
+  "image_width_px": 855,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13104749.421622554,
+   4898326.4990047105,
+   -13093997.739923777,
+   4920953.9045288665
+  ],
+  "google_maps_bounds": {
+   "west": -117.721967,
+   "south": 40.222488,
+   "east": -117.625383,
+   "north": 40.377512
+  },
+  "file_bytes": 57400,
+  "sha256": "7a29b133464b208567bcc6c3c70bbdfa16515debedfdb256e292c24daa47bd9c",
+  "kind": "source_map_artwork",
+  "map_id": "ssb-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Saddleback Stake: wards and meetinghouses",
+  "overlay_id": "U-SSB-5-ssb-stake-map",
+  "org_id": "U-SSB-5"
+ },
+ {
+  "image_path": "simulator/overlays/maps/ssb-stake-map.png",
+  "image_width_px": 855,
+  "image_height_px": 1800,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13104749.421622554,
+   4898326.4990047105,
+   -13093997.739923777,
+   4920953.9045288665
+  ],
+  "google_maps_bounds": {
+   "west": -117.721967,
+   "south": 40.222488,
+   "east": -117.625383,
+   "north": 40.377512
+  },
+  "file_bytes": 57400,
+  "sha256": "7a29b133464b208567bcc6c3c70bbdfa16515debedfdb256e292c24daa47bd9c",
+  "kind": "source_map_artwork",
+  "map_id": "ssb-stake-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Saddleback Stake: wards and meetinghouses",
+  "overlay_id": "U-SSB-6-ssb-stake-map",
+  "org_id": "U-SSB-6"
+ },
+ {
+  "image_path": "simulator/overlays/maps/area-map.png",
+  "image_width_px": 1657,
+  "image_height_px": 2048,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13105273.847743683,
+   4889920.12840952,
+   -13062660.524029033,
+   4942577.617472892
+  ],
+  "google_maps_bounds": {
+   "west": -117.726678,
+   "south": 40.164804,
+   "east": -117.343876,
+   "north": 40.525327
+  },
+  "file_bytes": 145046,
+  "sha256": "9fe120ced01df0e174c5123aead773d768e5168d3f20b7fdd9c2a4d344cde275",
+  "kind": "source_map_artwork",
+  "map_id": "area-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Juniper Plains Area: Larkspur Valley",
+  "overlay_id": "JPA-area-map",
+  "org_id": "JPA"
+ },
+ {
+  "image_path": "simulator/overlays/maps/area-map.png",
+  "image_width_px": 1657,
+  "image_height_px": 2048,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13105273.847743683,
+   4889920.12840952,
+   -13062660.524029033,
+   4942577.617472892
+  ],
+  "google_maps_bounds": {
+   "west": -117.726678,
+   "south": 40.164804,
+   "east": -117.343876,
+   "north": 40.525327
+  },
+  "file_bytes": 145046,
+  "sha256": "9fe120ced01df0e174c5123aead773d768e5168d3f20b7fdd9c2a4d344cde275",
+  "kind": "source_map_artwork",
+  "map_id": "area-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Juniper Plains Area: Larkspur Valley",
+  "overlay_id": "CLK-area-map",
+  "org_id": "CLK"
+ },
+ {
+  "image_path": "simulator/overlays/maps/area-map.png",
+  "image_width_px": 1657,
+  "image_height_px": 2048,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13105273.847743683,
+   4889920.12840952,
+   -13062660.524029033,
+   4942577.617472892
+  ],
+  "google_maps_bounds": {
+   "west": -117.726678,
+   "south": 40.164804,
+   "east": -117.343876,
+   "north": 40.525327
+  },
+  "file_bytes": 145046,
+  "sha256": "9fe120ced01df0e174c5123aead773d768e5168d3f20b7fdd9c2a4d344cde275",
+  "kind": "source_map_artwork",
+  "map_id": "area-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Juniper Plains Area: Larkspur Valley",
+  "overlay_id": "CKS-area-map",
+  "org_id": "CKS"
+ },
+ {
+  "image_path": "simulator/overlays/maps/area-map.png",
+  "image_width_px": 1657,
+  "image_height_px": 2048,
+  "image_crs": "EPSG:3857",
+  "web_mercator_bounds": [
+   -13105273.847743683,
+   4889920.12840952,
+   -13062660.524029033,
+   4942577.617472892
+  ],
+  "google_maps_bounds": {
+   "west": -117.726678,
+   "south": 40.164804,
+   "east": -117.343876,
+   "north": 40.525327
+  },
+  "file_bytes": 145046,
+  "sha256": "9fe120ced01df0e174c5123aead773d768e5168d3f20b7fdd9c2a4d344cde275",
+  "kind": "source_map_artwork",
+  "map_id": "area-map",
+  "recommended_opacity": 0.6,
+  "paper_label": "Juniper Plains Area: Larkspur Valley",
+  "overlay_id": "JPW-area-map",
+  "org_id": "JPW"
+ }
+]

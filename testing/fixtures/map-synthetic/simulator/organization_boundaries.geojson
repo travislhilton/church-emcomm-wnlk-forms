@@ -1,0 +1,308 @@
+{
+ "type": "FeatureCollection",
+ "note": "Invented test fixture: no real boundary, unit or place. Coordinates in the invented Larkspur Valley.",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U1",
+    "org_name": "Alpha 1st Ward",
+    "org_type": "Ward",
+    "stake_id": "S1",
+    "label_longitude": -117.512886,
+    "label_latitude": 40.302704
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.521886,
+       40.293704
+      ],
+      [
+       -117.503886,
+       40.293704
+      ],
+      [
+       -117.503886,
+       40.311704
+      ],
+      [
+       -117.521886,
+       40.311704
+      ],
+      [
+       -117.521886,
+       40.293704
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U2",
+    "org_name": "Alpha 2nd Ward",
+    "org_type": "Ward",
+    "stake_id": "S1",
+    "label_longitude": -117.492886,
+    "label_latitude": 40.302704
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.501886,
+       40.293704
+      ],
+      [
+       -117.483886,
+       40.293704
+      ],
+      [
+       -117.483886,
+       40.311704
+      ],
+      [
+       -117.501886,
+       40.311704
+      ],
+      [
+       -117.501886,
+       40.293704
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U3",
+    "org_name": "Riverbottom Ward",
+    "org_type": "Ward",
+    "stake_id": "S1",
+    "label_longitude": -117.493557,
+    "label_latitude": 40.169441
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.502557,
+       40.160441
+      ],
+      [
+       -117.484557,
+       40.160441
+      ],
+      [
+       -117.484557,
+       40.178441
+      ],
+      [
+       -117.502557,
+       40.178441
+      ],
+      [
+       -117.502557,
+       40.160441
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U4",
+    "org_name": "Alpha Care Center Branch",
+    "org_type": "Branch",
+    "stake_id": "S1",
+    "label_longitude": -117.492886,
+    "label_latitude": 40.282704
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.501886,
+       40.273704
+      ],
+      [
+       -117.483886,
+       40.273704
+      ],
+      [
+       -117.483886,
+       40.291704
+      ],
+      [
+       -117.501886,
+       40.291704
+      ],
+      [
+       -117.501886,
+       40.273704
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U5",
+    "org_name": "Bravo 1st Ward",
+    "org_type": "Ward",
+    "stake_id": "S2",
+    "label_longitude": -117.5,
+    "label_latitude": 40.36
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.509,
+       40.351
+      ],
+      [
+       -117.491,
+       40.351
+      ],
+      [
+       -117.491,
+       40.369
+      ],
+      [
+       -117.509,
+       40.369
+      ],
+      [
+       -117.509,
+       40.351
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U6",
+    "org_name": "Bravo 2nd Ward",
+    "org_type": "Ward",
+    "stake_id": "S2",
+    "label_longitude": -117.48,
+    "label_latitude": 40.36
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.489,
+       40.351
+      ],
+      [
+       -117.471,
+       40.351
+      ],
+      [
+       -117.471,
+       40.369
+      ],
+      [
+       -117.489,
+       40.369
+      ],
+      [
+       -117.489,
+       40.351
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "S1",
+    "org_name": "Alpha Stake",
+    "org_type": "Stake",
+    "label_longitude": -117.502886,
+    "label_latitude": 40.292704
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.522886,
+       40.272704
+      ],
+      [
+       -117.482886,
+       40.272704
+      ],
+      [
+       -117.482886,
+       40.312704
+      ],
+      [
+       -117.522886,
+       40.312704
+      ],
+      [
+       -117.522886,
+       40.272704
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "S2",
+    "org_name": "Bravo Stake",
+    "org_type": "Stake",
+    "label_longitude": -117.49,
+    "label_latitude": 40.36
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.51,
+       40.34
+      ],
+      [
+       -117.47,
+       40.34
+      ],
+      [
+       -117.47,
+       40.38
+      ],
+      [
+       -117.51,
+       40.38
+      ],
+      [
+       -117.51,
+       40.34
+      ]
+     ]
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,3350 @@
+{
+ "type": "FeatureCollection",
+ "note": "Invented example (Juniper Plains Area): no real organization, person or place.",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "JPA",
+    "org_name": "Juniper Plains Area",
+    "org_type": "Area",
+    "stake_id": "",
+    "council_id": "",
+    "label_longitude": -117.55,
+    "label_latitude": 40.336052,
+    "special_unit": false,
+    "bounds": [
+     -117.714899,
+     40.173817,
+     -117.420436,
+     40.516314
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        -117.585336,
+        40.290987
+       ],
+       [
+        -117.538221,
+        40.290987
+       ],
+       [
+        -117.538221,
+        40.354078
+       ],
+       [
+        -117.585336,
+        40.354078
+       ],
+       [
+        -117.585336,
+        40.290987
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        -117.538221,
+        40.290987
+       ],
+       [
+        -117.491107,
+        40.290987
+       ],
+       [
+        -117.491107,
+        40.354078
+       ],
+       [
+        -117.538221,
+        40.354078
+       ],
+       [
+        -117.538221,
+        40.290987
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        -117.63245,
+        40.290987
+       ],
+       [
+        -117.585336,
+        40.290987
+       ],
+       [
+        -117.585336,
+        40.354078
+       ],
+       [
+        -117.63245,
+        40.354078
+       ],
+       [
+        -117.63245,
+        40.290987
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        -117.491107,
+        40.281974
+       ],
+       [
+        -117.420436,
+        40.281974
+       ],
+       [
+        -117.420436,
+        40.345065
+       ],
+       [
+        -117.491107,
+        40.345065
+       ],
+       [
+        -117.491107,
+        40.281974
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        -117.620671,
+        40.363091
+       ],
+       [
+        -117.502886,
+        40.363091
+       ],
+       [
+        -117.502886,
+        40.444209
+       ],
+       [
+        -117.620671,
+        40.444209
+       ],
+       [
+        -117.620671,
+        40.363091
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        -117.667785,
+        40.444209
+       ],
+       [
+        -117.479329,
+        40.444209
+       ],
+       [
+        -117.479329,
+        40.516314
+       ],
+       [
+        -117.667785,
+        40.516314
+       ],
+       [
+        -117.667785,
+        40.444209
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        -117.63245,
+        40.173817
+       ],
+       [
+        -117.491107,
+        40.173817
+       ],
+       [
+        -117.491107,
+        40.290987
+       ],
+       [
+        -117.63245,
+        40.290987
+       ],
+       [
+        -117.63245,
+        40.173817
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        -117.714899,
+        40.227895
+       ],
+       [
+        -117.63245,
+        40.227895
+       ],
+       [
+        -117.63245,
+        40.372105
+       ],
+       [
+        -117.714899,
+        40.372105
+       ],
+       [
+        -117.714899,
+        40.227895
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "CLK",
+    "org_name": "Larkspur Coordinating Council",
+    "org_type": "Area Coordinating Council",
+    "stake_id": "",
+    "council_id": "CLK",
+    "label_longitude": -117.535277,
+    "label_latitude": 40.320279,
+    "special_unit": false,
+    "bounds": [
+     -117.63245,
+     40.281974,
+     -117.420436,
+     40.354078
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        -117.585336,
+        40.290987
+       ],
+       [
+        -117.538221,
+        40.290987
+       ],
+       [
+        -117.538221,
+        40.354078
+       ],
+       [
+        -117.585336,
+        40.354078
+       ],
+       [
+        -117.585336,
+        40.290987
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        -117.538221,
+        40.290987
+       ],
+       [
+        -117.491107,
+        40.290987
+       ],
+       [
+        -117.491107,
+        40.354078
+       ],
+       [
+        -117.538221,
+        40.354078
+       ],
+       [
+        -117.538221,
+        40.290987
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        -117.63245,
+        40.290987
+       ],
+       [
+        -117.585336,
+        40.290987
+       ],
+       [
+        -117.585336,
+        40.354078
+       ],
+       [
+        -117.63245,
+        40.354078
+       ],
+       [
+        -117.63245,
+        40.290987
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        -117.491107,
+        40.281974
+       ],
+       [
+        -117.420436,
+        40.281974
+       ],
+       [
+        -117.420436,
+        40.345065
+       ],
+       [
+        -117.491107,
+        40.345065
+       ],
+       [
+        -117.491107,
+        40.281974
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "CKS",
+    "org_name": "Kestrel Coordinating Council",
+    "org_type": "Area Coordinating Council",
+    "stake_id": "",
+    "council_id": "CKS",
+    "label_longitude": -117.592697,
+    "label_latitude": 40.354078,
+    "special_unit": false,
+    "bounds": [
+     -117.714899,
+     40.173817,
+     -117.479329,
+     40.516314
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        -117.620671,
+        40.363091
+       ],
+       [
+        -117.502886,
+        40.363091
+       ],
+       [
+        -117.502886,
+        40.444209
+       ],
+       [
+        -117.620671,
+        40.444209
+       ],
+       [
+        -117.620671,
+        40.363091
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        -117.667785,
+        40.444209
+       ],
+       [
+        -117.479329,
+        40.444209
+       ],
+       [
+        -117.479329,
+        40.516314
+       ],
+       [
+        -117.667785,
+        40.516314
+       ],
+       [
+        -117.667785,
+        40.444209
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        -117.63245,
+        40.173817
+       ],
+       [
+        -117.491107,
+        40.173817
+       ],
+       [
+        -117.491107,
+        40.290987
+       ],
+       [
+        -117.63245,
+        40.290987
+       ],
+       [
+        -117.63245,
+        40.173817
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        -117.714899,
+        40.227895
+       ],
+       [
+        -117.63245,
+        40.227895
+       ],
+       [
+        -117.63245,
+        40.372105
+       ],
+       [
+        -117.714899,
+        40.372105
+       ],
+       [
+        -117.714899,
+        40.227895
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "SLK",
+    "org_name": "Larkspur Stake",
+    "org_type": "Stake",
+    "stake_id": "SLK",
+    "council_id": "CLK",
+    "label_longitude": -117.561779,
+    "label_latitude": 40.322533,
+    "special_unit": false,
+    "bounds": [
+     -117.585336,
+     40.290987,
+     -117.538221,
+     40.354078
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.585336,
+       40.290987
+      ],
+      [
+       -117.538221,
+       40.290987
+      ],
+      [
+       -117.538221,
+       40.354078
+      ],
+      [
+       -117.585336,
+       40.354078
+      ],
+      [
+       -117.585336,
+       40.290987
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SLK-1",
+    "org_name": "Larkspur 1st Ward",
+    "org_type": "Ward",
+    "stake_id": "SLK",
+    "council_id": "CLK",
+    "label_longitude": -117.573557,
+    "label_latitude": 40.343563,
+    "special_unit": false,
+    "bounds": [
+     -117.585336,
+     40.333048,
+     -117.561779,
+     40.354078
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.585336,
+       40.333048
+      ],
+      [
+       -117.561779,
+       40.333048
+      ],
+      [
+       -117.561779,
+       40.354078
+      ],
+      [
+       -117.585336,
+       40.354078
+      ],
+      [
+       -117.585336,
+       40.333048
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SLK-2",
+    "org_name": "Larkspur 2nd Ward",
+    "org_type": "Ward",
+    "stake_id": "SLK",
+    "council_id": "CLK",
+    "label_longitude": -117.55,
+    "label_latitude": 40.343563,
+    "special_unit": false,
+    "bounds": [
+     -117.561779,
+     40.333048,
+     -117.538221,
+     40.354078
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.561779,
+       40.333048
+      ],
+      [
+       -117.538221,
+       40.333048
+      ],
+      [
+       -117.538221,
+       40.354078
+      ],
+      [
+       -117.561779,
+       40.354078
+      ],
+      [
+       -117.561779,
+       40.333048
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SLK-3",
+    "org_name": "Larkspur 3rd Ward",
+    "org_type": "Ward",
+    "stake_id": "SLK",
+    "council_id": "CLK",
+    "label_longitude": -117.573557,
+    "label_latitude": 40.322533,
+    "special_unit": false,
+    "bounds": [
+     -117.585336,
+     40.312017,
+     -117.561779,
+     40.333048
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.585336,
+       40.312017
+      ],
+      [
+       -117.561779,
+       40.312017
+      ],
+      [
+       -117.561779,
+       40.333048
+      ],
+      [
+       -117.585336,
+       40.333048
+      ],
+      [
+       -117.585336,
+       40.312017
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SLK-4",
+    "org_name": "Larkspur 4th Ward",
+    "org_type": "Ward",
+    "stake_id": "SLK",
+    "council_id": "CLK",
+    "label_longitude": -117.55,
+    "label_latitude": 40.322533,
+    "special_unit": false,
+    "bounds": [
+     -117.561779,
+     40.312017,
+     -117.538221,
+     40.333048
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.561779,
+       40.312017
+      ],
+      [
+       -117.538221,
+       40.312017
+      ],
+      [
+       -117.538221,
+       40.333048
+      ],
+      [
+       -117.561779,
+       40.333048
+      ],
+      [
+       -117.561779,
+       40.312017
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SLK-5",
+    "org_name": "Larkspur 5th Ward",
+    "org_type": "Ward",
+    "stake_id": "SLK",
+    "council_id": "CLK",
+    "label_longitude": -117.573557,
+    "label_latitude": 40.301502,
+    "special_unit": false,
+    "bounds": [
+     -117.585336,
+     40.290987,
+     -117.561779,
+     40.312017
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.585336,
+       40.290987
+      ],
+      [
+       -117.561779,
+       40.290987
+      ],
+      [
+       -117.561779,
+       40.312017
+      ],
+      [
+       -117.585336,
+       40.312017
+      ],
+      [
+       -117.585336,
+       40.290987
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SLK-6",
+    "org_name": "Larkspur 6th Ward",
+    "org_type": "Ward",
+    "stake_id": "SLK",
+    "council_id": "CLK",
+    "label_longitude": -117.55,
+    "label_latitude": 40.301502,
+    "special_unit": false,
+    "bounds": [
+     -117.561779,
+     40.290987,
+     -117.538221,
+     40.312017
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.561779,
+       40.290987
+      ],
+      [
+       -117.538221,
+       40.290987
+      ],
+      [
+       -117.538221,
+       40.312017
+      ],
+      [
+       -117.561779,
+       40.312017
+      ],
+      [
+       -117.561779,
+       40.290987
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SLK-B1",
+    "org_name": "Larkspur Care Center Branch",
+    "org_type": "Branch",
+    "stake_id": "SLK",
+    "council_id": "CLK",
+    "label_longitude": -117.545289,
+    "label_latitude": 40.308112,
+    "special_unit": true,
+    "bounds": [
+     -117.547409,
+     40.30685,
+     -117.543168,
+     40.309374
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.547409,
+       40.30685
+      ],
+      [
+       -117.543168,
+       40.30685
+      ],
+      [
+       -117.543168,
+       40.309374
+      ],
+      [
+       -117.547409,
+       40.309374
+      ],
+      [
+       -117.547409,
+       40.30685
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "SLE",
+    "org_name": "Larkspur East Stake",
+    "org_type": "Stake",
+    "stake_id": "SLE",
+    "council_id": "CLK",
+    "label_longitude": -117.514664,
+    "label_latitude": 40.322533,
+    "special_unit": false,
+    "bounds": [
+     -117.538221,
+     40.290987,
+     -117.491107,
+     40.354078
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.538221,
+       40.290987
+      ],
+      [
+       -117.491107,
+       40.290987
+      ],
+      [
+       -117.491107,
+       40.354078
+      ],
+      [
+       -117.538221,
+       40.354078
+      ],
+      [
+       -117.538221,
+       40.290987
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SLE-1",
+    "org_name": "Larkspur 7th Ward",
+    "org_type": "Ward",
+    "stake_id": "SLE",
+    "council_id": "CLK",
+    "label_longitude": -117.526443,
+    "label_latitude": 40.343563,
+    "special_unit": false,
+    "bounds": [
+     -117.538221,
+     40.333048,
+     -117.514664,
+     40.354078
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.538221,
+       40.333048
+      ],
+      [
+       -117.514664,
+       40.333048
+      ],
+      [
+       -117.514664,
+       40.354078
+      ],
+      [
+       -117.538221,
+       40.354078
+      ],
+      [
+       -117.538221,
+       40.333048
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SLE-2",
+    "org_name": "Larkspur 8th Ward",
+    "org_type": "Ward",
+    "stake_id": "SLE",
+    "council_id": "CLK",
+    "label_longitude": -117.502886,
+    "label_latitude": 40.343563,
+    "special_unit": false,
+    "bounds": [
+     -117.514664,
+     40.333048,
+     -117.491107,
+     40.354078
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.514664,
+       40.333048
+      ],
+      [
+       -117.491107,
+       40.333048
+      ],
+      [
+       -117.491107,
+       40.354078
+      ],
+      [
+       -117.514664,
+       40.354078
+      ],
+      [
+       -117.514664,
+       40.333048
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SLE-3",
+    "org_name": "Larkspur 9th Ward",
+    "org_type": "Ward",
+    "stake_id": "SLE",
+    "council_id": "CLK",
+    "label_longitude": -117.526443,
+    "label_latitude": 40.322533,
+    "special_unit": false,
+    "bounds": [
+     -117.538221,
+     40.312017,
+     -117.514664,
+     40.333048
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.538221,
+       40.312017
+      ],
+      [
+       -117.514664,
+       40.312017
+      ],
+      [
+       -117.514664,
+       40.333048
+      ],
+      [
+       -117.538221,
+       40.333048
+      ],
+      [
+       -117.538221,
+       40.312017
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SLE-4",
+    "org_name": "Larkspur 10th Ward",
+    "org_type": "Ward",
+    "stake_id": "SLE",
+    "council_id": "CLK",
+    "label_longitude": -117.502886,
+    "label_latitude": 40.322533,
+    "special_unit": false,
+    "bounds": [
+     -117.514664,
+     40.312017,
+     -117.491107,
+     40.333048
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.514664,
+       40.312017
+      ],
+      [
+       -117.491107,
+       40.312017
+      ],
+      [
+       -117.491107,
+       40.333048
+      ],
+      [
+       -117.514664,
+       40.333048
+      ],
+      [
+       -117.514664,
+       40.312017
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SLE-5",
+    "org_name": "Larkspur 11th Ward",
+    "org_type": "Ward",
+    "stake_id": "SLE",
+    "council_id": "CLK",
+    "label_longitude": -117.526443,
+    "label_latitude": 40.301502,
+    "special_unit": false,
+    "bounds": [
+     -117.538221,
+     40.290987,
+     -117.514664,
+     40.312017
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.538221,
+       40.290987
+      ],
+      [
+       -117.514664,
+       40.290987
+      ],
+      [
+       -117.514664,
+       40.312017
+      ],
+      [
+       -117.538221,
+       40.312017
+      ],
+      [
+       -117.538221,
+       40.290987
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SLE-6",
+    "org_name": "Larkspur 12th Ward",
+    "org_type": "Ward",
+    "stake_id": "SLE",
+    "council_id": "CLK",
+    "label_longitude": -117.502886,
+    "label_latitude": 40.301502,
+    "special_unit": false,
+    "bounds": [
+     -117.514664,
+     40.290987,
+     -117.491107,
+     40.312017
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.514664,
+       40.290987
+      ],
+      [
+       -117.491107,
+       40.290987
+      ],
+      [
+       -117.491107,
+       40.312017
+      ],
+      [
+       -117.514664,
+       40.312017
+      ],
+      [
+       -117.514664,
+       40.290987
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SLE-B1",
+    "org_name": "Larkspur Spanish Branch",
+    "org_type": "Branch",
+    "stake_id": "SLE",
+    "council_id": "CLK",
+    "label_longitude": -117.525265,
+    "label_latitude": 40.315322,
+    "special_unit": true,
+    "bounds": [
+     -117.63245,
+     40.290987,
+     -117.491107,
+     40.354078
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        -117.585336,
+        40.290987
+       ],
+       [
+        -117.538221,
+        40.290987
+       ],
+       [
+        -117.538221,
+        40.354078
+       ],
+       [
+        -117.585336,
+        40.354078
+       ],
+       [
+        -117.585336,
+        40.290987
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        -117.538221,
+        40.290987
+       ],
+       [
+        -117.491107,
+        40.290987
+       ],
+       [
+        -117.491107,
+        40.354078
+       ],
+       [
+        -117.538221,
+        40.354078
+       ],
+       [
+        -117.538221,
+        40.290987
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        -117.63245,
+        40.290987
+       ],
+       [
+        -117.585336,
+        40.290987
+       ],
+       [
+        -117.585336,
+        40.354078
+       ],
+       [
+        -117.63245,
+        40.354078
+       ],
+       [
+        -117.63245,
+        40.290987
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "SLW",
+    "org_name": "Larkspur West Stake",
+    "org_type": "Stake",
+    "stake_id": "SLW",
+    "council_id": "CLK",
+    "label_longitude": -117.608893,
+    "label_latitude": 40.322533,
+    "special_unit": false,
+    "bounds": [
+     -117.63245,
+     40.290987,
+     -117.585336,
+     40.354078
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.63245,
+       40.290987
+      ],
+      [
+       -117.585336,
+       40.290987
+      ],
+      [
+       -117.585336,
+       40.354078
+      ],
+      [
+       -117.63245,
+       40.354078
+      ],
+      [
+       -117.63245,
+       40.290987
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SLW-1",
+    "org_name": "Larkspur 13th Ward",
+    "org_type": "Ward",
+    "stake_id": "SLW",
+    "council_id": "CLK",
+    "label_longitude": -117.620671,
+    "label_latitude": 40.343563,
+    "special_unit": false,
+    "bounds": [
+     -117.63245,
+     40.333048,
+     -117.608893,
+     40.354078
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.63245,
+       40.333048
+      ],
+      [
+       -117.608893,
+       40.333048
+      ],
+      [
+       -117.608893,
+       40.354078
+      ],
+      [
+       -117.63245,
+       40.354078
+      ],
+      [
+       -117.63245,
+       40.333048
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SLW-2",
+    "org_name": "Larkspur 14th Ward",
+    "org_type": "Ward",
+    "stake_id": "SLW",
+    "council_id": "CLK",
+    "label_longitude": -117.597114,
+    "label_latitude": 40.343563,
+    "special_unit": false,
+    "bounds": [
+     -117.608893,
+     40.333048,
+     -117.585336,
+     40.354078
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.608893,
+       40.333048
+      ],
+      [
+       -117.585336,
+       40.333048
+      ],
+      [
+       -117.585336,
+       40.354078
+      ],
+      [
+       -117.608893,
+       40.354078
+      ],
+      [
+       -117.608893,
+       40.333048
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SLW-3",
+    "org_name": "Larkspur 15th Ward",
+    "org_type": "Ward",
+    "stake_id": "SLW",
+    "council_id": "CLK",
+    "label_longitude": -117.620671,
+    "label_latitude": 40.322533,
+    "special_unit": false,
+    "bounds": [
+     -117.63245,
+     40.312017,
+     -117.608893,
+     40.333048
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.63245,
+       40.312017
+      ],
+      [
+       -117.608893,
+       40.312017
+      ],
+      [
+       -117.608893,
+       40.333048
+      ],
+      [
+       -117.63245,
+       40.333048
+      ],
+      [
+       -117.63245,
+       40.312017
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SLW-4",
+    "org_name": "Larkspur 16th Ward",
+    "org_type": "Ward",
+    "stake_id": "SLW",
+    "council_id": "CLK",
+    "label_longitude": -117.597114,
+    "label_latitude": 40.322533,
+    "special_unit": false,
+    "bounds": [
+     -117.608893,
+     40.312017,
+     -117.585336,
+     40.333048
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.608893,
+       40.312017
+      ],
+      [
+       -117.585336,
+       40.312017
+      ],
+      [
+       -117.585336,
+       40.333048
+      ],
+      [
+       -117.608893,
+       40.333048
+      ],
+      [
+       -117.608893,
+       40.312017
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SLW-5",
+    "org_name": "Larkspur 17th Ward",
+    "org_type": "Ward",
+    "stake_id": "SLW",
+    "council_id": "CLK",
+    "label_longitude": -117.620671,
+    "label_latitude": 40.301502,
+    "special_unit": false,
+    "bounds": [
+     -117.63245,
+     40.290987,
+     -117.608893,
+     40.312017
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.63245,
+       40.290987
+      ],
+      [
+       -117.608893,
+       40.290987
+      ],
+      [
+       -117.608893,
+       40.312017
+      ],
+      [
+       -117.63245,
+       40.312017
+      ],
+      [
+       -117.63245,
+       40.290987
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SLW-6",
+    "org_name": "Riverside Ward",
+    "org_type": "Ward",
+    "stake_id": "SLW",
+    "council_id": "CLK",
+    "label_longitude": -117.597114,
+    "label_latitude": 40.301502,
+    "special_unit": false,
+    "bounds": [
+     -117.608893,
+     40.290987,
+     -117.585336,
+     40.312017
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.608893,
+       40.290987
+      ],
+      [
+       -117.585336,
+       40.290987
+      ],
+      [
+       -117.585336,
+       40.312017
+      ],
+      [
+       -117.608893,
+       40.312017
+      ],
+      [
+       -117.608893,
+       40.290987
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "SCR",
+    "org_name": "Copper Ridge Stake",
+    "org_type": "Stake",
+    "stake_id": "SCR",
+    "council_id": "CLK",
+    "label_longitude": -117.455772,
+    "label_latitude": 40.31352,
+    "special_unit": false,
+    "bounds": [
+     -117.491107,
+     40.281974,
+     -117.420436,
+     40.345065
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.491107,
+       40.281974
+      ],
+      [
+       -117.420436,
+       40.281974
+      ],
+      [
+       -117.420436,
+       40.345065
+      ],
+      [
+       -117.491107,
+       40.345065
+      ],
+      [
+       -117.491107,
+       40.281974
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SCR-1",
+    "org_name": "Copper Ridge 1st Ward",
+    "org_type": "Ward",
+    "stake_id": "SCR",
+    "council_id": "CLK",
+    "label_longitude": -117.479329,
+    "label_latitude": 40.329292,
+    "special_unit": false,
+    "bounds": [
+     -117.491107,
+     40.31352,
+     -117.46755,
+     40.345065
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.491107,
+       40.31352
+      ],
+      [
+       -117.46755,
+       40.31352
+      ],
+      [
+       -117.46755,
+       40.345065
+      ],
+      [
+       -117.491107,
+       40.345065
+      ],
+      [
+       -117.491107,
+       40.31352
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SCR-2",
+    "org_name": "Copper Ridge 2nd Ward",
+    "org_type": "Ward",
+    "stake_id": "SCR",
+    "council_id": "CLK",
+    "label_longitude": -117.455772,
+    "label_latitude": 40.329292,
+    "special_unit": false,
+    "bounds": [
+     -117.46755,
+     40.31352,
+     -117.443993,
+     40.345065
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.46755,
+       40.31352
+      ],
+      [
+       -117.443993,
+       40.31352
+      ],
+      [
+       -117.443993,
+       40.345065
+      ],
+      [
+       -117.46755,
+       40.345065
+      ],
+      [
+       -117.46755,
+       40.31352
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SCR-3",
+    "org_name": "Copper Ridge 3rd Ward",
+    "org_type": "Ward",
+    "stake_id": "SCR",
+    "council_id": "CLK",
+    "label_longitude": -117.432215,
+    "label_latitude": 40.329292,
+    "special_unit": false,
+    "bounds": [
+     -117.443993,
+     40.31352,
+     -117.420436,
+     40.345065
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.443993,
+       40.31352
+      ],
+      [
+       -117.420436,
+       40.31352
+      ],
+      [
+       -117.420436,
+       40.345065
+      ],
+      [
+       -117.443993,
+       40.345065
+      ],
+      [
+       -117.443993,
+       40.31352
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SCR-4",
+    "org_name": "Copper Ridge 4th Ward",
+    "org_type": "Ward",
+    "stake_id": "SCR",
+    "council_id": "CLK",
+    "label_longitude": -117.479329,
+    "label_latitude": 40.297747,
+    "special_unit": false,
+    "bounds": [
+     -117.491107,
+     40.281974,
+     -117.46755,
+     40.31352
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.491107,
+       40.281974
+      ],
+      [
+       -117.46755,
+       40.281974
+      ],
+      [
+       -117.46755,
+       40.31352
+      ],
+      [
+       -117.491107,
+       40.31352
+      ],
+      [
+       -117.491107,
+       40.281974
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SCR-5",
+    "org_name": "Copper Ridge 5th Ward",
+    "org_type": "Ward",
+    "stake_id": "SCR",
+    "council_id": "CLK",
+    "label_longitude": -117.455772,
+    "label_latitude": 40.297747,
+    "special_unit": false,
+    "bounds": [
+     -117.46755,
+     40.281974,
+     -117.443993,
+     40.31352
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.46755,
+       40.281974
+      ],
+      [
+       -117.443993,
+       40.281974
+      ],
+      [
+       -117.443993,
+       40.31352
+      ],
+      [
+       -117.46755,
+       40.31352
+      ],
+      [
+       -117.46755,
+       40.281974
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SCR-6",
+    "org_name": "Copper Canyon Ward",
+    "org_type": "Ward",
+    "stake_id": "SCR",
+    "council_id": "CLK",
+    "label_longitude": -117.432215,
+    "label_latitude": 40.297747,
+    "special_unit": false,
+    "bounds": [
+     -117.443993,
+     40.281974,
+     -117.420436,
+     40.31352
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.443993,
+       40.281974
+      ],
+      [
+       -117.420436,
+       40.281974
+      ],
+      [
+       -117.420436,
+       40.31352
+      ],
+      [
+       -117.443993,
+       40.31352
+      ],
+      [
+       -117.443993,
+       40.281974
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SCR-B1",
+    "org_name": "Copper Ridge Retirement Branch",
+    "org_type": "Branch",
+    "stake_id": "SCR",
+    "council_id": "CLK",
+    "label_longitude": -117.452238,
+    "label_latitude": 40.312618,
+    "special_unit": true,
+    "bounds": [
+     -117.454358,
+     40.311356,
+     -117.450118,
+     40.31388
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.454358,
+       40.311356
+      ],
+      [
+       -117.450118,
+       40.311356
+      ],
+      [
+       -117.450118,
+       40.31388
+      ],
+      [
+       -117.454358,
+       40.31388
+      ],
+      [
+       -117.454358,
+       40.311356
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "SJS",
+    "org_name": "Juniper Springs Stake",
+    "org_type": "Stake",
+    "stake_id": "SJS",
+    "council_id": "CKS",
+    "label_longitude": -117.561779,
+    "label_latitude": 40.40365,
+    "special_unit": false,
+    "bounds": [
+     -117.620671,
+     40.363091,
+     -117.502886,
+     40.444209
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.620671,
+       40.363091
+      ],
+      [
+       -117.502886,
+       40.363091
+      ],
+      [
+       -117.502886,
+       40.444209
+      ],
+      [
+       -117.620671,
+       40.444209
+      ],
+      [
+       -117.620671,
+       40.363091
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SJS-1",
+    "org_name": "Juniper Springs 1st Ward",
+    "org_type": "Ward",
+    "stake_id": "SJS",
+    "council_id": "CKS",
+    "label_longitude": -117.60104,
+    "label_latitude": 40.42393,
+    "special_unit": false,
+    "bounds": [
+     -117.620671,
+     40.40365,
+     -117.581409,
+     40.444209
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.620671,
+       40.40365
+      ],
+      [
+       -117.581409,
+       40.40365
+      ],
+      [
+       -117.581409,
+       40.444209
+      ],
+      [
+       -117.620671,
+       40.444209
+      ],
+      [
+       -117.620671,
+       40.40365
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SJS-2",
+    "org_name": "Juniper Springs 2nd Ward",
+    "org_type": "Ward",
+    "stake_id": "SJS",
+    "council_id": "CKS",
+    "label_longitude": -117.561779,
+    "label_latitude": 40.42393,
+    "special_unit": false,
+    "bounds": [
+     -117.581409,
+     40.40365,
+     -117.542148,
+     40.444209
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.581409,
+       40.40365
+      ],
+      [
+       -117.542148,
+       40.40365
+      ],
+      [
+       -117.542148,
+       40.444209
+      ],
+      [
+       -117.581409,
+       40.444209
+      ],
+      [
+       -117.581409,
+       40.40365
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SJS-3",
+    "org_name": "Juniper Springs 3rd Ward",
+    "org_type": "Ward",
+    "stake_id": "SJS",
+    "council_id": "CKS",
+    "label_longitude": -117.522517,
+    "label_latitude": 40.42393,
+    "special_unit": false,
+    "bounds": [
+     -117.542148,
+     40.40365,
+     -117.502886,
+     40.444209
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.542148,
+       40.40365
+      ],
+      [
+       -117.502886,
+       40.40365
+      ],
+      [
+       -117.502886,
+       40.444209
+      ],
+      [
+       -117.542148,
+       40.444209
+      ],
+      [
+       -117.542148,
+       40.40365
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SJS-4",
+    "org_name": "Juniper Springs 4th Ward",
+    "org_type": "Ward",
+    "stake_id": "SJS",
+    "council_id": "CKS",
+    "label_longitude": -117.60104,
+    "label_latitude": 40.383371,
+    "special_unit": false,
+    "bounds": [
+     -117.620671,
+     40.363091,
+     -117.581409,
+     40.40365
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.620671,
+       40.363091
+      ],
+      [
+       -117.581409,
+       40.363091
+      ],
+      [
+       -117.581409,
+       40.40365
+      ],
+      [
+       -117.620671,
+       40.40365
+      ],
+      [
+       -117.620671,
+       40.363091
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SJS-5",
+    "org_name": "Juniper Springs 5th Ward",
+    "org_type": "Ward",
+    "stake_id": "SJS",
+    "council_id": "CKS",
+    "label_longitude": -117.561779,
+    "label_latitude": 40.383371,
+    "special_unit": false,
+    "bounds": [
+     -117.581409,
+     40.363091,
+     -117.542148,
+     40.40365
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.581409,
+       40.363091
+      ],
+      [
+       -117.542148,
+       40.363091
+      ],
+      [
+       -117.542148,
+       40.40365
+      ],
+      [
+       -117.581409,
+       40.40365
+      ],
+      [
+       -117.581409,
+       40.363091
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SJS-6",
+    "org_name": "Larkspur Heights Ward",
+    "org_type": "Ward",
+    "stake_id": "SJS",
+    "council_id": "CKS",
+    "label_longitude": -117.522517,
+    "label_latitude": 40.383371,
+    "special_unit": false,
+    "bounds": [
+     -117.542148,
+     40.363091,
+     -117.502886,
+     40.40365
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.542148,
+       40.363091
+      ],
+      [
+       -117.502886,
+       40.363091
+      ],
+      [
+       -117.502886,
+       40.40365
+      ],
+      [
+       -117.542148,
+       40.40365
+      ],
+      [
+       -117.542148,
+       40.363091
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "SKS",
+    "org_name": "Kestrel Stake",
+    "org_type": "Stake",
+    "stake_id": "SKS",
+    "council_id": "CKS",
+    "label_longitude": -117.573557,
+    "label_latitude": 40.480261,
+    "special_unit": false,
+    "bounds": [
+     -117.667785,
+     40.444209,
+     -117.479329,
+     40.516314
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.667785,
+       40.444209
+      ],
+      [
+       -117.479329,
+       40.444209
+      ],
+      [
+       -117.479329,
+       40.516314
+      ],
+      [
+       -117.667785,
+       40.516314
+      ],
+      [
+       -117.667785,
+       40.444209
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SKS-1",
+    "org_name": "Kestrel 1st Ward",
+    "org_type": "Ward",
+    "stake_id": "SKS",
+    "council_id": "CKS",
+    "label_longitude": -117.636376,
+    "label_latitude": 40.498288,
+    "special_unit": false,
+    "bounds": [
+     -117.667785,
+     40.480261,
+     -117.604966,
+     40.516314
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.667785,
+       40.480261
+      ],
+      [
+       -117.604966,
+       40.480261
+      ],
+      [
+       -117.604966,
+       40.516314
+      ],
+      [
+       -117.667785,
+       40.516314
+      ],
+      [
+       -117.667785,
+       40.480261
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SKS-2",
+    "org_name": "Kestrel 2nd Ward",
+    "org_type": "Ward",
+    "stake_id": "SKS",
+    "council_id": "CKS",
+    "label_longitude": -117.573557,
+    "label_latitude": 40.498288,
+    "special_unit": false,
+    "bounds": [
+     -117.604966,
+     40.480261,
+     -117.542148,
+     40.516314
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.604966,
+       40.480261
+      ],
+      [
+       -117.542148,
+       40.480261
+      ],
+      [
+       -117.542148,
+       40.516314
+      ],
+      [
+       -117.604966,
+       40.516314
+      ],
+      [
+       -117.604966,
+       40.480261
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SKS-3",
+    "org_name": "Kestrel 3rd Ward",
+    "org_type": "Ward",
+    "stake_id": "SKS",
+    "council_id": "CKS",
+    "label_longitude": -117.510738,
+    "label_latitude": 40.498288,
+    "special_unit": false,
+    "bounds": [
+     -117.542148,
+     40.480261,
+     -117.479329,
+     40.516314
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.542148,
+       40.480261
+      ],
+      [
+       -117.479329,
+       40.480261
+      ],
+      [
+       -117.479329,
+       40.516314
+      ],
+      [
+       -117.542148,
+       40.516314
+      ],
+      [
+       -117.542148,
+       40.480261
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SKS-4",
+    "org_name": "North Fork Ward",
+    "org_type": "Ward",
+    "stake_id": "SKS",
+    "council_id": "CKS",
+    "label_longitude": -117.636376,
+    "label_latitude": 40.462235,
+    "special_unit": false,
+    "bounds": [
+     -117.667785,
+     40.444209,
+     -117.604966,
+     40.480261
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.667785,
+       40.444209
+      ],
+      [
+       -117.604966,
+       40.444209
+      ],
+      [
+       -117.604966,
+       40.480261
+      ],
+      [
+       -117.667785,
+       40.480261
+      ],
+      [
+       -117.667785,
+       40.444209
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SKS-5",
+    "org_name": "Pine Hollow Ward",
+    "org_type": "Ward",
+    "stake_id": "SKS",
+    "council_id": "CKS",
+    "label_longitude": -117.573557,
+    "label_latitude": 40.462235,
+    "special_unit": false,
+    "bounds": [
+     -117.604966,
+     40.444209,
+     -117.542148,
+     40.480261
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.604966,
+       40.444209
+      ],
+      [
+       -117.542148,
+       40.444209
+      ],
+      [
+       -117.542148,
+       40.480261
+      ],
+      [
+       -117.604966,
+       40.480261
+      ],
+      [
+       -117.604966,
+       40.444209
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SKS-6",
+    "org_name": "Elk Meadow Ward",
+    "org_type": "Ward",
+    "stake_id": "SKS",
+    "council_id": "CKS",
+    "label_longitude": -117.510738,
+    "label_latitude": 40.462235,
+    "special_unit": false,
+    "bounds": [
+     -117.542148,
+     40.444209,
+     -117.479329,
+     40.480261
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.542148,
+       40.444209
+      ],
+      [
+       -117.479329,
+       40.444209
+      ],
+      [
+       -117.479329,
+       40.480261
+      ],
+      [
+       -117.542148,
+       40.480261
+      ],
+      [
+       -117.542148,
+       40.444209
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "SAF",
+    "org_name": "Alder Flat Stake",
+    "org_type": "Stake",
+    "stake_id": "SAF",
+    "council_id": "CKS",
+    "label_longitude": -117.561779,
+    "label_latitude": 40.232402,
+    "special_unit": false,
+    "bounds": [
+     -117.63245,
+     40.173817,
+     -117.491107,
+     40.290987
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.63245,
+       40.173817
+      ],
+      [
+       -117.491107,
+       40.173817
+      ],
+      [
+       -117.491107,
+       40.290987
+      ],
+      [
+       -117.63245,
+       40.290987
+      ],
+      [
+       -117.63245,
+       40.173817
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SAF-1",
+    "org_name": "Alder Flat 1st Ward",
+    "org_type": "Ward",
+    "stake_id": "SAF",
+    "council_id": "CKS",
+    "label_longitude": -117.597114,
+    "label_latitude": 40.271459,
+    "special_unit": false,
+    "bounds": [
+     -117.63245,
+     40.25193,
+     -117.561779,
+     40.290987
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.63245,
+       40.25193
+      ],
+      [
+       -117.561779,
+       40.25193
+      ],
+      [
+       -117.561779,
+       40.290987
+      ],
+      [
+       -117.63245,
+       40.290987
+      ],
+      [
+       -117.63245,
+       40.25193
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SAF-2",
+    "org_name": "Alder Flat 2nd Ward",
+    "org_type": "Ward",
+    "stake_id": "SAF",
+    "council_id": "CKS",
+    "label_longitude": -117.526443,
+    "label_latitude": 40.271459,
+    "special_unit": false,
+    "bounds": [
+     -117.561779,
+     40.25193,
+     -117.491107,
+     40.290987
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.561779,
+       40.25193
+      ],
+      [
+       -117.491107,
+       40.25193
+      ],
+      [
+       -117.491107,
+       40.290987
+      ],
+      [
+       -117.561779,
+       40.290987
+      ],
+      [
+       -117.561779,
+       40.25193
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SAF-3",
+    "org_name": "Alder Flat 3rd Ward",
+    "org_type": "Ward",
+    "stake_id": "SAF",
+    "council_id": "CKS",
+    "label_longitude": -117.597114,
+    "label_latitude": 40.232402,
+    "special_unit": false,
+    "bounds": [
+     -117.63245,
+     40.212874,
+     -117.561779,
+     40.25193
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.63245,
+       40.212874
+      ],
+      [
+       -117.561779,
+       40.212874
+      ],
+      [
+       -117.561779,
+       40.25193
+      ],
+      [
+       -117.63245,
+       40.25193
+      ],
+      [
+       -117.63245,
+       40.212874
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SAF-4",
+    "org_name": "Alder Flat 4th Ward",
+    "org_type": "Ward",
+    "stake_id": "SAF",
+    "council_id": "CKS",
+    "label_longitude": -117.526443,
+    "label_latitude": 40.232402,
+    "special_unit": false,
+    "bounds": [
+     -117.561779,
+     40.212874,
+     -117.491107,
+     40.25193
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.561779,
+       40.212874
+      ],
+      [
+       -117.491107,
+       40.212874
+      ],
+      [
+       -117.491107,
+       40.25193
+      ],
+      [
+       -117.561779,
+       40.25193
+      ],
+      [
+       -117.561779,
+       40.212874
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SAF-5",
+    "org_name": "Willow Bend Ward",
+    "org_type": "Ward",
+    "stake_id": "SAF",
+    "council_id": "CKS",
+    "label_longitude": -117.597114,
+    "label_latitude": 40.193345,
+    "special_unit": false,
+    "bounds": [
+     -117.63245,
+     40.173817,
+     -117.561779,
+     40.212874
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.63245,
+       40.173817
+      ],
+      [
+       -117.561779,
+       40.173817
+      ],
+      [
+       -117.561779,
+       40.212874
+      ],
+      [
+       -117.63245,
+       40.212874
+      ],
+      [
+       -117.63245,
+       40.173817
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SAF-6",
+    "org_name": "Meadowlark Ward",
+    "org_type": "Ward",
+    "stake_id": "SAF",
+    "council_id": "CKS",
+    "label_longitude": -117.526443,
+    "label_latitude": 40.193345,
+    "special_unit": false,
+    "bounds": [
+     -117.561779,
+     40.173817,
+     -117.491107,
+     40.212874
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.561779,
+       40.173817
+      ],
+      [
+       -117.491107,
+       40.173817
+      ],
+      [
+       -117.491107,
+       40.212874
+      ],
+      [
+       -117.561779,
+       40.212874
+      ],
+      [
+       -117.561779,
+       40.173817
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "SSB",
+    "org_name": "Saddleback Stake",
+    "org_type": "Stake",
+    "stake_id": "SSB",
+    "council_id": "CKS",
+    "label_longitude": -117.673675,
+    "label_latitude": 40.3,
+    "special_unit": false,
+    "bounds": [
+     -117.714899,
+     40.227895,
+     -117.63245,
+     40.372105
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.714899,
+       40.227895
+      ],
+      [
+       -117.63245,
+       40.227895
+      ],
+      [
+       -117.63245,
+       40.372105
+      ],
+      [
+       -117.714899,
+       40.372105
+      ],
+      [
+       -117.714899,
+       40.227895
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SSB-1",
+    "org_name": "Saddleback 1st Ward",
+    "org_type": "Ward",
+    "stake_id": "SSB",
+    "council_id": "CKS",
+    "label_longitude": -117.694287,
+    "label_latitude": 40.34807,
+    "special_unit": false,
+    "bounds": [
+     -117.714899,
+     40.324035,
+     -117.673675,
+     40.372105
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.714899,
+       40.324035
+      ],
+      [
+       -117.673675,
+       40.324035
+      ],
+      [
+       -117.673675,
+       40.372105
+      ],
+      [
+       -117.714899,
+       40.372105
+      ],
+      [
+       -117.714899,
+       40.324035
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SSB-2",
+    "org_name": "Saddleback 2nd Ward",
+    "org_type": "Ward",
+    "stake_id": "SSB",
+    "council_id": "CKS",
+    "label_longitude": -117.653062,
+    "label_latitude": 40.34807,
+    "special_unit": false,
+    "bounds": [
+     -117.673675,
+     40.324035,
+     -117.63245,
+     40.372105
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.673675,
+       40.324035
+      ],
+      [
+       -117.63245,
+       40.324035
+      ],
+      [
+       -117.63245,
+       40.372105
+      ],
+      [
+       -117.673675,
+       40.372105
+      ],
+      [
+       -117.673675,
+       40.324035
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SSB-3",
+    "org_name": "Saddleback 3rd Ward",
+    "org_type": "Ward",
+    "stake_id": "SSB",
+    "council_id": "CKS",
+    "label_longitude": -117.694287,
+    "label_latitude": 40.3,
+    "special_unit": false,
+    "bounds": [
+     -117.714899,
+     40.275965,
+     -117.673675,
+     40.324035
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.714899,
+       40.275965
+      ],
+      [
+       -117.673675,
+       40.275965
+      ],
+      [
+       -117.673675,
+       40.324035
+      ],
+      [
+       -117.714899,
+       40.324035
+      ],
+      [
+       -117.714899,
+       40.275965
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SSB-4",
+    "org_name": "Saddleback 4th Ward",
+    "org_type": "Ward",
+    "stake_id": "SSB",
+    "council_id": "CKS",
+    "label_longitude": -117.653062,
+    "label_latitude": 40.3,
+    "special_unit": false,
+    "bounds": [
+     -117.673675,
+     40.275965,
+     -117.63245,
+     40.324035
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.673675,
+       40.275965
+      ],
+      [
+       -117.63245,
+       40.275965
+      ],
+      [
+       -117.63245,
+       40.324035
+      ],
+      [
+       -117.673675,
+       40.324035
+      ],
+      [
+       -117.673675,
+       40.275965
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SSB-5",
+    "org_name": "Dry Gulch Ward",
+    "org_type": "Ward",
+    "stake_id": "SSB",
+    "council_id": "CKS",
+    "label_longitude": -117.694287,
+    "label_latitude": 40.25193,
+    "special_unit": false,
+    "bounds": [
+     -117.714899,
+     40.227895,
+     -117.673675,
+     40.275965
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.714899,
+       40.227895
+      ],
+      [
+       -117.673675,
+       40.227895
+      ],
+      [
+       -117.673675,
+       40.275965
+      ],
+      [
+       -117.714899,
+       40.275965
+      ],
+      [
+       -117.714899,
+       40.227895
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "org_id": "U-SSB-6",
+    "org_name": "Cedar Bench Ward",
+    "org_type": "Ward",
+    "stake_id": "SSB",
+    "council_id": "CKS",
+    "label_longitude": -117.653062,
+    "label_latitude": 40.25193,
+    "special_unit": false,
+    "bounds": [
+     -117.673675,
+     40.227895,
+     -117.63245,
+     40.275965
+    ],
+    "quality": "invented",
+    "area_sq_km": null
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -117.673675,
+       40.227895
+      ],
+      [
+       -117.63245,
+       40.227895
+      ],
+      [
+       -117.63245,
+       40.275965
+      ],
+      [
+       -117.673675,
+       40.275965
+      ],
+      [
+       -117.673675,
+       40.227895
+      ]
+     ]
+    ]
+   }
+  }
+ ]
+}

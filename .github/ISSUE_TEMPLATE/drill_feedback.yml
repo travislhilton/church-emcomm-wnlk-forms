@@ -1,0 +1,70 @@
+name: "Drill / practice feedback"
+description: After a net, tabletop or full drill — what worked, what was confusing, what to change.
+title: "[Drill] "
+labels: ["drill-feedback", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use one of these per person or per team right after the exercise, while it is fresh. Honest beats polite. Coming from the EOC Message Center fills in the drill name, date, your role and the PACE level in force.
+  - type: input
+    id: drill
+    attributes:
+      label: Drill or practice session
+      placeholder: "2026-11-08 monthly net, Contingency level exercised (VARA FM)"
+    validations:
+      required: true
+  - type: dropdown
+    id: role
+    attributes:
+      label: Your role in the drill
+      options:
+        - Helping Hands Volunteer (phone form)
+        - Team Leader / Emergency Response Director
+        - EMCOMM HAM Operator (Winlink)
+        - EOC Operator — Satellite, Stake or Council / Area EOC
+        - Stake President / Bishop / observer
+        - Stake / Area Welfare and Self-Reliance Specialist
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: level
+    attributes:
+      label: PACE level(s) exercised
+      multiple: true
+      options:
+        - P — Primary (cell + internet)
+        - A — Alternate (any internet / Wi-Fi)
+        - C — Contingency (radio: VARA FM / HF)
+        - E — Emergency (runner / paper)
+  - type: textarea
+    id: worked
+    attributes:
+      label: What worked
+    validations:
+      required: true
+  - type: textarea
+    id: confusing
+    attributes:
+      label: What was confusing, slow or failed
+      description: Be specific — which screen, which step, which card, how long it took.
+    validations:
+      required: true
+  - type: textarea
+    id: change
+    attributes:
+      label: One thing to change before the next drill
+  - type: input
+    id: timing
+    attributes:
+      label: How long from "form filled" to "seen at the EOC"?
+      placeholder: "about 12 minutes at Contingency; 1 minute at Primary"
+  - type: dropdown
+    id: confidence
+    attributes:
+      label: Could you do your part for real tomorrow without help?
+      options:
+        - "Yes"
+        - "Mostly — I would need the card"
+        - "No — I need another practice"

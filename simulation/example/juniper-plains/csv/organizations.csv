@@ -1,0 +1,65 @@
+org_id,org_uuid,org_name,org_type,status,active_date,area_id,council_id,stake_id,parent_org_id,property_number,building_id,map_count,map_status,source_url,extracted_on
+JPA,9ce3d1bd8890f16a0c448093595087c6,Juniper Plains Area,Area,Active,2019-01-01,JPA,,,,,,1,invented,,2026-11-01
+JPW,433e54b374c0e06f6663e74402af5a36,Juniper Plains Welfare and Self-Reliance Region,Welfare and Self-Reliance Region,Active,2019-01-01,JPA,,,JPA,PROP-WSR,B-WSR,1,invented,,2026-11-01
+JPO,cca8c902f1a56bef1d7e3299859c9117,Juniper Plains Area Self-Reliance Office,Area PEF Self Reliance Office,Active,2019-01-01,JPA,,,JPA,,,1,invented,,2026-11-01
+CLK,fcea8677932f698f06799f81e024d7ab,Larkspur Coordinating Council,Area Coordinating Council,Active,2019-01-01,JPA,CLK,,JPA,,,1,invented,,2026-11-01
+CKS,62e08e3df930b3022644f9943263a758,Kestrel Coordinating Council,Area Coordinating Council,Active,2019-01-01,JPA,CKS,,JPA,,,1,invented,,2026-11-01
+SLK,1a4da35be77f06e83537fa08013a7bfb,Larkspur Stake,Stake,Active,2019-01-01,JPA,CLK,SLK,CLK,PROP-SLK-1,B-SLK-1,1,invented,,2026-11-01
+U-SLK-1,9e1882e879779576abf852873cc2246b,Larkspur 1st Ward,Ward,Active,2019-01-01,JPA,CLK,SLK,SLK,PROP-SLK-4,B-SLK-4,1,invented,,2026-11-01
+U-SLK-2,a091112260267a214edae4c2f1bffe40,Larkspur 2nd Ward,Ward,Active,2019-01-01,JPA,CLK,SLK,SLK,PROP-SLK-4,B-SLK-4,1,invented,,2026-11-01
+U-SLK-3,6f2ace28a1ac649bf49bcfbb2e963c60,Larkspur 3rd Ward,Ward,Active,2019-01-01,JPA,CLK,SLK,SLK,PROP-SLK-1,B-SLK-1,1,invented,,2026-11-01
+U-SLK-4,9364d0e69aad1066b6532f8f076aea91,Larkspur 4th Ward,Ward,Active,2019-01-01,JPA,CLK,SLK,SLK,PROP-SLK-3,B-SLK-3,1,invented,,2026-11-01
+U-SLK-5,d475716bcc819a8d538dc3e2f6747bba,Larkspur 5th Ward,Ward,Active,2019-01-01,JPA,CLK,SLK,SLK,PROP-SLK-2,B-SLK-2,1,invented,,2026-11-01
+U-SLK-6,1bce667dd66b77eb343ddffd32b3aab8,Larkspur 6th Ward,Ward,Active,2019-01-01,JPA,CLK,SLK,SLK,PROP-SLK-3,B-SLK-3,1,invented,,2026-11-01
+U-SLK-B1,dd460df13a5a626a2cf7541fccab255a,Larkspur Care Center Branch,Branch,Active,2019-01-01,JPA,CLK,SLK,SLK,PROP-SLK-F1,B-SLK-F1,1,invented,,2026-11-01
+SLE,0a1d07df9a43688c7128eefbe3d41b08,Larkspur East Stake,Stake,Active,2019-01-01,JPA,CLK,SLE,CLK,PROP-SLE-1,B-SLE-1,1,invented,,2026-11-01
+U-SLE-1,3e1a81c39e2ffce2a8b9a74888ebae15,Larkspur 7th Ward,Ward,Active,2019-01-01,JPA,CLK,SLE,SLE,PROP-SLE-4,B-SLE-4,1,invented,,2026-11-01
+U-SLE-2,bfb00629c9a231456ed5c999e22762d3,Larkspur 8th Ward,Ward,Active,2019-01-01,JPA,CLK,SLE,SLE,PROP-SLE-4,B-SLE-4,1,invented,,2026-11-01
+U-SLE-3,879e6c9624f3e65f001f88c7e4a363e3,Larkspur 9th Ward,Ward,Active,2019-01-01,JPA,CLK,SLE,SLE,PROP-SLE-1,B-SLE-1,1,invented,,2026-11-01
+U-SLE-4,91d85baa588de65873cb63e31c0431b4,Larkspur 10th Ward,Ward,Active,2019-01-01,JPA,CLK,SLE,SLE,PROP-SLE-1,B-SLE-1,1,invented,,2026-11-01
+U-SLE-5,caa8eea8d03db7020d08a9c5fa2d5c39,Larkspur 11th Ward,Ward,Active,2019-01-01,JPA,CLK,SLE,SLE,PROP-SLE-2,B-SLE-2,1,invented,,2026-11-01
+U-SLE-6,e8dd43181b1d9a8889cdaa8b9c58fe40,Larkspur 12th Ward,Ward,Active,2019-01-01,JPA,CLK,SLE,SLE,PROP-SLE-3,B-SLE-3,1,invented,,2026-11-01
+U-SLE-B1,618fc3984a44cbba7d2deb35a1569d76,Larkspur Spanish Branch,Branch,Active,2019-01-01,JPA,CLK,SLE,SLE,PROP-SLE-1,B-SLE-1,1,invented,,2026-11-01
+SLW,1606ec3c57c50621ee17be6df366d9f0,Larkspur West Stake,Stake,Active,2019-01-01,JPA,CLK,SLW,CLK,PROP-SLW-1,B-SLW-1,1,invented,,2026-11-01
+U-SLW-1,67994f7ee671623a35951888015579ea,Larkspur 13th Ward,Ward,Active,2019-01-01,JPA,CLK,SLW,SLW,PROP-SLW-4,B-SLW-4,1,invented,,2026-11-01
+U-SLW-2,f14589e7c74450cd3dcd0f47c731f10d,Larkspur 14th Ward,Ward,Active,2019-01-01,JPA,CLK,SLW,SLW,PROP-SLW-4,B-SLW-4,1,invented,,2026-11-01
+U-SLW-3,5afe34be42683069231ed69798aa627c,Larkspur 15th Ward,Ward,Active,2019-01-01,JPA,CLK,SLW,SLW,PROP-SLW-1,B-SLW-1,1,invented,,2026-11-01
+U-SLW-4,193c1fe5f9bc599317aeb75288dfb7aa,Larkspur 16th Ward,Ward,Active,2019-01-01,JPA,CLK,SLW,SLW,PROP-SLW-1,B-SLW-1,1,invented,,2026-11-01
+U-SLW-5,c4f79253dc2eab6e5c7552cae2774f03,Larkspur 17th Ward,Ward,Active,2019-01-01,JPA,CLK,SLW,SLW,PROP-SLW-2,B-SLW-2,1,invented,,2026-11-01
+U-SLW-6,89b6204565abef10fb447af0dc2f1ce5,Riverside Ward,Ward,Active,2019-01-01,JPA,CLK,SLW,SLW,PROP-SLW-3,B-SLW-3,1,invented,,2026-11-01
+SCR,b9c29cd5f83c535b0bcaf31343315bad,Copper Ridge Stake,Stake,Active,2019-01-01,JPA,CLK,SCR,CLK,PROP-SCR-1,B-SCR-1,1,invented,,2026-11-01
+U-SCR-1,a7c186ac4d090a200103681be12f8c5e,Copper Ridge 1st Ward,Ward,Active,2019-01-01,JPA,CLK,SCR,SCR,PROP-SCR-1,B-SCR-1,1,invented,,2026-11-01
+U-SCR-2,329f2d70d5974bd47fe8df8ef9222c21,Copper Ridge 2nd Ward,Ward,Active,2019-01-01,JPA,CLK,SCR,SCR,PROP-SCR-1,B-SCR-1,1,invented,,2026-11-01
+U-SCR-3,e96ad79e2e4fff7acd9bfc5fe13bbe96,Copper Ridge 3rd Ward,Ward,Active,2019-01-01,JPA,CLK,SCR,SCR,PROP-SCR-4,B-SCR-4,1,invented,,2026-11-01
+U-SCR-4,831e8bca7991a23f0d7ad092c6848670,Copper Ridge 4th Ward,Ward,Active,2019-01-01,JPA,CLK,SCR,SCR,PROP-SCR-2,B-SCR-2,1,invented,,2026-11-01
+U-SCR-5,b959a75ddff2c397a8a21349df8889c0,Copper Ridge 5th Ward,Ward,Active,2019-01-01,JPA,CLK,SCR,SCR,PROP-SCR-3,B-SCR-3,1,invented,,2026-11-01
+U-SCR-6,689949dbe2c8fd6f47f881398847d85a,Copper Canyon Ward,Ward,Active,2019-01-01,JPA,CLK,SCR,SCR,PROP-SCR-3,B-SCR-3,1,invented,,2026-11-01
+U-SCR-B1,70ad49077f23e15cc0ba3cb4c4d7fb86,Copper Ridge Retirement Branch,Branch,Active,2019-01-01,JPA,CLK,SCR,SCR,PROP-SCR-F1,B-SCR-F1,1,invented,,2026-11-01
+SJS,39615199089c25dc55b29595c14b7732,Juniper Springs Stake,Stake,Active,2019-01-01,JPA,CKS,SJS,CKS,PROP-SJS-1,B-SJS-1,1,invented,,2026-11-01
+U-SJS-1,ae4d1d9a7e0bbdfd288c329f17e0c36f,Juniper Springs 1st Ward,Ward,Active,2019-01-01,JPA,CKS,SJS,SJS,PROP-SJS-2,B-SJS-2,1,invented,,2026-11-01
+U-SJS-2,6c8f134c2434eabe4cf650b60e838095,Juniper Springs 2nd Ward,Ward,Active,2019-01-01,JPA,CKS,SJS,SJS,PROP-SJS-1,B-SJS-1,1,invented,,2026-11-01
+U-SJS-3,a50972e618850448c711da7012195c76,Juniper Springs 3rd Ward,Ward,Active,2019-01-01,JPA,CKS,SJS,SJS,PROP-SJS-3,B-SJS-3,1,invented,,2026-11-01
+U-SJS-4,76fc2ec70d13c4e61d67f12a1e610fa8,Juniper Springs 4th Ward,Ward,Active,2019-01-01,JPA,CKS,SJS,SJS,PROP-SJS-2,B-SJS-2,1,invented,,2026-11-01
+U-SJS-5,3c12f29b65aac3cf98e2e596096e0423,Juniper Springs 5th Ward,Ward,Active,2019-01-01,JPA,CKS,SJS,SJS,PROP-SJS-4,B-SJS-4,1,invented,,2026-11-01
+U-SJS-6,a985c7aff2701b076b7c1c9ec1eeff1a,Larkspur Heights Ward,Ward,Active,2019-01-01,JPA,CKS,SJS,SJS,PROP-SJS-3,B-SJS-3,1,invented,,2026-11-01
+SKS,8e021ce23a0565e3b1d8ae3daa2d8bfd,Kestrel Stake,Stake,Active,2019-01-01,JPA,CKS,SKS,CKS,PROP-SKS-1,B-SKS-1,1,invented,,2026-11-01
+U-SKS-1,1b849aa5352059b1f11a320c495ba9a6,Kestrel 1st Ward,Ward,Active,2019-01-01,JPA,CKS,SKS,SKS,PROP-SKS-2,B-SKS-2,1,invented,,2026-11-01
+U-SKS-2,4ba02a6da801005e4cc2ec838a868700,Kestrel 2nd Ward,Ward,Active,2019-01-01,JPA,CKS,SKS,SKS,PROP-SKS-1,B-SKS-1,1,invented,,2026-11-01
+U-SKS-3,dc11b27d8db11732065072cf6d00441a,Kestrel 3rd Ward,Ward,Active,2019-01-01,JPA,CKS,SKS,SKS,PROP-SKS-1,B-SKS-1,1,invented,,2026-11-01
+U-SKS-4,9c58029cd403ff6ead22bd7651b3b2f4,North Fork Ward,Ward,Active,2019-01-01,JPA,CKS,SKS,SKS,PROP-SKS-2,B-SKS-2,1,invented,,2026-11-01
+U-SKS-5,9050971b70e7f7f75b7d992ba2b1bc5e,Pine Hollow Ward,Ward,Active,2019-01-01,JPA,CKS,SKS,SKS,PROP-SKS-4,B-SKS-4,1,invented,,2026-11-01
+U-SKS-6,1269497206b7c66855c559f1817d464c,Elk Meadow Ward,Ward,Active,2019-01-01,JPA,CKS,SKS,SKS,PROP-SKS-3,B-SKS-3,1,invented,,2026-11-01
+SAF,7c5fc8889b6e3c8756abbd76353d68e7,Alder Flat Stake,Stake,Active,2019-01-01,JPA,CKS,SAF,CKS,PROP-SAF-1,B-SAF-1,1,invented,,2026-11-01
+U-SAF-1,1900c5aa28a4caf61e9da4dd2004ba3c,Alder Flat 1st Ward,Ward,Active,2019-01-01,JPA,CKS,SAF,SAF,PROP-SAF-3,B-SAF-3,1,invented,,2026-11-01
+U-SAF-2,28406fce32a0903edbd321ae7d6c6f22,Alder Flat 2nd Ward,Ward,Active,2019-01-01,JPA,CKS,SAF,SAF,PROP-SAF-2,B-SAF-2,1,invented,,2026-11-01
+U-SAF-3,fcd3a734cd2b9df9427a3ae0e777b0b2,Alder Flat 3rd Ward,Ward,Active,2019-01-01,JPA,CKS,SAF,SAF,PROP-SAF-1,B-SAF-1,1,invented,,2026-11-01
+U-SAF-4,b8949243b4444918a60328d30f473f89,Alder Flat 4th Ward,Ward,Active,2019-01-01,JPA,CKS,SAF,SAF,PROP-SAF-1,B-SAF-1,1,invented,,2026-11-01
+U-SAF-5,040d6ac717e8536dbfbd30ee6cc60d1b,Willow Bend Ward,Ward,Active,2019-01-01,JPA,CKS,SAF,SAF,PROP-SAF-4,B-SAF-4,1,invented,,2026-11-01
+U-SAF-6,f709ca9e84c3789856daea7d3e97c881,Meadowlark Ward,Ward,Active,2019-01-01,JPA,CKS,SAF,SAF,PROP-SAF-4,B-SAF-4,1,invented,,2026-11-01
+SSB,e7b26d653c8b64a48bef062ac0b67374,Saddleback Stake,Stake,Active,2019-01-01,JPA,CKS,SSB,CKS,PROP-SSPROP-1,B-SSB-1,1,invented,,2026-11-01
+U-SSB-1,57dc5ddfae5758056fc8a8f9dbb12607,Saddleback 1st Ward,Ward,Active,2019-01-01,JPA,CKS,SSB,SSB,PROP-SSPROP-2,B-SSB-2,1,invented,,2026-11-01
+U-SSB-2,5b858af254abfe1fbf2f41688d6e6404,Saddleback 2nd Ward,Ward,Active,2019-01-01,JPA,CKS,SSB,SSB,PROP-SSPROP-2,B-SSB-2,1,invented,,2026-11-01
+U-SSB-3,623936c9be711a58e2d51f1fa179c04f,Saddleback 3rd Ward,Ward,Active,2019-01-01,JPA,CKS,SSB,SSB,PROP-SSPROP-1,B-SSB-1,1,invented,,2026-11-01
+U-SSB-4,33db272e6898805625ec1e30d26de0ed,Saddleback 4th Ward,Ward,Active,2019-01-01,JPA,CKS,SSB,SSB,PROP-SSPROP-1,B-SSB-1,1,invented,,2026-11-01
+U-SSB-5,1f6ab6e215fae5757db51c21314af3af,Dry Gulch Ward,Ward,Active,2019-01-01,JPA,CKS,SSB,SSB,PROP-SSPROP-4,B-SSB-4,1,invented,,2026-11-01
+U-SSB-6,7ea0d9055f9d5234180a18416ba261a1,Cedar Bench Ward,Ward,Active,2019-01-01,JPA,CKS,SSB,SSB,PROP-SSPROP-3,B-SSB-3,1,invented,,2026-11-01

@@ -1,0 +1,55 @@
+{
+ "type": "FeatureCollection",
+ "note": "Invented test fixture.",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "building_id": "B1",
+    "organization_names": [
+     "Alpha 1st Ward",
+     "Alpha 2nd Ward"
+    ]
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -117.502886,
+     40.302704
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "building_id": "B2",
+    "organization_names": [
+     "Riverbottom Ward"
+    ]
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -117.493557,
+     40.169441
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "building_id": "B3",
+    "organization_names": [
+     "Bravo 1st Ward"
+    ]
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -117.5,
+     40.36
+    ]
+   }
+  }
+ ]
+}

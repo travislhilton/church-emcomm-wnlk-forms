@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Church of Jesus Christ EMCOMM — Simulator</title>
+<!--
+  EMCOMM (emergency communications) simulator: the controller's console for a drill.
+  Setup (organization pack, EOC, scope, scenario) -> Map -> Run (clock, PACE, injects, cards)
+  -> Roles (what each role player does) -> Hot wash (the evaluation checklist).
+
+  Self-contained: no mapping library, no CDN, no web fonts (repository rule 7). The map is a
+  Web Mercator canvas; the dataset (boundaries, buildings, overlay images) and the organization
+  pack are loaded at run time from sim_server.py and never live in the repository.
+
+  Independent volunteer project, not an official Church product.
+-->
+<style>
+  :root { --ink:#1d2a36; --mute:#5b6b7a; --line:#d5dde5; --bg:#f4f6f8; --panel:#fff; --acc:#1b4f8a; --sel:#e67800; --ok:#1f8a4c; --err:#b03a2e; --warn:#b7791f; }
+  * { box-sizing:border-box; }
+  html, body { height:100%; margin:0; }
+  body { font:14px/1.4 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color:var(--ink); background:var(--bg); display:flex; flex-direction:column; }
+  header { display:flex; align-items:center; gap:12px; padding:7px 14px; background:var(--panel); border-bottom:1px solid var(--line); flex:0 0 auto; }
+  header h1 { font-size:17px; margin:0; font-weight:600; white-space:nowrap; }
+  header .disc { color:var(--mute); font-size:12px; }
+  header .st { margin-left:auto; font-size:12px; color:var(--mute); white-space:nowrap; display:flex; gap:10px; align-items:center; }
+  header .st b { color:var(--ink); }
+  .badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:700; letter-spacing:.03em; }
+  .badge.real { background:#f8d7d3; color:#8a1f12; border:1px solid #e0a39b; }
+  .badge.pseudo { background:#d9efe1; color:#145c33; border:1px solid #9fd0b3; }
+  .badge.none { background:#eceff2; color:var(--mute); }
+  .badge.pace { font-size:13px; padding:2px 10px; background:#e8eef6; color:var(--acc); border:1px solid #b9c9dd; }
+  .badge.pace.C, .badge.pace.E { background:#fdebd9; color:#a04e00; border-color:#f0b87a; }
+  #wrap { flex:1 1 auto; display:flex; min-height:0; }
+  aside { width:420px; flex:0 0 420px; background:var(--panel); border-right:1px solid var(--line); display:flex; flex-direction:column; min-height:0; }
+  .tabs { display:flex; border-bottom:1px solid var(--line); }
+  .tabs button { flex:1; border:0; background:none; padding:9px 2px; font:inherit; font-size:13px; color:var(--mute); cursor:pointer; border-bottom:2px solid transparent; }
+  .tabs button.on { color:var(--acc); border-bottom-color:var(--acc); font-weight:600; }
+  .tabs button .n { display:inline-block; min-width:18px; padding:0 5px; border-radius:9px; background:var(--sel); color:#fff; font-size:10px; margin-left:3px; }
+  .pane { display:none; overflow:auto; padding:10px 12px; flex:1 1 auto; min-height:0; }
+  .pane.on { display:block; }
+  .pane h3 { font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--mute); margin:12px 0 6px; }
+  .pane h3:first-child { margin-top:2px; }
+  label.row { display:flex; align-items:center; gap:8px; padding:3px 0; cursor:pointer; }
+  label.row input[type=range] { flex:1; }
+  input[type=text], input[type=url], input[type=number], select, textarea { width:100%; padding:6px 8px; border:1px solid var(--line); border-radius:6px; font:inherit; background:#fff; }
+  input[type=number] { width:80px; }
+  button.b { padding:6px 10px; border:1px solid var(--line); border-radius:6px; background:#fff; font:inherit; cursor:pointer; }
+  button.b.p { background:var(--acc); color:#fff; border-color:var(--acc); }
+  button.b.w { background:var(--sel); color:#fff; border-color:var(--sel); }
+  button.b.s { padding:2px 7px; font-size:12px; }
+  button.b:disabled { opacity:.5; cursor:default; }
+  .btns { display:flex; gap:6px; flex-wrap:wrap; margin:6px 0; align-items:center; }
+  .muted { color:var(--mute); } .small { font-size:12px; } .ok { color:var(--ok); } .err { color:var(--err); } .warn { color:var(--warn); }
+  .box { border:1px solid var(--line); border-radius:6px; padding:6px 8px; margin:4px 0; background:#fafbfc; }
+  .list { max-height:180px; overflow:auto; border:1px solid var(--line); border-radius:6px; padding:4px 6px; }
+  #orglist { list-style:none; margin:0; padding:0; }
+  #orglist li { padding:5px 6px; border-radius:5px; cursor:pointer; display:flex; justify-content:space-between; gap:8px; }
+  #orglist li:hover { background:#eef3f8; }
+  #orglist li.sel { background:#fdeedc; }
+  #orglist li .t { color:var(--mute); font-size:12px; white-space:nowrap; }
+  #insp { border-top:1px solid var(--line); padding:8px 12px; max-height:40%; overflow:auto; flex:0 0 auto; font-size:13px; }
+  #insp h2 { font-size:15px; margin:0 0 4px; }
+  #insp .kv { display:grid; grid-template-columns:auto 1fr; gap:2px 10px; }
+  #insp .kv div:nth-child(odd) { color:var(--mute); }
+  #insp .ov { margin:6px 0 0; padding:0; list-style:none; }
+  #insp .ov li { display:flex; align-items:center; gap:6px; padding:2px 0; }
+  #insp .ov li .id { font-family:ui-monospace, Consolas, monospace; font-size:12px; }
+  main { flex:1 1 auto; position:relative; min-width:0; }
+  canvas { position:absolute; inset:0; width:100%; height:100%; display:block; cursor:grab; }
+  canvas.measure { cursor:crosshair; }
+  .ctl { position:absolute; left:10px; top:10px; display:flex; flex-direction:column; gap:4px; }
+  .ctl button { width:34px; height:34px; border:1px solid var(--line); background:#fff; border-radius:6px; font:18px/1 inherit; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,.12); }
+  .ctl button.on { background:var(--acc); color:#fff; }
+  #scale { position:absolute; left:10px; bottom:30px; background:rgba(255,255,255,.85); padding:2px 6px; border-radius:4px; font-size:12px; }
+  #scale .bar { height:4px; background:var(--ink); margin-top:2px; }
+  #legend { position:absolute; right:10px; top:10px; background:rgba(255,255,255,.92); border:1px solid var(--line); border-radius:6px; padding:6px 10px; font-size:12px; display:none; }
+  #legend i { display:inline-block; width:12px; height:12px; border-radius:6px; margin-right:5px; vertical-align:-2px; border:1px solid #fff; }
+  #foot { position:absolute; left:0; right:0; bottom:0; background:rgba(255,255,255,.9); border-top:1px solid var(--line); font-size:12px; padding:3px 10px; color:var(--mute); display:flex; gap:16px; }
+  #tip { position:absolute; pointer-events:none; background:#fff; border:1px solid var(--line); border-radius:6px; padding:5px 8px; font-size:12px; box-shadow:0 2px 8px rgba(0,0,0,.15); display:none; max-width:280px; }
+  #log, .mono { font-family:ui-monospace, Consolas, monospace; font-size:12px; white-space:pre-wrap; background:#f6f8fa; border:1px solid var(--line); border-radius:6px; padding:6px; max-height:160px; overflow:auto; margin-top:6px; }
+  #nodata { position:absolute; inset:0; display:none; align-items:center; justify-content:center; padding:30px; text-align:center; background:var(--bg); }
+  #nodata div { max-width:520px; background:#fff; border:1px solid var(--line); border-radius:10px; padding:18px 22px; }
+  code { background:#eef1f4; padding:1px 4px; border-radius:3px; font-size:12px; }
+  /* run console */
+  #clock { font-size:30px; font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:.02em; }
+  .clockrow { display:flex; align-items:center; gap:12px; }
+  .clockrow .sub { font-size:12px; color:var(--mute); }
+  #items { list-style:none; margin:0; padding:0; }
+  #items li { border-top:1px solid var(--line); padding:5px 0; display:grid; grid-template-columns:52px 1fr auto; gap:2px 8px; align-items:start; }
+  #items li.due { background:#fff8ec; }
+  #items li.fired { opacity:.75; }
+  #items li.error { background:#fdecea; }
+  #items li.skipped, #items li.held { opacity:.5; }
+  #items .t { font-variant-numeric:tabular-nums; font-weight:600; color:var(--mute); }
+  #items .k { font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:#fff; background:#7f8c8d; padding:0 5px; border-radius:3px; margin-right:4px; }
+  #items .k.form { background:var(--acc); } #items .k.voice { background:#8e44ad; } #items .k.prompt { background:var(--sel); } #items .k.note { background:#5b6b7a; } #items .k.paper { background:#6d4c41; } #items .k.work_item { background:#1b7f5a; } #items .k.rollup { background:#0b6e99; } #items li.elsewhere { opacity:.45; } .to { display:inline-block; font-size:10px; font-weight:700; background:#eceff2; color:var(--mute); border-radius:8px; padding:0 6px; margin-left:4px; vertical-align:middle; }
+  #board table { border-collapse:collapse; width:100%; } #board td { padding:2px 6px; border-top:1px solid var(--line); vertical-align:top; } #board tr.self td { background:#f3f7fb; } #board .bad { color:#b03a2e; font-weight:600; }
+  #hw .ev { font-size:12px; margin-top:4px; padding:4px 8px; border-radius:6px; background:#eef3f8; } #hw .ev.y { background:#e3f5ea; } #hw .ev.n { background:#fbe7e7; }
+  #items .card { grid-column:1 / -1; background:#fff; border:1px dashed #b9c9dd; border-radius:6px; padding:6px 8px; font-size:13px; white-space:pre-wrap; }
+  #items .res { grid-column:2; font-size:12px; }
+  .role h4 { margin:8px 0 2px; font-size:13px; }
+  .role ol { margin:0 0 6px 18px; padding:0; }
+  .role li { margin:2px 0; } .role li.due { background:#fff8ec; }
+  #hw li { border-top:1px solid var(--line); padding:6px 0; }
+  #hw .chk { display:flex; gap:4px; align-items:center; margin:3px 0; }
+  #hw .chk button { width:30px; }
+  #hw .chk button.on { background:var(--acc); color:#fff; border-color:var(--acc); }
+  .subtabs { display:flex; gap:4px; margin:4px 0 8px; }
+  .subtabs button { flex:1; }
+  .subtabs button.on { background:#e8eef6; border-color:#b9c9dd; }
+  .sub { display:none; } .sub.on { display:block; }
+  /* scoreboard and needs ledger */
+  .score { display:grid; grid-template-columns:repeat(5, minmax(0, 1fr)); gap:5px; margin:6px 0 2px; }
+  .score .tile { border:1px solid var(--line); border-radius:6px; padding:4px 7px; background:#fafbfc; min-width:0; }
+  .score .tile .k { font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:var(--mute); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .score .tile .v { font-size:19px; font-weight:700; line-height:1.15; font-variant-numeric:tabular-nums; }
+  .score .tile .v small { font-size:11px; color:var(--mute); font-weight:600; }
+  .score .tile.bad { background:#fdecea; border-color:#e0a39b; } .score .tile.good { background:#e3f5ea; border-color:#9fd0b3; } .score .tile.warnt { background:#fff8ec; border-color:#f0b87a; }
+  .sbar { height:7px; border-radius:4px; background:#eceff2; overflow:hidden; display:flex; margin:4px 0 2px; } .sbar i { display:block; height:100%; }
+  .chips { display:flex; flex-wrap:wrap; gap:4px; margin:4px 0; } .chip { font-size:11px; border-radius:9px; padding:1px 8px; background:#eceff2; color:var(--mute); } .chip.y { background:#e3f5ea; color:#145c33; } .chip.n { background:#fbe7e7; color:#8a1f12; }
+  .nst { display:inline-block; font-size:10px; font-weight:700; color:#fff; border-radius:4px; padding:0 6px; min-width:50px; text-align:center; vertical-align:middle; }
+  .nst.open { background:#5b6b7a; } .nst.met { background:#1f8a4c; } .nst.late { background:#b7791f; } .nst.overdue { background:#b03a2e; } .nst.missed { background:#7a1f16; } .nst.waived { background:#9aa5b1; }
+  #needs { list-style:none; margin:0; padding:0; } #needs li { border-top:1px solid var(--line); padding:5px 0; display:grid; grid-template-columns:52px 1fr auto; gap:2px 8px; align-items:start; font-size:13px; }
+  #needs li.overdue { background:#fdecea; } #needs li.open.soon { background:#fff8ec; } #needs li.met, #needs li.late { opacity:.8; } #needs li.missed { background:#fbe7e7; } #needs li.waived { opacity:.5; }
+  #needs .ev { grid-column:2 / -1; font-size:12px; color:var(--mute); } #needs .due { font-size:11px; color:var(--warn); } #needs .due.over { color:var(--err); font-weight:600; }
+  #items li.waiting { opacity:.6; border-left:3px dashed #b9c9dd; padding-left:5px; } #items .k.reply { background:#0b6e99; } #items .trig { font-size:11px; color:var(--acc); }
+  #hdr-score { font-size:12px; } #hdr-score b { color:var(--ink); }
+  /* the trainer's session */
+  .ss { list-style:none; margin:0; padding:0; counter-reset:ss; }
+  .ss > li { border:1px solid var(--line); border-radius:8px; padding:8px 10px; margin:0 0 8px; background:#fff; }
+  .ss > li.done { border-color:#9fd0b3; background:#f3fbf6; } .ss > li.now { border-color:var(--acc); box-shadow:0 0 0 2px #dbe7f5; }
+  .ss h4 { margin:0 0 4px; font-size:14px; } .ss h4 .tick { color:var(--ok); margin-right:4px; }
+  .ss .chk { font-size:13px; margin:2px 0; } .ss .chk .y { color:var(--ok); font-weight:700; } .ss .chk .n { color:var(--err); font-weight:700; }
+  button.go { font-size:20px; font-weight:700; padding:10px 28px; background:var(--ok); color:#fff; border:0; border-radius:8px; cursor:pointer; }
+  button.go:disabled { background:#9aa5b1; cursor:default; }
+  .ss .live { font-variant-numeric:tabular-nums; } .ss .live .clk { font-size:26px; font-weight:700; }
+  #ss-sessions li { font-size:12px; border-top:1px solid var(--line); padding:4px 0; list-style:none; } #ss-sessions { margin:0; padding:0; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Church of Jesus Christ EMCOMM Simulator</h1>
+  <span class="disc">Emergency communications drill console · independent volunteer project, not an official Church product</span>
+  <span class="st"><span id="hdr-priv" class="badge none">no pack</span><span id="hdr-pace"></span><span id="hdr-score"></span><span id="hdrst">loading…</span></span>
+</header>
+<div id="wrap">
+<aside>
+  <div class="tabs">
+    <button class="on" data-pane="session">Session</button>
+    <button data-pane="setup">Setup</button>
+    <button data-pane="map">Map</button>
+    <button data-pane="run">Run<span class="n" id="n-due" style="display:none">0</span></button>
+    <button data-pane="needs">Needs<span class="n" id="n-over" style="display:none;background:var(--err)">0</span></button>
+    <button data-pane="roles">Roles</button>
+    <button data-pane="hotwash">Hot wash</button>
+  </div>
+
+  <div class="pane on" id="pane-session">
+    <p class="small muted" style="margin:2px 0 8px">The trainer's path through a drill: set it up before the meeting, reset it, say GO, watch it, finish with the hot wash. The other tabs hold every detail.</p>
+    <ol class="ss">
+      <li id="ss-1"><h4><span class="tick"></span>1. Before the meeting: set up and rehearse</h4>
+        <div id="ss-1-body" class="small"></div>
+        <p class="small muted" style="margin:4px 0 0">Rehearse if you like: GO at 10&#215; for a few minutes shows every path. The reset below clears it from the EOC (Emergency Operations Center).</p></li>
+      <li id="ss-2"><h4><span class="tick"></span>2. Reset for the session</h4>
+        <p class="small" style="margin:2px 0">Stops whatever ran before and keeps it as a rehearsal, opens a <b>fresh drill event</b> on the EOC (no rehearsal traffic; the SITREP (situation report) clock starts at GO), plans the same run again at T+0, sets the PACE level (Primary, Alternate, Contingency, Emergency) to the scenario's first one. Every EOC screen then shows <i>ready: waiting for the trainer's GO</i>.</p>
+        <label class="small">Drill event name <input type="text" id="ss-event" placeholder="DRILL: (scenario) (THIS IS AN EXERCISE)" style="width:100%"></label>
+        <div class="btns"><button class="b" id="ss-reset">Reset for the session</button><span id="ss-2-msg" class="small"></span></div></li>
+      <li id="ss-3"><h4><span class="tick"></span>3. GO</h4>
+        <p class="small" style="margin:2px 0">Give the instructions, hand out the cards (Roles tab), then:</p>
+        <div class="btns"><button class="go" id="ss-go">GO</button>
+          <span class="small">or start every laptop at <input type="time" id="ss-at" step="1" style="width:auto"> <button class="b s" id="ss-sched">Schedule</button></span></div>
+        <div id="ss-3-msg" class="small"></div></li>
+      <li id="ss-4"><h4><span class="tick"></span>4. Live</h4><div id="ss-live" class="live small muted">Not running.</div>
+        <div class="btns"><button class="b s" id="ss-pause">Pause</button><button class="b s" id="ss-run">Open the Run tab</button><button class="b s" id="ss-needs">Needs</button></div></li>
+      <li id="ss-5"><h4><span class="tick"></span>5. Finish: hot wash and results</h4>
+        <div class="btns"><button class="b" id="ss-stop">Stop the drill</button><span id="ss-stop-ask" class="small"></span></div>
+        <div class="small">Then: <a href="#" id="ss-hw">Hot wash tab</a> (Gather evidence) · <a href="/debrief" target="_blank"><b>Debrief for the room</b></a> (on the projector: ← → to move, F full screen) · <a href="/report" target="_blank">After-action report</a></div>
+        <div class="small" style="margin-top:4px">Results for the room (phones on this network, read only): <b id="ss-results"></b></div></li>
+    </ol>
+    <h3 style="margin-top:10px">Saved sessions</h3>
+    <p class="small muted" style="margin:2px 0">Every run is saved beside the pack every 30 seconds. After a restart or a closed window, <b>Resume</b> brings it back paused at the minute it was saved; GO continues it.</p>
+    <ul id="ss-sessions"></ul>
+  </div>
+
+  <div class="pane" id="pane-setup">
+    <details id="dc-box" class="box small" style="margin:0 0 8px"><summary><b>Drill configuration</b> (one file sets up this simulator: pack, privacy, scenario, what it plays) <span id="dc-now" class="muted"></span></summary>
+      <p class="small muted" style="margin:4px 0">The drill director gives you this file (<code>drill-config.json</code>, in the organization pack's <code>simulation</code> folder of a participant package). Keep it on this laptop: it names your organizations. Choose which EOC this laptop is and which optional EOCs have people this time; an optional EOC nobody staffs is played by a simulator.</p>
+      <input type="file" id="dc-file" accept=".json,application/json">
+      <div id="dc-pick" style="display:none;margin-top:6px">
+        <label>This laptop is <select id="dc-eoc" style="width:auto"></select></label>
+        <div id="dc-opt" style="margin:4px 0"></div>
+        <button class="b" id="dc-apply">Set up this simulator</button>
+      </div>
+      <div id="dc-msg" class="small" style="margin-top:4px"></div>
+    </details>
+    <h3 id="setup-1">1. Organization pack</h3>
+    <input type="text" id="packpath" placeholder="Your directory export folder (with csv and simulator in it), or EOC Message Center\simulation\example\juniper-plains">
+    <div class="btns">
+      <select id="privsel" style="width:auto"><option value="pseudonymized">Pseudonymized (default)</option><option value="real">Real contacts</option></select>
+      <button class="b" id="b-pack">Load pack</button><span id="packinfo" class="small muted"></span>
+    </div>
+    <div id="consent-box" class="box small" style="display:none;border-color:#e0a39b;background:#fdf3f1">
+      <b>Real contacts: record the consent first.</b> The directory's names, phones and emails will show on every card, inject and report of this drill.
+      <div class="btns small" style="margin:6px 0 0;flex-wrap:wrap;gap:6px">
+        <label>Who consented <input type="text" id="cs-by" placeholder="name" style="width:160px"></label>
+        <label>as <input type="text" id="cs-role" value="Stake President" style="width:150px"></label>
+        <label>on <input type="date" id="cs-date" style="width:140px"></label>
+        <label>recorded by <input type="text" id="cs-rec" placeholder="your name" style="width:140px"></label>
+      </div>
+      <label class="row small" style="margin-top:4px"><input type="checkbox" id="cs-room"> Everything stays in the room: no screenshots, no shared run files or reports, nothing from this run leaves this laptop. When the drill is over, load the pack pseudonymized again.</label>
+      <div class="btns small" style="margin-top:4px"><button class="b" id="b-consent-load">Load with real contacts</button><button class="b s" id="b-consent-cancel">Cancel</button><span id="consent-err" class="err small"></span></div>
+    </div>
+    <p class="small muted">Pseudonymized keeps last names and invents first names (men's names for men's callings, never another leader's real name), phones (…-555-01xx, the range reserved for fiction) and emails (first.last@churchemcomm.sim). Real contacts need the Stake President's consent, recorded here, and stay in the room.
+    <details id="lr-box" class="box small" style="margin-top:6px"><summary><b>Roles the directory does not list</b> (Emergency Response Director, specialist, HAM (amateur radio) operators) <span id="lr-n" class="muted"></span></summary>
+      <p class="small muted" style="margin:4px 0">The Church directory export has no emergency callings. Add them here. They are saved in <code id="lr-path">…</code> on this laptop (never shared), become contacts of their organization and take the privacy mode like everyone else, so cards and injects can name them (<code>{erd}</code>, <code>{specialist}</code>). This table shows what you typed; the drill uses pseudonyms unless Real contacts is chosen.</p>
+      <table id="lr-table" style="width:100%;border-collapse:collapse"><thead><tr><th style="text-align:left">Organization</th><th style="text-align:left">Role</th><th style="text-align:left">First</th><th style="text-align:left">Last</th><th style="text-align:left">Mobile</th><th style="text-align:left">Email</th><th></th></tr></thead><tbody></tbody></table>
+      <div class="btns small" style="margin-top:4px"><button class="b s" id="lr-add">Add a role</button><button class="b s" id="lr-save">Save and reload the pack</button><span id="lr-msg"></span></div>
+      <datalist id="lr-roles"></datalist>
+    </details> Organization names and buildings are always real.</p>
+    <h3>2. What this simulator plays</h3>
+    <p class="small muted" style="margin:0 0 4px">One simulator per EOC in the drill. Each drill director picks what theirs plays; the reports of every ward go to the EOC that covers it, and the stakes nobody plays arrive at the Council / Area EOC as roll-up bundles.</p>
+    <div class="btns small" id="rolepick">
+      <label><input type="radio" name="role" value="stake" checked> <b>Stake EOC</b></label>
+      <label><input type="radio" name="role" value="satellite"> <b>Satellite EOC</b> (some of a stake's wards)</label>
+      <label><input type="radio" name="role" value="area"> <b>Council / Area EOC</b> (the stakes of one or more coordinating councils)</label>
+    </div>
+    <div id="site-stake" class="box small">
+      <div class="btns small" style="margin:0">Stake <select id="site-stakesel" style="width:auto"></select></div>
+      <div id="site-sat-wrap" style="margin-top:4px">Wards covered by a <b>Satellite EOC</b> in this drill (their reports go to that satellite's simulator, not this one): <span class="muted" id="site-sat-sug"></span>
+        <div id="site-satunits" class="list" style="max-height:120px"></div></div>
+      <label class="row small" id="site-parent-wrap" style="margin-top:4px"><input type="checkbox" id="site-parent"> People play the line above in this drill (a Council / Area EOC laptop or the welfare line as role players answer the items this EOC sets UP). Unticked: the simulator sends their replies (approvals, acknowledgements) itself.</label>
+      <div id="site-units-wrap" style="margin-top:4px;display:none">Wards this Satellite EOC covers: <span class="muted" id="site-units-sug"></span>
+        <div id="site-units" class="list" style="max-height:120px"></div></div>
+    </div>
+    <div id="site-area" class="box small" style="display:none">
+      Coordinating councils: <div id="site-councils" class="list" style="max-height:100px"></div>
+      <div style="margin-top:4px">Stakes with their <b>own EOC laptop</b> in this drill (their roll-ups come from their own simulator; the other stakes are played here and arrive as roll-up bundles): <div id="site-played" class="list" style="max-height:120px"></div></div>
+    </div>
+    <div class="small" id="site-sum"></div>
+    <div id="must-box" class="box small" style="display:none"><b>Must-have roles for this EOC</b> <span id="must-sum" class="muted"></span>
+      <div id="must-list"></div>
+      <p class="small muted" style="margin:4px 0 0">Red rows stop the drill from naming the people the cards and injects refer to. Directory roles come from the Church directory export; add the others under step 1. The people in the room (drill controller, EOC operator, HAM operator) are the scenario's role cards on the Run tab.</p>
+    </div>
+    <h3 id="setup-3">3. The EOC this simulator feeds</h3>
+    <input type="url" id="eocurl" placeholder="http://10.0.0.5:8080">
+    <div class="btns"><button class="b" id="b-check">Check EOC</button><span id="eocinfo" class="small muted"></span></div>
+    <div id="eocdetail" class="small muted"></div>
+    <div class="btns small">
+      <label>Winlink address <input type="text" id="eoc-winlink" placeholder="EOC-CALL@winlink.org" style="width:170px"></label>
+      <label>Drop email <input type="text" id="eoc-email" placeholder="eoc@…" style="width:150px"></label>
+    </div>
+    <h3 id="setup-4">4. Scenario</h3>
+    <select id="scen"></select>
+    <div id="scendesc" class="small box"></div>
+    <div class="btns small">
+      <label>Speed <select id="speed" style="width:auto"><option value="1">1× (real time)</option><option value="2" selected>2×</option><option value="4">4×</option><option value="10">10×</option><option value="60">60× (test)</option></select></label>
+      <label>Seed <input type="number" id="seed" value="1" min="1" max="9999"></label>
+    </div>
+    <div id="scencheck" class="small" style="margin:4px 0"></div>
+    <div class="btns"><button class="b p" id="b-plan">Plan the run</button><span id="planinfo" class="small muted"></span></div>
+    <p class="small muted"><b>Drill event:</b> <b>Reset for the session</b> (Session tab) opens a fresh drill event on the EOC for you (DRILL in its name), so simulated traffic never mixes with a real event; there is nothing to open by hand. Every simulated report says SIMULATED in its text. With several EOCs: every simulator uses the <b>same scenario and seed</b>, and the same scheduled start time (Run tab); the EOC screens show the drill bar and who is ready.</p>
+    <div id="log"></div>
+  </div>
+
+  <div class="pane" id="pane-map">
+    <div class="subtabs"><button class="b on" data-sub="layers">Layers</button><button class="b" data-sub="orgs">Organizations</button></div>
+    <div class="sub on" id="sub-layers">
+      <h3>Vector layers</h3>
+      <label class="row"><input type="checkbox" id="l-stakes" checked> Stake boundaries</label>
+      <label class="row"><input type="checkbox" id="l-wards" checked> Ward and branch boundaries</label>
+      <label class="row"><input type="checkbox" id="l-councils"> Coordinating councils and Area outline</label>
+      <label class="row"><input type="checkbox" id="l-bldg" checked> Buildings (meetinghouses and offices)</label>
+      <label class="row"><input type="checkbox" id="l-labels" checked> Names</label>
+      <label class="row"><input type="checkbox" id="l-sev" checked> Scenario: severity per unit, hazard features, reports as they arrive</label>
+      <h3>Overlay images</h3>
+      <p class="small muted">Select an organization to list its source-map artwork and transparent boundary image. Images are placed by the manifest's Web Mercator bounds; nothing is reprojected.</p>
+      <label class="row">Opacity <input type="range" id="l-opacity" min="0" max="100" value="55"> <span id="l-opv">55%</span></label>
+      <label class="row"><input type="checkbox" id="l-ovbounds" checked> Draw overlay image bounds</label>
+      <div class="btns"><button class="b" id="b-clearov">Hide all overlay images</button></div>
+      <h3>Measure</h3>
+      <p class="small muted">Click the ruler button (or press M), then click points on the map. Distances are geodesic (WGS84, World Geodetic System 1984, ellipsoid). Esc clears.</p>
+      <div id="measure-out" class="small"></div>
+      <h3>About the data</h3>
+      <p class="small muted" id="about">—</p>
+    </div>
+    <div class="sub" id="sub-orgs">
+      <input type="text" id="q" placeholder="Search by name…">
+      <div class="btns"><select id="qtype"><option value="">All types</option><option value="Stake">Stakes</option><option value="Ward">Wards and branches</option><option value="Council">Councils, Area, offices</option></select></div>
+      <ul id="orglist"></ul>
+    </div>
+  </div>
+
+  <div class="pane" id="pane-run">
+    <div class="clockrow"><div id="clock">T+000:00</div><div><div id="clockst" class="sub">no run planned</div><div id="clocklbl" class="sub"></div></div></div>
+    <div class="btns">
+      <button class="b p" id="r-start">Start</button><button class="b" id="r-pause">Pause</button><button class="b" id="r-stop">Stop</button>
+      <label class="small">Speed <select id="r-speed" style="width:auto"><option value="1">1×</option><option value="2">2×</option><option value="4">4×</option><option value="10">10×</option><option value="60">60×</option></select></label>
+      <label class="small">Jump to T+<input type="number" id="r-jump" min="0" max="600" style="width:60px"></label><button class="b s" id="r-jumpb">Go</button>
+    </div>
+    <div class="btns small"><label>Or start every simulator together at <input type="time" id="r-at" step="1" style="width:auto"></label><button class="b s" id="r-sched">Schedule</button><button class="b s" id="r-unsched">Cancel</button><span id="r-countdown" class="warn"></span></div>
+    <div class="box" id="score-box" style="display:none"><div class="btns" style="margin:0"><b>Scoreboard</b> <span id="score-sum" class="small muted"></span><button class="b s" id="b-needs" style="margin-left:auto">Needs tab</button></div>
+      <div class="score" id="score-tiles"></div><div class="sbar" id="score-bar"></div><div class="chips" id="score-checks"></div></div>
+    <div class="box" id="board-box"><div class="btns" style="margin:0"><b>EOCs in this drill</b> <span class="small muted">this EOC and every EOC heard on the network, with what its simulator plays, its clock and who pressed Ready</span><button class="b s" id="b-board" style="margin-left:auto">Refresh</button></div><div id="board" class="small"></div></div>
+    <div class="box">
+      <div class="btns" style="margin:0"><b>PACE in force</b> <span id="r-pace" class="badge pace">—</span> <span id="r-pacenext" class="small muted"></span>
+        <span style="margin-left:auto" class="small">Set now: <button class="b s" data-pace="P">P</button><button class="b s" data-pace="A">A</button><button class="b s" data-pace="C">C</button><button class="b s" data-pace="E">E</button></span></div>
+      <p class="small muted" style="margin:4px 0 0">The scenario changes the level on its timeline; the controller sets it when the players decide. Both push the level to the EOC header. Reports at P/A arrive as phone uploads; at C as Winlink messages (or paper cards when no Winlink folder is watched); at E as paper cards.</p>
+    </div>
+    <div class="box"><b id="ph-title">Phase</b><div id="ph-text" class="small"></div><div id="ph-ctl" class="small warn"></div></div>
+    <div class="btns small">Show
+      <select id="r-filter" style="width:auto"><option value="all">everything</option><option value="here">this EOC's items</option><option value="elsewhere">other EOCs' items</option><option value="due">due and recent</option><option value="cards">cards to hand out</option><option value="consequences">consequences (waiting / triggered)</option><option value="form">reports</option><option value="note">notes</option><option value="prompt">prompts</option><option value="error">errors</option></select>
+      <span id="r-counts" class="muted"></span>
+    </div>
+    <ul id="items"></ul>
+    <h3>Log</h3>
+    <div id="r-log" class="mono"></div>
+  </div>
+
+  <div class="pane" id="pane-needs">
+    <p class="small muted" style="margin:2px 0 6px">What the EOC must do about what the simulator sent: every work item it posts, every work item the EOC derives from a simulated report, every paper or net report a person must type in. Each need has a deadline in drill minutes; the simulator reads the EOC every few seconds. An <b>overdue</b> need triggers its consequence (the caller comes back, the truck stays put); a <b>met</b> need triggers the resolution (approval, thanks, truck ETA, estimated time of arrival). Nothing here is sent to the players: it is the controller's ledger.</p>
+    <div class="box" id="needs-score"><div class="score" id="needs-tiles"></div><div class="sbar" id="needs-bar"></div><div class="chips" id="needs-checks"></div></div>
+    <div class="btns small">Show <select id="nd-filter" style="width:auto"><option value="live">open and overdue</option><option value="all">everything</option><option value="overdue">overdue and missed</option><option value="met">met (on time or late)</option><option value="report">typed-in reports</option></select>
+      <select id="nd-cat" style="width:auto"><option value="">every category</option></select>
+      <button class="b s" id="b-ndrefresh">Read the EOC now</button><span id="nd-counts" class="muted"></span></div>
+    <ul id="needs"></ul>
+  </div>
+
+  <div class="pane" id="pane-roles">
+    <p class="small muted">One card per role: what to do and when. Cards whose minute has passed are highlighted during a run. Print this tab for the room (Ctrl+P).</p>
+    <div id="roles"></div>
+  </div>
+
+  <div class="pane" id="pane-hotwash">
+    <p class="small muted">Fill in during the run or right after. ✓ met, ✗ missed, – not played. Export for the drill-feedback issue. <b>Gather evidence</b> reads the EOC's Work Items list and fills in what it can see (owners, timing, status, decisions) under the checks that have a rule; you still press the button.</p>
+    <div class="btns"><button class="b" id="hw-evidence">Gather evidence from the EOC</button><button class="b" id="hw-export">Export as text</button><span id="hw-sum" class="small muted"></span></div>
+    <div class="box"><b>After-action report</b> <span class="small muted">scoreboard, done-when checks, the do-better list by role, the needs ledger, these answers, the timeline. Written beside the run file when the run ends; print it from the browser.</span>
+      <div class="btns" style="margin:4px 0 0"><button class="b p" id="hw-debrief">Debrief for the room</button><button class="b" id="hw-report">Open the report</button><button class="b" id="hw-report-txt">Report as text</button><button class="b" id="hw-report-red">Report as text, units redacted</button><span id="hw-report-info" class="small muted"></span></div>
+      <p class="small muted" style="margin:4px 0 0">For a drill-feedback issue, use <b>units redacted</b>: unit, building, stake and place names become Unit 1, Building 1 … and leaders' last names are dropped. A pseudonymized run still shows the real unit names everywhere else.</p>
+      <p class="small muted" style="margin:4px 0 0">The debrief is a set of slides for the projector: what went well first, the score, why it matters, one or two things per role, your progress since the last run, and the date of the next drill. ← → to move, F full screen, P print.</p></div>
+    <ul id="hw" style="list-style:none;margin:0;padding:0"></ul>
+  </div>
+
+  <div id="insp"><span class="muted">Click a ward, stake or building on the map, or pick one from Map › Organizations.</span></div>
+</aside>
+<main>
+  <canvas id="map"></canvas>
+  <div class="ctl">
+    <button id="z-in" title="Zoom in (+)">+</button>
+    <button id="z-out" title="Zoom out (−)">−</button>
+    <button id="z-fit" title="Fit all (F)">⌂</button>
+    <button id="z-measure" title="Measure (M)">📏</button>
+  </div>
+  <div id="legend"><b>Severity</b><br><i style="background:#9aa5b1"></i>0 unaffected <i style="background:#e4c441"></i>1 light<br><i style="background:#e67800"></i>2 moderate <i style="background:#b03a2e"></i>3 severe<br><span class="muted">ring = report received at the EOC</span></div>
+  <div id="scale"><span id="scale-t"></span><div class="bar" id="scale-b"></div></div>
+  <div id="foot"><span id="f-cur">—</span><span id="f-res"></span><span id="f-sel"></span></div>
+  <div id="tip"></div>
+  <div id="nodata"><div><h2>Map dataset not loaded</h2><p id="nodata-msg"></p><p class="small muted">Setup → 1. Organization pack: choose your directory export (the folder with <code>csv</code> and <code>simulator</code> in it), or <code>EOC Message Center\simulation\example\juniper-plains</code> for the invented example. Without its <code>simulator</code> folder the map shows only the pack's unit points.</p></div></div>
+</main>
+</div>
+<script>
+'use strict';
+// ---------- Web Mercator (EPSG:3857) and WGS84 helpers ----------
+const R = 6378137, D2R = Math.PI / 180;
+const merc = (lon, lat) => [R * lon * D2R, R * Math.log(Math.tan(Math.PI / 4 + lat * D2R / 2))];
+const unmerc = (x, y) => [x / R / D2R, (2 * Math.atan(Math.exp(y / R)) - Math.PI / 2) / D2R];
+// Vincenty inverse on the WGS84 ellipsoid (geodesic distance in metres); falls back to spherical if it does not converge.
+function geodesic(lat1, lon1, lat2, lon2) {
+  const a = 6378137, f = 1 / 298.257223563, b = a * (1 - f);
+  const L = (lon2 - lon1) * D2R, U1 = Math.atan((1 - f) * Math.tan(lat1 * D2R)), U2 = Math.atan((1 - f) * Math.tan(lat2 * D2R));
+  const sU1 = Math.sin(U1), cU1 = Math.cos(U1), sU2 = Math.sin(U2), cU2 = Math.cos(U2);
+  let lam = L, iter = 0, sinSig, cosSig, sig, sinAlpha, cos2Alpha, cos2SigM;
+  do {
+    const sl = Math.sin(lam), cl = Math.cos(lam);
+    sinSig = Math.sqrt((cU2 * sl) ** 2 + (cU1 * sU2 - sU1 * cU2 * cl) ** 2);
+    if (sinSig === 0) return 0;
+    cosSig = sU1 * sU2 + cU1 * cU2 * cl; sig = Math.atan2(sinSig, cosSig);
+    sinAlpha = cU1 * cU2 * sl / sinSig; cos2Alpha = 1 - sinAlpha ** 2;
+    cos2SigM = cos2Alpha ? cosSig - 2 * sU1 * sU2 / cos2Alpha : 0;
+    const C = f / 16 * cos2Alpha * (4 + f * (4 - 3 * cos2Alpha));
+    const lamP = lam;
+    lam = L + (1 - C) * f * sinAlpha * (sig + C * sinSig * (cos2SigM + C * cosSig * (-1 + 2 * cos2SigM ** 2)));
+    if (Math.abs(lam - lamP) < 1e-12) break;
+  } while (++iter < 100);
+  if (iter >= 100) { const h = Math.sin((lat2 - lat1) * D2R / 2) ** 2 + Math.cos(lat1 * D2R) * Math.cos(lat2 * D2R) * Math.sin(L / 2) ** 2; return 2 * 6371008.8 * Math.asin(Math.sqrt(h)); }
+  const u2 = cos2Alpha * (a * a - b * b) / (b * b);
+  const A = 1 + u2 / 16384 * (4096 + u2 * (-768 + u2 * (320 - 175 * u2))), B = u2 / 1024 * (256 + u2 * (-128 + u2 * (74 - 47 * u2)));
+  const dSig = B * sinSig * (cos2SigM + B / 4 * (cosSig * (-1 + 2 * cos2SigM ** 2) - B / 6 * cos2SigM * (-3 + 4 * sinSig ** 2) * (-3 + 4 * cos2SigM ** 2)));
+  return b * A * (sig - dSig);
+}
+function maidenhead(lat, lon) {                 // 6-character grid square, same as the Worker forms' stn_grid_d
+  lon += 180; lat += 90;
+  const A = 'ABCDEFGHIJKLMNOPQRSTUVWX';
+  return A[Math.floor(lon / 20)] + A[Math.floor(lat / 10)] + Math.floor((lon % 20) / 2) + Math.floor(lat % 10) +
+         A[Math.floor(((lon % 2) * 60) / 5)].toLowerCase() + A[Math.floor(((lat % 1) * 60) / 2.5)].toLowerCase();
+}
+const fmtKm = m => m >= 10000 ? (m / 1000).toFixed(1) + ' km' : m >= 1000 ? (m / 1000).toFixed(2) + ' km' : Math.round(m) + ' m';
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $ = id => document.getElementById(id);
+const SEVC = ['#9aa5b1', '#e4c441', '#e67800', '#b03a2e'];
+
+// ---------- state ----------
+const S = {
+  info: null, orgs: [], byId: new Map(), bldgs: [], bldgById: new Map(), locByOrg: new Map(), manifest: [], manByOrg: new Map(),
+  pack: null, unitsById: new Map(), stakesById: new Map(),
+  scenario: null, scenarios: [], run: null, planned: null,
+  view: { cx: 0, cy: 0, res: 100 }, sel: null, selB: null, hover: null,
+  overlays: new Map(), images: new Map(), measure: { on: false, pts: [] }, dataset: false,
+};
+const canvas = $('map'), ctx = canvas.getContext('2d');
+let W = 0, H = 0;
+
+// ---------- data loading ----------
+async function getJSON(u, opts) { const r = await fetch(u, Object.assign({ cache: 'no-cache' }, opts || {})); const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || (u + ' → HTTP ' + r.status)); return j; }
+const post = (u, body) => getJSON(u, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
+function log(msg, cls) { const el = $('log'), t = new Date().toTimeString().slice(0, 8); el.innerHTML += `<div class="${cls || ''}">${t} ${esc(msg)}</div>`; el.scrollTop = el.scrollHeight; }
+
+async function loadInfo() {
+  S.info = await getJSON('/api/info');
+  $('packpath').value = S.info.packPath || '';
+  showDrillNow();
+  if (!$('eocurl').value) $('eocurl').value = S.info.eocUrl || '';
+  showPackInfo();
+  if (S.info.pack) await loadPack();
+  if (S.info.ok && !S.dataset) await loadDataset();
+  else if (!S.info.ok) { $('nodata-msg').textContent = S.info.error || ''; $('nodata').style.display = S.pack ? 'none' : 'flex'; }
+  await loadScenarios();
+  if (S.info.run) { await pollRun(); }
+  updateHeader();
+}
+function showPackInfo() {
+  const p = S.info && S.info.pack;
+  $('packinfo').innerHTML = p ? `<span class="ok">✓</span> ${p.stakes} stakes · ${p.units} units (${p.wards} wards, ${p.branches} branches) · ${p.buildings} buildings · ${p.contacts} contacts${S.info.localRoles ? ` (${S.info.localRoles} added here)` : ''}` : `<span class="err">${esc(S.info && S.info.packError || 'no pack')}</span>`;
+  $('privsel').value = (S.info && S.info.privacy) || 'pseudonymized';
+  const c = S.info && S.info.consent;
+  if (p && c) $('packinfo').innerHTML += ` · <span class="err">real contacts</span>, consent ${esc(c.by)} (${esc(c.role || 'Stake President')}, ${esc(c.date)}), recorded by ${esc(c.recordedBy || '')}`;
+}
+// ── roles the directory does not list: a local file beside the pack ──
+let LR = { roles: [], orgs: [], path: '' };
+async function loadLocalRoles() {
+  try { const r = await getJSON('/api/local-roles'); if (!r.ok) return; LR = r; } catch (e) { return; }
+  $('lr-path').textContent = LR.readonly ? '(the controller laptop)' : LR.path;
+  ['lr-add', 'lr-save'].forEach(id => { $(id).disabled = !!LR.readonly; });
+  if (LR.readonly) $('lr-msg').innerHTML = '<span class="muted">Read only on this device: the roles are shown with the drill\'s pseudonyms. Change them on the controller laptop.</span>';
+  $('lr-roles').innerHTML = (LR.suggested || []).map(x => `<option value="${esc(x)}">`).join('');
+  renderLocalRoles(); renderRequired();
+}
+function renderRequired() {
+  const rows = LR.required || []; $('must-box').style.display = rows.length ? '' : 'none'; if (!rows.length) return;
+  const need = rows.filter(r => r.status !== 'room'), filled = need.filter(r => r.filled).length;
+  $('must-sum').innerHTML = filled === need.length ? `<span class="ok">all ${need.length} filled</span>` : `<span class="err">${need.length - filled} of ${need.length} missing</span>`;
+  $('must-list').innerHTML = rows.map(r => {
+    const cls = r.status === 'filled' ? 'ok' : r.status === 'room' ? 'muted' : 'err', mark = r.status === 'filled' ? '✓' : r.status === 'room' ? '○' : '✗';
+    const who = r.who.slice(0, 3).map(w => esc(w.who) + (r.who.length > 1 || r.missing.length ? ` (${esc(w.name)})` : '')).join(', ') + (r.who.length > 3 ? ` … ${r.who.length} in all` : '');
+    const miss = r.missing.length ? `<span class="err">missing: ${r.missing.slice(0, 6).map(m => esc(m.name)).join(', ')}${r.missing.length > 6 ? ` … ${r.missing.length} in all` : ''}</span>` : '';
+    const add = r.add ? ` <button class="b s" data-addrole="${esc(r.add.org)}" data-role="${esc(r.add.role)}">Add</button>` : '';
+    const note = r.status === 'room' ? '<span class="muted">a person at the EOC, not in the pack</span>' : r.source === 'directory' && !r.filled ? '<span class="muted">from the directory export; a fresh export or a local entry fills it</span>' : '';
+    return `<div class="row small" style="display:flex;gap:6px;align-items:baseline"><span class="${cls}" style="width:1em">${mark}</span><div style="flex:1"><b>${esc(r.title)}</b> <span class="muted">· ${esc(r.why)}</span><br>${who}${who && miss ? ' · ' : ''}${miss}${note}${add}</div></div>`;
+  }).join('');
+  $('must-list').querySelectorAll('button[data-addrole]').forEach(b => b.onclick = () => {
+    LR.roles.push({ org: b.dataset.addrole, role: b.dataset.role, first: '', last: '', mobile: '', email: '' }); $('lr-box').open = true; renderLocalRoles();
+    const tr = $('lr-table').querySelector('tbody tr:last-child input[data-k=first]'); if (tr) tr.focus();
+  });
+}
+function renderLocalRoles() {
+  const orgOpts = sel => (LR.orgs || []).map(o => `<option value="${esc(o.id)}" ${o.id === sel ? 'selected' : ''}>${esc(o.name)} (${esc(o.type)}${o.stake ? ', ' + esc(o.stake) : ''})</option>`).join('');
+  $('lr-table').querySelector('tbody').innerHTML = LR.roles.map((r, i) => `<tr data-i="${i}"><td><select data-k="org" style="width:auto;max-width:220px">${orgOpts(r.org)}</select></td>
+    <td><input data-k="role" list="lr-roles" value="${esc(r.role || '')}" style="width:220px"></td><td><input data-k="first" value="${esc(r.first || '')}" style="width:90px"></td><td><input data-k="last" value="${esc(r.last || '')}" style="width:100px"></td>
+    <td><input data-k="mobile" value="${esc(r.mobile || '')}" style="width:110px"></td><td><input data-k="email" value="${esc(r.email || '')}" style="width:170px"></td><td><button class="b s" data-del="${i}">×</button></td></tr>`).join('') || '<tr><td colspan="7" class="muted">None yet.</td></tr>';
+  $('lr-n').textContent = LR.roles.length ? `· ${LR.roles.length} added` : '';
+  $('lr-table').querySelectorAll('[data-k]').forEach(el => el.onchange = () => { LR.roles[+el.closest('tr').dataset.i][el.dataset.k] = el.value; });
+  $('lr-table').querySelectorAll('button[data-del]').forEach(b => b.onclick = () => { LR.roles.splice(+b.dataset.del, 1); renderLocalRoles(); });
+}
+$('lr-add').onclick = () => { LR.roles.push({ org: (LR.orgs[0] || {}).id || '', role: 'Emergency Response Director', first: '', last: '', mobile: '', email: '' }); renderLocalRoles(); };
+$('lr-save').onclick = async () => {
+  $('lr-msg').textContent = 'saving…';
+  try { const r = await post('/api/local-roles', { roles: LR.roles }); if (!r.ok) throw new Error(r.error); S.info = r.info; showPackInfo(); await loadPack(); await loadLocalRoles(); $('lr-msg').innerHTML = `<span class="ok">saved ${r.count} role(s); pack reloaded</span>`; }
+  catch (e) { $('lr-msg').innerHTML = `<span class="err">${esc(e.message)}</span>`; }
+};
+async function loadPack() {
+  S.pack = await getJSON('/api/pack');
+  S.unitsById = new Map(S.pack.units.map(u => [u.id, u])); S.stakesById = new Map(S.pack.stakes.map(s => [s.id, s]));
+  for (const u of S.pack.units) if (u.lat != null) u.xy = merc(u.lon, u.lat);
+  buildSite();
+  loadLocalRoles();
+  if (!S.dataset) { fitAll(); draw(); }
+}
+async function loadDataset() {
+  try {
+    const [bnd, bld, loc, man] = await Promise.all([
+      getJSON('/data/simulator/organization_boundaries.geojson'), getJSON('/data/simulator/buildings.geojson').catch(() => ({ features: [] })),
+      getJSON('/data/simulator/organization_locations.geojson').catch(() => ({ features: [] })), getJSON('/data/simulator/overlays/manifest.json').catch(() => [])]);   // only the boundaries are required
+    S.orgs = []; S.byId.clear(); S.bldgs = []; S.bldgById.clear(); S.locByOrg.clear(); S.manByOrg.clear();
+    for (const f of bnd.features) {
+      const p = f.properties, o = { id: p.org_id, name: p.org_name, type: p.org_type, p, polys: [], bbox: null, labelXY: null };
+      if (f.geometry) {
+        const polys = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates;
+        let x0 = 1e30, y0 = 1e30, x1 = -1e30, y1 = -1e30;
+        for (const poly of polys) o.polys.push(poly.map(ring => ring.map(([lon, lat]) => { const m = merc(lon, lat); if (m[0] < x0) x0 = m[0]; if (m[0] > x1) x1 = m[0]; if (m[1] < y0) y0 = m[1]; if (m[1] > y1) y1 = m[1]; return m; })));
+        o.bbox = [x0, y0, x1, y1];
+      }
+      if (p.label_longitude != null) o.labelXY = merc(p.label_longitude, p.label_latitude);
+      S.orgs.push(o); S.byId.set(o.id, o);
+    }
+    for (const f of bld.features) { const p = f.properties, [lon, lat] = f.geometry.coordinates; const b = { id: p.building_id, lon, lat, xy: merc(lon, lat), p }; S.bldgs.push(b); S.bldgById.set(b.id, b); }
+    for (const f of loc.features) S.locByOrg.set(f.properties.org_id, f.properties);
+    S.manifest = man;
+    for (const r of man) { if (!S.manByOrg.has(r.org_id)) S.manByOrg.set(r.org_id, []); S.manByOrg.get(r.org_id).push(r); }
+    const c = S.info.counts;
+    $('about').textContent = `Export: ${S.info.exportRoot}. ${c.artwork} source-map artwork frames and ${c.boundaryImages} transparent boundary images have placement records` + (c.missingImages ? ` (${c.missingImages} image files missing on disk)` : '') + '. Boundaries are approximate, traced from source maps; building points come from the dataset, with unspecified positional accuracy.';
+    S.dataset = true; $('nodata').style.display = 'none';
+    buildOrgList(); fitAll(); draw();
+  } catch (e) { $('nodata-msg').textContent = String(e.message || e); $('nodata').style.display = S.pack ? 'none' : 'flex'; }
+}
+function updateHeader() {
+  const pr = S.info && S.info.privacy, p = S.info && S.info.pack;
+  const b = $('hdr-priv'); b.className = 'badge ' + (p ? (pr === 'real' ? 'real' : 'pseudo') : 'none');
+  const cs = S.info && S.info.consent; b.textContent = p ? (pr === 'real' ? 'REAL CONTACTS' + (cs ? ` · consent ${cs.by}, ${cs.date}` : '') : 'PSEUDONYMIZED') : 'no pack';
+  b.title = pr === 'real' && cs ? `Consent: ${cs.by} (${cs.role || 'Stake President'}) on ${cs.date}, recorded by ${cs.recordedBy || ''}. Nothing from this run leaves the room.` : '';
+  const r = S.run;
+  $('hdr-pace').innerHTML = r ? `<span class="badge pace ${esc(r.clock.pace)}">PACE ${esc(r.clock.pace)}</span>` : '';
+  const sc = r && r.score; $('hdr-score').innerHTML = sc && sc.total ? `needs <b>${sc.met + sc.late}/${sc.total}</b>${sc.overdue + sc.missed ? ` · <b style="color:var(--err)">${sc.overdue + sc.missed} overdue</b>` : ''}${sc.pct != null ? ` · <b>${sc.pct}%</b>` : ''}` : '';
+  $('hdrst').innerHTML = r ? `<b>${esc(r.scenario.name)}</b> · ${esc(r.clock.status)} · ${r.scope.units.length} units` : (p ? `<b>${p.units}</b> units in ${p.stakes} stakes` : 'no pack loaded');
+}
+
+// ---------- view ----------
+function resize() { const dpr = window.devicePixelRatio || 1, r = canvas.getBoundingClientRect(); W = Math.round(r.width); H = Math.round(r.height); canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); draw(); }
+const toScr = (x, y) => [(x - S.view.cx) / S.view.res + W / 2, H / 2 - (y - S.view.cy) / S.view.res];
+const fromScr = (sx, sy) => [S.view.cx + (sx - W / 2) * S.view.res, S.view.cy - (sy - H / 2) * S.view.res];
+function fitBox(b, pad = 0.9) { if (!b) return; S.view.cx = (b[0] + b[2]) / 2; S.view.cy = (b[1] + b[3]) / 2; S.view.res = Math.max((b[2] - b[0]) / (W * pad), (b[3] - b[1]) / (H * pad), 0.05); }
+function fitAll() {
+  let b = null;
+  const add = bb => { b = b ? [Math.min(b[0], bb[0]), Math.min(b[1], bb[1]), Math.max(b[2], bb[2]), Math.max(b[3], bb[3])] : bb.slice(); };
+  for (const o of S.orgs) if (o.bbox && o.type !== 'Area' && o.type !== 'Area Coordinating Council') add(o.bbox);
+  if (!b && S.pack) for (const u of S.pack.units) if (u.xy) add([u.xy[0] - 2000, u.xy[1] - 2000, u.xy[0] + 2000, u.xy[1] + 2000]);
+  fitBox(b); draw();
+}
+function zoomAt(factor, sx = W / 2, sy = H / 2) { const [mx, my] = fromScr(sx, sy); S.view.res = Math.min(Math.max(S.view.res / factor, 0.05), 20000); const [nx, ny] = fromScr(sx, sy); S.view.cx += mx - nx; S.view.cy += my - ny; draw(); }
+
+// ---------- drawing ----------
+const L = () => ({ stakes: $('l-stakes').checked, wards: $('l-wards').checked, councils: $('l-councils').checked, bldg: $('l-bldg').checked, labels: $('l-labels').checked, sev: $('l-sev').checked, ovb: $('l-ovbounds').checked });
+const isWardish = o => o.type === 'Ward' || o.type === 'Branch';
+const isCouncil = o => !(isWardish(o) || o.type === 'Stake');
+function strokePoly(o) {
+  const res = S.view.res; ctx.beginPath();
+  for (const poly of o.polys) for (const ring of poly) {
+    let lx = NaN, ly = NaN, first = true;
+    for (const [x, y] of ring) { const sx = (x - S.view.cx) / res + W / 2, sy = H / 2 - (y - S.view.cy) / res; if (!first && Math.abs(sx - lx) < 0.6 && Math.abs(sy - ly) < 0.6) continue; first ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy); first = false; lx = sx; ly = sy; }
+    ctx.closePath();
+  }
+}
+const onScreen = b => b && !(toScr(b[0], b[1])[0] > W || toScr(b[2], b[3])[0] < 0 || toScr(b[0], b[1])[1] < 0 || toScr(b[2], b[3])[1] > H);
+function sevOf(unitId) { const r = S.run || S.planned; if (!r) return null; const u = r.scope.units.find(x => x.id === unitId); return u ? u.severity : null; }
+function draw() {
+  if (!W) return;
+  const l = L(), res = S.view.res, opacity = +$('l-opacity').value / 100;
+  ctx.fillStyle = '#e9eef3'; ctx.fillRect(0, 0, W, H);
+  const act = [...S.overlays.values()].sort((a, b) => (a.kind === 'source_map_artwork' ? 0 : 1) - (b.kind === 'source_map_artwork' ? 0 : 1));
+  for (const r of act) {
+    const [w, s, e, n] = r.web_mercator_bounds, [sx, sy] = toScr(w, n), sw = (e - w) / res, sh = (n - s) / res;
+    if (sx > W || sy > H || sx + sw < 0 || sy + sh < 0) continue;
+    const img = getImage(r);
+    if (img && img.complete && img.naturalWidth) { ctx.globalAlpha = r.kind === 'source_map_artwork' ? opacity : Math.min(1, opacity + 0.35); ctx.drawImage(img, sx, sy, sw, sh); ctx.globalAlpha = 1; }
+    if (l.ovb) { ctx.strokeStyle = r.kind === 'source_map_artwork' ? '#8e44ad' : '#16a085'; ctx.setLineDash([6, 4]); ctx.lineWidth = 1.5; ctx.strokeRect(sx, sy, sw, sh); ctx.setLineDash([]); }
+  }
+  // scenario hazard features under the polygons
+  const sc = S.scenario, showSev = l.sev && sc;
+  if (showSev && sc.geo && sc.geo.features) for (const [name, f] of Object.entries(sc.geo.features)) {
+    if (f.type !== 'polygon') continue;
+    ctx.beginPath(); f.coords.forEach(([lon, lat], i) => { const m = merc(lon, lat), [sx, sy] = toScr(m[0], m[1]); i ? ctx.lineTo(sx, sy) : ctx.moveTo(sx, sy); }); ctx.closePath();
+    ctx.fillStyle = name.includes('bottom') || name.includes('flood') ? 'rgba(41,128,185,.13)' : 'rgba(176,58,46,.10)'; ctx.fill(); ctx.strokeStyle = name.includes('bottom') ? '#2980b9' : '#b03a2e'; ctx.setLineDash([4, 4]); ctx.lineWidth = 1.2; ctx.stroke(); ctx.setLineDash([]);
+  }
+  const groups = [[l.councils, isCouncil, '#7f8c8d', 1.5, 'rgba(127,140,141,.05)', [8, 6]], [l.wards, isWardish, '#2f7fc1', 1, 'rgba(47,127,193,.06)', []], [l.stakes, o => o.type === 'Stake', '#1b4f8a', 2.5, 'rgba(0,0,0,0)', []]];
+  for (const [on, pred, stroke, lw, fill, dash] of groups) {
+    if (!on) continue;
+    for (const o of S.orgs) {
+      if (!o.polys.length || !pred(o) || !onScreen(o.bbox) || o === S.sel) continue;
+      strokePoly(o);
+      const sv = showSev && isWardish(o) ? sevOf(o.id) : null;
+      ctx.fillStyle = sv == null ? fill : SEVC[sv] + '33'; ctx.fill('evenodd'); ctx.setLineDash(dash); ctx.strokeStyle = o === S.hover ? '#e67800' : stroke; ctx.lineWidth = o === S.hover ? lw + 1.5 : lw; ctx.stroke(); ctx.setLineDash([]);
+    }
+  }
+  if (S.sel && S.sel.polys.length) { strokePoly(S.sel); ctx.fillStyle = 'rgba(230,120,0,.14)'; ctx.fill('evenodd'); ctx.strokeStyle = '#e67800'; ctx.lineWidth = 3; ctx.stroke(); }
+  if (showSev && sc.geo && sc.geo.epicenter) { const m = merc(sc.geo.epicenter[1], sc.geo.epicenter[0]), [sx, sy] = toScr(m[0], m[1]); ctx.beginPath(); for (let i = 0; i < 10; i++) { const a = i * Math.PI / 5 - Math.PI / 2, rr = i % 2 ? 6 : 14; ctx.lineTo(sx + rr * Math.cos(a), sy + rr * Math.sin(a)); } ctx.closePath(); ctx.fillStyle = '#b03a2e'; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke(); }
+  if (l.labels) {
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+    for (const o of S.orgs) {
+      if (!o.labelXY) continue;
+      const stake = o.type === 'Stake', ward = isWardish(o);
+      if (!((stake && l.stakes && res > 3) || (ward && l.wards && res < 40) || (isCouncil(o) && l.councils && res > 200))) continue;
+      const [sx, sy] = toScr(o.labelXY[0], o.labelXY[1]); if (sx < -200 || sx > W + 200 || sy < -50 || sy > H + 50) continue;
+      ctx.font = stake ? 'bold 13px sans-serif' : ward ? '11px sans-serif' : 'italic 13px sans-serif';
+      ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.strokeText(o.name, sx, sy); ctx.fillStyle = stake ? '#1b4f8a' : ward ? '#2c3e50' : '#555'; ctx.fillText(o.name, sx, sy);
+    }
+  }
+  if (l.bldg) {
+    if (S.dataset) for (const b of S.bldgs) { const [sx, sy] = toScr(b.xy[0], b.xy[1]); if (sx < -10 || sx > W + 10 || sy < -10 || sy > H + 10) continue; ctx.beginPath(); ctx.arc(sx, sy, b === S.selB ? 7 : 5, 0, Math.PI * 2); ctx.fillStyle = b === S.selB ? '#e67800' : '#c0392b'; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke(); }
+    else if (S.pack) for (const u of S.pack.units) { if (!u.xy) continue; const [sx, sy] = toScr(u.xy[0], u.xy[1]); ctx.beginPath(); ctx.arc(sx, sy, 5, 0, Math.PI * 2); ctx.fillStyle = '#c0392b'; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke(); }
+  }
+  // severity dots per unit (at the meetinghouse, offset per unit so shared buildings stay readable) and received-report rings
+  const r = S.run || S.planned;
+  if (showSev && r) {
+    const perB = new Map();
+    for (const u of r.scope.units) {
+      const pu = S.unitsById.get(u.id); if (!pu || !pu.xy) continue;
+      const k = pu.building || u.id, n = perB.get(k) || 0; perB.set(k, n + 1);
+      const ang = n * 0.9, rad = n ? 11 + 4 * Math.floor(n / 7) : 0, [bx, by] = toScr(pu.xy[0], pu.xy[1]), sx = bx + rad * Math.cos(ang), sy = by + rad * Math.sin(ang);
+      if (sx < -20 || sx > W + 20 || sy < -20 || sy > H + 20) continue;
+      ctx.beginPath(); ctx.arc(sx, sy, 5, 0, Math.PI * 2); ctx.fillStyle = SEVC[u.severity]; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.stroke();
+      const got = S.run && S.run.items.some(it => it.kind === 'form' && it.unit_id === u.id && it.status === 'fired' && it.result && it.result.ok);
+      if (got) { ctx.beginPath(); ctx.arc(sx, sy, 9, 0, Math.PI * 2); ctx.strokeStyle = '#1f8a4c'; ctx.lineWidth = 2; ctx.stroke(); }
+    }
+  }
+  $('legend').style.display = showSev && r ? 'block' : 'none';
+  if (S.measure.pts.length) {
+    ctx.beginPath(); S.measure.pts.forEach(([lon, lat], i) => { const m = merc(lon, lat), [sx, sy] = toScr(m[0], m[1]); i ? ctx.lineTo(sx, sy) : ctx.moveTo(sx, sy); });
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.setLineDash([5, 4]); ctx.stroke(); ctx.setLineDash([]);
+    for (const [lon, lat] of S.measure.pts) { const m = merc(lon, lat), [sx, sy] = toScr(m[0], m[1]); ctx.beginPath(); ctx.arc(sx, sy, 4, 0, Math.PI * 2); ctx.fillStyle = '#000'; ctx.fill(); }
+  }
+  drawScale(); $('f-res').textContent = `${res >= 1 ? res.toFixed(1) : res.toFixed(2)} m/px (Mercator)`;
+}
+function drawScale() {
+  const latC = unmerc(S.view.cx, S.view.cy)[1], ground = S.view.res * Math.cos(latC * D2R);
+  const target = ground * 120; const nice = [1, 2, 5].map(n => n * Math.pow(10, Math.floor(Math.log10(target)))).concat(10 * Math.pow(10, Math.floor(Math.log10(target))));
+  const len = nice.reduce((a, b) => Math.abs(b - target) < Math.abs(a - target) ? b : a);
+  $('scale-t').textContent = fmtKm(len); $('scale-b').style.width = (len / ground) + 'px';
+}
+function getImage(r) { if (S.images.has(r.overlay_id)) return S.images.get(r.overlay_id); const img = new Image(); img.onload = draw; img.onerror = () => log(`image failed: ${r.image_path}`, 'err'); img.src = '/data/' + r.image_path; S.images.set(r.overlay_id, img); return img; }
+
+// ---------- hit testing, selection, inspector ----------
+function inRing(ring, x, y) { let inside = false; for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) { const [xi, yi] = ring[i], [xj, yj] = ring[j]; if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inside = !inside; } return inside; }
+function orgAt(x, y, l) {
+  let best = null;
+  for (const o of S.orgs) {
+    if (!o.bbox || x < o.bbox[0] || x > o.bbox[2] || y < o.bbox[1] || y > o.bbox[3]) continue;
+    if (!((isWardish(o) && l.wards) || (o.type === 'Stake' && l.stakes) || (isCouncil(o) && l.councils))) continue;
+    const hit = o.polys.some(poly => inRing(poly[0], x, y) && !poly.slice(1).some(h => inRing(h, x, y)));
+    if (hit && (!best || (o.p.area_sq_km || 1e9) < (best.p.area_sq_km || 1e9))) best = o;
+  }
+  return best;
+}
+function bldgAt(sx, sy) { let best = null, bd = 9; for (const b of S.bldgs) { const [bx, by] = toScr(b.xy[0], b.xy[1]), d = Math.hypot(bx - sx, by - sy); if (d < bd) { bd = d; best = b; } } return best; }
+function select(o, zoom) { S.sel = o; S.selB = null; if (o && zoom && o.bbox) fitBox(o.bbox, 0.8); renderInspector(); markList(); draw(); }
+function selectBuilding(b) { S.selB = b; S.sel = null; renderInspector(); markList(); draw(); }
+function stakeName(id) { const s = S.stakesById.get(id) || S.byId.get(id); return s ? s.name : id || '—'; }
+function leaderOf(unitId) { const u = S.unitsById.get(unitId); if (!u || !S.pack) return null; const C = new Map(S.pack.contacts.map(c => [c.id, c])); for (const role of ['Bishop', 'Branch President', 'Bishopric First Counselor']) for (const id of u.leaders) { const c = C.get(id); if (c && c.role === role) return c; } return null; }
+function renderInspector() {
+  const el = $('insp');
+  if (S.selB) {
+    const b = S.selB, p = b.p;
+    el.innerHTML = `<h2>Building</h2><div class="kv"><div>Address</div><div>${esc(p.address_raw)}</div><div>Coordinates</div><div>${b.lat.toFixed(5)}, ${b.lon.toFixed(5)} · ${maidenhead(b.lat, b.lon)}</div><div>Source</div><div>${esc(p.coordinate_method)} (${esc(p.accuracy_class)})</div><div>Hosts</div><div>${(p.organization_names || []).map(esc).join('<br>') || '—'}</div></div>`;
+    $('f-sel').textContent = 'Building: ' + p.address_raw; return;
+  }
+  const o = S.sel;
+  if (!o) { el.innerHTML = '<span class="muted">Click a ward, stake or building on the map, or pick one from Map › Organizations.</span>'; $('f-sel').textContent = ''; return; }
+  const p = o.p, loc = S.locByOrg.get(o.id), b = loc && loc.building_id ? S.bldgById.get(loc.building_id) : null;
+  const pu = S.unitsById.get(o.id), lead = leaderOf(o.id), sv = sevOf(o.id);
+  const recs = (S.manByOrg.get(o.id) || []).slice().sort((a, c) => a.overlay_id.localeCompare(c.overlay_id));
+  const items = S.run ? S.run.items.filter(it => it.unit_id === o.id) : [];
+  el.innerHTML = `<h2>${esc(o.name)}</h2><div class="kv">
+    <div>Type</div><div>${esc(o.type)}${pu && pu.flags.length ? ' · ' + pu.flags.join(', ').replace(/_/g, ' ') : ''}${pu && pu.draws_from.length ? ` · draws from ${pu.draws_from.length} stakes` : ''}</div>
+    ${isWardish(o) ? `<div>Stake</div><div>${esc(stakeName(p.stake_id))}</div>` : ''}
+    ${lead ? `<div>${esc(lead.role)}</div><div>${esc(lead.name)} ${esc(lead.mobile || lead.phone)} ${esc(lead.email)}</div>` : ''}
+    ${sv != null ? `<div>Severity</div><div><span style="color:${SEVC[sv]};font-weight:700">band ${sv}</span> · ${items.filter(i => i.kind === 'form').length} reports planned, ${items.filter(i => i.status === 'fired').length} sent</div>` : ''}
+    <div>Boundary</div><div>${esc(p.boundary_status || '—')}${p.area_sq_km ? ` · ${p.area_sq_km.toFixed(1)} km²` : ''}</div>
+    <div>Meetinghouse</div><div>${b ? esc(b.p.address_raw) : (pu && pu.address) || 'none in the dataset'}</div></div>
+    <div class="btns"><button class="b s" id="i-zoom">Zoom to</button>${b ? '<button class="b s" id="i-bldg">Building</button>' : ''}${recs.length ? '<button class="b s" id="i-allov">Show all images</button>' : ''}</div>
+    ${recs.length ? `<ul class="ov">${recs.map(r => `<li><input type="checkbox" data-ov="${esc(r.overlay_id)}" ${S.overlays.has(r.overlay_id) ? 'checked' : ''}> <span class="id">${esc(r.overlay_id)}</span> <span class="muted small">${r.kind === 'source_map_artwork' ? 'artwork' : 'boundary'}</span> <button class="b s" data-zov="${esc(r.overlay_id)}" title="Zoom to image bounds">⌖</button></li>`).join('')}</ul>` : ''}`;
+  $('f-sel').textContent = `${o.type}: ${o.name}`;
+  $('i-zoom').onclick = () => { fitBox(o.bbox, 0.8); draw(); };
+  if (b) $('i-bldg').onclick = () => selectBuilding(b);
+  if (recs.length) $('i-allov').onclick = () => { recs.forEach(r => S.overlays.set(r.overlay_id, r)); renderInspector(); draw(); };
+  el.querySelectorAll('input[data-ov]').forEach(cb => cb.onchange = () => { const r = recs.find(x => x.overlay_id === cb.dataset.ov); cb.checked ? S.overlays.set(r.overlay_id, r) : S.overlays.delete(r.overlay_id); draw(); });
+  el.querySelectorAll('button[data-zov]').forEach(bt => bt.onclick = () => { const r = recs.find(x => x.overlay_id === bt.dataset.zov); S.overlays.set(r.overlay_id, r); fitBox(r.web_mercator_bounds, 0.85); renderInspector(); draw(); });
+}
+function buildOrgList() {
+  const q = $('q').value.trim().toLowerCase(), t = $('qtype').value, ul = $('orglist');
+  const rows = S.orgs.filter(o => (!q || o.name.toLowerCase().includes(q)) && (!t || (t === 'Ward' ? isWardish(o) : t === 'Council' ? isCouncil(o) : o.type === t))).sort((a, b) => (a.type === 'Stake' ? 0 : 1) - (b.type === 'Stake' ? 0 : 1) || a.name.localeCompare(b.name));
+  ul.innerHTML = rows.map(o => `<li data-id="${esc(o.id)}"${o === S.sel ? ' class="sel"' : ''}><span>${esc(o.name)}</span><span class="t">${esc(o.type)}</span></li>`).join('');
+  ul.querySelectorAll('li').forEach(li => li.onclick = () => select(S.byId.get(li.dataset.id), true));
+}
+function markList() { $('orglist').querySelectorAll('li').forEach(li => li.classList.toggle('sel', S.sel && li.dataset.id === S.sel.id)); }
+$('q').oninput = buildOrgList; $('qtype').onchange = buildOrgList;
+
+// ---------- map interaction ----------
+let drag = null, moved = false;
+canvas.addEventListener('mousedown', e => { drag = { x: e.clientX, y: e.clientY, cx: S.view.cx, cy: S.view.cy }; moved = false; canvas.style.cursor = 'grabbing'; });
+window.addEventListener('mousemove', e => {
+  if (drag) { const dx = e.clientX - drag.x, dy = e.clientY - drag.y; if (Math.abs(dx) + Math.abs(dy) > 3) moved = true; S.view.cx = drag.cx - dx * S.view.res; S.view.cy = drag.cy + dy * S.view.res; draw(); return; }
+  const r = canvas.getBoundingClientRect(), sx = e.clientX - r.left, sy = e.clientY - r.top; if (sx < 0 || sy < 0 || sx > W || sy > H) return;
+  const [x, y] = fromScr(sx, sy), [lon, lat] = unmerc(x, y); $('f-cur').textContent = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+  const b = L().bldg ? bldgAt(sx, sy) : null, tip = $('tip');
+  if (b) { tip.style.display = 'block'; tip.style.left = (sx + 14) + 'px'; tip.style.top = (sy + 14) + 'px'; tip.innerHTML = `<b>${esc(b.p.address_raw)}</b><br><span class="muted">${(b.p.organization_names || []).slice(0, 4).map(esc).join('<br>')}${(b.p.organization_names || []).length > 4 ? '<br>…' : ''}</span>`; } else tip.style.display = 'none';
+  const h = orgAt(x, y, L()); if (h !== S.hover) { S.hover = h; draw(); }
+});
+window.addEventListener('mouseup', e => {
+  if (!drag) return; const wasDrag = moved; drag = null; canvas.style.cursor = S.measure.on ? 'crosshair' : 'grab'; if (wasDrag) return;
+  const r = canvas.getBoundingClientRect(), sx = e.clientX - r.left, sy = e.clientY - r.top; if (sx < 0 || sy < 0 || sx > W || sy > H) return;
+  const [x, y] = fromScr(sx, sy);
+  if (S.measure.on) { S.measure.pts.push(unmerc(x, y)); measureOut(); draw(); return; }
+  const b = L().bldg ? bldgAt(sx, sy) : null; if (b) return selectBuilding(b);
+  select(orgAt(x, y, L()), false);
+});
+canvas.addEventListener('wheel', e => { e.preventDefault(); const r = canvas.getBoundingClientRect(); zoomAt(e.deltaY < 0 ? 1.25 : 0.8, e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+canvas.addEventListener('dblclick', e => { const r = canvas.getBoundingClientRect(); zoomAt(2, e.clientX - r.left, e.clientY - r.top); });
+$('z-in').onclick = () => zoomAt(1.5); $('z-out').onclick = () => zoomAt(1 / 1.5); $('z-fit').onclick = fitAll; $('z-measure').onclick = toggleMeasure;
+function toggleMeasure() { S.measure.on = !S.measure.on; if (!S.measure.on) S.measure.pts = []; $('z-measure').classList.toggle('on', S.measure.on); canvas.classList.toggle('measure', S.measure.on); measureOut(); draw(); }
+function measureOut() { const p = S.measure.pts; let total = 0, parts = []; for (let i = 1; i < p.length; i++) { const d = geodesic(p[i - 1][1], p[i - 1][0], p[i][1], p[i][0]); total += d; parts.push(fmtKm(d)); } $('measure-out').innerHTML = S.measure.on ? (p.length ? `<b>${fmtKm(total)}</b> total${parts.length > 1 ? ' (' + parts.join(' + ') + ')' : ''} · ${p.length} point${p.length > 1 ? 's' : ''}` : 'Click the first point.') : ''; }
+window.addEventListener('keydown', e => {
+  if (e.target.matches('input, select, textarea')) return;
+  if (e.key === '+' || e.key === '=') zoomAt(1.5); else if (e.key === '-') zoomAt(1 / 1.5); else if (e.key === 'f' || e.key === 'F') fitAll();
+  else if (e.key === 'm' || e.key === 'M') toggleMeasure(); else if (e.key === 'Escape') { if (S.measure.on) toggleMeasure(); else select(null); }
+  else if (e.key.startsWith('Arrow')) { const d = 60 * S.view.res; if (e.key === 'ArrowLeft') S.view.cx -= d; if (e.key === 'ArrowRight') S.view.cx += d; if (e.key === 'ArrowUp') S.view.cy += d; if (e.key === 'ArrowDown') S.view.cy -= d; draw(); }
+});
+function showPane(name) { document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x.dataset.pane === name)); document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === 'pane-' + name)); }
+document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => showPane(b.dataset.pane));
+document.querySelectorAll('.subtabs button').forEach(b => b.onclick = () => { document.querySelectorAll('.subtabs button').forEach(x => x.classList.toggle('on', x === b)); document.querySelectorAll('.sub').forEach(p => p.classList.toggle('on', p.id === 'sub-' + b.dataset.sub)); });
+['l-stakes', 'l-wards', 'l-councils', 'l-bldg', 'l-labels', 'l-sev', 'l-ovbounds'].forEach(id => $(id).onchange = draw);
+$('l-opacity').oninput = () => { $('l-opv').textContent = $('l-opacity').value + '%'; draw(); };
+$('b-clearov').onclick = () => { S.overlays.clear(); renderInspector(); draw(); };
+window.addEventListener('resize', resize);
+
+// ---------- Setup: pack, EOC, scope, scenario ----------
+async function loadPackAs(mode, consent) {
+  $('packinfo').textContent = 'loading…';
+  try { const r = await post('/api/pack', { path: $('packpath').value.trim(), privacy: mode, confirm: mode === 'real', consent: consent || undefined }); S.info = r.info; showPackInfo(); await loadPack(); if (S.info.ok && !S.dataset) await loadDataset(); await loadScenarios(); updateHeader(); log(`Pack loaded (${mode}): ${S.info.pack.units} units` + (consent ? ` · consent ${consent.by}, ${consent.date}` : '')); return true; }
+  catch (e) { $('packinfo').innerHTML = `<span class="err">${esc(e.message)}</span>`; log('Pack: ' + e.message, 'err'); return false; }
+}
+function showConsent(on) { $('consent-box').style.display = on ? '' : 'none'; if (on) { if (!$('cs-date').value) $('cs-date').value = new Date().toISOString().slice(0, 10); $('consent-err').textContent = ''; $('cs-by').focus(); } }
+$('privsel').onchange = () => showConsent($('privsel').value === 'real');
+$('b-consent-cancel').onclick = () => { $('privsel').value = 'pseudonymized'; showConsent(false); };
+$('b-consent-load').onclick = async () => {
+  const consent = { by: $('cs-by').value.trim(), role: $('cs-role').value.trim() || 'Stake President', date: $('cs-date').value, recordedBy: $('cs-rec').value.trim(), inRoom: $('cs-room').checked };
+  const miss = !consent.by ? 'who consented' : !consent.date ? 'the date' : !consent.recordedBy ? 'who records it' : !consent.inRoom ? 'the in-the-room promise' : '';
+  if (miss) { $('consent-err').textContent = 'Missing: ' + miss; return; }
+  if (await loadPackAs('real', consent)) showConsent(false);
+};
+$('b-pack').onclick = async () => {
+  const mode = $('privsel').value;
+  // Real contacts: the recorded consent of this session is reused (same pack); otherwise the form opens.
+  if (mode === 'real') { const c = S.info && S.info.consent; if (c && c.by) return loadPackAs('real', c); showConsent(true); log('Record the consent, then press Load with real contacts.', 'err'); return; }
+  showConsent(false); await loadPackAs('pseudonymized');
+};
+const eocUrl = () => $('eocurl').value.trim().replace(/\/+$/, '');
+let eocProbe = null;
+$('b-check').onclick = checkEoc;
+async function checkEoc() {
+  $('eocinfo').textContent = 'checking…'; $('eocdetail').textContent = '';
+  try {
+    const p = eocProbe = await getJSON('/api/eoc?url=' + encodeURIComponent(eocUrl()));
+    if (!p.ok) throw new Error(p.error || 'not reachable');
+    const st = p.status, drill = /drill/i.test(st.activeEventName || '');
+    $('eocinfo').innerHTML = `<span class="ok">✓</span> <b>${esc(st.eocName || 'unnamed EOC')}</b> (${esc(st.eocLevel || '?')}) · PACE ${esc(st.pace || '—')}`;
+    $('eocdetail').innerHTML = `Event: <b class="${drill ? 'ok' : 'warn'}">${esc(st.activeEventName || 'none')}</b>${drill ? '' : ' — open a drill event on the EOC before running'} · ${st.msgCount} messages · roster ${(p.roster || []).length}<br>Winlink folder: ${p.receivedDir ? '<span class="ok">watched</span> ' + esc(p.receivedDir) : '<span class="warn">not watched</span> (C-level reports become paper cards)'}<br>Drop Folder: ${p.dropDir ? esc(p.dropDir) : '<span class="warn">none</span>'}`;
+    post('/api/settings', { eocUrl: eocUrl() }).catch(() => {});
+    log(`EOC reachable: ${st.eocName || '?'}, event "${st.activeEventName || ''}"`);
+  } catch (e) { $('eocinfo').innerHTML = `<span class="err">not reachable</span>`; log('EOC not reachable at ' + eocUrl() + ' (is eoc_server.py running? same network?)', 'err'); }
+}
+// What this simulator plays: a Stake EOC (minus the wards a satellite covers), a Satellite EOC's
+// wards, or a Council / Area EOC over councils (its stakes without an EOC laptop are played here).
+const role = () => (document.querySelector('input[name=role]:checked') || {}).value || 'stake';
+const checked = id => [...$(id).querySelectorAll('input:checked')].map(cb => cb.dataset.k);
+function buildSite() {
+  const st = S.pack.stakes.slice().sort((a, b) => a.name.localeCompare(b.name)), saved = (S.info && S.info.site) || {};
+  $('site-stakesel').innerHTML = st.map(s => `<option value="${esc(s.id)}">${esc(s.name)} (${s.units.length})</option>`).join('');
+  if (saved.stake && S.stakesById.has(saved.stake)) $('site-stakesel').value = saved.stake;
+  const cs = (S.pack.councils || []).slice().sort((a, b) => a.name.localeCompare(b.name));
+  $('site-councils').innerHTML = cs.map(c => `<label class="row small"><input type="checkbox" data-k="${esc(c.id)}" ${(saved.councils || []).includes(c.id) || !cs.length ? 'checked' : ''}> ${esc(c.name)} <span class="muted">(${c.stakes.length} stakes)</span></label>`).join('') || '<span class="muted">The pack has no coordinating councils.</span>';
+  if (saved.role) { const r = document.querySelector(`input[name=role][value="${saved.role}"]`); if (r) r.checked = true; }
+  $('site-parent').checked = !!saved.played_parent; $('site-parent').onchange = siteSummary;
+  buildSiteUnits(saved);
+}
+function buildSiteUnits(saved) {
+  saved = saved || {};
+  const sid = $('site-stakesel').value, units = S.pack.units.filter(u => u.stake === sid).sort((a, b) => a.name.localeCompare(b.name));
+  const rows = (id, pre) => $(id).innerHTML = units.map(u => `<label class="row small"><input type="checkbox" data-k="${esc(u.id)}" ${pre.includes(u.id) ? 'checked' : ''}> ${esc(u.name)}</label>`).join('');
+  rows('site-satunits', saved.satellite_units || []); rows('site-units', saved.units || []);
+  const stakes = S.pack.stakes.filter(s => checked('site-councils').some(c => (S.pack.councils.find(x => x.id === c) || {}).stakes.includes(s.id)));
+  $('site-played').innerHTML = stakes.map(s => `<label class="row small"><input type="checkbox" data-k="${esc(s.id)}" ${(saved.played_stakes || []).includes(s.id) ? 'checked' : ''}> ${esc(s.name)}</label>`).join('') || '<span class="muted">Pick a council first.</span>';
+  $('site-played').querySelectorAll('input').forEach(cb => cb.onchange = siteSummary);
+  ['site-satunits', 'site-units'].forEach(id => $(id).querySelectorAll('input').forEach(cb => cb.onchange = siteSummary));
+  suggestSatellite(); siteSummary();
+}
+async function suggestSatellite() {
+  // the scenario may name the wards a Satellite EOC would cover (e.g. the far side of a closed bridge)
+  const sid = $('site-stakesel').value, sc = $('scen').value; if (!sid || !sc) return;
+  try {
+    const s = await getJSON('/api/scenarios/' + encodeURIComponent(sc) + '?stake=' + encodeURIComponent(sid));
+    const sug = s.suggested_satellite_units || [], names = sug.map(u => (S.unitsById.get(u) || {}).name).filter(Boolean);
+    const txt = names.length ? `scenario suggests: ${names.join(', ')} ` : '';
+    $('site-sat-sug').innerHTML = txt ? txt + `<button class="b s" id="b-sug1">use</button>` : ''; $('site-units-sug').innerHTML = txt ? txt + `<button class="b s" id="b-sug2">use</button>` : '';
+    const apply = id => () => { $(id).querySelectorAll('input').forEach(cb => cb.checked = sug.includes(cb.dataset.k)); siteSummary(); };
+    if (txt) { $('b-sug1').onclick = apply('site-satunits'); $('b-sug2').onclick = apply('site-units'); }
+  } catch (e) { /* no suggestion */ }
+}
+function siteSpec() {
+  const r = role();
+  return { role: r, stake: $('site-stakesel').value, satellite_units: r === 'stake' ? checked('site-satunits') : [], units: r === 'satellite' ? checked('site-units') : [],
+           councils: r === 'area' ? checked('site-councils') : [], played_stakes: r === 'area' ? checked('site-played') : [], played_parent: r === 'stake' && $('site-parent').checked };
+}
+function siteSummary() {
+  const r = role(), s = siteSpec(), st = S.stakesById.get(s.stake) || { name: '?', units: [] };
+  $('site-stake').style.display = r === 'area' ? 'none' : ''; $('site-area').style.display = r === 'area' ? '' : 'none';
+  $('site-sat-wrap').style.display = r === 'stake' ? '' : 'none'; $('site-units-wrap').style.display = r === 'satellite' ? '' : 'none'; $('site-parent-wrap').style.display = r === 'stake' ? '' : 'none';
+  let txt;
+  if (r === 'stake') txt = `<b>${esc(st.name)} EOC</b>: ${st.units.length - s.satellite_units.length} of ${st.units.length} units report here` + (s.satellite_units.length ? `; ${s.satellite_units.length} report to the Satellite EOC (its simulator fires them)` : '') + (s.played_parent ? '; the line above is played by people (no simulated replies)' : '; the simulator plays the line above (replies, approvals)');
+  else if (r === 'satellite') txt = s.units.length ? `<b>Satellite EOC of ${esc(st.name)}</b>: ${s.units.length} units report here; everything else is the Stake EOC's` : `<span class="err">Pick the wards this Satellite EOC covers.</span>`;
+  else { const stakes = (S.pack.stakes || []).filter(x => s.councils.some(c => (S.pack.councils.find(y => y.id === c) || {}).stakes.includes(x.id))); const played = stakes.filter(x => s.played_stakes.includes(x.id)).length;
+    txt = stakes.length ? `<b>Council / Area EOC</b> over ${stakes.length} stakes: ${played} with their own EOC laptop (their roll-ups come from them), ${stakes.length - played} played here and delivered as roll-up bundles` : `<span class="err">Pick at least one council.</span>`; }
+  $('site-sum').innerHTML = txt;
+  post('/api/settings', { site: s }).then(() => loadLocalRoles()).catch(() => {});
+}
+document.querySelectorAll('input[name=role]').forEach(r => r.onchange = siteSummary);
+$('site-stakesel').onchange = () => buildSiteUnits((S.info && S.info.site) || {});
+$('site-councils').onchange = () => buildSiteUnits((S.info && S.info.site) || {});
+async function loadScenarios() {
+  const cat = await getJSON('/api/scenarios'); S.scenarios = cat.scenarios;
+  $('scen').innerHTML = cat.scenarios.map(s => `<option value="${esc(s.id)}">${s.status === 'developed' ? '● ' : '○ '}${esc(s.name)}${s.applies_here === false ? ' (not this area)' : ''}${s.local_binding ? ' ★' : ''}</option>`).join('');
+  if (S.info && S.info.scenario && cat.scenarios.some(s => s.id === S.info.scenario)) $('scen').value = S.info.scenario;
+  $('scen').onchange = showScenario; showScenario();
+}
+// ── Drill configuration file ──
+let DC = null;
+$('dc-file').onchange = () => {
+  const f = $('dc-file').files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const c = JSON.parse(r.result);
+      if (!c || c.kind !== 'church_emcomm_drill_config' || !Array.isArray(c.eocs)) throw new Error('this is not a drill configuration file');
+      DC = c;
+      const had = (S.info && S.info.drill) || {};
+      $('dc-eoc').innerHTML = c.eocs.map(e => `<option value="${esc(e.id)}">${esc(e.name)}${e.manned === 'optional' ? ' (optional)' : ''}</option>`).join('');
+      if (had.eoc) $('dc-eoc').value = had.eoc;
+      $('dc-opt').innerHTML = c.eocs.filter(e => e.manned === 'optional').map(e =>
+        `<label class="row small"><input type="checkbox" data-opt="${esc(e.id)}"${(had.manned || []).includes(e.id) ? ' checked' : ''}> People staff <b>${esc(e.name)}</b> in this drill</label>`).join('');
+      $('dc-pick').style.display = '';
+      $('dc-msg').textContent = `${c.name} · ${c.eocs.length} EOCs · scenario ${c.scenario} · contacts ${c.privacy}`;
+    } catch (e) { $('dc-msg').textContent = 'Could not read it: ' + e.message; }
+  };
+  r.readAsText(f);
+};
+$('dc-apply').onclick = async () => {
+  if (!DC) return;
+  const manned = [...document.querySelectorAll('#dc-opt input[data-opt]:checked')].map(i => i.dataset.opt);
+  $('dc-msg').textContent = 'Loading the pack and setting up…';
+  try {
+    const d = await getJSON('/api/drillconfig', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ config: DC, eoc: $('dc-eoc').value, manned }) });
+    $('dc-msg').textContent = `This simulator plays for ${d.drill.eocName}. With people: ${d.drill.manned.join(', ')}. Reloading…`;
+    setTimeout(() => location.reload(), 1000);
+  } catch (e) { $('dc-msg').textContent = e.message; }
+};
+function showDrillNow() {
+  const d = S.info && S.info.drill;
+  $('dc-now').textContent = d ? `— now: ${d.eocName} (with people: ${d.manned.join(', ')})` : '';
+}
+async function showScenario() {
+  const s = S.scenarios.find(x => x.id === $('scen').value); if (!s) return;
+  $('scendesc').innerHTML = `<b>${esc(s.hazard)}</b> · ${s.duration_min} min · ${s.status === 'developed' ? 'fully developed' : 'outline only (no injects yet)'}${s.local_binding ? ' · local binding found' : ''}<br>${esc(s.summary)}<br><span class="muted">PACE: ${esc(s.pace)}<br>Severity: ${esc(s.severity)}</span>`;
+  try { S.scenario = await getJSON('/api/scenarios/' + encodeURIComponent(s.id)); } catch (e) { S.scenario = null; }
+  checkScenario(s.id);
+  if (!S.run) renderRoles(S.scenario && S.scenario.roles || []);
+  if (S.pack) suggestSatellite();
+  draw();
+}
+// the scenario validator (simulation/scenario_check.py) runs before planning: errors stop the plan once, warnings are shown
+async function checkScenario(id) {
+  $('scencheck').innerHTML = '<span class="muted">checking the scenario…</span>';
+  let c;
+  try { c = await getJSON('/api/scenarios/' + encodeURIComponent(id) + '/check'); } catch (e) { $('scencheck').innerHTML = `<span class="err">scenario check failed: ${esc(e.message)}</span>`; return null; }
+  if ($('scen').value !== id) return c;
+  S.check = { id, res: c };
+  const list = (arr, cls) => arr.slice(0, 12).map(x => `<li class="${cls}">${esc(x)}</li>`).join('') + (arr.length > 12 ? `<li class="muted">… ${arr.length - 12} more: the drill director runs simulation/scenario_check.py for the full list</li>` : '');
+  $('scencheck').innerHTML = (c.errors.length ? `<b class="err">Scenario check: ${c.errors.length} error(s)</b>` : `<span class="ok">✓ Scenario check passed</span>`)
+    + (c.warnings.length ? ` · <span class="warn">${c.warnings.length} warning(s)</span>` : '') + (c.info && c.info.length ? ` <span class="muted">· ${esc(c.info.join(' · '))}</span>` : '')
+    + (c.errors.length || c.warnings.length ? `<ul style="margin:2px 0 0;padding-left:18px">${list(c.errors, 'err')}${list(c.warnings, 'warn')}</ul>` : '');
+  return c;
+}
+$('b-plan').onclick = async () => {
+  if (!S.pack) return log('Load a pack first.', 'err');
+  const sid = $('scen').value;
+  const chk = S.check && S.check.id === sid ? S.check.res : await checkScenario(sid);
+  if (chk && chk.errors.length && S.planAnyway !== sid) {
+    S.planAnyway = sid;
+    $('planinfo').innerHTML = `<span class="err">The scenario has ${chk.errors.length} error(s) (listed above). Fix the scenario file, or press Plan the run again to plan it anyway.</span>`;
+    return;
+  }
+  const site = siteSpec();
+  const body = { scenario: $('scen').value, seed: +$('seed').value || 1, speed: +$('speed').value, site,
+                 eoc: { url: eocUrl(), winlink: $('eoc-winlink').value.trim(), email: $('eoc-email').value.trim(), call: ($('eoc-winlink').value.split('@')[0] || '').trim() } };
+  if (site.role === 'satellite' && !site.units.length) return log('Pick the wards the Satellite EOC covers.', 'err');
+  if (site.role === 'area' && !site.councils.length) return log('Pick at least one coordinating council.', 'err');
+  if (site.role !== 'area' && !site.stake) return log('Pick the stake.', 'err');
+  $('planinfo').textContent = 'planning…';
+  try {
+    const r = await post('/api/run/plan', body);
+    S.run = r.run; S.planned = r.run; renderRun(); renderRoles(r.run.roles); renderHotwash(); updateHeader(); draw();
+    const c = r.counts; $('planinfo').innerHTML = `<span class="ok">✓</span> ${c.items} items for ${c.units} units: ${c.dr || 0} DR, ${c.so || 0} SO, ${c.wcl || 0} WCL, ${c.note || 0} notes, ${c.voice || 0} net cards, ${c.prompt || 0} prompts${c.work_item ? `, ${c.work_item} work items` : ''}${c.rollup ? `, ${c.rollup} roll-ups` : ''}${c.elsewhere ? ` · <b>${c.elsewhere} fired by other EOCs' simulators</b>` : ''} · severity 0/1/2/3 = ${[0, 1, 2, 3].map(b => c.severity[b]).join('/')}`;
+    log(`Run ${r.run.id} planned: ${c.items} items` + (r.run.eoc_probe && !r.run.eoc_probe.ok ? ' (EOC not reachable yet)' : ''));
+    showPane('run');
+  } catch (e) { $('planinfo').innerHTML = `<span class="err">${esc(e.message)}</span>`; log('Plan: ' + e.message, 'err'); }
+};
+
+// ---------- Run console ----------
+const fmtT = m => { const s = Math.max(0, Math.round(m * 60)); return `T+${String(Math.floor(s / 60)).padStart(3, '0')}:${String(s % 60).padStart(2, '0')}`; };
+let polling = null, openCards = new Set(), closedCards = new Set();   // polling = {id, ms}; cards the controller opened / hid by hand
+async function pollRun() {
+  try { const r = await getJSON('/api/run'); if (r.status === 'none') { S.run = null; } else { S.run = r; } } catch (e) { return; }
+  renderRun(); updateHeader(); draw();
+  const want = S.run ? (S.run.clock.status === 'running' ? 2000 : 5000) : 0;      // the board and a scheduled start change while the clock is stopped
+  if (want !== (polling && polling.ms)) { if (polling) clearInterval(polling.id); polling = want ? { id: setInterval(pollRun, want), ms: want } : null; }
+}
+function renderRun() {
+  const r = S.run;
+  $('r-start').disabled = !r || r.clock.status === 'running' || r.clock.status === 'finished'; $('r-pause').disabled = !r || r.clock.status !== 'running'; $('r-stop').disabled = !r || ['stopped', 'finished', 'planned'].includes(r.clock.status);
+  if (!r) { $('clock').textContent = 'T+000:00'; $('clockst').textContent = 'no run planned'; $('clocklbl').textContent = ''; $('items').innerHTML = ''; $('r-log').textContent = ''; $('n-due').style.display = 'none'; return; }
+  const now = r.clock.elapsed_min;
+  $('clock').textContent = fmtT(now); $('clockst').innerHTML = `<b>${esc(r.clock.status)}</b> · ${r.clock.speed}× · run ${esc(r.id)}`; $('clocklbl').textContent = (r.clock.t0_label ? 'T0 = ' + r.clock.t0_label + ' · ' : '') + `${r.scope.units.length} units · ${r.site && r.site.label ? r.site.label + ' · ' : ''}EOC ${r.eoc.name || r.eoc.url || ''}`;
+  const sa = r.clock.start_at_wall ? r.clock.start_at_wall * 1000 : 0, left = sa ? Math.round((sa - Date.now()) / 1000) : 0;
+  $('r-countdown').textContent = r.clock.status === 'scheduled' ? (left > 0 ? `starts at ${new Date(sa).toTimeString().slice(0, 8)} · in ${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}` : 'starting…') : '';
+  renderBoard(r);
+  $('r-speed').value = String(r.clock.speed);
+  const pace = r.clock.pace, next = r.pace.filter(p => p.t > now).sort((a, b) => a.t - b.t)[0];
+  const pb = $('r-pace'); pb.textContent = pace; pb.className = 'badge pace ' + pace;
+  $('r-pacenext').textContent = next ? `next: ${next.level} at ${fmtT(next.t)}${next.trigger ? ' (' + next.trigger + ')' : ''}` : 'no further scheduled change';
+  const ph = r.phases.find(p => now >= p.from && now < p.to) || r.phases[r.phases.length - 1] || {};
+  $('ph-title').textContent = ph.title ? `Phase: ${ph.title} (${fmtT(ph.from)} – ${fmtT(ph.to)})` : 'Phase'; $('ph-text').textContent = ph.narrative || ''; $('ph-ctl').textContent = ph.controller ? 'Controller: ' + ph.controller : '';
+  renderScore('score', r.score, r);
+  $('score-box').style.display = r.score ? '' : 'none';
+  const f = $('r-filter').value;
+  const rows = r.items.filter(it => f === 'all' || f === 'here' && it.local !== false || f === 'elsewhere' && it.local === false || (f === 'due' ? (it.status === 'pending' && it.t <= now + 5) || (it.status === 'fired' && (it.fired_t == null || now - it.fired_t < 15)) : f === 'cards' ? ['voice', 'prompt', 'paper'].includes(it.kind) || it.delivered_via === 'paper' : f === 'consequences' ? !!it.after : f === 'error' ? it.status === 'error' : it.kind === f));
+  const due = r.items.filter(it => it.status === 'pending' && it.t <= now).length; $('n-due').style.display = due ? 'inline-block' : 'none'; $('n-due').textContent = due;
+  const cnt = {}; for (const it of r.items) cnt[it.status] = (cnt[it.status] || 0) + 1;
+  $('r-counts').textContent = `${rows.length} shown · ${Object.entries(cnt).map(([k, v]) => `${v} ${k}`).join(', ')}`;
+  $('items').innerHTML = rows.map(it => {
+    const card = ['voice', 'prompt', 'paper'].includes(it.kind) || it.delivered_via === 'paper';
+    const isDue = it.status === 'pending' && it.t <= now;
+    const res = it.result ? (it.result.ok ? `<span class="ok">✓ ${esc(it.result.via)}${it.result.new != null ? ` · new ${it.result.new}, dup ${it.result.dup}` : ''}${it.result.file ? ' · ' + esc(it.result.file.split(/[\\/]/).pop()) : ''}</span>` : `<span class="err">✗ ${esc(it.result.error)}</span>`) : '';
+    const toBadge = it.local === false ? ` <span class="to">→ ${esc(it.to)} EOC's simulator</span>` : it.rollup ? ' <span class="to">in a roll-up</span>' : '';
+    const what = (it.kind === 'form' ? `${it.form.toUpperCase()} from <b>${esc(it.unit)}</b>${it.severity != null ? ` <span style="color:${SEVC[it.severity]}">●</span>` : ''}` : it.kind === 'rollup' ? `Roll-up to the Council / Area EOC from <b>${esc(it.stake)}</b> (simulated stake)` : it.kind === 'note' ? 'Note to the EOC log' : it.kind === 'voice' ? `Net card · HAM${it.unit ? ' of <b>' + esc(it.unit) + '</b>' : ''}` : it.kind === 'prompt' ? `Prompt · <b>${esc(it.role.replace(/_/g, ' '))}</b>` : it.kind === 'work_item' ? `Work item to the EOC list · <b>${esc((it.work || {}).title || '')}</b>${it.unit ? ' (' + esc(it.unit) + ')' : ''}` : it.kind === 'reply' ? `Reply from <b>${esc((it.reply || {}).from || 'the line above')}</b>${it.unit ? ' about <b>' + esc(it.unit) + '</b>' : ''} · closes the matching UP items with the decision` : esc(it.kind)) + toBadge
+      + (it.after ? ` <span class="trig">${it.status === 'waiting' ? '⏳ waits until' : '⚡ triggered:'} <i>${esc(afterLabel(r, it))}</i> is ${esc(it.after.is)}${it.triggered ? ` (was, at ${fmtT(it.triggered.at)})` : ''}</span>` : '');
+    // a card to hand out stays open from the minute it is due until 20 drill minutes after it fired (the clock
+    // fires it within a second of being due, so "due" alone would close it at once); Show / Hide override that
+    const recent = it.status === 'fired' && it.fired_t != null && now - it.fired_t < 20;
+    const open = openCards.has(it.id) || (card && !closedCards.has(it.id) && (isDue || recent));
+    const text = it.kind === 'form' ? (it.delivered_via === 'paper' ? it.text : '') : it.text;
+    const btns = it.status === 'elsewhere' ? '' : it.rollup && it.status === 'pending' ? '' : it.status === 'waiting' ? `<button class="b s" data-act="fire" data-id="${esc(it.id)}" data-force="1" title="Fire it now without waiting for the need">Force now</button><button class="b s" data-act="skip" data-id="${esc(it.id)}">Skip</button>` : it.status === 'pending' || it.status === 'held' ? `<button class="b s" data-act="fire" data-id="${esc(it.id)}">${it.kind === 'form' || it.kind === 'note' || it.kind === 'work_item' || it.kind === 'rollup' ? 'Send now' : 'Hand out'}</button><button class="b s" data-act="skip" data-id="${esc(it.id)}">Skip</button>${it.status === 'pending' ? `<button class="b s" data-act="hold" data-id="${esc(it.id)}">Hold</button>` : `<button class="b s" data-act="pending" data-id="${esc(it.id)}">Release</button>`}` : it.status === 'skipped' ? `<button class="b s" data-act="pending" data-id="${esc(it.id)}">Unskip</button>` : it.status === 'error' ? `<button class="b s" data-act="fire" data-id="${esc(it.id)}" data-force="1">Retry</button>` : (text ? `<button class="b s" data-show="${esc(it.id)}" data-open="${open ? 1 : 0}">${open ? 'Hide' : 'Show'}</button>` : '');
+    return `<li class="${esc(it.status)}${isDue ? ' due' : ''}"><span class="t">${fmtT(it.t)}</span><span><span class="k ${esc(it.kind)}">${esc(it.kind)}</span>${what}${it.note ? ` <span class="muted small">— ${esc(it.note)}</span>` : ''}${it.status === 'fired' ? ` <span class="muted small">${esc(it.fired_wall || '')}</span>` : ''}</span><span>${btns}</span>${res ? `<span class="res">${res}</span>` : ''}${open && text ? `<div class="card">${esc(text)}</div>` : ''}</li>`;
+  }).join('');
+  $('items').querySelectorAll('button[data-act]').forEach(b => b.onclick = async () => { b.disabled = true; try { await post('/api/run/item', { id: b.dataset.id, action: b.dataset.act, force: !!b.dataset.force }); } catch (e) { log(e.message, 'err'); } pollRun(); });
+  $('items').querySelectorAll('button[data-show]').forEach(b => b.onclick = () => { const id = b.dataset.show; if (b.dataset.open === '1') { openCards.delete(id); closedCards.add(id); } else { closedCards.delete(id); openCards.add(id); } renderRun(); });
+  $('r-log').textContent = (r.log || []).slice(-40).map(e => `${e.wall} ${fmtT(e.t)}  ${e.text}`).join('\n'); $('r-log').scrollTop = 1e6;
+  renderRoles(r.roles, now); renderHotwash(); renderNeeds();
+}
+function afterLabel(r, it) {
+  const a = it.after || {}, inj = a.need.split('#')[0], suf = a.need.split('#')[1] || '';
+  const n = (r.needs || []).find(x => x.inject === inj && (!it.unit_id || x.item.includes('@' + it.unit_id)) && (!suf || x.id.split('#').pop().startsWith(suf)));
+  return n ? n.label.slice(0, 70) : a.need;
+}
+// ---------- scoreboard and the needs ledger ----------
+const NSTATE = { open: 'open', met: 'met', late: 'met late', overdue: 'OVERDUE', missed: 'MISSED', waived: 'not played' };
+function renderScore(prefix, sc, r) {
+  const tiles = $(prefix + '-tiles'), bar = $(prefix + '-bar'), chips = $(prefix + '-checks'); if (!tiles) return;
+  if (!sc || !sc.total) { tiles.innerHTML = `<div class="tile" style="grid-column:1/-1"><div class="k">needs</div><div class="v" style="font-size:13px;font-weight:400" class="muted">${r && r.clock.status === 'planned' ? 'Start the run: needs arise as items fire.' : 'No need has arisen yet.'}${sc && sc.eoc_error ? ' <span class="err">' + esc(sc.eoc_error) + '</span>' : ''}</div></div>`; bar.innerHTML = ''; chips.innerHTML = ''; if (prefix === 'score') $('score-sum').textContent = ''; return; }
+  const bad = sc.overdue + sc.missed, arrow = sc.trend === 'worse' ? ' ▲' : sc.trend === 'better' ? ' ▼' : '';
+  tiles.innerHTML = [
+    [`Met`, `${sc.met + sc.late}<small>/${sc.total}</small>`, sc.late ? `${sc.late} late` : 'needs', bad ? '' : 'good'],
+    [`Overdue${arrow}`, `${bad}`, sc.missed ? `${sc.missed} missed` : 'needs', bad ? 'bad' : 'good'],
+    [`Score`, `${sc.pct == null ? '—' : sc.pct}<small>%</small>`, sc.label || '', sc.pct == null ? '' : sc.pct >= 65 ? 'good' : sc.pct >= 40 ? 'warnt' : 'bad'],
+    [`To owner`, `${sc.median_owner_min == null ? '—' : sc.median_owner_min}<small> min</small>`, 'median', ''],
+    [`No owner`, `${sc.high_unowned}`, 'high prio', sc.high_unowned ? 'bad' : ''],
+  ].map(([k, v, s2, cls]) => `<div class="tile ${cls}"><div class="k">${esc(k)}</div><div class="v">${v}</div>${s2 ? `<div class="k" style="text-transform:none;white-space:normal;overflow:visible">${esc(s2)}</div>` : ''}</div>`).join('');
+  const col = { met: '#1f8a4c', late: '#b7791f', open: '#9aa5b1', overdue: '#b03a2e', missed: '#7a1f16' };
+  bar.innerHTML = ['met', 'late', 'open', 'overdue', 'missed'].map(k => `<i style="width:${100 * sc[k] / sc.total}%;background:${col[k]}" title="${k}: ${sc[k]}"></i>`).join('');
+  chips.innerHTML = (sc.checks || []).map(c => `<span class="chip ${c.ok ? 'y' : c.ok === false ? 'n' : ''}" title="${esc(c.why)}">${c.ok ? '✓' : c.ok === false ? '✗' : '…'} ${esc(c.label)}</span>`).join('')
+    + (sc.reports ? `<span class="chip">reports ${sc.reports.sent}/${sc.reports.expected}${sc.reports.typed ? ` · typed in ${sc.reports.typed_ok}/${sc.reports.typed}` : ''}${sc.accuracy != null ? ` · ${sc.accuracy}% accurate` : ''}</span>` : '')
+    + `<span class="chip">SITREPs ${sc.sitreps && sc.sitreps.length ? sc.sitreps.map(fmtT).join(', ') : 'none yet'}</span>`;
+  if (prefix === 'score') $('score-sum').textContent = `${sc.met + sc.late} of ${sc.total} needs met` + (bad ? ` · ${bad} overdue` : '') + (sc.trend ? ` · ${sc.trend}` : '');
+}
+function renderNeeds() {
+  const r = S.run, ul = $('needs'); if (!ul) return;
+  if (!r) { ul.innerHTML = '<li class="muted small">Plan a run first.</li>'; $('n-over').style.display = 'none'; renderScore('needs', null, null); return; }
+  renderScore('needs', r.score, r);
+  const now = r.clock.elapsed_min, needs = (r.needs || []).filter(n => n.arose_t != null);
+  const over = needs.filter(n => n.state === 'overdue').length; $('n-over').style.display = over ? 'inline-block' : 'none'; $('n-over').textContent = over;
+  const cats = [...new Set(needs.map(n => n.cat))].sort(), sel = $('nd-cat'), cur = sel.value;
+  sel.innerHTML = '<option value="">every category</option>' + cats.map(c => `<option value="${esc(c)}"${c === cur ? ' selected' : ''}>${esc(c)}</option>`).join('');
+  const f = $('nd-filter').value, cat = sel.value;
+  const rows = needs.filter(n => (!cat || n.cat === cat) && (f === 'all' || f === 'live' && ['open', 'overdue'].includes(n.state) || f === 'overdue' && ['overdue', 'missed'].includes(n.state) || f === 'met' && ['met', 'late'].includes(n.state) || f === 'report' && n.kind === 'report'))
+    .sort((a, b) => ({ overdue: 0, open: 1, late: 2, met: 3, missed: 4, waived: 5 }[a.state] - { overdue: 0, open: 1, late: 2, met: 3, missed: 4, waived: 5 }[b.state]) || a.arose_t - b.arose_t);
+  $('nd-counts').textContent = `${rows.length} shown · ${needs.length} arisen of ${(r.needs || []).length} planned`;
+  ul.innerHTML = rows.map(n => {
+    const rule = n.rule || {}, age = now - n.arose_t, tm = n.times || {};
+    let due = '';
+    if (n.state === 'open') {
+      if (n.kind === 'report') due = `type in by ${fmtT(n.arose_t + (rule.typed || 25))}`;
+      else if (tm.owner == null) { const left = (rule.owner || 30) - age; due = left >= 0 ? `owner due in ${Math.ceil(left)} min` : `owner overdue by ${Math.floor(-left)} min`; }
+      else { const left = (rule.done || 120) - age; due = left >= 0 ? `${(rule.done_states || ['done']).includes('up') ? 'UP or done' : 'done'} due in ${Math.ceil(left)} min` : `done overdue by ${Math.floor(-left)} min`; }
+    }
+    const soon = n.state === 'open' && /due in [0-5] min/.test(due);
+    const what = n.kind === 'report' ? `typed in within ${rule.typed || 25} min, numbers as on the card` : `owner within ${rule.owner} min · ${(rule.done_states || ['done']).join(' / ')} within ${rule.done} min${rule.decision ? ' · decision written in' : ''}`;
+    const acc = n.accuracy ? ` · <b>${Math.round(n.accuracy.score * 100)}%</b> of the card's fields` : '';
+    const btn = ['open', 'overdue'].includes(n.state) ? `<button class="b s" data-nd="${esc(n.id)}" data-nv="waive" title="Not played in this drill: leave it out of the score">Waive</button>` : n.state === 'waived' ? `<button class="b s" data-nd="${esc(n.id)}" data-nv="reopen">Reopen</button>` : '';
+    return `<li class="${esc(n.state)}${soon ? ' soon' : ''}"><span class="t" style="font-variant-numeric:tabular-nums;font-weight:600;color:var(--mute)">${fmtT(n.arose_t)}</span><span><span class="nst ${esc(n.state)}">${esc(NSTATE[n.state] || n.state)}</span> ${n.prio === 1 ? '<b style="color:var(--err)">HIGH</b> ' : ''}${esc(n.label)}${n.unit && !n.label.includes(n.unit) ? ` <span class="muted">(${esc(n.unit)})</span>` : ''}${due ? ` <span class="due${/overdue/.test(due) ? ' over' : ''}">${esc(due)}</span>` : ''}</span><span>${btn}</span><span class="ev">${esc(what)}${n.evidence ? ` — <b>${esc(n.evidence)}</b>` : ''}${acc}${n.owner ? ` · owner ${esc(n.owner)}` : ''}</span></li>`;
+  }).join('') || '<li class="muted small" style="display:block">Nothing in this list.</li>';
+  ul.querySelectorAll('button[data-nd]').forEach(b => b.onclick = () => post('/api/run/need', { id: b.dataset.nd, action: b.dataset.nv }).then(pollRun).catch(e => log(e.message, 'err')));
+}
+$('nd-filter').onchange = renderNeeds; $('nd-cat').onchange = renderNeeds;
+$('b-ndrefresh').onclick = () => post('/api/run/needs').then(pollRun).catch(e => log(e.message, 'err'));
+$('b-needs').onclick = () => showPane('needs');
+$('hw-report').onclick = () => { if (S.run) window.open('/report', '_blank'); };
+$('hw-debrief').onclick = () => { if (S.run) window.open('/debrief', '_blank'); };
+$('hw-report-txt').onclick = () => { if (S.run) window.open('/api/run/report.txt', '_blank'); };
+$('hw-report-red').onclick = () => { if (S.run) window.open('/api/run/report.txt?redact=units', '_blank'); };
+function renderBoard(r) {
+  const rows = r.board || [], mine = rows.find(x => x.self) || {};
+  const LV = { satellite: 'Satellite EOC', stake: 'Stake EOC', area: 'Council / Area EOC' };
+  const when = x => x.status === 'scheduled' && x.start_at_ms ? 'starts ' + new Date(x.start_at_ms).toTimeString().slice(0, 8) : (x.status || '');
+  $('board').innerHTML = rows.length ? `<table>${rows.map(x => {
+    const bad = [];
+    if (!x.ok) bad.push('not reachable');
+    if (x.scenario_id && mine.scenario_id && x.scenario_id !== mine.scenario_id) bad.push('different scenario');
+    if (x.seed != null && mine.seed != null && x.seed !== mine.seed) bad.push('different seed');
+    if (x.start_at_ms && mine.start_at_ms && x.start_at_ms !== mine.start_at_ms) bad.push('different start time');
+    if (x.level && x.role && x.level !== x.role) bad.push(`EOC Setup says ${LV[x.level] || x.level}, simulator plays ${LV[x.role] || x.role}`);
+    if (x.event && !/drill/i.test(x.event)) bad.push('event name without DRILL');
+    return `<tr class="${x.self ? 'self' : ''}"><td><b>${esc(x.name || x.url)}</b>${x.self ? ' <span class="to">this simulator</span>' : ''}<br><span class="muted">${esc(x.url)}</span></td><td>${esc(x.site_label || LV[x.role] || (x.ok ? 'no simulator' : ''))}<br><span class="muted">${esc(x.scenario || '')}${x.seed != null ? ' · seed ' + x.seed : ''}</span></td><td>${esc(when(x))}${x.stale ? ' <span class="bad">stale</span>' : ''}</td><td>Ready: ${(x.ready || []).length ? esc(x.ready.join(', ')) : '<i class="muted">nobody</i>'}</td><td class="bad">${esc(bad.join(' · '))}</td></tr>`;
+  }).join('')}</table>` : '<span class="muted">No EOC heard yet. Check the EOC on the Setup tab.</span>';
+}
+$('b-board').onclick = () => post('/api/run/board').then(pollRun).catch(e => log(e.message, 'err'));
+$('r-sched').onclick = () => { const at = $('r-at').value; if (!at) return log('Pick a start time first.', 'err'); post('/api/run/schedule', { at }).then(r => { if (!r.ok) log(r.error, 'err'); pollRun(); }).catch(e => log(e.message, 'err')); };
+$('r-unsched').onclick = () => post('/api/run/unschedule').then(pollRun);
+$('r-filter').onchange = renderRun;
+$('r-start').onclick = () => post('/api/run/start').then(pollRun);
+$('r-pause').onclick = () => post('/api/run/pause').then(pollRun);
+$('r-stop').onclick = () => { if (confirm('Stop the run? Pending items will not fire. The record stays on disk.')) post('/api/run/stop').then(pollRun); };
+$('r-speed').onchange = () => post('/api/run/speed', { speed: +$('r-speed').value }).then(pollRun);
+$('r-jumpb').onclick = () => post('/api/run/jump', { minute: +$('r-jump').value || 0 }).then(pollRun);
+document.querySelectorAll('button[data-pace]').forEach(b => b.onclick = async () => {
+  const why = prompt(`Set PACE = ${b.dataset.pace} now. Who decided, and on what trigger? (goes into the run log)`); if (why === null) return;
+  try { const r = await post('/api/run/pace', { level: b.dataset.pace, why }); if (!r.ok) log('PACE set in the run but the EOC was not reachable: ' + r.error, 'err'); } catch (e) { log(e.message, 'err'); }
+  pollRun();
+});
+
+// ---------- Roles and hot wash ----------
+function renderRoles(roles, now) {
+  $('roles').innerHTML = (roles || []).map(r => `<div class="role"><h4>${esc(r.title)}</h4><ol>${(r.cards || []).map(c => `<li class="${now != null && c.t <= now ? 'due' : ''}"><b>${fmtT(c.t)}</b> ${esc(c.text)}</li>`).join('')}</ol></div>`).join('') || '<p class="muted small">Pick a developed scenario to see its role cards.</p>';
+}
+function renderHotwash() {
+  const r = S.run; if (!r) { $('hw').innerHTML = '<li class="muted small">Plan a run to get its checklist.</li>'; $('hw-sum').textContent = ''; return; }
+  const done = r.hotwash.filter(h => h.result).length; $('hw-sum').textContent = `${done} of ${r.hotwash.length} answered`;
+  $('hw').innerHTML = r.hotwash.map((h, n) => `<li><div><b>${fmtT(h.t)}</b> ${esc(h.check)}</div><div class="small muted">How: ${esc(h.how)}${h.auto ? ' · <i>has an evidence rule</i>' : ''}</div>${h.evidence ? `<div class="ev ${h.suggest === '✓' ? 'y' : 'n'}"><b>${esc(h.suggest || '')}</b> evidence: ${esc(h.evidence)}</div>` : ''}<div class="chk">${['✓', '✗', '–'].map(v => `<button class="b s ${h.result === v ? 'on' : ''}" data-hw="${n}" data-v="${v}">${v}</button>`).join('')}<input type="text" data-hwn="${n}" value="${esc(h.note)}" placeholder="note" style="flex:1"></div></li>`).join('');
+  $('hw').querySelectorAll('button[data-hw]').forEach(b => b.onclick = () => post('/api/run/hotwash', { n: +b.dataset.hw, result: b.dataset.v, note: $('hw').querySelector(`input[data-hwn="${b.dataset.hw}"]`).value }).then(pollRun));
+  $('hw').querySelectorAll('input[data-hwn]').forEach(i => i.onchange = () => post('/api/run/hotwash', { n: +i.dataset.hwn, result: S.run.hotwash[+i.dataset.hwn].result, note: i.value }));
+}
+$('hw-export').onclick = () => { if (S.run) window.open('/api/run/export', '_blank'); };
+$('hw-evidence').onclick = async () => { if (!S.run) return; try { const r = await post('/api/run/evidence'); log(r.ok ? `Evidence gathered: ${r.checks} checks, ${r.items} work items on the EOC` : r.error, r.ok ? '' : 'err'); } catch (e) { log(e.message, 'err'); } pollRun(); };
+
+// ---------- the trainer's session ----------
+let SS = null, ssTimer = null, ssStopArm = 0;
+async function loadSession() {
+  try { SS = await getJSON('/api/session'); } catch (e) { return; }
+  renderSession();
+}
+function ssCheck(ok, text, fix) { return `<div class="chk"><span class="${ok ? 'y' : 'n'}">${ok ? '✓' : '✗'}</span> ${text}${!ok && fix ? ` <a href="#" data-goto="${fix[0]}"${fix[2] ? ` data-step="${fix[2]}"` : ''}>${esc(fix[1])}</a>` : ''}</div>`; }
+function renderSession() {
+  const s = SS; if (!s) return;
+  const r = s.run, st = r ? r.status : 'none';
+  const setupOk = s.pack && s.eoc.ok && (r || s.planned_before);
+  $('ss-1-body').innerHTML =
+    ssCheck(s.pack, s.pack ? `Organization pack: <b>${esc(s.pack_label)}</b> (${esc(s.privacy)})` : 'Organization pack not loaded', ['setup', 'Setup, step 1', 'setup-1'])
+    + ssCheck(s.eoc.ok, s.eoc.ok ? `EOC: <b>${esc(s.eoc.name || s.eoc.url)}</b>${s.eoc.event ? ' · event <i>' + esc(s.eoc.event) + '</i>' : ''}` : `EOC not reachable at ${esc(s.eoc.url)} (start the EOC server)`, ['setup', 'Setup, step 3', 'setup-3'])
+    + ssCheck(!!r || s.planned_before, r ? `Scenario planned: <b>${esc(r.scenario)}</b>${r.site ? ' · ' + esc(r.site) : ''} · ${r.counts.units} units` : 'No run planned', ['setup', 'Setup, step 4: Plan the run', 'setup-4']);
+  const ready = r && r.session && st === 'planned', running = st === 'running', paused = st === 'paused', sched = st === 'scheduled', over = st === 'stopped' || st === 'finished';
+  const mark = (id, done, now) => { const li = $(id); li.classList.toggle('done', !!done); li.classList.toggle('now', !!now); li.querySelector('.tick').textContent = done ? '✓' : ''; };
+  mark('ss-1', setupOk, !setupOk);
+  mark('ss-2', r && r.session, setupOk && !(r && r.session));
+  mark('ss-3', r && r.session && (running || paused || over), ready || sched);
+  mark('ss-4', over, running || paused);
+  mark('ss-5', over && r && r.session, over);
+  // a running rehearsal may be reset straight away (the reset stops it); a running session must be paused first
+  const liveSession = running && r && r.session;
+  $('ss-reset').disabled = !(s.pack && (r || s.planned_before)) || liveSession;
+  $('ss-2-msg').innerHTML = liveSession ? '<span class="warn">The session is running. Pause it (step 4) before you reset it.</span>'
+    : r && r.session ? `<span class="ok">Ready${r.event ? ': fresh drill event <i>' + esc(r.event) + '</i>' : ''}.</span>${r.ready.length ? ' Ready at the EOC: ' + esc(r.ready.join(', ')) : ''}`
+    : running ? '<span class="warn">A rehearsal is running. Reset stops it and keeps it as a rehearsal.</span>'
+    : (r && r.rehearsal ? '<span class="warn">The last run was a rehearsal.</span>' : '');
+  $('ss-go').disabled = !r || running || over;
+  $('ss-go').textContent = paused ? 'CONTINUE' : 'GO';
+  $('ss-3-msg').innerHTML = sched && r.start_at_ms ? `Starts at <b>${new Date(r.start_at_ms).toTimeString().slice(0, 8)}</b> on this laptop.` : (r && !r.session && st === 'planned' ? '<span class="warn">Not reset for the session yet: GO would start the planned run as it is.</span>' : '');
+  if (r && (running || paused || over)) {
+    const sc = r.score || {};
+    $('ss-live').className = 'live small';
+    $('ss-live').innerHTML = `<span class="clk">${fmtT(r.minute)}</span> of T+${r.duration} · <b>${esc(st)}</b> · ${r.speed}× · PACE <b>${esc(r.pace)}</b>${r.phase ? ' · ' + esc(r.phase) : ''}`
+      + (sc.total ? `<br>Needs met <b>${sc.met + (sc.late || 0)}/${sc.total}</b>${(sc.overdue || 0) + (sc.missed || 0) ? ' · <b class="err">' + ((sc.overdue || 0) + (sc.missed || 0)) + ' overdue</b>' : ''}${sc.pct != null ? ' · ' + sc.pct + '%' : ''}` : '')
+      + (r.next.length ? '<br>Next: ' + r.next.map(n => `${fmtT(n.t)} ${esc(n.kind)} ${esc(n.what)}`).join(' · ') : '');
+  } else { $('ss-live').className = 'live small muted'; $('ss-live').textContent = 'Not running.'; }
+  $('ss-pause').disabled = !running;
+  $('ss-stop').disabled = !(running || paused || sched);
+  $('ss-results').textContent = s.results_url;
+  $('ss-sessions').innerHTML = (s.sessions || []).map(x => `<li>${new Date(x.saved * 1000).toLocaleString()} · <b>${esc(x.scenario)}</b>${x.site ? ' · ' + esc(x.site) : ''} · ${esc(x.status)} at ${fmtT(x.minute)}${x.session ? ' · session' : x.rehearsal ? ' · rehearsal' : ''}${x.pct != null ? ' · ' + x.pct + '% met' : ''}${x.current ? ' · <i>current</i>' : ''} ${x.resumable ? `<button class="b s" data-resume="${esc(x.id)}">Resume</button>` : ''}</li>`).join('') || '<li class="muted">None yet.</li>';
+  $('ss-sessions').querySelectorAll('button[data-resume]').forEach(b => b.onclick = async () => { b.disabled = true; try { const r = await post('/api/session/resume', { id: b.dataset.resume }); log(r.ok ? `Session ${r.run} resumed, ${r.status} at ${fmtT(r.minute)}: GO continues it` : r.error, r.ok ? '' : 'err'); } catch (e) { log(e.message, 'err'); } loadSession(); pollRun(); });
+  document.querySelectorAll('#pane-session a[data-goto]').forEach(a => a.onclick = ev => { ev.preventDefault(); showPane(a.dataset.goto); const h = a.dataset.step && $(a.dataset.step); if (h) h.scrollIntoView({ block: 'start' }); });
+}
+$('ss-reset').onclick = async () => {
+  $('ss-reset').disabled = true; $('ss-2-msg').textContent = 'Resetting…';
+  try { const r = await post('/api/session/reset', { event: $('ss-event').value.trim() }); if (!r.ok) throw new Error(r.error); log(`Session reset: run ${r.run}${r.event ? ', fresh drill event "' + r.event + '"' : ''}`); if (r.warning) log(r.warning, 'err'); }
+  catch (e) { $('ss-2-msg').innerHTML = `<span class="err">${esc(e.message)}</span>`; }
+  await loadSession(); pollRun();
+};
+$('ss-go').onclick = async () => { try { await post('/api/session/go', {}); } catch (e) { log(e.message, 'err'); } loadSession(); pollRun(); };
+$('ss-sched').onclick = async () => { const at = $('ss-at').value; if (!at) return; try { const r = await post('/api/session/go', { at }); if (r.ok === false) log(r.error, 'err'); } catch (e) { log(e.message, 'err'); } loadSession(); pollRun(); };
+$('ss-pause').onclick = () => post('/api/run/pause').then(() => { loadSession(); pollRun(); });
+$('ss-run').onclick = () => showPane('run');
+$('ss-needs').onclick = () => showPane('needs');
+$('ss-hw').onclick = ev => { ev.preventDefault(); showPane('hotwash'); };
+$('ss-stop').onclick = async () => {   // two clicks, no browser dialog: the first arms it for five seconds
+  if (Date.now() - ssStopArm > 5000) { ssStopArm = Date.now(); $('ss-stop-ask').innerHTML = '<span class="warn">Click again to stop: pending items will not fire; the score becomes final.</span>'; return; }
+  ssStopArm = 0; $('ss-stop-ask').textContent = '';
+  try { await post('/api/run/stop'); } catch (e) { log(e.message, 'err'); } loadSession(); pollRun(); showPane('hotwash');
+};
+ssTimer = setInterval(() => { if ($('pane-session').classList.contains('on')) loadSession(); }, 3000);
+
+// expose for tests (Chrome checks in testing/TEST_CHECKLIST.md, section N)
+window.SIM = { S, draw, select, fitBox, toScr, fromScr, merc, unmerc, geodesic, maidenhead, orgAt, pollRun, renderRun, showPane, loadSession };
+resize(); loadInfo().catch(e => { $('hdrst').textContent = 'server error: ' + e.message; }); loadSession();
+</script>
+</body>
+</html>

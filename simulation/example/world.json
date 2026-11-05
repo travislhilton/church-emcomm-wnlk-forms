@@ -1,0 +1,90 @@
+{
+ "kind": "church_emcomm_example_world",
+ "v": 1,
+ "note": "An entirely invented Church community for public drills, demonstrations and tests: the Juniper Plains Area, its two coordinating councils and eight stakes in the fictional Larkspur Valley. Every organization, person, phone, email, address, street, road, river, facility and map is made up. The coordinates only place the fiction on a map; they do not describe any real place. Independent volunteer project, not an official Church product.",
+ "frame": {"note": "Positions below are kilometres east (x) and north (y) of the frame origin.", "origin_lat": 40.30, "origin_lon": -117.55},
+ "state": "Westland",
+ "state_abbr": "WL",
+ "zip_base": 89700,
+ "area": {"id": "JPA", "name": "Juniper Plains Area"},
+ "welfare": {
+  "region": {"id": "JPW", "name": "Juniper Plains Welfare and Self-Reliance Region", "office": "Larkspur Welfare and Self-Reliance Office", "at": [0.6, 3.6]},
+  "area_office": {"id": "JPO", "name": "Juniper Plains Area Self-Reliance Office"},
+  "storehouse": {"name": "Bramble Junction Bishops' Storehouse", "note": "140 km south-west of the valley, off the map; trucks take 2.5 hours on dry roads"}
+ },
+ "councils": [
+  {"id": "CLK", "name": "Larkspur Coordinating Council", "stakes": ["SLK", "SLE", "SLW", "SCR"]},
+  {"id": "CKS", "name": "Kestrel Coordinating Council", "stakes": ["SJS", "SKS", "SAF", "SSB"]}
+ ],
+ "towns": [
+  {"name": "Larkspur", "center": [-1.0, 2.5], "note": "County seat, about 41,000 people. Main Street runs north-south, Center Street east-west.", "grid": [-7.0, -1.0, 5.0, 6.0]},
+  {"name": "Copper Ridge", "center": [7.5, 1.5], "note": "About 9,000 people on the east bench, below Copper Creek Dam.", "grid": [5.0, -1.5, 11.0, 4.5]},
+  {"name": "Juniper Springs", "center": [-1.0, 12.0], "note": "About 7,500 people.", "grid": [-4.5, 9.5, 2.5, 14.5]},
+  {"name": "Kestrel", "center": [0.0, 20.0], "note": "About 3,200 people; farms and the Kestrel grain elevators.", "grid": [-2.5, 18.5, 2.5, 21.5]},
+  {"name": "Alder Flat", "center": [-1.0, -8.0], "note": "About 5,800 people in the river bottoms south of Larkspur.", "grid": [-4.0, -10.5, 2.0, -5.0]},
+  {"name": "Saddleback", "center": [-10.0, 1.0], "note": "About 4,400 people on the west bench under Saddleback Ridge.", "grid": [-12.5, -2.0, -7.5, 4.0]}
+ ],
+ "stakes": [
+  {"id": "SLK", "name": "Larkspur Stake", "council": "CLK", "town": "Larkspur", "rect": [-3.0, -1.0, 1.0, 6.0], "grid": [2, 3], "center": [-1.4, 3.1],
+   "wards": ["Larkspur 1st Ward", "Larkspur 2nd Ward", "Larkspur 3rd Ward", "Larkspur 4th Ward", "Larkspur 5th Ward", "Larkspur 6th Ward"],
+   "special": [{"name": "Larkspur Care Center Branch", "type": "Branch", "at": [0.4, 0.9], "facility": "Larkspur Care Center"}],
+   "buildings": [[-1.4, 3.1], [-2.2, 0.6], [0.0, 1.4], [-0.6, 5.0]]},
+  {"id": "SLE", "name": "Larkspur East Stake", "council": "CLK", "town": "Larkspur", "rect": [1.0, -1.0, 5.0, 6.0], "grid": [2, 3], "center": [3.0, 2.8],
+   "wards": ["Larkspur 7th Ward", "Larkspur 8th Ward", "Larkspur 9th Ward", "Larkspur 10th Ward", "Larkspur 11th Ward", "Larkspur 12th Ward"],
+   "special": [{"name": "Larkspur Spanish Branch", "type": "Branch", "at": [2.1, 1.7], "draws_from": ["SLK", "SLE", "SLW"]}],
+   "buildings": [[3.0, 2.8], [1.9, 0.2], [4.1, 0.5], [2.4, 5.1]]},
+  {"id": "SLW", "name": "Larkspur West Stake", "council": "CLK", "town": "Larkspur", "rect": [-7.0, -1.0, -3.0, 6.0], "grid": [2, 3], "center": [-5.0, 3.0],
+   "wards": ["Larkspur 13th Ward", "Larkspur 14th Ward", "Larkspur 15th Ward", "Larkspur 16th Ward", "Larkspur 17th Ward", "Riverside Ward"],
+   "buildings": [[-5.0, 3.0], [-6.1, 0.4], [-3.9, 0.3], [-5.6, 5.2]]},
+  {"id": "SCR", "name": "Copper Ridge Stake", "council": "CLK", "town": "Copper Ridge", "rect": [5.0, -2.0, 11.0, 5.0], "grid": [3, 2], "center": [7.6, 2.4],
+   "wards": ["Copper Ridge 1st Ward", "Copper Ridge 2nd Ward", "Copper Ridge 3rd Ward", "Copper Ridge 4th Ward", "Copper Ridge 5th Ward", "Copper Canyon Ward"],
+   "special": [{"name": "Copper Ridge Retirement Branch", "type": "Branch", "at": [8.3, 1.4], "facility": "Copper Ridge Retirement Village"}],
+   "buildings": [[7.6, 2.4], [6.0, 0.0], [9.2, 0.2], [10.2, 3.6]]},
+  {"id": "SJS", "name": "Juniper Springs Stake", "council": "CKS", "town": "Juniper Springs", "rect": [-6.0, 7.0, 4.0, 16.0], "grid": [3, 2], "center": [-1.0, 12.2],
+   "wards": ["Juniper Springs 1st Ward", "Juniper Springs 2nd Ward", "Juniper Springs 3rd Ward", "Juniper Springs 4th Ward", "Juniper Springs 5th Ward", "Larkspur Heights Ward"],
+   "buildings": [[-1.0, 12.2], [-3.4, 10.4], [1.6, 10.6], [-0.2, 8.0]]},
+  {"id": "SKS", "name": "Kestrel Stake", "council": "CKS", "town": "Kestrel", "rect": [-10.0, 16.0, 6.0, 24.0], "grid": [3, 2], "center": [0.2, 20.1],
+   "wards": ["Kestrel 1st Ward", "Kestrel 2nd Ward", "Kestrel 3rd Ward", "North Fork Ward", "Pine Hollow Ward", "Elk Meadow Ward"],
+   "buildings": [[0.2, 20.1], [-6.0, 21.5], [3.8, 18.2], [-1.5, 17.2]]},
+  {"id": "SAF", "name": "Alder Flat Stake", "council": "CKS", "town": "Alder Flat", "rect": [-7.0, -14.0, 5.0, -1.0], "grid": [2, 3], "center": [-1.2, -7.8],
+   "wards": ["Alder Flat 1st Ward", "Alder Flat 2nd Ward", "Alder Flat 3rd Ward", "Alder Flat 4th Ward", "Willow Bend Ward", "Meadowlark Ward"],
+   "buildings": [[-1.2, -7.8], [1.8, -3.0], [-4.5, -4.2], [0.6, -12.0]]},
+  {"id": "SSB", "name": "Saddleback Stake", "council": "CKS", "town": "Saddleback", "rect": [-14.0, -8.0, -7.0, 8.0], "grid": [2, 3], "center": [-10.0, 1.2],
+   "wards": ["Saddleback 1st Ward", "Saddleback 2nd Ward", "Saddleback 3rd Ward", "Saddleback 4th Ward", "Dry Gulch Ward", "Cedar Bench Ward"],
+   "buildings": [[-10.0, 1.2], [-11.8, 5.0], [-8.6, -2.4], [-12.2, -5.5]]}
+ ],
+ "rivers": [
+  {"name": "Larkspur River", "width_km": 0.09, "points": [[-3.0, 24.5], [-2.5, 18.0], [-3.5, 13.0], [-4.0, 9.0], [-3.5, 5.0], [-3.2, 2.0], [-2.5, -1.0], [-2.0, -4.0], [-1.5, -8.0], [-0.5, -12.0], [0.5, -16.0], [1.0, -22.0]]},
+  {"name": "Copper Creek", "width_km": 0.04, "points": [[12.0, 2.0], [11.0, 1.8], [9.0, 1.5], [7.5, 1.2], [6.0, 0.8], [4.0, 0.3], [2.0, -0.3], [0.0, -0.8], [-2.3, -1.2]]},
+  {"name": "Pine Hollow Creek", "width_km": 0.03, "points": [[-9.0, 23.0], [-6.0, 21.0], [-4.0, 19.5], [-2.7, 18.8]]}
+ ],
+ "reservoir": {"name": "Copper Creek Reservoir", "points": [[12.0, 1.4], [13.5, 0.6], [15.5, 0.9], [16.4, 2.4], [15.2, 3.9], [13.4, 3.6], [12.0, 2.6]]},
+ "roads": [
+  {"name": "Route 12 (Valley Highway)", "kind": "highway", "points": [[1.5, -22.0], [1.5, -12.0], [1.0, -6.0], [1.5, 0.0], [1.5, 10.0], [1.0, 16.0], [0.5, 24.0]]},
+  {"name": "Route 30", "kind": "highway", "points": [[-14.0, 1.0], [-7.5, 1.6], [-3.3, 2.5], [5.0, 2.5], [8.0, 2.2], [11.5, 2.6], [12.3, 2.4]]},
+  {"name": "Dam Road", "kind": "road", "points": [[11.5, 2.6], [12.6, 3.4], [14.0, 4.3]]},
+  {"name": "Kestrel Road", "kind": "road", "points": [[-2.0, 12.0], [-6.0, 16.0], [-6.0, 21.5]]},
+  {"name": "River Road", "kind": "road", "points": [[-4.0, -1.0], [-3.2, -4.0], [-2.5, -8.0], [-1.4, -12.0]]},
+  {"name": "Saddleback Ridge Road", "kind": "road", "points": [[-10.0, 1.2], [-12.0, 4.0], [-12.6, 6.4]]}
+ ],
+ "bridges": [
+  {"name": "Center Street bridge over the Larkspur River", "at": [-3.25, 2.5]},
+  {"name": "Route 12 bridge over Copper Creek", "at": [1.5, -0.4]},
+  {"name": "Route 30 bridge over Copper Creek at Copper Ridge", "at": [8.3, 2.0]},
+  {"name": "Alder Flat bridge over the Larkspur River", "at": [-1.6, -8.0]}
+ ],
+ "facilities": [
+  {"name": "Larkspur Regional Hospital", "kind": "hospital", "at": [1.2, 4.3]},
+  {"name": "Larkspur County EOC (county building)", "kind": "eoc", "at": [-0.8, 2.9]},
+  {"name": "Larkspur City EOC (Fire Station 1)", "kind": "eoc", "at": [-1.7, 2.2]},
+  {"name": "Copper Ridge Fire Station", "kind": "fire", "at": [7.0, 2.0]},
+  {"name": "Larkspur High School (county shelter site)", "kind": "school", "at": [2.6, 5.3]},
+  {"name": "Alder Flat Elementary School", "kind": "school", "at": [-0.4, -7.4]},
+  {"name": "Copper Creek Dam (Larkspur Valley Irrigation District)", "kind": "dam", "at": [12.0, 2.0]},
+  {"name": "Copper Creek electrical substation", "kind": "power", "at": [3.0, 0.0]},
+  {"name": "Larkspur Care Center", "kind": "care", "at": [0.4, 0.9]},
+  {"name": "Copper Ridge Retirement Village", "kind": "care", "at": [8.3, 1.4]},
+  {"name": "Saddleback Peak amateur radio repeater", "kind": "radio", "at": [-12.6, 6.4]},
+  {"name": "Juniper Springs Fairgrounds", "kind": "open", "at": [1.2, 13.4]}
+ ]
+}

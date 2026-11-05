@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1a3a5c">
+<title>Church of Jesus Christ EMCOMM — EOC on this Wi-Fi</title>
+<!--
+  Church of Jesus Christ EMCOMM — EOC phone page. Served by eoc_server.py at /m (the wall QR code points
+  here) and at /receive (the Church of Jesus Christ EMCOMM app hands saved reports over in the URL fragment:
+  /receive#d=<payload>&r=<return url>). Phones are clients only: everything is sent to the
+  EOC server that served this page, which relays to another EOC on the LAN when chosen.
+  Self-contained: no external fonts or scripts (the EOC network may have no internet).
+-->
+<style>
+:root{--bg:#f0f2f5;--card:#fff;--fg:#1d2733;--muted:#5d6b7a;--navy:#1a3a5c;--line:#d9dee5;--ok:#1a6b3c;--okbg:#e7f6ec;--err:#b00020;--errbg:#fdecee;--warnbg:#fff7e0;
+  --P:#047857;--A:#1d4ed8;--C:#b45309;--E:#be123c;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f172a;--card:#1e293b;--fg:#f1f5f9;--muted:#94a3b8;--navy:#93c5fd;--line:#334155;--okbg:#052e16;--errbg:#3b0712;--warnbg:#2a2000;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f172a;--card:#1e293b;--fg:#f1f5f9;--muted:#94a3b8;--navy:#93c5fd;--line:#334155;--okbg:#052e16;--errbg:#3b0712;--warnbg:#2a2000;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:16px;line-height:1.45;padding:0 0 max(24px,env(safe-area-inset-bottom))}
+header{background:#1a3a5c;color:#fff;padding:max(14px,env(safe-area-inset-top)) 16px 14px}
+header .t{font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
+header h1{font-size:21px;margin:2px 0 4px;line-height:1.2}
+header .ev{font-size:14px;opacity:.9}
+.pace{display:inline-block;font-weight:800;color:#fff;border-radius:5px;padding:0 7px;margin-left:6px;font-size:13px}
+.pace.P{background:var(--P)}.pace.A{background:var(--A)}.pace.C{background:var(--C)}.pace.E{background:var(--E)}
+main{max-width:640px;margin:0 auto;padding:0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:14px 0}
+.card h2{font-size:17px;margin:0 0 8px}
+.big{display:flex;align-items:center;gap:12px;width:100%;min-height:58px;margin:8px 0;padding:10px 14px;border:none;border-radius:10px;background:#1a3a5c;color:#fff;font-size:17px;font-weight:700;text-decoration:none;text-align:left;cursor:pointer;font-family:inherit}
+.big .i{font-size:24px;width:30px;text-align:center}
+.big.green{background:var(--ok)}
+.big:disabled{opacity:.55}
+.sec{display:block;width:100%;padding:12px;margin:8px 0;border:1.5px solid var(--line);border-radius:10px;background:transparent;color:var(--fg);font-size:15px;font-weight:600;text-align:center;text-decoration:none;cursor:pointer;font-family:inherit}
+.muted{color:var(--muted);font-size:14px}
+.addr{font-size:22px;font-weight:800;letter-spacing:.02em;background:var(--bg);border:1px dashed var(--line);border-radius:8px;padding:8px 12px;margin:6px 0;text-align:center;word-break:break-all}
+ol,ul{margin:6px 0 6px 20px;padding:0}li{margin:4px 0}
+.rep{border-top:1px solid var(--line);padding:9px 0}
+.rep:first-child{border-top:none}
+.rep .f{font-weight:700}
+.eoc{display:flex;gap:10px;align-items:flex-start;padding:10px;border:1.5px solid var(--line);border-radius:10px;margin:8px 0;cursor:pointer}
+.eoc input{width:22px;height:22px;margin-top:2px;accent-color:#1a3a5c}
+.eoc.on{border-color:#1a3a5c}
+.receipt{background:var(--okbg);border:2px solid var(--ok);border-radius:12px;padding:16px;margin:14px 0}
+.receipt .h{font-size:22px;font-weight:800;color:var(--ok)}
+.error{background:var(--errbg);border:2px solid var(--err);border-radius:12px;padding:14px;margin:14px 0}
+.kv{display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--line);padding:6px 0;font-size:14px}
+.kv:first-child{border-top:none}.kv .v{text-align:right;font-weight:600;word-break:break-word}
+a{color:var(--navy)}
+footer{max-width:640px;margin:0 auto;padding:4px 16px 0;font-size:12px;color:var(--muted)}
+.wi{border-top:1px solid var(--line);padding:9px 0}.wi:first-child{border-top:none}.wi .t{font-weight:700}.wi .m{font-size:13px;color:var(--muted);margin-top:2px}
+.tag{display:inline-block;font-size:11px;font-weight:800;border-radius:4px;padding:0 6px;margin-right:5px;color:#fff;vertical-align:middle}
+.tag.hi{background:#b00020}.tag.up{background:#5b21b6}.tag.work{background:#92400e}.tag.open{background:#1d4ed8}
+.wi .d{display:none;margin-top:6px}.wi.open .d{display:block}
+.wi .d button{padding:8px 12px;margin:4px 4px 0 0;border:1.5px solid var(--line);border-radius:8px;background:var(--card);color:var(--fg);font-weight:600;font-size:14px}
+.drill{background:#4c1d95;color:#ede9fe;border-radius:12px;padding:12px 16px;margin:14px 0;font-weight:600;line-height:1.5}.drill b{color:#fff}
+</style>
+</head>
+<body>
+<header>
+  <div class="t">Emergency Operations Center</div>
+  <h1 id="eoc-name">EOC on this Wi-Fi</h1>
+  <div class="ev" id="eoc-ev">Connecting…</div>
+</header>
+<main id="main"></main>
+<footer>Church of Jesus Christ EMCOMM (emergency communications) digital forms. Independent volunteer project, not an official product of The Church of Jesus Christ of Latter-day Saints. <a href="/">Full EOC Message Center</a></footer>
+
+<script>
+var PORTAL = 'https://travislhilton.github.io/church-emcomm-wnlk-forms/forms/index.html';
+var FORM_NAME = {dr:'Disaster Report', so:'Supply Order', wcl:'Work Crew Log'};
+var LEVEL = {satellite:'Satellite EOC', stake:'Stake EOC', area:'Council / Area EOC'};
+var PACE_NAME = {P:'Primary', A:'Alternate', C:'Contingency', E:'Emergency'};
+var srv = {}, peers = [];
+
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+// A value inside a single-quoted JS string in an onclick attribute (the browser decodes &#39; before the script runs).
+function jsq(s){ return String(s == null ? '' : s).replace(/[\\'"<>&\r\n\u2028\u2029]/g, function(c){ return '\\u' + ('000' + c.charCodeAt(0).toString(16)).slice(-4); }); }
+function hm(ts){ var d = new Date(ts); return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2); }
+function getJSON(u){ return fetch(u, {cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }); }
+function hashParams(){ var o = {}; location.hash.replace(/^#/, '').split('&').forEach(function(kv){ var i = kv.indexOf('='); if (i > 0) o[kv.slice(0,i)] = decodeURIComponent(kv.slice(i+1)); }); return o; }
+function eocLabel(p){ return (p.name || 'EOC at ' + p.url.replace(/^https?:\/\//, '')) + (p.level && LEVEL[p.level] ? ' · ' + LEVEL[p.level] : ''); }
+
+function header(){
+  document.getElementById('eoc-name').textContent = srv.eocName || 'EOC on this Wi-Fi';
+  document.title = (srv.eocName || 'EOC') + ' — phone page';
+  var ev = srv.activeEventName ? 'Event: ' + srv.activeEventName : 'No event named yet';
+  var lvl = LEVEL[srv.eocLevel] ? LEVEL[srv.eocLevel] + ' · ' : '';
+  document.getElementById('eoc-ev').innerHTML = esc(lvl + ev) + (srv.pace ? '<span class="pace ' + esc(srv.pace) + '">PACE ' + esc(srv.pace) + ' ' + esc(PACE_NAME[srv.pace] || '') + '</span>' : '')
+    + (srv.drill && srv.drill.active ? '<span class="pace" style="background:#4c1d95">DRILL</span>' : '');
+}
+// ── Drill card: what the simulator feeding this EOC pushed (role, scenario, clock) ─
+function drillScore(d){ var s=d&&d.score; if(!s||!s.total) return ''; var bad=(s.overdue||0)+(s.missed||0); return 'Needs met <b>'+(s.met+s.late)+'/'+s.total+'</b>'+(bad?' · <b style="color:#fca5a5">'+bad+' overdue</b>':'')+(s.pct!=null?' · <b>'+s.pct+'%</b>':''); }
+function drawDrill(){
+  var d = srv.drill, el = document.getElementById('drill-card'); if (!el) return;
+  if (!d || !d.active) { el.innerHTML = ''; return; }
+  var role = LEVEL[d.role] || d.role || '';
+  var when = d.status === 'scheduled' && d.start_at_ms ? 'starts at ' + hm(d.start_at_ms) : d.status === 'running' ? 'running' : (d.status === 'planned' && d.session) ? 'ready: waiting for the trainer\'s GO' : (d.status || 'planned');
+  el.innerHTML = '<div class="drill">&#127919; DRILL · <b>' + esc(d.scenario || '') + '</b><br>This EOC plays <b>' + esc(d.site_label || role) + '</b> · ' + esc(when)
+    + (drillScore(d) ? '<br>' + drillScore(d) : '')
+    + (d.ready && d.ready.length ? '<br>Ready: ' + esc(d.ready.join(', ')) : '')
+    + '<br><span style="font-weight:400">Every simulated report says SIMULATED in its text. Real reports still go through.</span></div>';
+}
+
+// ── Work items: the EOC's worklist on the phone (take an item, move it) ───────
+var work = [], workOpen = null, myName = '';
+try { myName = localStorage.getItem('emcomm_phone_name') || ''; } catch (e) {}
+function loadWork(){ getJSON('/api/actions').then(function(l){ if (Array.isArray(l)) { work = l; renderWork(); } }).catch(function(){}); }
+function renderWork(){
+  var card = document.getElementById('work-card'), box = document.getElementById('work'); if (!card || !box) return;
+  var open = work.filter(function(a){ return a.status !== 'done'; });
+  var ORD = {open:0, progress:1, up:2};
+  open.sort(function(a,b){ return (a.prio||2)-(b.prio||2) || (ORD[a.status]||0)-(ORD[b.status]||0) || (a.ts||0)-(b.ts||0); });
+  document.getElementById('work-n').textContent = open.length ? open.length + ' open' : '';
+  if (!work.length) { card.style.display = 'none'; return; }
+  card.style.display = '';
+  var ST = {open:'OPEN', progress:'IN WORK', up:'UP'};
+  box.innerHTML = open.length ? open.map(function(a){
+    var id = jsq(a.id);
+    var d = '<div class="d"><div class="m">' + (a.detail ? esc(a.detail) + '<br>' : '') + (a.next ? 'Next: ' + esc(a.next) + '<br>' : '')
+      + (a.due ? 'Due ' + esc(a.due) + ' · ' : '') + (a.from ? 'From ' + esc(a.from) + ' · ' : '') + 'Owner: ' + esc(a.owner || 'nobody') + '</div>'
+      + '<button onclick="workAct(\'' + id + '\',\'take\')">Take it</button>'
+      + (a.status !== 'progress' ? '<button onclick="workAct(\'' + id + '\',\'progress\')">In work</button>' : '')
+      + (a.status !== 'up' ? '<button onclick="workAct(\'' + id + '\',\'up\')">Up (line above)</button>' : '')
+      + '<button onclick="workAct(\'' + id + '\',\'done\')">Done</button></div>';
+    return '<div class="wi' + (workOpen === a.id ? ' open' : '') + '" onclick="workToggle(\'' + id + '\', event)"><div class="t">'
+      + (a.prio === 1 ? '<span class="tag hi">HIGH</span>' : '') + '<span class="tag ' + (a.status === 'up' ? 'up' : a.status === 'progress' ? 'work' : 'open') + '">' + (ST[a.status] || 'OPEN') + '</span>' + esc(a.title) + '</div>'
+      + '<div class="m">' + esc(a.unit || '') + (a.owner ? ' · ' + esc(a.owner) : ' · <b>no owner</b>') + (a.next && workOpen !== a.id ? ' · ' + esc(a.next) : '') + '</div>' + d + '</div>';
+  }).join('') : '<p class="muted" style="margin:0">Nothing open. ' + work.length + ' done.</p>';
+}
+function workToggle(id, ev){ if (ev && ev.target && ev.target.tagName === 'BUTTON') return; workOpen = workOpen === id ? null : id; renderWork(); }
+function workAct(id, act){
+  if (!myName) { myName = (prompt('Your name (goes in the item log):') || '').trim(); if (!myName) return; try { localStorage.setItem('emcomm_phone_name', myName); } catch (e) {} }
+  var body = act === 'take' ? {owner: myName, who: myName} : {status: act, who: myName};
+  if (act === 'take') { var a = work.filter(function(x){ return x.id === id; })[0]; if (a && a.status === 'open') body.status = 'progress'; }
+  fetch('/api/actions/' + encodeURIComponent(id), {method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)}).then(function(){ loadWork(); }).catch(function(){});
+}
+
+// ── Landing (/m): new reports, reports saved in the app, comms sheet ──────────
+function landing(){
+  var h = '';
+  h += '<div id="drill-card"></div>';
+  h += '<div class="card"><h2>Fill in a new report</h2><p class="muted" style="margin:0 0 4px">The form opens on this phone. When you are done, tap <b>Send to EOC</b> at the bottom. No saving or files needed.</p>';
+  ['dr','so','wcl'].forEach(function(k, i){
+    h += '<a class="big" href="/forms/' + k + '"><span class="i">' + ['&#128203;','&#128230;','&#128296;'][i] + '</span>New ' + FORM_NAME[k] + '</a>';
+  });
+  h += '</div>';
+  h += '<div class="card"><h2>Reports saved in the Church of Jesus Christ EMCOMM app</h2>'
+     + '<p class="muted" style="margin:0 0 6px">Filled in forms out in the field with no signal? Send them now, while you are on this Wi-Fi.</p>'
+     + '<ol><li>Open the <b>EMCOMM</b> app on your home screen.</li><li>Tap <b>Outbox</b>, then <b>Send to EOC</b>.</li><li>Tap <b>Scan the EOC QR code</b> and point the camera at the code on the wall. Or type this address:</li></ol>'
+     + '<div class="addr">' + esc(location.host) + '</div>'
+     + '<p class="muted" style="margin:6px 0 0">Android: this button also opens your saved reports.</p>'
+     + '<a class="sec" href="' + esc(PORTAL + '?eoc=' + encodeURIComponent(location.origin) + '#outbox') + '">Open my saved reports (Android)</a></div>';
+  h += '<div class="card" id="work-card" style="display:none"><h2>Work items <span class="muted" id="work-n"></span></h2>'
+     + '<p class="muted" style="margin:0 0 6px">What the reports ask the EOC to do or decide. Tap an item to see it, take it or move it.</p><div id="work"></div></div>';
+  h += '<div class="card" id="comms-card" style="display:none"><h2>Comms sheet</h2><div id="comms"></div></div>';
+  h += '<a class="sec" href="/">Full EOC Message Center (for EOC operators)</a>';
+  document.getElementById('main').innerHTML = h;
+  drawDrill(); loadWork();
+  getJSON('/api/comms').then(renderComms).catch(function(){});
+  setInterval(loadWork, 10000);
+  setInterval(function(){ getJSON('/api/status').then(function(s){ srv = s; header(); drawDrill(); }).catch(function(){}); }, 15000);
+}
+function renderComms(c){
+  var s = (c && c.sheet) || {}, h = '';
+  (s.contacts || []).forEach(function(r){
+    if (!r.name && !r.role) return;
+    h += '<div class="kv"><span>' + esc(r.role || '') + '<br><b>' + esc(r.name || '') + '</b></span><span class="v">'
+       + (r.phone ? '<a href="tel:' + esc(String(r.phone).replace(/[^0-9+]/g,'')) + '">' + esc(r.phone) + '</a><br>' : '')
+       + (r.winlink ? esc(r.winlink) : '') + '</span></div>';
+  });
+  (s.nets || []).forEach(function(r){
+    if (!r.name && !r.freq) return;
+    h += '<div class="kv"><span>' + esc(r.name || 'Net') + '</span><span class="v">' + esc([r.freq, r.offset, r.tone && ('tone ' + r.tone), r.mode].filter(Boolean).join(' · ')) + '</span></div>';
+  });
+  if (h) { document.getElementById('comms').innerHTML = h; document.getElementById('comms-card').style.display = ''; }
+}
+
+// ── Receive (/receive#d=…&r=…): reports handed over from the Church of Jesus Christ EMCOMM app ───────
+function b64urlToBytes(s){
+  s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '=';
+  var bin = atob(s), out = new Uint8Array(bin.length);
+  for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+function decodePayload(d){
+  // 'z' + base64url(deflate-raw(JSON)) or 'j' + base64url(UTF-8 JSON)  (see emcomm-app.js packReports)
+  var kind = d.charAt(0), bytes = b64urlToBytes(d.slice(1));
+  if (kind === 'j') return Promise.resolve(JSON.parse(new TextDecoder().decode(bytes)));
+  if (kind === 'z') {
+    if (typeof DecompressionStream === 'undefined') return Promise.reject(new Error('This browser is too old to read the reports. Update the phone, or use Save to My Phone.'));
+    var stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+    return new Response(stream).text().then(JSON.parse);
+  }
+  return Promise.reject(new Error('The link does not carry any reports.'));
+}
+var incoming = null, backTo = '';
+function receive(p){
+  backTo = safeReturn(p.r || '');
+  document.getElementById('main').innerHTML = '<div class="card">Reading the reports from the app…</div>';
+  decodePayload(p.d).then(function(b){
+    if (!b || !Array.isArray(b.reports) || !b.reports.length) throw new Error('No reports were handed over.');
+    incoming = b; showIncoming();
+  }).catch(function(e){
+    document.getElementById('main').innerHTML = '<div class="error"><b>Could not read the reports.</b><br>' + esc(e.message) + '</div><a class="sec" href="/m">EOC phone page</a>';
+  });
+}
+function safeReturn(r){
+  // Only hand control back to the Church of Jesus Christ EMCOMM app (the GitHub Pages portal), this server, or a dev copy on the LAN.
+  if (/^https:\/\/travislhilton\.github\.io\/church-emcomm-wnlk-forms\//.test(r)) return r;
+  if (r.indexOf(location.origin + '/') === 0) return r;
+  if (/^https?:\/\/(localhost|127\.0\.0\.1|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)(:\d+)?\//.test(r)) return r;
+  if (/^file:\/\//.test(r)) return r;
+  return '';
+}
+function showIncoming(){
+  var reps = incoming.reports, h = '<div class="card"><h2>' + reps.length + ' report' + (reps.length === 1 ? '' : 's') + ' from your Church of Jesus Christ EMCOMM app</h2>';
+  reps.forEach(function(r){
+    h += '<div class="rep"><div class="f">' + esc(FORM_NAME[r.form] || 'Report') + '</div><div class="muted">' + esc(r.title || '') + (r.savedAt ? ' · saved ' + esc(new Date(r.savedAt).toLocaleString()) : '') + '</div></div>';
+  });
+  if (incoming.app && srv.formsVersion && incoming.app < srv.formsVersion)
+    h += '<p class="muted" style="margin:8px 0 0">Your Church of Jesus Christ EMCOMM app (version ' + esc(incoming.app) + ') is older than this EOC\'s forms (' + esc(srv.formsVersion) + '). Your reports still go through. The app updates itself next time the phone has internet. For new reports here, use the EOC\'s forms on the phone page.</p>';
+  h += '</div><div class="card"><h2>Send to which EOC?</h2><div id="eocs"></div></div>'
+     + '<button class="big green" id="send" onclick="sendIncoming()"><span class="i">&#128228;</span><span id="send-l">Send to EOC</span></button>'
+     + '<div id="result"></div>';
+  document.getElementById('main').innerHTML = h;
+  renderPeers();
+}
+function renderPeers(){
+  var el = document.getElementById('eocs'); if (!el) return;
+  var list = peers.length ? peers : [{url: location.origin, name: srv.eocName, level: srv.eocLevel, event: srv.activeEventName, self: true}];
+  var h = '';
+  list.forEach(function(p, i){
+    h += '<label class="eoc' + (i === 0 ? ' on' : '') + '"><input type="radio" name="to" value="' + esc(p.url) + '"' + (i === 0 ? ' checked' : '') + ' onchange="pickEoc()">'
+       + '<span><b>' + esc(eocLabel(p)) + '</b>' + (p.self ? ' <span class="muted">(this one)</span>' : '') + '<br><span class="muted">' + esc(p.event ? 'Event: ' + p.event : 'No event named') + ' · ' + esc(p.url.replace(/^https?:\/\//, '')) + '</span></span></label>';
+  });
+  if (list.length === 1) h += '<p class="muted" style="margin:4px 0 0">This is the only EOC on this Wi-Fi.</p>';
+  el.innerHTML = h; pickEoc();
+}
+function chosen(){ var r = document.querySelector('input[name=to]:checked'); return r ? r.value : location.origin; }
+function pickEoc(){
+  document.querySelectorAll('.eoc').forEach(function(l){ l.classList.toggle('on', l.querySelector('input').checked); });
+  var p = (peers.filter(function(x){ return x.url === chosen(); })[0]) || {name: srv.eocName, url: location.origin};
+  var l = document.getElementById('send-l'); if (l) l.textContent = 'Send to ' + (p.name || 'this EOC');
+}
+function sendIncoming(){
+  var btn = document.getElementById('send'); btn.disabled = true;
+  var to = chosen(), self = !peers.length || peers[0].url === to;
+  var body = {reports: incoming.reports.map(function(r){ return {id: r.id, form: r.form, filename: r.filename, data: r.data}; })};
+  if (!self) body.to = to;
+  fetch('/api/upload', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)})
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      var ok = (res.results || []).filter(function(x){ return x.status !== 'error'; });
+      var bad = (res.results || []).filter(function(x){ return x.status === 'error'; });
+      var h = '';
+      if (ok.length) {
+        h += '<div class="receipt"><div class="h">&#10003; ' + ok.length + ' report' + (ok.length === 1 ? '' : 's') + ' received</div>'
+           + '<div>by <b>' + esc((res.eoc && res.eoc.name) || 'the EOC') + '</b> at ' + hm(res.receivedAt || Date.now()) + (res.event ? ' · event ' + esc(res.event) : '') + '</div>'
+           + (res.dup ? '<div class="muted">' + res.dup + ' of them were already on file (sent before). That is fine.</div>' : '') + '</div>';
+      }
+      if (bad.length || !res.results) {
+        // Name each report that failed: the app's "Yes, mark sent" would mark the whole batch, so the volunteer must tap No.
+        var byId = {}; incoming.reports.forEach(function(r){ if (r.id) byId[r.id] = r; });
+        var list = bad.map(function(x){ var r = byId[x.id] || {}; return '<li><b>' + esc(FORM_NAME[r.form] || x.filename || 'Report') + '</b>' + (r.title ? ' · ' + esc(r.title) : '') + (x.error ? '<br><span class="muted">' + esc(x.error) + '</span>' : '') + '</li>'; }).join('');
+        h += '<div class="error"><b>' + (bad.length ? bad.length + ' of ' + incoming.reports.length + ' report' + (incoming.reports.length === 1 ? '' : 's') : 'The reports') + ' could not be filed.</b>'
+           + (list ? '<ul style="margin:6px 0;padding-left:20px">' + list + '</ul>' : '<br>' + esc(res.error || '') + '<br>')
+           + 'Back in the app, when it asks whether you saw a green screen, tap <b>No</b>. Then the reports stay in your app\'s Outbox. Try again, or show this screen to an EOC operator.</div>';
+        btn.disabled = false;
+      } else btn.style.display = 'none';
+      if (ok.length) {
+        var ids = ok.map(function(x){ return x.id; }).filter(Boolean).join(',');
+        h += '<div class="card"><h2>Back to the Church of Jesus Christ EMCOMM app</h2><p class="muted" style="margin:0">'
+           + (bad.length
+              ? 'Some reports were <b>not</b> filed (see the red box). On an iPhone, close this page and switch back to the app. It asks whether you saw a green screen. Tap <b>No</b>. All the reports stay in the Outbox. Send them again later: the ones filed now are not filed twice.'
+              : 'The app marks these reports as sent. On an iPhone, close this page and switch back to the app: it asks whether you saw this green screen. Tap <b>Yes</b>.') + '</p>'
+           + (backTo ? '<a class="big" href="' + esc(backTo.split('#')[0] + '#ack=' + encodeURIComponent(ids) + '&to=' + encodeURIComponent((res.eoc && res.eoc.name) || '')) + '"><span class="i">&#8617;</span>Back to the app' + (bad.length ? ' (marks only the filed reports as sent)' : '') + '</a>' : '') + '</div>';
+        try { history.replaceState(null, '', '/receive'); } catch (e) {}
+      }
+      document.getElementById('result').innerHTML = h;
+      window.scrollTo(0, document.body.scrollHeight);
+    })
+    .catch(function(e){
+      btn.disabled = false;
+      document.getElementById('result').innerHTML = '<div class="error"><b>Could not reach the EOC.</b><br>' + esc(e.message) + '<br>Check you are still on the EOC Wi-Fi, then tap Send again. Your reports stay in the app.</div>';
+    });
+}
+
+// ── Start ─────────────────────────────────────────────────────────────────────
+getJSON('/api/status').then(function(s){ srv = s; header(); }).catch(function(){ document.getElementById('eoc-ev').textContent = 'The EOC server is not answering. Check the Wi-Fi.'; })
+  .then(function(){ return getJSON('/api/peers').then(function(p){ peers = Array.isArray(p) ? p : []; }).catch(function(){}); })
+  .then(function(){ var p = hashParams(); if (p.d) receive(p); else landing(); });
+</script>
+</body>
+</html>

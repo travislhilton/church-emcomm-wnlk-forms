@@ -1,0 +1,49 @@
+{
+ "kind": "church_emcomm_orgpack",
+ "v": 1,
+ "source": "synthetic-fixture",
+ "privacy": "real",
+ "note": "Invented organizations for tests. No real unit, person, phone or email. Coordinates sit in the invented Larkspur Valley so the copper-creek-dam scenario applies.",
+ "councils": [
+  {"id": "C1", "name": "Alpha Coordinating Council", "stakes": ["S1", "S2"], "leaders": ["p-c1-seventy"]}
+ ],
+ "stakes": [
+  {"id": "S1", "name": "Alpha Stake", "council": "C1", "center_building": "B1", "city": "Alphaville", "state": "UT", "zip": "84000", "address": "100 N Main St, Alphaville, UT 84000", "lat": 40.302704, "lon": -117.502886, "units": ["U1", "U2", "U3", "U4"], "leaders": ["p-s1-sp", "p-s1-c1"], "email": "alpha.stake@example.test", "phone": "000-000-0001", "bbox": [-117.602886, 40.252704, -117.452886, 40.352704]},
+  {"id": "S2", "name": "Bravo Stake", "council": "C1", "center_building": "B3", "city": "Bravoton", "state": "ID", "zip": "83000", "address": "200 S 1st St, Bravoton, ID 83000", "lat": 40.6, "lon": -117.58, "units": ["U5", "U6"], "leaders": ["p-s2-sp"], "email": "", "phone": "", "bbox": [-117.65, 40.55, -117.5, 40.65]}
+ ],
+ "units": [
+  {"id": "U1", "name": "Alpha 1st Ward", "type": "Ward", "stake": "S1", "stake_name": "Alpha Stake", "building": "B1", "lat": 40.302704, "lon": -117.502886, "address": "100 N Main St, Alphaville, UT 84000", "city": "Alphaville", "state": "UT", "zip": "84000", "flags": [], "draws_from": [], "bbox": null, "rings": [], "label": null, "area_km2": 2.0, "leaders": ["p-u1-bp", "p-u1-c1", "p-u1-c2", "p-u1-clerk"], "phone": ""},
+  {"id": "U2", "name": "Alpha 2nd Ward", "type": "Ward", "stake": "S1", "stake_name": "Alpha Stake", "building": "B1", "lat": 40.302704, "lon": -117.502886, "address": "100 N Main St, Alphaville, UT 84000", "city": "Alphaville", "state": "UT", "zip": "84000", "flags": [], "draws_from": [], "bbox": null, "rings": [], "label": null, "area_km2": 2.0, "leaders": ["p-u2-bp", "p-u2-c1"], "phone": ""},
+  {"id": "U3", "name": "Riverbottom Ward", "type": "Ward", "stake": "S1", "stake_name": "Alpha Stake", "building": "B2", "lat": 40.259441, "lon": -117.573557, "address": "50 W River Rd, Bottoms, UT 84001", "city": "Bottoms", "state": "UT", "zip": "84001", "flags": [], "draws_from": [], "bbox": null, "rings": [], "label": null, "area_km2": 30.0, "leaders": ["p-u3-bp", "p-u3-c1"], "phone": "000-000-0002"},
+  {"id": "U4", "name": "Alpha Care Center Branch", "type": "Branch", "stake": "S1", "stake_name": "Alpha Stake", "building": "B1", "lat": 40.302704, "lon": -117.502886, "address": "100 N Main St, Alphaville, UT 84000", "city": "Alphaville", "state": "UT", "zip": "84000", "flags": ["care_facility"], "draws_from": [], "bbox": null, "rings": [], "label": null, "area_km2": null, "leaders": ["p-u4-bp"], "phone": ""},
+  {"id": "U5", "name": "Bravo 1st Ward", "type": "Ward", "stake": "S2", "stake_name": "Bravo Stake", "building": "B3", "lat": 40.6, "lon": -117.58, "address": "200 S 1st St, Bravoton, ID 83000", "city": "Bravoton", "state": "ID", "zip": "83000", "flags": [], "draws_from": [], "bbox": null, "rings": [], "label": null, "area_km2": 5.0, "leaders": ["p-u5-bp", "p-u5-c1", "p-u5-c2"], "phone": ""},
+  {"id": "U6", "name": "Bravo (Spanish) Ward", "type": "Ward", "stake": "S2", "stake_name": "Bravo Stake", "building": "B3", "lat": 40.6, "lon": -117.58, "address": "200 S 1st St, Bravoton, ID 83000", "city": "Bravoton", "state": "ID", "zip": "83000", "flags": ["language_unit"], "draws_from": ["S1", "S2"], "bbox": null, "rings": [], "label": null, "area_km2": 40.0, "leaders": ["p-u6-bp"], "phone": ""}
+ ],
+ "buildings": [
+  {"id": "B1", "address": "100 N Main St, Alphaville, UT 84000", "street": "100 N Main St", "city": "Alphaville", "state": "UT", "zip": "84000", "lat": 40.302704, "lon": -117.502886, "units": ["U1", "U2", "U4"], "stake_center_for": ["S1"]},
+  {"id": "B2", "address": "50 W River Rd, Bottoms, UT 84001", "street": "50 W River Rd", "city": "Bottoms", "state": "UT", "zip": "84001", "lat": 40.259441, "lon": -117.573557, "units": ["U3"], "stake_center_for": []},
+  {"id": "B3", "address": "200 S 1st St, Bravoton, ID 83000", "street": "200 S 1st St", "city": "Bravoton", "state": "ID", "zip": "83000", "lat": 40.6, "lon": -117.58, "units": ["U5", "U6"], "stake_center_for": ["S2"]}
+ ],
+ "welfare": {"region": {"id": "W1", "name": "Alpha Welfare Region", "leaders": ["p-w1-wsrm"], "city": "Alphaville", "address": "", "lat": null, "lon": null}, "area_office": {"id": "W2", "name": "Area Welfare Office", "leaders": ["p-w2-awsrm"]}},
+ "contacts": [
+  {"id": "p-c1-seventy", "person": "per-01", "role": "Area Seventy", "org": "C1", "name": "Test Seventy", "first": "Test", "last": "Seventy", "mobile": "000-000-0101", "phone": "000-000-0101", "email": "seventy@example.test"},
+  {"id": "p-s1-sp", "person": "per-02", "role": "Stake President", "org": "S1", "name": "Pat Alphapres", "first": "Pat", "last": "Alphapres", "mobile": "000-000-0102", "phone": "000-000-0102", "email": "alphapres@example.test"},
+  {"id": "p-s1-c1", "person": "per-03", "role": "Stake Presidency First Counselor", "org": "S1", "name": "Chris Alphacounsel", "first": "Chris", "last": "Alphacounsel", "mobile": "", "phone": "000-000-0103", "email": ""},
+  {"id": "p-s2-sp", "person": "per-04", "role": "Stake President", "org": "S2", "name": "Sam Bravopres", "first": "Sam", "last": "Bravopres", "mobile": "000-000-0104", "phone": "000-000-0104", "email": "bravopres@example.test"},
+  {"id": "p-u1-bp", "person": "per-05", "role": "Bishop", "org": "U1", "name": "Lee Firstbishop", "first": "Lee", "last": "Firstbishop", "mobile": "000-000-0105", "phone": "000-000-0105", "email": "firstbishop@example.test"},
+  {"id": "p-u1-c1", "person": "per-06", "role": "Bishopric First Counselor", "org": "U1", "name": "Jo Firstcounsel", "first": "Jo", "last": "Firstcounsel", "mobile": "000-000-0106", "phone": "000-000-0106", "email": ""},
+  {"id": "p-u1-c2", "person": "per-07", "role": "Bishopric Second Counselor", "org": "U1", "name": "Kim Secondcounsel", "first": "Kim", "last": "Secondcounsel", "mobile": "", "phone": "", "email": "secondcounsel@example.test"},
+  {"id": "p-u1-clerk", "person": "per-08", "role": "Ward Clerk", "org": "U1", "name": "Alex Firstclerk", "first": "Alex", "last": "Firstclerk", "mobile": "000-000-0108", "phone": "000-000-0108", "email": ""},
+  {"id": "p-u2-bp", "person": "per-09", "role": "Bishop", "org": "U2", "name": "Dana Secondbishop", "first": "Dana", "last": "Secondbishop", "mobile": "000-000-0109", "phone": "000-000-0109", "email": "secondbishop@example.test"},
+  {"id": "p-u2-c1", "person": "per-10", "role": "Bishopric First Counselor", "org": "U2", "name": "Robin Secondward", "first": "Robin", "last": "Secondward", "mobile": "000-000-0110", "phone": "000-000-0110", "email": ""},
+  {"id": "p-u3-bp", "person": "per-11", "role": "Bishop", "org": "U3", "name": "Morgan Riverbishop", "first": "Morgan", "last": "Riverbishop", "mobile": "000-000-0111", "phone": "000-000-0111", "email": "riverbishop@example.test"},
+  {"id": "p-u3-c1", "person": "per-12", "role": "Ward Executive Secretary", "org": "U3", "name": "Casey Riversec", "first": "Casey", "last": "Riversec", "mobile": "000-000-0112", "phone": "000-000-0112", "email": ""},
+  {"id": "p-u4-bp", "person": "per-13", "role": "Branch President", "org": "U4", "name": "Jordan Carepres", "first": "Jordan", "last": "Carepres", "mobile": "000-000-0113", "phone": "000-000-0113", "email": "carepres@example.test"},
+  {"id": "p-u5-bp", "person": "per-14", "role": "Bishop", "org": "U5", "name": "Taylor Bravobishop", "first": "Taylor", "last": "Bravobishop", "mobile": "000-000-0114", "phone": "000-000-0114", "email": "bravobishop@example.test"},
+  {"id": "p-u5-c1", "person": "per-15", "role": "Bishopric First Counselor", "org": "U5", "name": "Drew Bravocounsel", "first": "Drew", "last": "Bravocounsel", "mobile": "000-000-0115", "phone": "000-000-0115", "email": ""},
+  {"id": "p-u5-c2", "person": "per-02", "role": "Bishopric Second Counselor", "org": "U5", "name": "Pat Alphapres", "first": "Pat", "last": "Alphapres", "mobile": "000-000-0102", "phone": "000-000-0102", "email": "alphapres@example.test"},
+  {"id": "p-u6-bp", "person": "per-16", "role": "Bishop", "org": "U6", "name": "Rene Spanishbishop", "first": "Rene", "last": "Spanishbishop", "mobile": "000-000-0116", "phone": "000-000-0116", "email": "spanishbishop@example.test"},
+  {"id": "p-w1-wsrm", "person": "per-17", "role": "Welfare and Self-Reliance Manager", "org": "W1", "name": "Val Regionmanager", "first": "Val", "last": "Regionmanager", "mobile": "000-000-0117", "phone": "000-000-0117", "email": "wsrm@example.test"},
+  {"id": "p-w2-awsrm", "person": "per-18", "role": "Area Welfare and Self-Reliance Manager", "org": "W2", "name": "Sky Areamanager", "first": "Sky", "last": "Areamanager", "mobile": "000-000-0118", "phone": "000-000-0118", "email": "awsrm@example.test"}
+ ]
+}

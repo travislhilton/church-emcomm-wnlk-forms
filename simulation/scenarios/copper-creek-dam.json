@@ -1,0 +1,5880 @@
+{
+ "kind": "church_emcomm_scenario",
+ "v": 1,
+ "id": "copper-creek-dam",
+ "name": "Copper Creek Dam failure, Larkspur Valley flood",
+ "hazard": "flood (dam failure)",
+ "onset": "rapid",
+ "summary": "Invented drill fiction for the invented Juniper Plains Area in the Larkspur Valley: no real place, organization or person. Sunday 21 March, 07:50, daylight, +4 °C and light rain after three days of warm rain on a deep snowpack. Copper Creek Dam has been seeping since Saturday evening; the county orders Copper Ridge below the dam and the Copper Creek corridor through south Larkspur out, and warns the river bottoms and Alder Flat. Sacrament meetings are at 9:00: the Stake Presidents must decide to cancel. At T+38 the dam fails. The flood wave takes the Route 30 bridge at Copper Ridge (T+45), reaches south Larkspur at 09:00 (T+70: the Route 12 bridge over Copper Creek closed, the Larkspur Care Center surrounded by water), floods the Copper Creek substation and cuts the fibre under the Route 12 bridge (T+75 to T+78): cellular dies in the south and the stakes go to Contingency (radio). The river crests through Larkspur West and reaches Alder Flat (T+140). Care-facility residents with no transport, missionaries not accounted for, Spanish-speaking families, members with relatives, a dam rumour, unasked volunteers, Supply Orders to the welfare line and a storehouse truck from Bramble Junction, city requests by ICS 213RR (Incident Command System resource request), and a wet-snow night ahead. Acronyms: EOC (Emergency Operations Center), PACE (Primary, Alternate, Contingency, Emergency), SITREP (situation report), ERD (Emergency Response Director), WSRM / AWSRM ((Area) Welfare and Self-Reliance Manager), NWS (National Weather Service), VARA (the Winlink radio mode), FRS / GMRS (Family / General Mobile Radio Service).",
+ "sources": [],
+ "applies": {
+  "bbox": [
+   -117.74,
+   40.08,
+   -117.34,
+   40.53
+  ]
+ },
+ "clock": {
+  "t0": "Sunday 21 March 07:50 local (daylight saving time), daylight (sunrise 07:20, sunset 19:40); +4 °C, light rain, snow line at 1,900 m; sacrament meetings at 9:00",
+  "duration_min": 240,
+  "default_speed": 2
+ },
+ "geo": {
+  "dam": [
+   40.31803,
+   -117.40866
+  ],
+  "note": "Feature coordinates are [lon, lat] in the invented Larkspur Valley frame (simulation/example/world.json: x km east and y km north of 40.30 N 117.55 W). The dam point is [lat, lon].",
+  "features": {
+   "dam_inundation": {
+    "type": "polygon",
+    "note": "Drill geography, not a hazard map: the flood path of the Copper Creek Dam breach from the dam to the Larkspur River. Narrow in the Copper Ridge canyon reach (0.7 km north, 0.9 km south of the creek), spreading over the low south side of Larkspur (up to 1.8 km north of the creek, which puts the Larkspur Care Center under water).",
+    "coords": [
+     [
+      -117.58062,
+      40.2982
+     ],
+     [
+      -117.57473,
+      40.29962
+     ],
+     [
+      -117.56885,
+      40.30318
+     ],
+     [
+      -117.56296,
+      40.30673
+     ],
+     [
+      -117.55707,
+      40.30807
+     ],
+     [
+      -117.55118,
+      40.30886
+     ],
+     [
+      -117.54529,
+      40.30991
+     ],
+     [
+      -117.5394,
+      40.31104
+     ],
+     [
+      -117.53351,
+      40.31217
+     ],
+     [
+      -117.52762,
+      40.31329
+     ],
+     [
+      -117.52173,
+      40.3146
+     ],
+     [
+      -117.51584,
+      40.31397
+     ],
+     [
+      -117.50995,
+      40.31284
+     ],
+     [
+      -117.50406,
+      40.31172
+     ],
+     [
+      -117.49817,
+      40.31041
+     ],
+     [
+      -117.49229,
+      40.31104
+     ],
+     [
+      -117.4864,
+      40.31217
+     ],
+     [
+      -117.48051,
+      40.31329
+     ],
+     [
+      -117.47462,
+      40.31448
+     ],
+     [
+      -117.46873,
+      40.31568
+     ],
+     [
+      -117.46284,
+      40.31688
+     ],
+     [
+      -117.45695,
+      40.31785
+     ],
+     [
+      -117.45106,
+      40.31875
+     ],
+     [
+      -117.44517,
+      40.31965
+     ],
+     [
+      -117.43928,
+      40.32037
+     ],
+     [
+      -117.43339,
+      40.32105
+     ],
+     [
+      -117.4275,
+      40.32172
+     ],
+     [
+      -117.42161,
+      40.3224
+     ],
+     [
+      -117.41572,
+      40.32325
+     ],
+     [
+      -117.40984,
+      40.32416
+     ],
+     [
+      -117.40512,
+      40.32434
+     ],
+     [
+      -117.40512,
+      40.30991
+     ],
+     [
+      -117.40984,
+      40.30973
+     ],
+     [
+      -117.41572,
+      40.30883
+     ],
+     [
+      -117.42161,
+      40.30798
+     ],
+     [
+      -117.4275,
+      40.3073
+     ],
+     [
+      -117.43339,
+      40.30662
+     ],
+     [
+      -117.43928,
+      40.30595
+     ],
+     [
+      -117.44517,
+      40.30523
+     ],
+     [
+      -117.45106,
+      40.30433
+     ],
+     [
+      -117.45695,
+      40.30342
+     ],
+     [
+      -117.46284,
+      40.30246
+     ],
+     [
+      -117.46873,
+      40.30126
+     ],
+     [
+      -117.47462,
+      40.30006
+     ],
+     [
+      -117.48051,
+      40.29887
+     ],
+     [
+      -117.4864,
+      40.29775
+     ],
+     [
+      -117.49229,
+      40.29662
+     ],
+     [
+      -117.49817,
+      40.29459
+     ],
+     [
+      -117.50406,
+      40.29342
+     ],
+     [
+      -117.50995,
+      40.29207
+     ],
+     [
+      -117.51584,
+      40.29072
+     ],
+     [
+      -117.52173,
+      40.28936
+     ],
+     [
+      -117.52762,
+      40.28806
+     ],
+     [
+      -117.53351,
+      40.28693
+     ],
+     [
+      -117.5394,
+      40.2858
+     ],
+     [
+      -117.54529,
+      40.28468
+     ],
+     [
+      -117.55118,
+      40.28362
+     ],
+     [
+      -117.55707,
+      40.28284
+     ],
+     [
+      -117.56296,
+      40.28205
+     ],
+     [
+      -117.56885,
+      40.28127
+     ],
+     [
+      -117.57473,
+      40.28048
+     ],
+     [
+      -117.58062,
+      40.28017
+     ]
+    ]
+   },
+   "evacuation_order": {
+    "type": "polygon",
+    "note": "The county evacuation ORDER at T+0: Copper Ridge below Route 30 and the Copper Creek corridor through south Larkspur (south of about 500 South). Wider than the water will be.",
+    "coords": [
+     [
+      -117.58062,
+      40.31082
+     ],
+     [
+      -117.57473,
+      40.31113
+     ],
+     [
+      -117.56885,
+      40.31191
+     ],
+     [
+      -117.56296,
+      40.3127
+     ],
+     [
+      -117.55707,
+      40.31348
+     ],
+     [
+      -117.55118,
+      40.31426
+     ],
+     [
+      -117.54529,
+      40.31532
+     ],
+     [
+      -117.5394,
+      40.31645
+     ],
+     [
+      -117.53351,
+      40.31758
+     ],
+     [
+      -117.52762,
+      40.3187
+     ],
+     [
+      -117.52173,
+      40.32001
+     ],
+     [
+      -117.51584,
+      40.32136
+     ],
+     [
+      -117.50995,
+      40.32019
+     ],
+     [
+      -117.50406,
+      40.31839
+     ],
+     [
+      -117.49817,
+      40.3164
+     ],
+     [
+      -117.49229,
+      40.31438
+     ],
+     [
+      -117.4864,
+      40.31487
+     ],
+     [
+      -117.48051,
+      40.316
+     ],
+     [
+      -117.47462,
+      40.31718
+     ],
+     [
+      -117.46873,
+      40.31839
+     ],
+     [
+      -117.46284,
+      40.31959
+     ],
+     [
+      -117.45695,
+      40.32055
+     ],
+     [
+      -117.45106,
+      40.32145
+     ],
+     [
+      -117.44517,
+      40.32235
+     ],
+     [
+      -117.43928,
+      40.32307
+     ],
+     [
+      -117.43339,
+      40.32375
+     ],
+     [
+      -117.4275,
+      40.32443
+     ],
+     [
+      -117.42161,
+      40.3251
+     ],
+     [
+      -117.41572,
+      40.32596
+     ],
+     [
+      -117.40984,
+      40.32686
+     ],
+     [
+      -117.40395,
+      40.32704
+     ],
+     [
+      -117.40395,
+      40.30361
+     ],
+     [
+      -117.40984,
+      40.30342
+     ],
+     [
+      -117.41572,
+      40.30252
+     ],
+     [
+      -117.42161,
+      40.30167
+     ],
+     [
+      -117.4275,
+      40.30099
+     ],
+     [
+      -117.43339,
+      40.30032
+     ],
+     [
+      -117.43928,
+      40.29964
+     ],
+     [
+      -117.44517,
+      40.29892
+     ],
+     [
+      -117.45106,
+      40.29802
+     ],
+     [
+      -117.45695,
+      40.29712
+     ],
+     [
+      -117.46284,
+      40.29615
+     ],
+     [
+      -117.46873,
+      40.29495
+     ],
+     [
+      -117.47462,
+      40.29375
+     ],
+     [
+      -117.48051,
+      40.29256
+     ],
+     [
+      -117.4864,
+      40.29144
+     ],
+     [
+      -117.49229,
+      40.29031
+     ],
+     [
+      -117.49817,
+      40.28918
+     ],
+     [
+      -117.50406,
+      40.28801
+     ],
+     [
+      -117.50995,
+      40.28666
+     ],
+     [
+      -117.51584,
+      40.28531
+     ],
+     [
+      -117.52173,
+      40.28396
+     ],
+     [
+      -117.52762,
+      40.28265
+     ],
+     [
+      -117.53351,
+      40.28152
+     ],
+     [
+      -117.5394,
+      40.2804
+     ],
+     [
+      -117.54529,
+      40.27927
+     ],
+     [
+      -117.55118,
+      40.27821
+     ],
+     [
+      -117.55707,
+      40.27743
+     ],
+     [
+      -117.56296,
+      40.27664
+     ],
+     [
+      -117.56885,
+      40.27586
+     ],
+     [
+      -117.57473,
+      40.27508
+     ],
+     [
+      -117.58062,
+      40.27476
+     ]
+    ]
+   },
+   "river_floodplain": {
+    "type": "polygon",
+    "note": "Larkspur River flood plain from Center Street south past Alder Flat (1.2 km either side of the river): the river bottoms that flood as the breach water and the snowmelt arrive.",
+    "coords": [
+     [
+      -117.603,
+      40.32704
+     ],
+     [
+      -117.60241,
+      40.32253
+     ],
+     [
+      -117.60183,
+      40.31803
+     ],
+     [
+      -117.60045,
+      40.31352
+     ],
+     [
+      -117.59908,
+      40.30901
+     ],
+     [
+      -117.5977,
+      40.30451
+     ],
+     [
+      -117.59633,
+      40.3
+     ],
+     [
+      -117.59495,
+      40.29549
+     ],
+     [
+      -117.59358,
+      40.29099
+     ],
+     [
+      -117.5926,
+      40.28648
+     ],
+     [
+      -117.59162,
+      40.28197
+     ],
+     [
+      -117.59064,
+      40.27747
+     ],
+     [
+      -117.58965,
+      40.27296
+     ],
+     [
+      -117.58867,
+      40.26845
+     ],
+     [
+      -117.58769,
+      40.26395
+     ],
+     [
+      -117.58696,
+      40.25944
+     ],
+     [
+      -117.58622,
+      40.25493
+     ],
+     [
+      -117.58548,
+      40.25043
+     ],
+     [
+      -117.58475,
+      40.24592
+     ],
+     [
+      -117.58401,
+      40.24142
+     ],
+     [
+      -117.58327,
+      40.23691
+     ],
+     [
+      -117.58254,
+      40.2324
+     ],
+     [
+      -117.5818,
+      40.2279
+     ],
+     [
+      -117.58033,
+      40.22339
+     ],
+     [
+      -117.57886,
+      40.21888
+     ],
+     [
+      -117.57739,
+      40.21438
+     ],
+     [
+      -117.57591,
+      40.20987
+     ],
+     [
+      -117.57444,
+      40.20536
+     ],
+     [
+      -117.57297,
+      40.20086
+     ],
+     [
+      -117.5715,
+      40.19635
+     ],
+     [
+      -117.57002,
+      40.19184
+     ],
+     [
+      -117.56855,
+      40.18734
+     ],
+     [
+      -117.56708,
+      40.18283
+     ],
+     [
+      -117.56561,
+      40.17832
+     ],
+     [
+      -117.56413,
+      40.17382
+     ],
+     [
+      -117.56266,
+      40.16931
+     ],
+     [
+      -117.56119,
+      40.1648
+     ],
+     [
+      -117.55972,
+      40.1603
+     ],
+     [
+      -117.55824,
+      40.15579
+     ],
+     [
+      -117.52998,
+      40.15579
+     ],
+     [
+      -117.53145,
+      40.1603
+     ],
+     [
+      -117.53292,
+      40.1648
+     ],
+     [
+      -117.53439,
+      40.16931
+     ],
+     [
+      -117.53587,
+      40.17382
+     ],
+     [
+      -117.53734,
+      40.17832
+     ],
+     [
+      -117.53881,
+      40.18283
+     ],
+     [
+      -117.54028,
+      40.18734
+     ],
+     [
+      -117.54176,
+      40.19184
+     ],
+     [
+      -117.54323,
+      40.19635
+     ],
+     [
+      -117.5447,
+      40.20086
+     ],
+     [
+      -117.54617,
+      40.20536
+     ],
+     [
+      -117.54764,
+      40.20987
+     ],
+     [
+      -117.54912,
+      40.21438
+     ],
+     [
+      -117.55059,
+      40.21888
+     ],
+     [
+      -117.55206,
+      40.22339
+     ],
+     [
+      -117.55353,
+      40.2279
+     ],
+     [
+      -117.55427,
+      40.2324
+     ],
+     [
+      -117.55501,
+      40.23691
+     ],
+     [
+      -117.55574,
+      40.24142
+     ],
+     [
+      -117.55648,
+      40.24592
+     ],
+     [
+      -117.55721,
+      40.25043
+     ],
+     [
+      -117.55795,
+      40.25493
+     ],
+     [
+      -117.55869,
+      40.25944
+     ],
+     [
+      -117.55942,
+      40.26395
+     ],
+     [
+      -117.5604,
+      40.26845
+     ],
+     [
+      -117.56139,
+      40.27296
+     ],
+     [
+      -117.56237,
+      40.27747
+     ],
+     [
+      -117.56335,
+      40.28197
+     ],
+     [
+      -117.56433,
+      40.28648
+     ],
+     [
+      -117.56531,
+      40.29099
+     ],
+     [
+      -117.56669,
+      40.29549
+     ],
+     [
+      -117.56806,
+      40.3
+     ],
+     [
+      -117.56943,
+      40.30451
+     ],
+     [
+      -117.57081,
+      40.30901
+     ],
+     [
+      -117.57218,
+      40.31352
+     ],
+     [
+      -117.57356,
+      40.31803
+     ],
+     [
+      -117.57415,
+      40.32253
+     ],
+     [
+      -117.57473,
+      40.32704
+     ]
+    ]
+   },
+   "warning_river": {
+    "type": "polygon",
+    "note": "County evacuation WARNING (get ready to leave) for the river bottoms: 3 km either side of the Larkspur River from just north of Center Street to below Alder Flat.",
+    "coords": [
+     [
+      -117.62479,
+      40.33155
+     ],
+     [
+      -117.6242,
+      40.32704
+     ],
+     [
+      -117.62362,
+      40.32253
+     ],
+     [
+      -117.62303,
+      40.31803
+     ],
+     [
+      -117.62165,
+      40.31352
+     ],
+     [
+      -117.62028,
+      40.30901
+     ],
+     [
+      -117.6189,
+      40.30451
+     ],
+     [
+      -117.61753,
+      40.3
+     ],
+     [
+      -117.61616,
+      40.29549
+     ],
+     [
+      -117.61478,
+      40.29099
+     ],
+     [
+      -117.6138,
+      40.28648
+     ],
+     [
+      -117.61282,
+      40.28197
+     ],
+     [
+      -117.61184,
+      40.27747
+     ],
+     [
+      -117.61086,
+      40.27296
+     ],
+     [
+      -117.60987,
+      40.26845
+     ],
+     [
+      -117.60889,
+      40.26395
+     ],
+     [
+      -117.60816,
+      40.25944
+     ],
+     [
+      -117.60742,
+      40.25493
+     ],
+     [
+      -117.60668,
+      40.25043
+     ],
+     [
+      -117.60595,
+      40.24592
+     ],
+     [
+      -117.60521,
+      40.24142
+     ],
+     [
+      -117.60448,
+      40.23691
+     ],
+     [
+      -117.60374,
+      40.2324
+     ],
+     [
+      -117.603,
+      40.2279
+     ],
+     [
+      -117.60153,
+      40.22339
+     ],
+     [
+      -117.60006,
+      40.21888
+     ],
+     [
+      -117.59859,
+      40.21438
+     ],
+     [
+      -117.59711,
+      40.20987
+     ],
+     [
+      -117.59564,
+      40.20536
+     ],
+     [
+      -117.59417,
+      40.20086
+     ],
+     [
+      -117.5927,
+      40.19635
+     ],
+     [
+      -117.59122,
+      40.19184
+     ],
+     [
+      -117.58975,
+      40.18734
+     ],
+     [
+      -117.58828,
+      40.18283
+     ],
+     [
+      -117.58681,
+      40.17832
+     ],
+     [
+      -117.58534,
+      40.17382
+     ],
+     [
+      -117.58386,
+      40.16931
+     ],
+     [
+      -117.58239,
+      40.1648
+     ],
+     [
+      -117.58092,
+      40.1603
+     ],
+     [
+      -117.57945,
+      40.15579
+     ],
+     [
+      -117.50878,
+      40.15579
+     ],
+     [
+      -117.51025,
+      40.1603
+     ],
+     [
+      -117.51172,
+      40.1648
+     ],
+     [
+      -117.51319,
+      40.16931
+     ],
+     [
+      -117.51466,
+      40.17382
+     ],
+     [
+      -117.51614,
+      40.17832
+     ],
+     [
+      -117.51761,
+      40.18283
+     ],
+     [
+      -117.51908,
+      40.18734
+     ],
+     [
+      -117.52055,
+      40.19184
+     ],
+     [
+      -117.52203,
+      40.19635
+     ],
+     [
+      -117.5235,
+      40.20086
+     ],
+     [
+      -117.52497,
+      40.20536
+     ],
+     [
+      -117.52644,
+      40.20987
+     ],
+     [
+      -117.52792,
+      40.21438
+     ],
+     [
+      -117.52939,
+      40.21888
+     ],
+     [
+      -117.53086,
+      40.22339
+     ],
+     [
+      -117.53233,
+      40.2279
+     ],
+     [
+      -117.53307,
+      40.2324
+     ],
+     [
+      -117.5338,
+      40.23691
+     ],
+     [
+      -117.53454,
+      40.24142
+     ],
+     [
+      -117.53528,
+      40.24592
+     ],
+     [
+      -117.53601,
+      40.25043
+     ],
+     [
+      -117.53675,
+      40.25493
+     ],
+     [
+      -117.53749,
+      40.25944
+     ],
+     [
+      -117.53822,
+      40.26395
+     ],
+     [
+      -117.5392,
+      40.26845
+     ],
+     [
+      -117.54018,
+      40.27296
+     ],
+     [
+      -117.54117,
+      40.27747
+     ],
+     [
+      -117.54215,
+      40.28197
+     ],
+     [
+      -117.54313,
+      40.28648
+     ],
+     [
+      -117.54411,
+      40.29099
+     ],
+     [
+      -117.54548,
+      40.29549
+     ],
+     [
+      -117.54686,
+      40.3
+     ],
+     [
+      -117.54823,
+      40.30451
+     ],
+     [
+      -117.54961,
+      40.30901
+     ],
+     [
+      -117.55098,
+      40.31352
+     ],
+     [
+      -117.55236,
+      40.31803
+     ],
+     [
+      -117.55294,
+      40.32253
+     ],
+     [
+      -117.55353,
+      40.32704
+     ],
+     [
+      -117.55412,
+      40.33155
+     ]
+    ]
+   },
+   "warning_creek": {
+    "type": "polygon",
+    "note": "County evacuation WARNING for the benches either side of the Copper Creek order zone.",
+    "coords": [
+     [
+      -117.58534,
+      40.31803
+     ],
+     [
+      -117.57945,
+      40.31803
+     ],
+     [
+      -117.57356,
+      40.3185
+     ],
+     [
+      -117.56767,
+      40.31928
+     ],
+     [
+      -117.56178,
+      40.32006
+     ],
+     [
+      -117.55589,
+      40.32085
+     ],
+     [
+      -117.55,
+      40.32163
+     ],
+     [
+      -117.54411,
+      40.32276
+     ],
+     [
+      -117.53822,
+      40.32388
+     ],
+     [
+      -117.53233,
+      40.32501
+     ],
+     [
+      -117.52644,
+      40.32614
+     ],
+     [
+      -117.52055,
+      40.32749
+     ],
+     [
+      -117.51466,
+      40.32884
+     ],
+     [
+      -117.50878,
+      40.33019
+     ],
+     [
+      -117.50289,
+      40.33155
+     ],
+     [
+      -117.497,
+      40.33267
+     ],
+     [
+      -117.49111,
+      40.3338
+     ],
+     [
+      -117.48522,
+      40.33493
+     ],
+     [
+      -117.47933,
+      40.33605
+     ],
+     [
+      -117.47344,
+      40.33725
+     ],
+     [
+      -117.46755,
+      40.33846
+     ],
+     [
+      -117.46166,
+      40.33966
+     ],
+     [
+      -117.45577,
+      40.34056
+     ],
+     [
+      -117.44988,
+      40.34146
+     ],
+     [
+      -117.44399,
+      40.34236
+     ],
+     [
+      -117.4381,
+      40.34304
+     ],
+     [
+      -117.43221,
+      40.34371
+     ],
+     [
+      -117.42633,
+      40.34439
+     ],
+     [
+      -117.42044,
+      40.34507
+     ],
+     [
+      -117.41455,
+      40.34597
+     ],
+     [
+      -117.40866,
+      40.34687
+     ],
+     [
+      -117.40277,
+      40.34687
+     ],
+     [
+      -117.40159,
+      40.34687
+     ],
+     [
+      -117.40159,
+      40.29459
+     ],
+     [
+      -117.40277,
+      40.29459
+     ],
+     [
+      -117.40866,
+      40.29459
+     ],
+     [
+      -117.41455,
+      40.29369
+     ],
+     [
+      -117.42044,
+      40.29279
+     ],
+     [
+      -117.42633,
+      40.29211
+     ],
+     [
+      -117.43221,
+      40.29144
+     ],
+     [
+      -117.4381,
+      40.29076
+     ],
+     [
+      -117.44399,
+      40.29009
+     ],
+     [
+      -117.44988,
+      40.28918
+     ],
+     [
+      -117.45577,
+      40.28828
+     ],
+     [
+      -117.46166,
+      40.28738
+     ],
+     [
+      -117.46755,
+      40.28618
+     ],
+     [
+      -117.47344,
+      40.28498
+     ],
+     [
+      -117.47933,
+      40.28378
+     ],
+     [
+      -117.48522,
+      40.28265
+     ],
+     [
+      -117.49111,
+      40.28152
+     ],
+     [
+      -117.497,
+      40.2804
+     ],
+     [
+      -117.50289,
+      40.27927
+     ],
+     [
+      -117.50878,
+      40.27792
+     ],
+     [
+      -117.51466,
+      40.27657
+     ],
+     [
+      -117.52055,
+      40.27521
+     ],
+     [
+      -117.52644,
+      40.27386
+     ],
+     [
+      -117.53233,
+      40.27274
+     ],
+     [
+      -117.53822,
+      40.27161
+     ],
+     [
+      -117.54411,
+      40.27048
+     ],
+     [
+      -117.55,
+      40.26936
+     ],
+     [
+      -117.55589,
+      40.26857
+     ],
+     [
+      -117.56178,
+      40.26779
+     ],
+     [
+      -117.56767,
+      40.267
+     ],
+     [
+      -117.57356,
+      40.26622
+     ],
+     [
+      -117.57945,
+      40.26575
+     ],
+     [
+      -117.58534,
+      40.26575
+     ]
+    ]
+   },
+   "south_of_copper_creek": {
+    "type": "polygon",
+    "note": "Copper Ridge south of the creek: cut off from the Copper Ridge stake center when the Route 30 bridge goes (T+45). The wards a Satellite EOC would cover.",
+    "coords": [
+     [
+      -117.49582,
+      40.30406
+     ],
+     [
+      -117.48993,
+      40.30518
+     ],
+     [
+      -117.48404,
+      40.30631
+     ],
+     [
+      -117.47815,
+      40.30745
+     ],
+     [
+      -117.47226,
+      40.30865
+     ],
+     [
+      -117.46637,
+      40.30985
+     ],
+     [
+      -117.46048,
+      40.311
+     ],
+     [
+      -117.45459,
+      40.3119
+     ],
+     [
+      -117.4487,
+      40.3128
+     ],
+     [
+      -117.44282,
+      40.31365
+     ],
+     [
+      -117.43693,
+      40.31433
+     ],
+     [
+      -117.43104,
+      40.31501
+     ],
+     [
+      -117.42515,
+      40.31568
+     ],
+     [
+      -117.41926,
+      40.3164
+     ],
+     [
+      -117.41337,
+      40.31731
+     ],
+     [
+      -117.40748,
+      40.31803
+     ],
+     [
+      -117.40277,
+      40.31803
+     ],
+     [
+      -117.40277,
+      40.29099
+     ],
+     [
+      -117.40748,
+      40.29099
+     ],
+     [
+      -117.41337,
+      40.29027
+     ],
+     [
+      -117.41926,
+      40.28936
+     ],
+     [
+      -117.42515,
+      40.28864
+     ],
+     [
+      -117.43104,
+      40.28797
+     ],
+     [
+      -117.43693,
+      40.28729
+     ],
+     [
+      -117.44282,
+      40.28662
+     ],
+     [
+      -117.4487,
+      40.28576
+     ],
+     [
+      -117.45459,
+      40.28486
+     ],
+     [
+      -117.46048,
+      40.28396
+     ],
+     [
+      -117.46637,
+      40.28282
+     ],
+     [
+      -117.47226,
+      40.28161
+     ],
+     [
+      -117.47815,
+      40.28041
+     ],
+     [
+      -117.48404,
+      40.27927
+     ],
+     [
+      -117.48993,
+      40.27814
+     ],
+     [
+      -117.49582,
+      40.27702
+     ]
+    ]
+   },
+   "larkspur_town": {
+    "type": "polygon",
+    "note": "The town of Larkspur (the city EOC at Fire Station 1 serves it).",
+    "coords": [
+     [
+      -117.63245,
+      40.28828
+     ],
+     [
+      -117.49111,
+      40.28828
+     ],
+     [
+      -117.49111,
+      40.35408
+     ],
+     [
+      -117.63245,
+      40.35408
+     ]
+    ]
+   },
+   "copper_ridge_town": {
+    "type": "polygon",
+    "note": "The town of Copper Ridge (its city EOC is at the Copper Ridge Fire Station).",
+    "coords": [
+     [
+      -117.49111,
+      40.28197
+     ],
+     [
+      -117.42044,
+      40.28197
+     ],
+     [
+      -117.42044,
+      40.34056
+     ],
+     [
+      -117.49111,
+      40.34056
+     ]
+    ]
+   },
+   "alder_flat_area": {
+    "type": "polygon",
+    "note": "Alder Flat and the river bottoms south of Larkspur.",
+    "coords": [
+     [
+      -117.63245,
+      40.17382
+     ],
+     [
+      -117.49111,
+      40.17382
+     ],
+     [
+      -117.49111,
+      40.28738
+     ],
+     [
+      -117.63245,
+      40.28738
+     ]
+    ]
+   }
+  }
+ },
+ "severity": {
+  "rule": "feature",
+  "default": 0,
+  "bands": [
+   {
+    "in": "dam_inundation",
+    "level": 3
+   },
+   {
+    "in": "river_floodplain",
+    "level": 2
+   },
+   {
+    "in": "evacuation_order",
+    "level": 2
+   },
+   {
+    "in": "warning_river",
+    "level": 1
+   },
+   {
+    "in": "warning_creek",
+    "level": 1
+   }
+  ],
+  "boost": [
+   {
+    "flag": "care_facility",
+    "min": 2
+   },
+   {
+    "flag": "retirement",
+    "min": 2
+   },
+   {
+    "flag": "language_unit",
+    "min": 1
+   }
+  ],
+  "note": "Band 3 in the flood path, 2 in the river flood plain or the order zone, 1 in the warning zone, 0 elsewhere (the north stakes host evacuees). Care-facility and retirement branches at least 2; the Spanish-language branch at least 1 (its members live in the order zone)."
+ },
+ "pace": [
+  {
+   "t": 0,
+   "level": "P",
+   "why": "Cellular is up but congested: one call in three fails and texts arrive late; data works."
+  },
+  {
+   "t": 80,
+   "level": "C",
+   "why": "The Copper Creek substation flooded at T+75 and the fibre under the Route 12 bridge was cut at T+78: cell sites in the south half are off the air. Two failed attempts in 15 minutes (T+72, T+78): the specialist recommended Contingency, the Stake President decided, the net announced it.",
+   "trigger": "two failed attempts in 15 min"
+  },
+  {
+   "t": 175,
+   "level": "A",
+   "why": "Internet works in the north half (home Wi-Fi, a business on Main Street) and the stake center has Starlink with a named operator; a round-trip test with the line above passed three times at T+170.",
+   "trigger": "round-trip test passed"
+  },
+  {
+   "t": 225,
+   "level": "P",
+   "why": "Portable cell sites on generators serve the north half; a second round-trip test passed. The south wards stay on what works for them.",
+   "trigger": "round-trip test passed"
+  }
+ ],
+ "phases": [
+  {
+   "id": "warning",
+   "from": 0,
+   "to": 38,
+   "title": "Order and warning",
+   "narrative": "Sunday morning, steady rain, the creek brown and loud. Deputies drive the streets below the dam with loudspeakers; cell broadcast alerts reach most phones but not all. Families in their church clothes load cars; others have not heard. The 9:00 meetings are an hour away. The care facility on the south side of Larkspur has 46 residents and one van. Two sister missionaries do not answer their phone. Phones still work, slowly: first reports arrive by the phone app.",
+   "controller": "Keep the pace calm but steady. Make sure the Stake President player hears the meetings question at T+3. Do not hint at the breach."
+  },
+  {
+   "id": "breach",
+   "from": 38,
+   "to": 80,
+   "title": "Breach and flood wave",
+   "narrative": "At 08:28 the embankment goes. A wall of brown water takes the Route 30 bridge at Copper Ridge and cuts the town in two; the retirement village grounds flood to the windows. 911 rings out. At 09:00, when the meetings would have started, the water reaches south Larkspur: the Route 12 bridge closes, the care center is surrounded, the substation floods. Phones fail one by one in the south.",
+   "controller": "Read the breach note aloud at T+38. Hand the rooftop net card to the HAM player at T+47. At T+80 confirm the step down to Contingency was decided, not assumed."
+  },
+  {
+   "id": "contingency",
+   "from": 80,
+   "to": 160,
+   "title": "Contingency: radio and runners",
+   "narrative": "The south half of the valley is dark and silent except for radios. Reports come by Winlink VARA FM, by net cards and by a soaked runner. The river rises through Riverside and reaches Alder Flat. Warming centres fill; families with relatives across the valley are reported missing and then found; a rumour that a second dam failed sends cars onto Route 12; Winlink gateways congest; the repeater on Saddleback Peak runs down its battery; a donations truck and forty volunteers arrive unasked; the county shelter fills and asks for a meetinghouse.",
+   "controller": "If a Satellite EOC laptop is in the room, open it at T+57 with the wards south of Copper Creek and let it roll up to the Stake EOC."
+  },
+  {
+   "id": "night",
+   "from": 160,
+   "to": 240,
+   "title": "Holding through a cold, wet night",
+   "narrative": "Rain turns to wet snow. Internet returns in the north first; the stake steps up to Alternate after a round-trip test and to Primary for the north wards near the end. Supply Orders are approved and a truck leaves Bramble Junction by the long way round. Work Crew Logs come in from sandbag, moving and warming-centre crews; the first mud-out crews go into streets the county has reopened. The night plan and the 72-hour posture are written before the drill ends.",
+   "controller": "Do not let the players step up without the test card. End with the hot wash at T+236."
+  }
+ ],
+ "injects": [
+  {
+   "id": "n-open",
+   "kind": "note",
+   "t": 0,
+   "to": "eoc",
+   "text": "07:50 DRILL. Sunday morning, +4 °C, light rain after three days of warm rain on a deep snowpack. The Larkspur Valley Irrigation District reported seepage at Copper Creek Dam last evening; at 07:40 the wet area on the downstream face began carrying muddy water. Larkspur County Sheriff: evacuation ORDER (leave now) for Copper Ridge below Route 30 and the Copper Creek corridor through south Larkspur, south of 500 South from Route 12 to the river. Evacuation WARNING (get ready to leave) for the Larkspur River bottoms from Center Street to Alder Flat. Most members are getting ready for 9:00 sacrament meetings. This is a simulation."
+  },
+  {
+   "id": "n-nws",
+   "kind": "note",
+   "t": 2,
+   "to": "eoc",
+   "text": "07:52 National Weather Service (NWS): flash flood warning for Copper Creek below the dam and for the Larkspur River from Larkspur to Alder Flat until 16:00. The river gauge at Center Street reads 2.9 m and is rising; flood stage is 3.2 m."
+  },
+  {
+   "id": "p-meetings",
+   "kind": "prompt",
+   "t": 3,
+   "role": "stake_president",
+   "text": "Sacrament meetings start at 9:00. Families will drive toward meetinghouses in and near the order zone. Decide now, with {erd} and {specialist}: are the 9:00 meetings in the stake cancelled, which buildings stay closed, and how members are told (phone tree, ministering, text, the net). Record it as a work item with \"meetings\" in the title and the decision written in: who decided, which meetings, which channels, what minute.",
+   "need": {
+    "cat": "other",
+    "prio": 1,
+    "owner": 10,
+    "done": 20,
+    "decision": true,
+    "title_contains": "meetings",
+    "role": "Stake President and ERD",
+    "label": "Sunday meetings decided (cancelled or not, which buildings, which channels) and recorded within 20 minutes"
+   },
+   "lesson": "Kerr County 2025 and Valencia 2024: people were on the move toward the water because no one told them to stay away in time."
+  },
+  {
+   "id": "p-alert-members",
+   "kind": "prompt",
+   "t": 5,
+   "role": "specialist",
+   "text": "The county alert went out by cell broadcast at 07:48. Older phones, phones on silent for church, visitors and many Spanish-speaking members will not have it. Recommend to the Stake President how members in the ORDER zone are told to leave now and members in the WARNING zone to get ready: which area, which action, which channels (phone tree, ministering brothers and sisters, block captains, door knocks, the net), in English and Spanish. The Stake President decides; {erd} or you announce it. Record it as a work item with \"notify\" in the title and the decision written in.",
+   "need": {
+    "cat": "life",
+    "prio": 1,
+    "owner": 5,
+    "done": 20,
+    "decision": true,
+    "title_contains": "notify",
+    "role": "Specialist, Stake President, ERD",
+    "label": "Member notification for the order and warning zones recommended, decided and announced (area, action, channels, languages) within 20 minutes"
+   },
+   "lesson": "Valencia 2024: the public alert came after most of the deaths; Kerr County 2025: no county alert reached many phones; the stake must reach its own members."
+  },
+  {
+   "id": "v-net-open",
+   "kind": "voice",
+   "t": 6,
+   "role": "ham",
+   "text": "Net control: 'This is {eoc_call} opening the {stake} emergency net on the Saddleback Peak repeater. The level is PRIMARY, cellular. This net is the backup and carries wards without signal. Stand by for roll call.'"
+  },
+  {
+   "id": "n-cell-busy",
+   "kind": "note",
+   "t": 8,
+   "to": "eoc",
+   "text": "07:58 Cellular is up but congested: about one call in three fails, texts arrive up to ten minutes late, data works. Members are calling bishops, bishops are calling the Stake President, everyone is calling 911."
+  },
+  {
+   "id": "dr-initial",
+   "kind": "form",
+   "form": "dr",
+   "each": "unit",
+   "t": {
+    "from": 10,
+    "to": 45
+   },
+   "template": "dr_initial",
+   "channel": "by_pace",
+   "note": "Every unit's first Disaster Report, sent by phone while cellular holds: who has left, who is still home, who cannot leave. Values by severity band."
+  },
+  {
+   "id": "v-roll-call",
+   "kind": "voice",
+   "t": 12,
+   "role": "ham",
+   "text": "Net control: 'All {stake} stations, roll call by ward. Give your call, your ward, how many families in the order zone have left, and anyone who cannot leave without help.' (Operator: note every ward that does not answer.)"
+  },
+  {
+   "id": "dr-care",
+   "kind": "form",
+   "form": "dr",
+   "each": "unit",
+   "where": {
+    "flags_any": [
+     "care_facility",
+     "retirement"
+    ]
+   },
+   "t": 14,
+   "template": "dr_care",
+   "channel": "by_pace",
+   "note": "The care-facility and retirement branches report: residents who cannot leave on their own, no transport of their own, a building in the order zone.",
+   "lesson": "Eaton 2025: wheelchair users died after three 911 calls while paratransit stood uncalled; night staff had no recall list; Noto 2024: six in ten deaths were aged 70 or over."
+  },
+  {
+   "id": "wi-care-transport",
+   "kind": "work_item",
+   "each": "unit",
+   "same_as": "dr-care",
+   "t": 16,
+   "cat": "life",
+   "prio": 1,
+   "due": "08:36",
+   "title": "Transport for the residents of {unit} out of the order zone: wheelchair users and oxygen; request through the county, headcount at departure and arrival",
+   "detail": "The facility has one van for six people. Wheelchair users and oxygen patients go by county or care-facility transport, never in members’ cars. Pull the unit’s list of members with special needs and give every name a ministering contact.",
+   "next": "Request transport through the county liaison; name the destination (a building outside the warning zone with power for oxygen concentrators); count heads at departure and at arrival; record the request minute, destination and headcount as the decision",
+   "from": "Branch president {bishop}",
+   "need": {
+    "owner": 10,
+    "done": 30,
+    "decision": true,
+    "role": "ERD and EOC operator",
+    "label": "Transport for the residents of the unit requested through the county within 30 minutes, destination and headcount recorded as the decision"
+   }
+  },
+  {
+   "id": "n-county-shelter",
+   "kind": "note",
+   "t": 18,
+   "to": "eoc",
+   "text": "08:08 Larkspur County Emergency Operations Center (EOC): the county shelter opens at Larkspur High School at 08:30 (220 cots, Red Cross staffing from 10:00). Large animals and recreational vehicles to the Juniper Springs Fairgrounds. Evacuees are asked to stay with family or friends outside the warning zone if they can."
+  },
+  {
+   "id": "v-meetinghouse-open",
+   "kind": "voice",
+   "t": 20,
+   "each": "stake",
+   "where": {
+    "severity_max": 0,
+    "flags_none": [
+     "care_facility",
+     "retirement",
+     "language_unit"
+    ]
+   },
+   "role": "ham",
+   "text": "'{unit_call} to net control: Bishop {bishop} unlocked the meetinghouse at {building} because cars with families from the south side were waiting in the parking lot in the rain. About twenty people inside now, more coming. Is this building a warming centre or not? Who decided?' (Operator: a work item with 'warming' in the title; the decision says which building opens, under whose authority and who runs it.)",
+   "need": {
+    "cat": "facilities",
+    "prio": 2,
+    "owner": 10,
+    "done": 30,
+    "decision": true,
+    "title_contains": "warming",
+    "role": "ERD and Stake President",
+    "label": "The meetinghouse opened by the unit confirmed or redirected as a warming centre, with who decided and who runs it, within 30 minutes"
+   }
+  },
+  {
+   "id": "wi-sp-shelter",
+   "kind": "work_item",
+   "t": 22,
+   "cat": "facilities",
+   "prio": 1,
+   "due": "08:42",
+   "title": "Stake President asks: which meetinghouse opens as the warming centre and staging point for families leaving the order zone? Recommendation within 30 minutes",
+   "detail": "Families are leaving with what they could carry. The county shelter at the high school opens at 08:30 but many members will come to a meetinghouse first. A building outside the warning zone, with power, parking and toilets; a building lead; a usage note for the facilities manager.",
+   "next": "ERD and specialist recommend one building and a lead; the Stake President decides; record the decision; tell the net",
+   "from": "Stake President",
+   "need": {
+    "owner": 10,
+    "done": 30,
+    "decision": true
+   }
+  },
+  {
+   "id": "dr-missing",
+   "kind": "form",
+   "form": "dr",
+   "each": "unit",
+   "where": {
+    "severity_min": 2,
+    "flags_none": [
+     "care_facility",
+     "retirement",
+     "language_unit"
+    ],
+    "sample": 1,
+    "tag": "missing"
+   },
+   "t": 25,
+   "template": "dr_missing",
+   "channel": "by_pace",
+   "note": "One unit in the order zone reports two missionaries not accounted for."
+  },
+  {
+   "id": "v-missing",
+   "kind": "voice",
+   "t": 26,
+   "same_as": "dr-missing",
+   "role": "ham",
+   "text": "'{unit_call} to net control, priority: {unit} has two sister missionaries not accounted for. Their apartment is in the order zone near the creek; nobody answers the door; their phone goes to voicemail. Bishop {bishop} asks that the Stake President be told now.'"
+  },
+  {
+   "id": "p-missing",
+   "kind": "prompt",
+   "t": 27,
+   "role": "eoc",
+   "text": "A Missionaries Not Accounted For alert should be on the EOC screens. Confirm it is owned, the Stake President has been told, and the call is logged as a note with the minute."
+  },
+  {
+   "id": "wi-mission-office",
+   "kind": "work_item",
+   "t": 30,
+   "same_as": "dr-missing",
+   "cat": "missionaries",
+   "prio": 1,
+   "due": "08:50",
+   "title": "Mission office asks: names, companionship and last known location of the missionaries not accounted for in {unit}",
+   "detail": "The mission office reached the EOC by phone before the lines jammed. They want the names, where the companionship was last seen, and who is looking.",
+   "next": "Get the names from Bishop {bishop}; reply to the mission office; log the time on the item",
+   "from": "Mission office",
+   "note": "Lands on the Work Items list (HIGH). Needs an owner and a logged reply.",
+   "need": {
+    "owner": 5,
+    "done": 30,
+    "label": "Mission office answered with names and last known location within 30 minutes"
+   }
+  },
+  {
+   "id": "n-dam-worse",
+   "kind": "note",
+   "t": 30,
+   "to": "eoc",
+   "text": "08:20 Irrigation district to the county: the seep on the downstream face is now a flow the width of a road, carrying soil; a hole has opened on the crest. Failure is expected within the hour. Sheriff: everyone in the ORDER zone must be out now; deputies are going door to door below Route 30."
+  },
+  {
+   "id": "p-hw-policy",
+   "kind": "prompt",
+   "t": 32,
+   "role": "eoc",
+   "text": "County amateur radio liaison: 'County channels are for agency traffic only. We will not relay family inquiries. Route your health-and-welfare traffic yourselves.' With {specialist}: decide where member-status and family inquiries go (the stake net and Winlink to the EOC address, never the county channel), who is net control and who succeeds them. Record it as a work item with 'health and welfare' in the title and the policy as its decision; have the net announce it.",
+   "need": {
+    "cat": "other",
+    "prio": 1,
+    "owner": 10,
+    "done": 25,
+    "decision": true,
+    "title_contains": "health and welfare",
+    "role": "Specialist and EOC operator",
+    "label": "Health-and-welfare traffic policy (path, net control, successor) recorded as a work item and announced within 25 minutes"
+   },
+   "lesson": "Helene 2024: the state would not accept inbound health-and-welfare traffic; spontaneous nets had no leader; Texas 2025: welfare messages moved by radio because circuits were overloaded."
+  },
+  {
+   "id": "p-spanish",
+   "kind": "prompt",
+   "t": 34,
+   "role": "specialist",
+   "text": "Many members in the south wards and the Spanish-language branch read Spanish first. The county alert and the stake net are in English. Decide with the bishops who sends the order, the warning and the meeting cancellation in Spanish, by which channels, and who answers Spanish callers at the warming centre. Record it as a work item with \"Spanish\" in the title and the plan as its decision.",
+   "need": {
+    "cat": "other",
+    "prio": 2,
+    "owner": 15,
+    "done": 40,
+    "decision": true,
+    "title_contains": "Spanish",
+    "role": "Specialist and ERD",
+    "label": "Spanish-language notification and a Spanish speaker at the warming centre decided and recorded within 40 minutes"
+   },
+   "lesson": "Eaton and Palisades 2025: alerts and shelter information in English only left Spanish-speaking households behind."
+  },
+  {
+   "id": "n-breach",
+   "kind": "note",
+   "t": 38,
+   "to": "eoc",
+   "text": "08:28 Copper Creek Dam has failed. The reservoir is emptying through a breach in the embankment. Sheriff: the flood wave reaches Copper Ridge in about ten minutes, the south side of Larkspur in about thirty to forty, the Larkspur River bottoms and Alder Flat in about an hour and a half. Nobody goes back for belongings. Stay off Route 12 south of Center Street and Route 30 east of Larkspur."
+  },
+  {
+   "id": "v-breach-net",
+   "kind": "voice",
+   "t": 39,
+   "role": "ham",
+   "text": "Net control: 'All {stake} stations: the dam has failed. Stay out of the Copper Creek corridor and the river bottoms. Stations in the order zone, check in when you are out. No one goes back for belongings. Priority traffic only until further notice.'"
+  },
+  {
+   "id": "n-hospital",
+   "kind": "note",
+   "t": 42,
+   "to": "eoc",
+   "text": "08:32 Larkspur Regional Hospital (north Larkspur, above the water) is on normal power and taking patients; it asks that people with minor cuts and colds go to the warming centres, not the emergency room."
+  },
+  {
+   "id": "n-route30",
+   "kind": "note",
+   "t": 45,
+   "to": "eoc",
+   "text": "08:35 The flood wave reached Copper Ridge at 08:33. Water two metres deep is running across Route 30; the Route 30 bridge over Copper Creek at Copper Ridge was carried away at 08:36. Copper Ridge is cut in two: the wards south of the creek cannot reach the north bench by road. The Copper Ridge Retirement Village grounds are under water to the first-floor windows."
+  },
+  {
+   "id": "n-911",
+   "kind": "note",
+   "t": 46,
+   "to": "eoc",
+   "text": "08:36 County: 911 is overloaded; calls hold for minutes or drop. Life-safety calls that cannot get through may be relayed in writing through the stake liaison to the county EOC: address, how many people and their condition, access route, call-back path. Do not promise a rescue.",
+   "lesson": "Helene 2024: 19 dispatch centres rerouted, one county dark for a month; Valencia 2024: the emergency number answered one call in five."
+  },
+  {
+   "id": "v-roof",
+   "kind": "voice",
+   "t": 47,
+   "each": "unit",
+   "where": {
+    "severity_min": 2,
+    "flags_none": [
+     "care_facility",
+     "retirement",
+     "language_unit"
+    ],
+    "sample": 1,
+    "tag": "roof"
+   },
+   "role": "ham",
+   "text": "'{unit_call} to net control, priority: a Team Leader reports a family of four on the garage roof at 2240 Willow Lane in {city}, water to the eaves, an elderly man among them with a heart condition. 911 is busy. Request relay to the county.' (Operator: a work item with 'roof' in the title; relay the address, people and condition, access (by boat from the north end of Willow Lane) and a call-back path through the liaison; the decision is the county's acknowledgement: call sign or name and the minute.)",
+   "need": {
+    "cat": "life",
+    "prio": 1,
+    "owner": 5,
+    "done": 20,
+    "decision": true,
+    "title_contains": "roof",
+    "role": "EOC operator and the stake liaison to the county",
+    "label": "Rooftop family in the unit relayed with address, people, access and call-back path; the county acknowledgement recorded as the decision within 20 minutes"
+   },
+   "lesson": "Helene 2024: the Mount Mitchell repeater carried medical coordination when 911 was dark."
+  },
+  {
+   "id": "p-liaison-slots",
+   "kind": "prompt",
+   "t": 50,
+   "role": "county_liaison",
+   "text": "Larkspur County EOC: 'I can take one written message from your stake every 30 minutes: on the hour and the half hour. Put everything in it: life-safety relays, facilities, what you need from us.' Name the stake's liaison, batch the open life-safety and facilities items into one consolidated message, and send it on the next slot. Record it as a work item with 'liaison' in the title, the liaison's name and the message as its decision.",
+   "need": {
+    "cat": "other",
+    "prio": 1,
+    "owner": 5,
+    "done": 20,
+    "decision": true,
+    "title_contains": "liaison",
+    "role": "ERD and the stake liaison",
+    "label": "Stake liaison named and the first consolidated message to the county written for the next slot within 20 minutes"
+   },
+   "lesson": "Helene 2024: county emergency managers waited over an hour on saturated public-safety radio; one consolidated message per slot gets through."
+  },
+  {
+   "id": "v-satellite",
+   "kind": "voice",
+   "t": 55,
+   "each": "unit",
+   "where": {
+    "in": "south_of_copper_creek",
+    "flags_none": [
+     "care_facility",
+     "retirement",
+     "language_unit"
+    ],
+    "sample": 1,
+    "tag": "satellite"
+   },
+   "role": "ham",
+   "text": "'{unit_call} to net control: with the Route 30 bridge gone, {unit} and the wards south of Copper Creek cannot reach the stake center. Bishop {bishop} asks the Stake President to open a Satellite EOC at the meetinghouse at {building}. It is above the water; we have a generator, a VHF station and a laptop.'"
+  },
+  {
+   "id": "p-satellite",
+   "kind": "prompt",
+   "t": 57,
+   "each": "unit",
+   "same_as": "v-satellite",
+   "role": "stake_president",
+   "text": "Decide whether a Satellite EOC opens at the meetinghouse at {building} for the wards south of Copper Creek, who leads it, and which wards report to it. Record the decision as a work item with \"Satellite\" in the title; have the net tell the wards the new Winlink address.",
+   "need": {
+    "cat": "facilities",
+    "prio": 1,
+    "owner": 10,
+    "done": 30,
+    "decision": true,
+    "title_contains": "Satellite",
+    "role": "Stake President and specialist",
+    "label": "Satellite EOC south of the creek decided (lead, wards, Winlink address) and recorded within 30 minutes"
+   }
+  },
+  {
+   "id": "p-sitrep-1",
+   "kind": "prompt",
+   "t": 58,
+   "role": "eoc",
+   "text": "SITREP (situation report) #1: the first assessment goes as soon as possible. Generate it now from the reports on file (who has evacuated, missionaries, care-facility residents, warming centre) and send it up both lines: the coordinating council (Area Seventy) and the welfare line (WSRM, the Welfare and Self-Reliance Manager). Regular status reports follow on the interval leadership set on Setup."
+  },
+  {
+   "id": "v-hw-relatives",
+   "kind": "voice",
+   "t": 60,
+   "role": "ham",
+   "text": "'Juniper Springs station to net control: I have relatives in another state on the phone asking about three families in the south wards. Can I read the names on the net?' (Net control answers with the health-and-welfare policy, if there is one.)"
+  },
+  {
+   "id": "rollup-1",
+   "kind": "rollup",
+   "t": 62,
+   "to": "area",
+   "text": "SITREP #1 roll-up from {stake}",
+   "note": "Council / Area simulator only: one bundle per stake played by the simulator (no EOC laptop of its own), with every report due so far."
+  },
+  {
+   "id": "v-spanish-branch",
+   "kind": "voice",
+   "t": 64,
+   "each": "unit",
+   "where": {
+    "flags_any": [
+     "language_unit"
+    ]
+   },
+   "role": "ham",
+   "text": "'{unit_call} to net control: President {bishop} of {unit} reports that eleven of its families live in the order zone and several got the county alert in English only. Four families not reached. The branch needs the order and the warming-centre address in Spanish, read on the net and texted.' (Operator: a work item with 'Spanish' in the title, the families counted once on the branch's roster row, not again by the geographic wards.)",
+   "need": {
+    "cat": "life",
+    "prio": 1,
+    "owner": 10,
+    "done": 45,
+    "decision": true,
+    "title_contains": "Spanish",
+    "role": "EOC operator and specialist",
+    "label": "Spanish-language branch: the four families not reached are worked as one item, the message sent in Spanish, recorded within 45 minutes"
+   }
+  },
+  {
+   "id": "ics-sandbags",
+   "kind": "ics",
+   "form": "ics213rr",
+   "agency": "city_eoc",
+   "t": 60,
+   "each": "unit",
+   "where": {
+    "in": "larkspur_town",
+    "flags_none": [
+     "care_facility",
+     "retirement",
+     "language_unit"
+    ],
+    "sample": 1,
+    "tag": "city"
+   },
+   "subject": "Sandbag crews: River Road at Riverside",
+   "fields": {
+    "incident_name": "Copper Creek Dam failure (DRILL)",
+    "date": "{today}",
+    "time": "08:50",
+    "request_number": "{city_eoc_call}-001",
+    "priority": "Urgent",
+    "qty": "25",
+    "kind": "Volunteers (Helping Hands)",
+    "type": "Sandbag fill and placement crews with shovels, gloves and rain gear",
+    "item": "The Larkspur River will crest about 10:30 with the breach water on top of the snowmelt. Build a sandbag wall along River Road from Center Street to 1100 South to protect the sewer lift station and about thirty homes. The city has sand, bags and a loader at the River Road yard.",
+    "requested_arrival": "09:30, for about 3 hours",
+    "deliver_to": "River Road yard at 900 South; the crew leader checks in at Fire Station 1 first",
+    "substitutes": "Any able adults with shovels and rain gear; no one in moving water",
+    "requested_by": "{city_eoc_contact}, {city_eoc}"
+   },
+   "need": {
+    "cat": "assist",
+    "prio": 1,
+    "owner": 15,
+    "done": 45,
+    "decision": true,
+    "title_contains": "Sandbag",
+    "role": "ERD and the Stake President",
+    "label": "The city's sandbag request owned within 15 minutes; crews with a leader and the safety acknowledgment decided and answered by ICS 213 within 45"
+   }
+  },
+  {
+   "id": "ics-cr-accountability",
+   "kind": "ics",
+   "form": "ics213rr",
+   "agency": "cr_city_eoc",
+   "t": 66,
+   "each": "unit",
+   "where": {
+    "in": "copper_ridge_town",
+    "flags_none": [
+     "care_facility",
+     "retirement",
+     "language_unit"
+    ],
+    "sample": 1,
+    "tag": "cr_city"
+   },
+   "subject": "Door-to-door accountability on the north bench",
+   "fields": {
+    "incident_name": "Copper Creek Dam failure (DRILL)",
+    "date": "{today}",
+    "time": "08:56",
+    "request_number": "{cr_city_eoc_call}-001",
+    "priority": "Urgent",
+    "qty": "12",
+    "kind": "Volunteers (Helping Hands)",
+    "type": "Accountability teams of two",
+    "item": "The city has a list of 140 residents of the north bench who registered as needing help to evacuate. Teams of two to knock on doors, record who is home, who left and who needs a ride, and report to the fire station by radio. North bench only: nobody crosses toward the creek.",
+    "requested_arrival": "09:15 until done",
+    "deliver_to": "Copper Ridge Fire Station, Route 30; lists and street assignments there",
+    "substitutes": "Any adults with a charged phone or FRS radio",
+    "requested_by": "{cr_city_eoc_contact}, {cr_city_eoc}"
+   },
+   "need": {
+    "cat": "assist",
+    "prio": 1,
+    "owner": 15,
+    "done": 45,
+    "decision": true,
+    "title_contains": "accountability",
+    "role": "ERD",
+    "label": "Copper Ridge city's accountability request owned within 15 minutes; teams decided and answered by ICS 213 within 45"
+   }
+  },
+  {
+   "id": "n-larkspur-south",
+   "kind": "note",
+   "t": 70,
+   "to": "eoc",
+   "text": "09:00 The flood wave reached the south side of Larkspur at 09:00. Water is over the Route 12 bridge over Copper Creek and the bridge is closed. Streets south of 500 South are under 30 to 120 cm of moving water. The Larkspur Care Center is surrounded by about 60 cm of water. Route 12 south of Larkspur is cut: Alder Flat is reached only by River Road on the west bank."
+  },
+  {
+   "id": "n-substation",
+   "kind": "note",
+   "t": 75,
+   "to": "eoc",
+   "text": "09:05 The Copper Creek electrical substation flooded at 09:05. Power is out across the south half of the valley: Larkspur south of Center Street, Copper Ridge and Alder Flat. Traffic lights are dark on Route 12."
+  },
+  {
+   "id": "p-recommend-c",
+   "kind": "prompt",
+   "t": 78,
+   "role": "specialist",
+   "text": "Two attempts to reach the EOC by cell and text have failed in the last 15 minutes (09:02 and 09:08) and the fibre under the Route 12 bridge over Copper Creek is reported cut. Recommend to the Stake President that the stake go to CONTINGENCY (radio: Winlink VARA FM for forms, then VARA HF; FRS/GMRS and the stake net for voice)."
+  },
+  {
+   "id": "n-cell-down",
+   "kind": "note",
+   "t": 78,
+   "to": "eoc",
+   "text": "09:08 Carrier notice: the fibre crossing under the Route 12 bridge over Copper Creek is cut and cell sites in the south half of the valley are on short battery or off the air. Calls and texts from Larkspur south of Center Street, Copper Ridge and Alder Flat are failing."
+  },
+  {
+   "id": "p-decide-c",
+   "kind": "prompt",
+   "t": 80,
+   "role": "stake_president",
+   "text": "Decide the PACE level (Primary, Alternate, Contingency, Emergency) on the recommendation of {specialist}. You decide; the specialist recommends; {erd} or the specialist announces it on the net. Then the EOC sets PACE on Setup."
+  },
+  {
+   "id": "v-level-c",
+   "kind": "voice",
+   "t": 81,
+   "role": "ham",
+   "text": "Net control: 'All {stake} stations: by decision of the Stake President the stake is at CONTINGENCY as of 09:11. Disaster Reports, Supply Orders and Work Crew Logs go by Winlink VARA FM to {eoc_winlink}; VARA HF if you cannot reach a gateway. Voice traffic on this net and FRS/GMRS. Where there is no radio, send a runner with the paper form.'"
+  },
+  {
+   "id": "p-worklist",
+   "kind": "prompt",
+   "t": 82,
+   "role": "eoc",
+   "text": "At Contingency the EOC lives on its work items. Sort the list by priority; make sure every HIGH item (missionaries, life safety, care-facility transport) has an owner; set the Supply Orders and any Church-headquarters-assistance items to UP before the next SITREP."
+  },
+  {
+   "id": "wi-county-headcount",
+   "kind": "work_item",
+   "t": 85,
+   "cat": "other",
+   "prio": 2,
+   "due": "10:00",
+   "title": "County EOC asks: how many people are in Church warming centres and how many member homes are flooded, by 10:00",
+   "detail": "Larkspur County EOC liaison: headcount at each meetinghouse in use and the number of member homes with water inside, by ward. Two numbers, not adjectives.",
+   "next": "Compile from the Disaster Reports and the warming-centre counts; reply through the county liaison on the next slot",
+   "from": "Larkspur County EOC",
+   "note": "A request from the side, not the line above: answered from the reports on file.",
+   "need": {
+    "owner": 15,
+    "done": 45,
+    "label": "County headcount answered within 45 minutes"
+   }
+  },
+  {
+   "id": "so-care",
+   "kind": "form",
+   "form": "so",
+   "each": "unit",
+   "where": {
+    "flags_any": [
+     "care_facility",
+     "retirement"
+    ]
+   },
+   "t": {
+    "from": 84,
+    "to": 100
+   },
+   "template": "so_care",
+   "channel": "by_pace",
+   "note": "Supply Order for the care-facility residents moved to a building outside the warning zone."
+  },
+  {
+   "id": "v-missing-family",
+   "kind": "voice",
+   "t": 86,
+   "each": "unit",
+   "where": {
+    "severity_min": 2,
+    "flags_none": [
+     "care_facility",
+     "retirement",
+     "language_unit"
+    ],
+    "sample": 1,
+    "tag": "family"
+   },
+   "role": "ham",
+   "text": "'{unit_call} to net control: a Team Leader reports the family at 415 Alder Street in {unit} not at home, car gone, not at the warming centre, nobody answers their phone. Requesting they be listed as not accounted for.' (Operator: one work item for the household, 'Alder Street' in the title.)",
+   "need": {
+    "cat": "life",
+    "prio": 2,
+    "owner": 10,
+    "done": 60,
+    "title_contains": "Alder Street",
+    "role": "EOC operator",
+    "label": "The household at 415 Alder Street in the unit logged as ONE work item and closed when they are found"
+   },
+   "lesson": "Helene 2024: the same homes were checked three to four times; missing lists fell by an order of magnitude on verification in Buncombe, Valencia, Kerr County and Lahaina."
+  },
+  {
+   "id": "dr-paper",
+   "kind": "form",
+   "form": "dr",
+   "each": "unit",
+   "where": {
+    "severity_min": 1,
+    "flags_none": [
+     "care_facility",
+     "retirement",
+     "language_unit"
+    ],
+    "sample": 1,
+    "tag": "no_ham"
+   },
+   "t": 92,
+   "template": "dr_followup",
+   "channel": "paper",
+   "note": "EMERGENCY path: the ward whose HAM operator lives in the flooded zone sends its update with a runner on foot; the operator types the paper form in."
+  },
+  {
+   "id": "v-missing-runner",
+   "kind": "voice",
+   "t": 95,
+   "each": "unit",
+   "same_as": "v-missing-family",
+   "role": "controller",
+   "text": "A runner hands the EOC a note from the Stake President's phone, which had one bar for a minute: 'Relatives in another state ask about the family at 415 Alder Street in {unit}; no answer since this morning. Please check.' (Same household, second path: add it to the open item, do not open another.)"
+  },
+  {
+   "id": "v-care-roll",
+   "kind": "voice",
+   "t": 96,
+   "each": "unit",
+   "same_as": "dr-care",
+   "role": "team_leader",
+   "text": "Team Leader at the destination building: 'The residents of {unit} are here: I count them off the bus. The facility list says one more than I have. Staff think she left with her daughter at 08:10, but nobody wrote it down.' (EOC: the headcount at departure and arrival goes on the transport item; the one not seen is a life item until a person confirms where she is.)",
+   "lesson": "Eaton 2025: the roll call at the destination found two residents missing who had been assumed safe."
+  },
+  {
+   "id": "so-water",
+   "kind": "form",
+   "form": "so",
+   "each": "unit",
+   "where": {
+    "severity_min": 2,
+    "flags_none": [
+     "care_facility",
+     "retirement",
+     "language_unit"
+    ],
+    "sample": 0.6
+   },
+   "t": {
+    "from": 95,
+    "to": 150
+   },
+   "template": "so_initial",
+   "channel": "by_pace",
+   "note": "Supply Orders from the flooded wards: water, cleaning kits, boots, gloves, pumps and wet/dry vacuums."
+  },
+  {
+   "id": "n-not-heard",
+   "kind": "note",
+   "t": 100,
+   "each": "unit",
+   "where": {
+    "severity_min": 2,
+    "flags_none": [
+     "care_facility",
+     "retirement",
+     "language_unit"
+    ],
+    "sample": 1,
+    "tag": "cutoff"
+   },
+   "to": "eoc",
+   "text": "09:30 Nothing has been heard from {unit} since the cell sites went down. Its HAM operator lives in the flooded zone and its meetinghouse has no power. 'No report' is not 'no damage': flag it as a work item ('not heard from' in the title), ask the net for a relay or send a runner, and record the attempt as the decision.",
+   "need": {
+    "cat": "other",
+    "prio": 1,
+    "owner": 10,
+    "done": 60,
+    "decision": true,
+    "title_contains": "not heard",
+    "role": "EOC operator and net control",
+    "label": "The unit flagged as not heard from (a work item) within 10 minutes; a relay or runner attempt recorded as its decision"
+   },
+   "lesson": "Noto 2024: 33 districts isolated by road for days; Helene 2024: help went only where someone had asked."
+  },
+  {
+   "id": "n-river",
+   "kind": "note",
+   "t": 104,
+   "to": "eoc",
+   "text": "09:34 Larkspur River at Center Street 3.9 m and rising, 70 cm over flood stage. Water is in the streets of the Riverside neighbourhood west of the river. The Center Street bridge stays open; the county watches it."
+  },
+  {
+   "id": "dr-found",
+   "kind": "form",
+   "form": "dr",
+   "same_as": "dr-missing",
+   "t": 108,
+   "template": "dr_found",
+   "channel": "by_pace",
+   "note": "The missing missionaries are found; follow-up Disaster Report from the same unit."
+  },
+  {
+   "id": "v-found",
+   "kind": "voice",
+   "t": 109,
+   "same_as": "dr-missing",
+   "role": "ham",
+   "text": "'{unit_call} to net control: the two sister missionaries of {unit} are found, safe, at a member family's home in Juniper Springs. The family took them along at 07:55; their phone battery was dead. Bishop {bishop} asks the EOC to tell the mission office and clear the alert.'",
+   "lesson": "Reported missing is not verified missing: most people on early lists were safe with family."
+  },
+  {
+   "id": "p-starlink-setup",
+   "kind": "prompt",
+   "t": 110,
+   "role": "eoc",
+   "text": "A member brings a satellite internet kit (Starlink) to the stake center. The building has no power on the south side but the generator runs the office. Before anyone calls the EOC \"online\": name an operator, a power source with its hours of fuel, a mount with open sky (it is raining and the roof is wet), then a round-trip test with the line above. Record it as a work item with \"Starlink\" in the title and those four answers as the decision.",
+   "need": {
+    "cat": "facilities",
+    "prio": 2,
+    "owner": 10,
+    "done": 30,
+    "decision": true,
+    "title_contains": "Starlink",
+    "role": "Specialist and EOC operator",
+    "label": "Starlink set up with a named operator, power and hours, open sky and a round-trip test, recorded within 30 minutes"
+   },
+   "lesson": "Noto 2024: terminals sat unused for lack of anyone who knew how to run them; Helene 2024: terminals arrived days late without power."
+  },
+  {
+   "id": "v-host-families",
+   "kind": "voice",
+   "t": 112,
+   "each": "stake",
+   "where": {
+    "severity_max": 0,
+    "flags_none": [
+     "care_facility",
+     "retirement",
+     "language_unit"
+    ]
+   },
+   "role": "ham",
+   "text": "'{unit_call} to net control: {unit} reports 23 families from the south side staying with relatives in our ward boundaries. Names are with Bishop {bishop}. Please pass them to their home wards so they are marked accounted for and not searched for.' (Operator: a work item with 'staying with relatives' in the title; the decision says which home wards were told and by what path.)",
+   "need": {
+    "cat": "other",
+    "prio": 2,
+    "owner": 15,
+    "done": 45,
+    "decision": true,
+    "title_contains": "relatives",
+    "role": "EOC operator",
+    "label": "Families staying with relatives in the unit passed to their home wards (verified, not reported missing) within 45 minutes"
+   },
+   "lesson": "Valencia, Kerr County and Lahaina: missing lists shrank by an order of magnitude once people staying with family were matched."
+  },
+  {
+   "id": "ics-move",
+   "kind": "ics",
+   "form": "ics213rr",
+   "agency": "city_eoc",
+   "t": 115,
+   "each": "unit",
+   "same_as": "ics-sandbags",
+   "subject": "Crews to move belongings ahead of the river crest",
+   "fields": {
+    "incident_name": "Copper Creek Dam failure (DRILL)",
+    "date": "{today}",
+    "time": "09:45",
+    "request_number": "{city_eoc_call}-002",
+    "priority": "High",
+    "qty": "20",
+    "kind": "Volunteers (Helping Hands)",
+    "type": "Moving crews of 4 with a pickup",
+    "item": "Residents in the warning zone west of the river (Riverside, 1100 South to 1600 South) asked for help to lift furniture and appliances to upper floors or carry them to trailers before the crest at about 10:30. Thirty-five homes on the city list. Stop at 10:15 or when the police close a street.",
+    "requested_arrival": "09:55 until 10:15",
+    "deliver_to": "Riverside Park parking lot; lists at the police command post",
+    "substitutes": "Any able adults; trailers and pickups welcome",
+    "requested_by": "{city_eoc_contact}, {city_eoc}"
+   },
+   "need": {
+    "cat": "assist",
+    "prio": 2,
+    "owner": 15,
+    "done": 40,
+    "decision": true,
+    "title_contains": "belongings",
+    "role": "ERD",
+    "label": "The city's moving-crew request owned within 15 minutes; crews assigned, a stop time set and answered by ICS 213 within 40"
+   }
+  },
+  {
+   "id": "v-repeater-battery",
+   "kind": "voice",
+   "t": 120,
+   "role": "ham",
+   "text": "'Repeater trustee to net control: the Saddleback Peak repeater lost commercial power with the substation and is on battery at 30 percent. The site generator needs fuel and the ridge road is mud. Expect to lose the repeater in about an hour. Stations in the south will need a simplex relay through a station on the north bench.' (EOC: a work item with 'relay' in the title; the decision names the relay station, the simplex frequency and who tells the south.)",
+   "need": {
+    "cat": "other",
+    "prio": 1,
+    "owner": 15,
+    "done": 40,
+    "decision": true,
+    "title_contains": "relay",
+    "role": "Specialist and net control",
+    "label": "Relay plan for the south (station, frequency, who is told) recorded as a work item before the repeater dies"
+   },
+   "lesson": "Helene 2024: the backup repeater died when its batteries ran out and the generator failed; plan to run 72 hours with no communications."
+  },
+  {
+   "id": "n-meetinghouse-water",
+   "kind": "note",
+   "t": 122,
+   "each": "unit",
+   "where": {
+    "severity": 3,
+    "flags_none": [
+     "care_facility",
+     "retirement",
+     "language_unit"
+    ],
+    "sample": 1
+   },
+   "to": "eoc",
+   "text": "09:52 The facilities manager reports 40 cm of water in the meetinghouse at {building} used by {unit}: carpets, the organ and the clerk's office on the floor. Nobody inside. Power off at the main. It is not a shelter and will need mud-out."
+  },
+  {
+   "id": "v-rumour-dam",
+   "kind": "voice",
+   "t": 125,
+   "role": "ham",
+   "text": "'Kestrel station to net control: several members say the Pine Hollow dam above Kestrel has failed too and the county has ordered all of Larkspur to evacuate. People are loading cars in the north wards. Can you confirm?' (EOC: a work item with 'Pine Hollow' in the title; check with the county before anything is relayed; the decision records the answer and the one correction sent under the Stake President's name.)",
+   "need": {
+    "cat": "other",
+    "prio": 1,
+    "owner": 5,
+    "done": 20,
+    "decision": true,
+    "title_contains": "Pine Hollow",
+    "role": "EOC operator, specialist, Stake President",
+    "label": "The Pine Hollow rumour checked with the county before relay; the answer and one correction under the Stake President's name recorded within 20 minutes"
+   },
+   "lesson": "Helene 2024: unverified reports misallocated resources; Magna 2020: a false rumour spread through credible Church channels."
+  },
+  {
+   "id": "n-boil",
+   "kind": "note",
+   "t": 128,
+   "to": "eoc",
+   "text": "09:58 City of Larkspur: two wells on the south side are flooded. Boil-water order for Larkspur south of Center Street until further notice. Bottled water for the warming centres and the care-facility residents."
+  },
+  {
+   "id": "n-winlink-congested",
+   "kind": "note",
+   "t": 130,
+   "to": "eoc",
+   "text": "10:00 Winlink gateways in the region report heavy traffic; the Winlink development team asks that all non-essential traffic stop, tests included. Expect queues on VARA FM; send short messages, the form tag and CSV line rather than long bodies.",
+   "lesson": "Hurricane Milton 2024: the Winlink team asked for all non-essential traffic to stop; Georgia operators sent short text instead of template messages."
+  },
+  {
+   "id": "p-traffic-priority",
+   "kind": "prompt",
+   "t": 131,
+   "role": "eoc",
+   "text": "Rank the outbound traffic: life safety first, then the SITREP, then Supply Orders UP, then everything else. Stop test messages. Record it as a work item with \"traffic priority\" in the title and the order as its decision; tell the net.",
+   "need": {
+    "cat": "other",
+    "prio": 2,
+    "owner": 10,
+    "done": 20,
+    "decision": true,
+    "title_contains": "traffic priority",
+    "role": "EOC operator and net control",
+    "label": "Traffic priority recorded and announced within 20 minutes"
+   }
+  },
+  {
+   "id": "wi-area-totals",
+   "kind": "work_item",
+   "t": 132,
+   "to": "area",
+   "cat": "supply",
+   "prio": 2,
+   "due": "10:50",
+   "title": "Welfare line (AWSRM) asks the Council / Area EOC for Supply Order totals by stake",
+   "detail": "The Area Welfare and Self-Reliance Manager (AWSRM) is loading the storehouse truck at Bramble Junction. Totals of water, cleaning kits, blankets and boots per stake, and which building receives.",
+   "next": "Total the Supply Orders on file (each stake’s roll-up); reply by Winlink at Contingency or email at Alternate",
+   "from": "Welfare line (AWSRM)",
+   "note": "Lands on the Council / Area EOC’s list only."
+  },
+  {
+   "id": "v-family-found",
+   "kind": "voice",
+   "t": 134,
+   "each": "unit",
+   "same_as": "v-missing-family",
+   "role": "ham",
+   "text": "'{unit_call} to net control: the family from 415 Alder Street in {unit} is safe at a cousin's home in Kestrel; a Kestrel Team Leader saw them at 10:20. Please close it.' (One item, closed with 'found', the Team Leader told to stand down.)"
+  },
+  {
+   "id": "n-alder-flat",
+   "kind": "note",
+   "t": 140,
+   "to": "eoc",
+   "text": "10:10 The flood reached Alder Flat at 10:08, lower and slower than in Larkspur. The Alder Flat bridge over the river is closed; River Road is under water south of 1600 South. Homes in the river bottoms have water in basements and on the first floor nearest the river. Alder Flat Elementary is dry and is a county shelter point from 11:00."
+  },
+  {
+   "id": "wi-af-sandbags",
+   "kind": "work_item",
+   "t": 141,
+   "each": "unit",
+   "where": {
+    "in": "alder_flat_area",
+    "severity_min": 1,
+    "flags_none": [
+     "care_facility",
+     "retirement",
+     "language_unit"
+    ],
+    "sample": 1,
+    "tag": "af"
+   },
+   "cat": "assist",
+   "prio": 2,
+   "due": "10:50",
+   "title": "County asks for sandbag crews at Alder Flat Elementary School (county shelter point) before the second rise",
+   "detail": "The county expects the river to rise again by about 30 cm this afternoon with the snowmelt. Sand and bags are at the school; the county needs 15 people for two hours to build a low wall at the gym doors. Crews stay out of moving water.",
+   "next": "Ask a ward with people free; name a crew leader; safety acknowledgment; answer the county with the number and arrival time",
+   "from": "Larkspur County EOC",
+   "need": {
+    "owner": 15,
+    "done": 45,
+    "decision": true,
+    "label": "Alder Flat sandbag crew named with a leader and the safety acknowledgment, the county answered within 45 minutes"
+   }
+  },
+  {
+   "id": "wi-dup-order",
+   "kind": "work_item",
+   "t": 142,
+   "cat": "supply",
+   "prio": 2,
+   "due": "10:32",
+   "title": "Second ward asks for cots and blankets for the SAME warming centre already ordered; consolidate or mark duplicate",
+   "detail": "A bishop’s clerk hands in a Supply Order for 40 cots and 80 blankets for the stake’s warming centre. One order for that centre is already UP. Two orders for one centre send goods twice and delay both approvals.",
+   "next": "Compare with the orders on the Supply Order tab; fold any new items into the order that is UP; close this one DONE with “duplicate of …” as the decision",
+   "from": "Bishop’s clerk, second ward",
+   "need": {
+    "owner": 10,
+    "done": 20,
+    "decision": true,
+    "done_states": [
+     "done"
+    ],
+    "label": "Duplicate warming-centre order recognised and closed with the consolidated order named, within 20 minutes"
+   },
+   "lesson": "Helene 2024: duplicate requests sent goods where support had already arrived; request volume was ten times a normal event."
+  },
+  {
+   "id": "v-box-truck",
+   "kind": "voice",
+   "t": 145,
+   "role": "county_liaison",
+   "text": "County liaison: 'A box truck of donated clothing, bottled water and mattresses from a neighbouring county is at the north end of Main Street. The driver wants a church to unload at. Nobody asked for it.' (EOC: a work item with 'donation' in the title; the decision names a receiving site with an inventory owner, or a refusal with a redirect, and who approved it.)",
+   "need": {
+    "cat": "assist",
+    "prio": 2,
+    "owner": 10,
+    "done": 30,
+    "decision": true,
+    "title_contains": "donation",
+    "role": "ERD",
+    "label": "Unsolicited donations: a receiving site with an inventory owner, or a refusal and redirect, recorded within 30 minutes"
+   },
+   "lesson": "Helene 2024: no warehouse, then no inventory system, for donated goods; Valencia 2024: self-organised help blocked the roads for three days."
+  },
+  {
+   "id": "v-walkups",
+   "kind": "voice",
+   "t": 148,
+   "role": "ham",
+   "text": "'Stake center station to net control: forty young adults from the north stakes are in the parking lot with shovels and pickups asking where to work. Nobody asked for them; some want to go into the flooded streets.' (EOC: a work item with 'volunteer' in the title; the decision says held until the city or the Stake President asks, placed with trained team leaders with the safety acknowledgment, or sent home with thanks, and who approved it. Nobody goes into floodwater.)",
+   "need": {
+    "cat": "assist",
+    "prio": 2,
+    "owner": 10,
+    "done": 30,
+    "decision": true,
+    "title_contains": "volunteer",
+    "role": "ERD",
+    "label": "Walk-up volunteers held, placed with trained team leaders or sent home; who approved recorded, within 30 minutes"
+   }
+  },
+  {
+   "id": "dr-followup",
+   "kind": "form",
+   "form": "dr",
+   "each": "unit",
+   "where": {
+    "severity_min": 2,
+    "tag_not": "cutoff"
+   },
+   "t": {
+    "from": 140,
+    "to": 195
+   },
+   "template": "dr_followup",
+   "channel": "by_pace",
+   "note": "UPDATE Disaster Reports from the flooded wards with counts corrected after block checks (none from the unit not heard from: it is relayed by voice)."
+  },
+  {
+   "id": "so-shelter",
+   "kind": "form",
+   "form": "so",
+   "each": "stake",
+   "where": {
+    "severity_max": 0,
+    "flags_none": [
+     "care_facility",
+     "retirement",
+     "language_unit"
+    ]
+   },
+   "t": {
+    "from": 120,
+    "to": 165
+   },
+   "template": "so_shelter",
+   "channel": "by_pace",
+   "note": "The receiving stakes order for the warming centres they host: cots, blankets, hygiene kits, food boxes, water."
+  },
+  {
+   "id": "dr-relay",
+   "kind": "form",
+   "form": "dr",
+   "each": "unit",
+   "same_as": "n-not-heard",
+   "t": 150,
+   "template": "dr_relay",
+   "channel": "voice",
+   "note": "The unit not heard from is reached by a relay station: a 30-word report read over the net; the operator types it in as a Disaster Report (compared with the card). Its ordinary follow-up never arrives (tag_not)."
+  },
+  {
+   "id": "p-city-inspection",
+   "kind": "prompt",
+   "t": 150,
+   "each": "unit",
+   "same_as": "ics-sandbags",
+   "text": "The county asks whether a meetinghouse can take overflow from the full high-school shelter tonight. Before any meetinghouse shelters the public, ask {city_eoc} by ICS 213 (Winlink to {city_eoc_call}; the city does not run this system, so use the standard ICS 213 form in Winlink Express, never a Church form) for a fire-safety check of the building and its occupancy limit. Log it as a work item with \"inspection\" in the title; the decision is the city's answer and the time.",
+   "need": {
+    "cat": "facilities",
+    "prio": 2,
+    "owner": 10,
+    "done": 45,
+    "decision": true,
+    "title_contains": "inspection",
+    "role": "ERD and the HAM at the EOC",
+    "label": "Fire-safety check asked of the city by ICS 213 and logged; the city's answer recorded within 45 minutes"
+   }
+  },
+  {
+   "id": "n-shelter-full",
+   "kind": "note",
+   "t": 152,
+   "to": "eoc",
+   "text": "10:22 County: the high-school shelter is full at 220. Sixty more people, many from the care facilities and the Spanish-speaking families, need a dry, heated place tonight. The county asks the Church for a meetinghouse.",
+   "lesson": "Buncombe 2024: two church shelters were lost to flooding within a day; the shelter plan had never been tested."
+  },
+  {
+   "id": "p-shelter-usage",
+   "kind": "prompt",
+   "t": 153,
+   "role": "stake_president",
+   "text": "A meetinghouse shelters the public only with the Area's approval and a usage agreement. Ask through the coordinating council line now; decide the interim plan (members and the care-facility residents only until approval) and have it recorded as a work item with \"usage\" in the title. The building lead reports six figures every status report: headcount, water on hand, working toilets, heat, generator fuel hours, medical cases.",
+   "need": {
+    "cat": "facilities",
+    "prio": 1,
+    "owner": 10,
+    "done": 30,
+    "decision": true,
+    "title_contains": "usage",
+    "role": "Stake President and ERD",
+    "label": "Public-shelter request: Area approval asked, the interim plan decided and recorded within 30 minutes"
+   }
+  },
+  {
+   "id": "v-co",
+   "kind": "voice",
+   "t": 156,
+   "each": "unit",
+   "where": {
+    "severity_min": 1,
+    "flags_none": [
+     "care_facility",
+     "retirement",
+     "language_unit"
+    ],
+    "sample": 1,
+    "tag": "co"
+   },
+   "role": "ham",
+   "text": "'{unit_call} to net control, priority: a family in {unit} ran a generator in the attached garage to keep the sump pump going. Two children dizzy and vomiting; the mother has a headache. They are outside now. 911 not connecting.' (Operator: a work item with 'carbon monoxide' in the title; relay through the liaison; decision is the county's acknowledgement and the minute.)",
+   "need": {
+    "cat": "life",
+    "prio": 1,
+    "owner": 5,
+    "done": 20,
+    "decision": true,
+    "title_contains": "carbon monoxide",
+    "role": "EOC operator and the stake liaison",
+    "label": "Carbon monoxide family in the unit relayed; the county acknowledgement recorded within 20 minutes"
+   },
+   "lesson": "Every large outage brings carbon monoxide poisonings from generators run indoors or in garages."
+  },
+  {
+   "id": "v-livestock",
+   "kind": "voice",
+   "t": 158,
+   "each": "unit",
+   "where": {
+    "in": "river_floodplain",
+    "flags_none": [
+     "care_facility",
+     "retirement",
+     "language_unit"
+    ],
+    "sample": 1,
+    "tag": "farm"
+   },
+   "role": "ham",
+   "text": "'{unit_call} to net control: a member's horses and forty calves are stranded on a farm in the river bottoms near {city}. The owner wants young men with a trailer to wade in and bring them out.' (EOC: a work item with 'livestock' in the title; the decision: no member goes into floodwater; the county animal-control officer and the fairgrounds are told.)",
+   "need": {
+    "cat": "assist",
+    "prio": 2,
+    "owner": 15,
+    "done": 40,
+    "decision": true,
+    "title_contains": "livestock",
+    "role": "ERD",
+    "label": "Stranded livestock referred to the county; no members sent into floodwater; recorded within 40 minutes"
+   }
+  },
+  {
+   "id": "wi-welfare-delivery",
+   "kind": "work_item",
+   "t": 160,
+   "cat": "supply",
+   "prio": 1,
+   "due": "11:00",
+   "title": "WSRM asks: delivery point, receiver and route for the storehouse truck from Bramble Junction",
+   "detail": "The Welfare and Self-Reliance Manager (WSRM) has a truck loading at the Bramble Junction Bishops’ Storehouse, 2.5 hours away. Route 12 from the south is cut at Copper Creek; the truck must come by Saddleback, Route 30 and the Center Street bridge. Which building, who signs for it, a forklift or a crew to unload.",
+   "next": "Name the receiving building, the receiver and the unloading crew; confirm the route with the county; reply to the WSRM",
+   "from": "Welfare line (WSRM)",
+   "need": {
+    "owner": 10,
+    "done": 30,
+    "decision": true,
+    "label": "Storehouse delivery point, receiver, crew and route given to the WSRM within 30 minutes"
+   }
+  },
+  {
+   "id": "n-cold-night",
+   "kind": "note",
+   "t": 162,
+   "to": "eoc",
+   "text": "10:32 NWS: rain turning to wet snow tonight, low −3 °C. About 300 people are in warming centres in the valley; the south half has no power and the utility gives no time for its return. Members outside the flooded area stay home and off the roads.",
+   "lesson": "Noto 2024: more people died in the shelters in the first month than in the collapse; cold and fuel decide the first night."
+  },
+  {
+   "id": "p-roundtrip",
+   "kind": "prompt",
+   "t": 166,
+   "role": "specialist",
+   "text": "Internet works in the north half of the valley (home Wi-Fi on power, a business on Main Street, the stake center Starlink if it is set up). Run a round-trip test with the line above: send, receive a reply, three times. Only then recommend ALTERNATE (any internet anywhere) to the Stake President."
+  },
+  {
+   "id": "n-repeater-down",
+   "kind": "note",
+   "t": 170,
+   "to": "eoc",
+   "text": "10:40 The Saddleback Peak repeater went silent at 10:38. Stations are on the simplex relay frequency, if one was named."
+  },
+  {
+   "id": "wi-overnight",
+   "kind": "work_item",
+   "t": 172,
+   "cat": "supply",
+   "prio": 1,
+   "due": "11:22",
+   "title": "Overnight plan: generator fuel, heat, cots, blankets and water per person for the warming centre and the care-facility residents; Supply Order UP",
+   "detail": "Six hours of generator fuel, a wet-snow night at −3 °C, people in wet clothes. Quantities, not adjectives: litres of fuel, number of heaters, cots and blankets, litres of water per person per day.",
+   "next": "Type the Supply Order with quantities and set it UP; the decision is the plan (fuel source, heat, dry clothing, who sleeps where)",
+   "from": "{erd} (Emergency Response Director)",
+   "need": {
+    "owner": 10,
+    "done": 40,
+    "decision": true,
+    "done_states": [
+     "up",
+     "done"
+    ],
+    "label": "Overnight fuel, heat and water plan recorded and the Supply Order sent UP within 40 minutes"
+   }
+  },
+  {
+   "id": "p-step-up-a",
+   "kind": "prompt",
+   "t": 175,
+   "role": "stake_president",
+   "text": "Step up to ALTERNATE (any internet anywhere: home, shelter, business, meetinghouse, Starlink) only if the specialist reports three round-trip successes. You decide; the specialist or {erd} announces it."
+  },
+  {
+   "id": "v-step-up-a",
+   "kind": "voice",
+   "t": 176,
+   "role": "ham",
+   "text": "Net control: 'All {stake} stations: by decision of the Stake President the stake is at ALTERNATE as of 10:46. Use any internet you have: home, a business, a meetinghouse, Starlink. Stations without internet stay on radio; the net stays open.'"
+  },
+  {
+   "id": "n-county-call",
+   "kind": "note",
+   "t": 178,
+   "to": "eoc",
+   "text": "10:48 Larkspur County EOC invites a stake representative to its 13:00 coordination call (in person or by phone) and asks for the latest SITREP in writing before it."
+  },
+  {
+   "id": "wi-shelter-status",
+   "kind": "work_item",
+   "t": 180,
+   "cat": "facilities",
+   "prio": 2,
+   "due": "11:10",
+   "title": "Warming-centre status in six figures for SITREP #2: headcount, water on hand, working toilets, heat, generator fuel hours, medical cases",
+   "detail": "The coordinating council and the county both want the same six figures for every Church building in use, from the building lead, not estimates.",
+   "next": "Get the six figures by net or phone from each building lead; record them as the decision; carry them into SITREP #2",
+   "from": "Stake President",
+   "need": {
+    "owner": 10,
+    "done": 25,
+    "decision": true,
+    "label": "Six-figure status for every Church building in use recorded within 25 minutes"
+   },
+   "lesson": "Buncombe 2024: shortages of water, backup power, medical supplies and sanitation came in the first 48 hours; the shelter reports did not carry them."
+  },
+  {
+   "id": "p-sitrep-2",
+   "kind": "prompt",
+   "t": 185,
+   "role": "eoc",
+   "text": "SITREP #2 on the interval leadership set. Give two numbers for members not accounted for: reported and verified. Carry the warming-centre figures and the overnight plan. Send it to both lines above the stake by the fastest path in force."
+  },
+  {
+   "id": "rollup-2",
+   "kind": "rollup",
+   "t": 188,
+   "to": "area",
+   "text": "SITREP #2 roll-up from {stake}",
+   "note": "Council / Area simulator only."
+  },
+  {
+   "id": "ics-warming",
+   "kind": "ics",
+   "form": "ics213rr",
+   "agency": "city_eoc",
+   "t": 190,
+   "each": "unit",
+   "same_as": "ics-sandbags",
+   "subject": "Staff for the city warming centre tonight",
+   "fields": {
+    "incident_name": "Copper Creek Dam failure (DRILL)",
+    "date": "{today}",
+    "time": "11:00",
+    "request_number": "{city_eoc_call}-003",
+    "priority": "High",
+    "qty": "8",
+    "kind": "Volunteers (Helping Hands)",
+    "type": "Warming centre staff: registration, cots, hot drinks; two Spanish speakers",
+    "item": "The city opens a warming centre in the Larkspur Civic Center gym at 17:00 for 120 people. We need eight volunteers from 17:00 to 23:00 and eight from 23:00 to 07:00, two of each shift able to register families in Spanish.",
+    "requested_arrival": "16:45 today",
+    "deliver_to": "Larkspur Civic Center, 200 North Main Street, gym doors",
+    "substitutes": "Any adults; a cot count and a sign-in sheet in Spanish would help",
+    "requested_by": "{city_eoc_contact}, {city_eoc}"
+   },
+   "need": {
+    "cat": "assist",
+    "prio": 2,
+    "owner": 15,
+    "done": 45,
+    "decision": true,
+    "title_contains": "warming centre",
+    "role": "ERD and the Stake President",
+    "label": "The city's warming-centre staffing request owned within 15 minutes; two shifts named and answered by ICS 213 within 45"
+   }
+  },
+  {
+   "id": "wcl-crews",
+   "kind": "form",
+   "form": "wcl",
+   "each": "unit",
+   "where": {
+    "severity_min": 1,
+    "sample": 0.5,
+    "tag_not": "cutoff"
+   },
+   "t": {
+    "from": 175,
+    "to": 230
+   },
+   "template": "wcl_initial",
+   "channel": "by_pace",
+   "note": "Work Crew Logs from the morning: sandbag crews, moving crews, welfare checks and warming-centre staff."
+  },
+  {
+   "id": "wcl-host",
+   "kind": "form",
+   "form": "wcl",
+   "each": "stake",
+   "where": {
+    "severity_max": 0,
+    "flags_none": [
+     "care_facility",
+     "retirement",
+     "language_unit"
+    ]
+   },
+   "t": {
+    "from": 190,
+    "to": 235
+   },
+   "template": "wcl_host",
+   "channel": "by_pace",
+   "note": "The receiving stakes log the crews that ran their warming centres."
+  },
+  {
+   "id": "n-approvals",
+   "kind": "reply",
+   "t": 205,
+   "to": "eoc",
+   "text": "10:55 AWSRM: Supply Orders for water, cleaning kits, boots, gloves and the warming-centre supplies approved; the Bramble Junction truck leaves at 11:30, by Saddleback, Route 30 and Center Street, at the named receiving building about 14:00 if the Center Street bridge stays open.",
+   "from": "Welfare line (AWSRM)",
+   "match": {
+    "cat": "supply",
+    "status": "up"
+   },
+   "decision": "Approved by the AWSRM 10:55. Bramble Junction Bishops’ Storehouse truck leaves 11:30 by Saddleback, Route 30 and Center Street; ETA 14:00 at the receiving building.",
+   "note": "A reply from the line above: every Supply Order still UP is closed DONE with this decision, as a real Council / Area EOC’s reply bundle would. Earlier orders were answered one by one (r-so-care, r-so-water)."
+  },
+  {
+   "id": "p-approvals",
+   "kind": "prompt",
+   "t": 206,
+   "role": "eoc",
+   "text": "The approvals are in. Check that every Supply Order item shows DONE with the approval and the truck time as its decision; tell the receiving building lead the time and the route; keep the orders that were answered \"fulfilled\" open until a person confirms delivery."
+  },
+  {
+   "id": "p-72h",
+   "kind": "prompt",
+   "t": 210,
+   "role": "erd",
+   "text": "The drill ends at 11:50; the flood does not. Write the 72-hour posture as a work item with \"72\" in the title: shifts for the EOC and the warming centres, fuel, paper copies of the rosters, a second laptop, mud-out crews for tomorrow, and what the stake does if there is no contact for three days.",
+   "need": {
+    "cat": "other",
+    "prio": 2,
+    "owner": 10,
+    "done": 25,
+    "decision": true,
+    "title_contains": "72",
+    "role": "ERD",
+    "label": "72-hour posture written down as a work item before the drill ends"
+   },
+   "lesson": "Helene 2024: cell service in the worst counties took three weeks to return; the state now plans for 72 hours with no communications."
+  },
+  {
+   "id": "wcl-mudout",
+   "kind": "form",
+   "form": "wcl",
+   "each": "unit",
+   "where": {
+    "in": "dam_inundation",
+    "flags_none": [
+     "care_facility",
+     "retirement",
+     "language_unit"
+    ]
+   },
+   "t": {
+    "from": 212,
+    "to": 232
+   },
+   "template": "wcl_mudout",
+   "channel": "by_pace",
+   "note": "The first mud-out crews on the streets the county has reopened in Copper Ridge and south Larkspur."
+  },
+  {
+   "id": "ics-mudout",
+   "kind": "ics",
+   "form": "ics213rr",
+   "agency": "city_eoc",
+   "t": 214,
+   "each": "unit",
+   "same_as": "ics-sandbags",
+   "subject": "Mud-out crews for tomorrow morning",
+   "fields": {
+    "incident_name": "Copper Creek Dam failure (DRILL)",
+    "date": "{today}",
+    "time": "11:24",
+    "request_number": "{city_eoc_call}-004",
+    "priority": "Routine",
+    "qty": "60",
+    "kind": "Volunteers (Helping Hands)",
+    "type": "Mud-out crews of 6 with a team leader",
+    "item": "Tomorrow from 08:00: about 120 homes in south Larkspur with water inside. Crews to carry out wet carpet, drywall to 1.2 m and furniture, with the homeowner's signed release. The city supplies dumpsters, masks and gloves.",
+    "requested_arrival": "Tomorrow 07:45",
+    "deliver_to": "Fire Station 1, Center Street; work orders by street",
+    "substitutes": "Crews must have a team leader, boots, gloves and N95 masks; no one under 16",
+    "requested_by": "{city_eoc_contact}, {city_eoc}"
+   },
+   "need": {
+    "cat": "assist",
+    "prio": 3,
+    "owner": 20,
+    "done": 60,
+    "decision": true,
+    "title_contains": "Mud-out",
+    "role": "ERD",
+    "label": "The city's mud-out request owned; crews for tomorrow planned and answered by ICS 213 within 60 minutes"
+   }
+  },
+  {
+   "id": "n-cell-back",
+   "kind": "note",
+   "t": 218,
+   "to": "eoc",
+   "text": "11:28 Carrier notice: portable cell sites on generators are up in north Larkspur and Juniper Springs; texting works north of Center Street. The south half is still dark."
+  },
+  {
+   "id": "p-roundtrip-2",
+   "kind": "prompt",
+   "t": 220,
+   "role": "specialist",
+   "text": "Run the round-trip test again over cellular from the north half. If it passes three times, recommend PRIMARY for the north wards; the south wards stay on what works for them."
+  },
+  {
+   "id": "p-step-up-p",
+   "kind": "prompt",
+   "t": 225,
+   "role": "stake_president",
+   "text": "Decide PRIMARY on the specialist's recommendation after the test, and say which wards it covers. Have it announced on the net; the net stays open for the south."
+  },
+  {
+   "id": "n-close",
+   "kind": "note",
+   "t": 235,
+   "to": "eoc",
+   "text": "11:45 End of the drill period. The south half of the valley is still without power; the river is falling slowly; wet snow is starting. Leave the event open; hot wash now."
+  },
+  {
+   "id": "p-hotwash",
+   "kind": "prompt",
+   "t": 236,
+   "role": "controller",
+   "text": "Hot wash from the checklist; then the after-action report."
+  },
+  {
+   "id": "n-meetings-told",
+   "kind": "note",
+   "after": {
+    "need": "p-meetings",
+    "is": "met",
+    "delay": 10
+   },
+   "to": "eoc",
+   "text": "Bishops confirm on the net and by text: meetings cancelled; members told to stay home or go to the warming centre; no cars in the order zone."
+  },
+  {
+   "id": "v-meeting-cars",
+   "kind": "voice",
+   "after": {
+    "need": "p-meetings",
+    "is": "overdue",
+    "delay": 0
+   },
+   "role": "ham",
+   "text": "'Net control, a ward station: families are arriving for the 9:00 meeting at a meetinghouse near 500 South; the deputies are turning cars around on Route 12. Is church on or not?'",
+   "note": "Consequence: the meetings decision was not recorded in time."
+  },
+  {
+   "id": "n-notify-moved",
+   "kind": "note",
+   "after": {
+    "need": "p-alert-members",
+    "is": "met",
+    "delay": 15
+   },
+   "to": "eoc",
+   "text": "Ministering brothers and sisters and block captains report: every household on the order-zone lists contacted or knocked on, three families helped into cars, the Spanish-speaking families reached by text and in person."
+  },
+  {
+   "id": "v-notify-late",
+   "kind": "voice",
+   "after": {
+    "need": "p-alert-members",
+    "is": "overdue",
+    "delay": 0
+   },
+   "role": "ham",
+   "text": "'Net control, a ward station: an older couple on the creek did not know they were in the order zone. A neighbour found them at breakfast with the radio off. Who is telling our members?'",
+   "note": "Consequence: member notification was not decided in time."
+  },
+  {
+   "id": "n-care-moved",
+   "kind": "note",
+   "each": "unit",
+   "same_as": "dr-care",
+   "after": {
+    "need": "wi-care-transport",
+    "is": "met",
+    "delay": 40
+   },
+   "to": "eoc",
+   "text": "County dispatch to the EOC: the residents of {unit} are at the destination building with the county wheelchair bus and two ambulances for the oxygen patients; the headcount at arrival matches the list except one, see the Team Leader."
+  },
+  {
+   "id": "v-care-left",
+   "kind": "voice",
+   "each": "unit",
+   "same_as": "dr-care",
+   "after": {
+    "need": "wi-care-transport",
+    "is": "overdue",
+    "delay": 0
+   },
+   "role": "ham",
+   "text": "'{unit_call} to net control, priority: water is at the doors of the building where {unit} meets and twelve residents are still inside, four in wheelchairs. Staff have no bus. Who requested transport?'",
+   "note": "Consequence: the care-facility transport item had no owner in time."
+  },
+  {
+   "id": "n-shelter-decided",
+   "kind": "note",
+   "after": {
+    "need": "wi-sp-shelter",
+    "is": "met",
+    "delay": 8
+   },
+   "to": "eoc",
+   "text": "{erd} (Emergency Response Director): the warming centre is open at the building the Stake President chose, with a building lead, a sign-in sheet and the facilities manager told. The net has the address."
+  },
+  {
+   "id": "v-sp-shelter-again",
+   "kind": "voice",
+   "after": {
+    "need": "wi-sp-shelter",
+    "is": "overdue",
+    "delay": 0
+   },
+   "role": "stake_president",
+   "text": "The Stake President calls the EOC: 'I asked which building opens. Families are sitting in their cars in the rain at three meetinghouses. I need the recommendation now.'",
+   "note": "Consequence: the warming-centre question went unanswered past its limit."
+  },
+  {
+   "id": "wi-sp-shelter-2",
+   "kind": "work_item",
+   "after": {
+    "need": "wi-sp-shelter",
+    "is": "overdue",
+    "delay": 0
+   },
+   "cat": "facilities",
+   "prio": 1,
+   "due": "now",
+   "title": "Stake President asks AGAIN: which building opens as the warming centre? Recommendation within 10 minutes",
+   "detail": "The first question had no recorded decision in time. Families are waiting in cars in the rain.",
+   "next": "ERD and specialist give the recommendation now; record the decision",
+   "from": "Stake President",
+   "need": {
+    "owner": 5,
+    "done": 15,
+    "decision": true,
+    "label": "The repeated warming-centre question answered within 10 minutes with a decision"
+   },
+   "note": "Escalation of the warming-centre question."
+  },
+  {
+   "id": "n-mission-thanks",
+   "kind": "note",
+   "after": {
+    "need": "wi-mission-office",
+    "is": "met",
+    "delay": 5
+   },
+   "to": "eoc",
+   "text": "Mission office: thank you; the mission president has the names and last known location and is calling the missionaries' parents only when there is news."
+  },
+  {
+   "id": "v-mission-president",
+   "kind": "voice",
+   "after": {
+    "need": "wi-mission-office",
+    "is": "overdue",
+    "delay": 0
+   },
+   "role": "ham",
+   "text": "'Net control, relay from the mission president's assistant: we still have no names or location for the sisters not accounted for. Who at the EOC is on it?'",
+   "note": "Consequence: the mission office was not answered in time."
+  },
+  {
+   "id": "wi-mission-president",
+   "kind": "work_item",
+   "after": {
+    "need": "wi-mission-office",
+    "is": "overdue",
+    "delay": 0
+   },
+   "cat": "missionaries",
+   "prio": 1,
+   "due": "now",
+   "title": "Mission president asks AGAIN for the names and last known location of the missionaries not accounted for",
+   "detail": "The first request was not answered in time.",
+   "next": "Owner now; names from the bishop; reply; log the minute",
+   "from": "Mission president",
+   "need": {
+    "owner": 5,
+    "done": 15,
+    "label": "Mission president answered within 15 minutes"
+   }
+  },
+  {
+   "id": "v-missing-again",
+   "kind": "voice",
+   "same_as": "dr-missing",
+   "after": {
+    "need": "dr-missing#miss",
+    "is": "overdue",
+    "delay": 0
+   },
+   "role": "ham",
+   "text": "'{unit_call} to net control, priority: Bishop {bishop} asks again whether the Stake President knows about the sisters not accounted for in {unit}. No answer from the EOC yet.'",
+   "note": "Consequence: the missionaries alert was not owned within 10 minutes."
+  },
+  {
+   "id": "n-rescue",
+   "kind": "note",
+   "each": "unit",
+   "same_as": "v-roof",
+   "after": {
+    "need": "v-roof",
+    "is": "met",
+    "delay": 12
+   },
+   "to": "eoc",
+   "text": "County dispatch to the EOC: the swift-water team took the family off the garage roof at 2240 Willow Lane in {city} by boat; the man with the heart condition is on his way to Larkspur Regional. The relay had what dispatch needed."
+  },
+  {
+   "id": "v-roof-again",
+   "kind": "voice",
+   "each": "unit",
+   "same_as": "v-roof",
+   "after": {
+    "need": "v-roof",
+    "is": "overdue",
+    "delay": 0
+   },
+   "role": "ham",
+   "text": "'{unit_call} to net control: Bishop {bishop} asks who has the family on the roof at 2240 Willow Lane. The water is still rising and the county says it has no record of the call.'",
+   "note": "Consequence: the relay was not acknowledged within 20 minutes."
+  },
+  {
+   "id": "n-hw-complaint",
+   "kind": "note",
+   "after": {
+    "need": "p-hw-policy",
+    "is": "overdue",
+    "delay": 0
+   },
+   "to": "eoc",
+   "text": "County radio liaison: a stake station read family inquiries on the county channel and blocked a swift-water request for two minutes. Please publish your health-and-welfare path."
+  },
+  {
+   "id": "v-county-norecord",
+   "kind": "voice",
+   "after": {
+    "need": "p-liaison-slots",
+    "is": "overdue",
+    "delay": 0
+   },
+   "role": "county_liaison",
+   "text": "County liaison: 'Your slot passed with nothing from the stake. I have three separate scraps of paper from your wards and no one to ask. Next slot is in 30 minutes.'",
+   "note": "Consequence: no consolidated message in the slot."
+  },
+  {
+   "id": "n-area-asks-unit",
+   "kind": "note",
+   "each": "unit",
+   "same_as": "n-not-heard",
+   "after": {
+    "need": "n-not-heard",
+    "is": "overdue",
+    "delay": 0
+   },
+   "to": "eoc",
+   "text": "The coordinating council asks by relay: SITREP #1 shows {unit} with no report. Is it \"no damage\" or \"not heard from\"? What has the stake tried?"
+  },
+  {
+   "id": "v-third-trip",
+   "kind": "voice",
+   "each": "unit",
+   "same_as": "v-missing-family",
+   "after": {
+    "need": "v-missing-family",
+    "is": "overdue",
+    "delay": 0
+   },
+   "role": "team_leader",
+   "text": "A Team Leader on the net: 'This is the third crew sent to 415 Alder Street in {unit} this morning. A neighbour says the family went to Kestrel at 08:00. Who keeps the list?'",
+   "note": "Consequence: the household item was not closed when the family was found."
+  },
+  {
+   "id": "n-starlink",
+   "kind": "note",
+   "after": {
+    "need": "p-starlink-setup",
+    "is": "met",
+    "delay": 5
+   },
+   "to": "eoc",
+   "text": "Stake center Starlink is up on the generator with a named operator and open sky over the dish. The EOC has internet: SITREPs to the line above by email and forms by Winlink over Telnet. The field stays at CONTINGENCY until the round-trip test and the Stake President's decision."
+  },
+  {
+   "id": "p-starlink",
+   "kind": "prompt",
+   "role": "eoc",
+   "after": {
+    "need": "p-starlink-setup",
+    "is": "met",
+    "delay": 6
+   },
+   "text": "Starlink is up. Re-send SITREP #1 by email to both lines above the stake (the Area Seventy's council has email only; the welfare line also gets the forwarded Disaster Reports); keep PACE at Contingency for the field. Log the time the line above acknowledges."
+  },
+  {
+   "id": "n-starlink-nosignal",
+   "kind": "note",
+   "after": {
+    "need": "p-starlink-setup",
+    "is": "overdue",
+    "delay": 0
+   },
+   "to": "eoc",
+   "text": "The Starlink dish sits in its box on the foyer floor: nobody owns it, the generator outlet is in use, and the only open sky is the wet roof. No internet at the EOC."
+  },
+  {
+   "id": "dr-west-relayed",
+   "kind": "form",
+   "form": "dr",
+   "each": "unit",
+   "where": {
+    "in": "river_floodplain",
+    "tag_not": "cutoff"
+   },
+   "after": {
+    "need": "v-repeater-battery",
+    "is": "met",
+    "delay": 50
+   },
+   "template": "dr_followup",
+   "channel": "voice",
+   "note": "Reports from the river bottoms after the repeater died: they arrive by voice relay only because the relay plan was logged."
+  },
+  {
+   "id": "n-south-silent",
+   "kind": "note",
+   "after": {
+    "need": "v-repeater-battery",
+    "is": "overdue",
+    "delay": 45
+   },
+   "to": "eoc",
+   "text": "Since the repeater died nothing has been heard from the river bottoms. No relay station was named; the south has no path but runners."
+  },
+  {
+   "id": "n-rumour-stopped",
+   "kind": "note",
+   "after": {
+    "need": "v-rumour-dam",
+    "is": "met",
+    "delay": 5
+   },
+   "to": "eoc",
+   "text": "County EOC: Pine Hollow diversion dam inspected at 10:20, no damage; no order for north Larkspur. The stake's correction went out once on the net and by text under the Stake President's name."
+  },
+  {
+   "id": "n-self-evac",
+   "kind": "note",
+   "after": {
+    "need": "v-rumour-dam",
+    "is": "overdue",
+    "delay": 0
+   },
+   "to": "eoc",
+   "text": "County: Route 12 north of Larkspur is jammed with cars from the north wards fleeing a dam failure that did not happen; an ambulance for the hospital is stuck in it."
+  },
+  {
+   "id": "n-queue",
+   "kind": "note",
+   "after": {
+    "need": "p-traffic-priority",
+    "is": "overdue",
+    "delay": 0
+   },
+   "to": "eoc",
+   "text": "Your outbound queue: 19 messages, the SITREP behind four test messages and three welfare inquiries. Estimated 40 minutes before the SITREP leaves."
+  },
+  {
+   "id": "r-so-care",
+   "kind": "reply",
+   "each": "unit",
+   "same_as": "so-care",
+   "after": {
+    "need": "so-care#approve",
+    "is": "met",
+    "delay": 25
+   },
+   "from": "Welfare line (WSRM)",
+   "match": {
+    "cat": "supply",
+    "status": "up"
+   },
+   "status": "done",
+   "decision": "Approved by the WSRM; cots, water, blankets and incontinence supplies for {unit} on the Bramble Junction truck, ETA 14:00 at the receiving building.",
+   "text": "WSRM to {eoc}: Supply Order from {unit} (care-facility residents) approved; on the Bramble Junction truck, ETA 14:00. Confirm the receiver.",
+   "note": "Fires 25 drill minutes after the operator sets the care-facility Supply Order UP."
+  },
+  {
+   "id": "r-so-water",
+   "kind": "reply",
+   "each": "unit",
+   "same_as": "so-water",
+   "after": {
+    "need": "so-water#approve",
+    "is": "met",
+    "delay": 30
+   },
+   "from": "Welfare line (WSRM)",
+   "match": {
+    "cat": "supply",
+    "status": "up"
+   },
+   "status": "done",
+   "decision": "Approved by the WSRM; water, cleaning kits, boots and gloves for {unit} on the Bramble Junction truck, ETA 14:00.",
+   "text": "WSRM to {eoc}: Supply Order from {unit} approved; on the Bramble Junction truck, ETA 14:00.",
+   "note": "Fires 30 drill minutes after the order went UP."
+  },
+  {
+   "id": "r-hq",
+   "kind": "reply",
+   "each": "unit",
+   "where": {
+    "severity_min": 2
+   },
+   "after": {
+    "need": "dr-initial#hq",
+    "is": "met",
+    "delay": 30
+   },
+   "from": "Welfare line (WSRM)",
+   "match": {
+    "cat": "upward",
+    "status": "up"
+   },
+   "status": "done",
+   "decision": "Welfare line: headquarters-assistance request from {unit} acknowledged; resources assigned through the AWSRM; details come with the storehouse truck and the Area Seventy’s call to the Stake President.",
+   "text": "WSRM to {eoc}: the headquarters-assistance request from {unit} is received and being worked with the AWSRM.",
+   "note": "Only for units whose Disaster Report asked for Church headquarters assistance, 30 drill minutes after the item went UP."
+  },
+  {
+   "id": "n-injured-care",
+   "kind": "note",
+   "each": "unit",
+   "where": {
+    "severity_min": 2
+   },
+   "after": {
+    "need": "dr-initial#life",
+    "is": "met",
+    "delay": 20
+   },
+   "to": "eoc",
+   "text": "County dispatch to the EOC: the injured from {unit} are at Larkspur Regional or the first-aid point at the high school; Bishop {bishop} confirms care and names on file."
+  },
+  {
+   "id": "v-bishop-injured",
+   "kind": "voice",
+   "each": "unit",
+   "where": {
+    "severity_min": 2
+   },
+   "after": {
+    "need": "dr-initial#life",
+    "is": "overdue",
+    "delay": 0
+   },
+   "role": "ham",
+   "text": "'{unit_call} to net control: Bishop {bishop} asks whether the EOC has the injured list from {unit}. Nobody has called back. Who is on it?'",
+   "note": "Per unit with injuries: fires when its injuries item had no owner in time."
+  },
+  {
+   "id": "v-runner-again",
+   "kind": "voice",
+   "same_as": "dr-paper",
+   "after": {
+    "need": "dr-paper#report",
+    "is": "overdue",
+    "delay": 0
+   },
+   "role": "controller",
+   "text": "The runner who brought the paper form from {unit} is still standing at the EOC door, soaked: \"Did anyone type it in? The bishop asked me to wait for an answer.\"",
+   "note": "Consequence: the paper form was not typed in time."
+  },
+  {
+   "id": "v-no-truck",
+   "kind": "voice",
+   "each": "unit",
+   "same_as": "so-care",
+   "after": {
+    "need": "so-care#approve",
+    "is": "met",
+    "delay": 60
+   },
+   "role": "ham",
+   "text": "'{unit_call} to net control: President {bishop} reports no truck for the care-facility order; the county says the Bramble Junction truck was held at Saddleback because the Center Street bridge closed to trucks for an inspection. The order shows DONE on your side; we have nothing.' (EOC: a fulfilled reply is a promise, not a delivery. Open a new work item 'Supplies for {unit}: not delivered', set it UP with an ETA request and a delivery contact as the decision.)",
+   "need": {
+    "cat": "supply",
+    "prio": 1,
+    "owner": 10,
+    "done": 30,
+    "decision": true,
+    "done_states": [
+     "up",
+     "done"
+    ],
+    "title_contains": "not delivered",
+    "role": "EOC operator",
+    "label": "Undelivered care-facility order for the unit re-raised as a new item and sent UP with an ETA request within 30 minutes"
+   },
+   "lesson": "Helene 2024: responders received false delivery or fulfilment alerts; resources were delayed, never arrived or were diverted."
+  },
+  {
+   "id": "n-no-water",
+   "kind": "note",
+   "each": "unit",
+   "same_as": "so-care",
+   "after": {
+    "need": "v-no-truck",
+    "is": "overdue",
+    "delay": 0
+   },
+   "to": "eoc",
+   "text": "The building lead where the residents of {unit} are staying: bottled water runs out at 15:00 and the boil-water order is in force. Nobody has told us when supplies come."
+  },
+  {
+   "id": "n-area-usage",
+   "kind": "note",
+   "after": {
+    "need": "p-shelter-usage",
+    "is": "met",
+    "delay": 20
+   },
+   "to": "eoc",
+   "text": "Coordinating council: the Area approves the meetinghouse as a public overnight shelter under a usage agreement with the county; the county sends a deputy and a nurse for the night."
+  },
+  {
+   "id": "v-shelter-toilets",
+   "kind": "voice",
+   "after": {
+    "need": "p-shelter-usage",
+    "is": "overdue",
+    "delay": 0
+   },
+   "role": "team_leader",
+   "text": "Team Leader at the meetinghouse: 'Eighty people here now, half of them not members, two toilets working because the water pressure dropped, no one in charge from the county. What is this building tonight?'",
+   "note": "Consequence: the public-shelter decision was not made in time."
+  },
+  {
+   "id": "n-bus-lane",
+   "kind": "note",
+   "after": {
+    "need": "v-box-truck",
+    "is": "overdue",
+    "delay": 0
+   },
+   "to": "eoc",
+   "text": "Police: the donations truck unloaded on the sidewalk at the stake center; the boxes block the drop-off lane the county wheelchair bus uses."
+  },
+  {
+   "id": "wcl-unsupervised",
+   "kind": "form",
+   "form": "wcl",
+   "each": "unit",
+   "where": {
+    "severity_min": 1,
+    "flags_none": [
+     "care_facility",
+     "retirement",
+     "language_unit"
+    ],
+    "sample": 1,
+    "tag": "walkups"
+   },
+   "after": {
+    "need": "v-walkups",
+    "is": "overdue",
+    "delay": 10
+   },
+   "template": "wcl_unsupervised",
+   "channel": "paper",
+   "note": "Consequence: the walk-up volunteers went to work on their own; their crew log arrives on paper with no team leader and no safety acknowledgment."
+  },
+  {
+   "id": "v-generator-out",
+   "kind": "voice",
+   "after": {
+    "need": "wi-overnight",
+    "is": "overdue",
+    "delay": 0
+   },
+   "role": "team_leader",
+   "text": "Building lead: 'The generator has two hours of fuel left and nobody has told me if more is coming. People are in wet clothes and it is snowing.'",
+   "note": "Consequence: the overnight plan was not made in time."
+  },
+  {
+   "id": "n-truck",
+   "kind": "note",
+   "after": {
+    "need": "wi-welfare-delivery",
+    "is": "met",
+    "delay": 15
+   },
+   "to": "eoc",
+   "text": "WSRM: the Bramble Junction truck is loaded and has the receiving building, the receiver's name and the route by Saddleback and Route 30."
+  },
+  {
+   "id": "v-wsrm-again",
+   "kind": "voice",
+   "after": {
+    "need": "wi-welfare-delivery",
+    "is": "overdue",
+    "delay": 0
+   },
+   "role": "ham",
+   "text": "'Relay from the WSRM: the truck is loaded at Bramble Junction and cannot leave without a delivery point and a route. Who answers?'",
+   "note": "Consequence: the delivery point was not given in time."
+  },
+  {
+   "id": "wi-welfare-delivery-2",
+   "kind": "work_item",
+   "after": {
+    "need": "wi-welfare-delivery",
+    "is": "overdue",
+    "delay": 0
+   },
+   "cat": "supply",
+   "prio": 1,
+   "due": "now",
+   "title": "WSRM asks AGAIN: delivery point and receiver for the storehouse truck; it cannot leave without them",
+   "detail": "The first request was not answered in time.",
+   "next": "Name the building, the receiver and the route now",
+   "from": "Welfare line (WSRM)",
+   "need": {
+    "owner": 5,
+    "done": 15,
+    "decision": true,
+    "label": "Storehouse delivery point given within 15 minutes of the second request"
+   }
+  },
+  {
+   "id": "ics-sandbags-thanks",
+   "kind": "ics",
+   "form": "ics213",
+   "agency": "city_eoc",
+   "each": "unit",
+   "same_as": "ics-sandbags",
+   "after": {
+    "need": "ics-sandbags",
+    "is": "met",
+    "delay": 20
+   },
+   "subject": "Sandbag crews on River Road",
+   "fields": {
+    "incident_name": "Copper Creek Dam failure (DRILL)",
+    "to_name": "{eoc}",
+    "from_name": "{city_eoc_contact}",
+    "subject": "Sandbag crews on River Road",
+    "date": "{today}",
+    "time": "",
+    "message": "Your crew leaders checked in at Fire Station 1 and the crews are on River Road. The wall is up from Center Street to 900 South. Thank you. We will release them at 12:30."
+   },
+   "note": "Resolution: the stake answered the city in time."
+  },
+  {
+   "id": "ics-sandbags-again",
+   "kind": "ics",
+   "form": "ics213",
+   "agency": "city_eoc",
+   "each": "unit",
+   "same_as": "ics-sandbags",
+   "after": {
+    "need": "ics-sandbags",
+    "is": "overdue",
+    "delay": 0
+   },
+   "subject": "Sandbag request: no answer",
+   "fields": {
+    "incident_name": "Copper Creek Dam failure (DRILL)",
+    "to_name": "{eoc}",
+    "from_name": "{city_eoc_contact}",
+    "subject": "Sandbag request: no answer",
+    "date": "{today}",
+    "time": "",
+    "message": "We have had no answer to request {city_eoc_call}-001. The river is rising at River Road. Can the stake send crews, yes or no, and how many? If not, we will ask the county."
+   },
+   "note": "Consequence: the city request was not owned in time."
+  },
+  {
+   "id": "ics-inspection-answer",
+   "kind": "ics",
+   "form": "ics213",
+   "agency": "city_eoc",
+   "each": "unit",
+   "same_as": "ics-sandbags",
+   "after": {
+    "need": "p-city-inspection",
+    "is": "met",
+    "delay": 15
+   },
+   "subject": "Fire-safety check of the meetinghouse",
+   "fields": {
+    "incident_name": "Copper Creek Dam failure (DRILL)",
+    "to_name": "{eoc}",
+    "from_name": "{city_eoc_contact}",
+    "subject": "Fire-safety check of the meetinghouse",
+    "date": "{today}",
+    "time": "",
+    "message": "The fire marshal will be at the meetinghouse at 13:30. Occupancy for sleeping in the cultural hall is 90 with the exits clear; no generators or heaters inside the building."
+   },
+   "note": "Resolution: the stake asked the city in time."
+  },
+  {
+   "id": "ics-cr-thanks",
+   "kind": "ics",
+   "form": "ics213",
+   "agency": "cr_city_eoc",
+   "each": "unit",
+   "same_as": "ics-cr-accountability",
+   "after": {
+    "need": "ics-cr-accountability",
+    "is": "met",
+    "delay": 25
+   },
+   "subject": "Accountability teams",
+   "fields": {
+    "incident_name": "Copper Creek Dam failure (DRILL)",
+    "to_name": "{eoc}",
+    "from_name": "{cr_city_eoc_contact}",
+    "subject": "Accountability teams",
+    "date": "{today}",
+    "time": "",
+    "message": "Your teams have checked 96 of the 140 names on the north bench. Eleven needed rides; all are out. Thank you. Please send the remaining teams back to the fire station by 12:00."
+   },
+   "note": "Resolution: the stake answered Copper Ridge in time."
+  }
+ ],
+ "templates": {
+  "dr_initial": {
+   "inc_type": "Flood (dam failure)",
+   "inc_date": "{today}",
+   "inc_location": "{building}, {city}",
+   "sp_name": "{stake_president}",
+   "sub_name": "{bishop}",
+   "sub_phone": "{bishop_phone}",
+   "sub_email": "{bishop_email}",
+   "miss_safe": {
+    "yes": {
+     "0": 1.0,
+     "1": 1.0,
+     "2": 0.95,
+     "3": 0.9
+    }
+   },
+   "miss_details": {
+    "pick": {
+     "0": [
+      "All missionaries assigned to {unit} accounted for."
+     ],
+     "2": [
+      "Missionaries accounted for; they left their apartment in the order zone and are at the meetinghouse."
+     ],
+     "3": [
+      "Missionaries accounted for; they are helping families load cars on the north side of the creek."
+     ]
+    }
+   },
+   "mem_injuries": {
+    "range": {
+     "0": [
+      0,
+      0
+     ],
+     "1": [
+      0,
+      0
+     ],
+     "2": [
+      0,
+      2
+     ],
+     "3": [
+      1,
+      4
+     ]
+    }
+   },
+   "mem_deaths": {
+    "range": {
+     "0": [
+      0,
+      0
+     ],
+     "1": [
+      0,
+      0
+     ],
+     "2": [
+      0,
+      0
+     ],
+     "3": [
+      0,
+      0
+     ]
+    }
+   },
+   "mem_damaged": {
+    "range": {
+     "0": [
+      0,
+      0
+     ],
+     "1": [
+      0,
+      2
+     ],
+     "2": [
+      2,
+      12
+     ],
+     "3": [
+      10,
+      35
+     ]
+    }
+   },
+   "mem_destroyed": {
+    "range": {
+     "0": [
+      0,
+      0
+     ],
+     "1": [
+      0,
+      0
+     ],
+     "2": [
+      0,
+      0
+     ],
+     "3": [
+      0,
+      3
+     ]
+    }
+   },
+   "mem_details": {
+    "pick": {
+     "0": [
+      "{unit}: outside the warning zone; members asked to stay home; ready to receive families from the south side.",
+      "{unit}: no water here; several members are hosting relatives from the order zone."
+     ],
+     "1": [
+      "{unit}: in the WARNING zone; families packing cars and moving vehicles to high ground; basements being emptied; everyone reached by ministering or phone so far.",
+      "{unit}: water rising in the irrigation ditches; families with small children and the elderly leaving early to relatives in the north."
+     ],
+     "2": [
+      "{unit}: in the ORDER zone; about two thirds of the families have left; Team Leaders knocking on doors; two elderly members need rides.",
+      "{unit}: evacuation under way; streets nearest the creek have water at the curbs; three households refuse to leave."
+     ],
+     "3": [
+      "{unit}: water already in basements on the streets nearest the creek; families leaving with what they can carry; several cars stalled in water; a few members still not reached.",
+      "{unit}: most families out; Team Leaders helping the last ones; water over the road at the low end of the ward; people taking shelter on the bench."
+     ]
+    }
+   },
+   "bldg_damage": {
+    "pick": {
+     "0": [
+      "None visible"
+     ],
+     "1": [
+      "None visible; building ready to receive families."
+     ],
+     "2": [
+      "Meetinghouse at {building} in the order zone; locked and empty; power still on."
+     ],
+     "3": [
+      "Meetinghouse at {building}: water in the parking lot and rising; building evacuated and locked."
+     ]
+    }
+   },
+   "community": {
+    "pick": {
+     "0": [
+      "Power and cell on; roads busy with evacuees."
+     ],
+     "1": [
+      "Power on; cell congested; light rain; roads busy northbound."
+     ],
+     "2": [
+      "Deputies going door to door; Route 12 jammed; cell congested."
+     ],
+     "3": [
+      "Copper Creek out of its banks; roads to the south closed; power flickering; cell congested."
+     ]
+    }
+   },
+   "need_local": {
+    "yes": {
+     "0": 0.5,
+     "1": 0.3,
+     "2": 0.8,
+     "3": 1.0
+    }
+   },
+   "need_neighbor": {
+    "yes": {
+     "0": 0.0,
+     "1": 0.0,
+     "2": 0.4,
+     "3": 0.7
+    }
+   },
+   "need_hq": {
+    "yes": {
+     "0": 0.0,
+     "1": 0.0,
+     "2": 0.1,
+     "3": 0.4
+    }
+   },
+   "needs_details": {
+    "pick": {
+     "0": [
+      "A meetinghouse open as a warming centre if the families keep coming."
+     ],
+     "1": [
+      "Rides for two elderly members; a place for their cars."
+     ],
+     "2": [
+      "Rides out of the order zone for elderly members; a warm dry place for 30 people."
+     ],
+     "3": [
+      "Rides and a dry, heated building for 60 people; blankets; dry clothing for children; help for members who cannot walk out."
+     ]
+    }
+   },
+   "vol_count": {
+    "range": {
+     "0": [
+      2,
+      6
+     ],
+     "1": [
+      4,
+      10
+     ],
+     "2": [
+      8,
+      20
+     ],
+     "3": [
+      12,
+      30
+     ]
+    }
+   },
+   "vol_hours": {
+    "range": {
+     "0": [
+      2,
+      8
+     ],
+     "1": [
+      4,
+      15
+     ],
+     "2": [
+      8,
+      30
+     ],
+     "3": [
+      15,
+      50
+     ]
+    }
+   },
+   "vol_activities": {
+    "pick": {
+     "0": [
+      "Welfare calls; getting the meetinghouse ready."
+     ],
+     "1": [
+      "Phone tree; helping families pack; moving cars."
+     ],
+     "2": [
+      "Door knocks; rides out of the order zone; carrying belongings."
+     ],
+     "3": [
+      "Door knocks; carrying people and pets out; directing families to the warming centre."
+     ]
+    }
+   },
+   "vol_injuries": {
+    "yes": {
+     "0": 0.0,
+     "1": 0.0,
+     "2": 0.0,
+     "3": 0.1
+    }
+   },
+   "vol_inj_details": {
+    "pick": {
+     "0": [
+      ""
+     ],
+     "3": [
+      "One volunteer cut his hand on a fence in the water; first aid given."
+     ]
+    }
+   }
+  },
+  "dr_missing": {
+   "inc_type": "Flood (dam failure)",
+   "inc_date": "{today}",
+   "inc_location": "{building}, {city}",
+   "sp_name": "{stake_president}",
+   "sub_name": "{bishop}",
+   "sub_phone": "{bishop_phone}",
+   "sub_email": "{bishop_email}",
+   "miss_safe": "NO",
+   "miss_details": "Two sister missionaries of {unit} NOT accounted for. Their apartment is in the order zone near the creek. Members knocked at 08:10: no answer, car gone. Their phone goes to voicemail. Last seen at the meetinghouse last night.",
+   "mem_injuries": {
+    "range": {
+     "2": [
+      0,
+      2
+     ],
+     "3": [
+      1,
+      3
+     ]
+    }
+   },
+   "mem_deaths": "0",
+   "mem_damaged": {
+    "range": {
+     "2": [
+      2,
+      10
+     ],
+     "3": [
+      8,
+      25
+     ]
+    }
+   },
+   "mem_destroyed": "0",
+   "mem_details": "{unit}: evacuation under way; most families out; see missionaries.",
+   "bldg_damage": "Meetinghouse at {building}: locked and empty; in the order zone.",
+   "community": "Order zone emptying; roads jammed; cell congested.",
+   "need_local": "YES",
+   "need_neighbor": "YES",
+   "need_hq": "NO",
+   "needs_details": "Help to find the two sister missionaries; their names to the mission office.",
+   "vol_count": {
+    "range": {
+     "2": [
+      8,
+      15
+     ],
+     "3": [
+      10,
+      20
+     ]
+    }
+   },
+   "vol_hours": {
+    "range": {
+     "2": [
+      6,
+      15
+     ],
+     "3": [
+      8,
+      20
+     ]
+    }
+   },
+   "vol_activities": "Door knocks; looking for the missionaries along the evacuation routes.",
+   "vol_injuries": "NO",
+   "vol_inj_details": ""
+  },
+  "dr_found": {
+   "inc_type": "Flood (dam failure)",
+   "inc_date": "{today}",
+   "inc_location": "{building}, {city}",
+   "sp_name": "{stake_president}",
+   "sub_name": "{bishop}",
+   "sub_phone": "{bishop_phone}",
+   "sub_email": "{bishop_email}",
+   "miss_safe": "YES",
+   "miss_details": "UPDATE: both sister missionaries of {unit} found safe at a member family's home in Juniper Springs; they left with the family at 07:55; phone battery dead. Accounted for. Please tell the mission office.",
+   "mem_injuries": {
+    "range": {
+     "2": [
+      0,
+      2
+     ],
+     "3": [
+      1,
+      4
+     ]
+    }
+   },
+   "mem_deaths": "0",
+   "mem_damaged": {
+    "range": {
+     "2": [
+      8,
+      25
+     ],
+     "3": [
+      20,
+      50
+     ]
+    }
+   },
+   "mem_destroyed": {
+    "range": {
+     "2": [
+      0,
+      1
+     ],
+     "3": [
+      1,
+      5
+     ]
+    }
+   },
+   "mem_details": "{unit} UPDATE: all but three families accounted for; homes nearest the creek flooded to the first floor.",
+   "bldg_damage": "Meetinghouse at {building}: water in the parking lot; building not entered.",
+   "community": "Power out; cell down; water receding slowly near the creek.",
+   "need_local": "YES",
+   "need_neighbor": "YES",
+   "need_hq": "NO",
+   "needs_details": "Water, cleaning kits, boots and gloves; a dry place for 40 people tonight.",
+   "vol_count": {
+    "range": {
+     "2": [
+      10,
+      20
+     ],
+     "3": [
+      15,
+      30
+     ]
+    }
+   },
+   "vol_hours": {
+    "range": {
+     "2": [
+      20,
+      40
+     ],
+     "3": [
+      30,
+      70
+     ]
+    }
+   },
+   "vol_activities": "Search ended; door knocks; carrying belongings; warming centre.",
+   "vol_injuries": "NO",
+   "vol_inj_details": ""
+  },
+  "dr_care": {
+   "inc_type": "Flood (dam failure)",
+   "inc_date": "{today}",
+   "inc_location": "{building}, {city}",
+   "sp_name": "{stake_president}",
+   "sub_name": "{bishop}",
+   "sub_phone": "{bishop_phone}",
+   "sub_email": "{bishop_email}",
+   "miss_safe": "YES",
+   "miss_details": "No missionaries assigned to {unit}; the senior service couple who serve here are safe at home.",
+   "mem_injuries": "0",
+   "mem_deaths": "0",
+   "mem_damaged": "0",
+   "mem_destroyed": "0",
+   "mem_details": "{unit} (care facility in the ORDER zone): nine members of the branch among 46 residents; six wheelchair users, three on oxygen concentrators with about four hours of tank oxygen. Day staff of five, two leaving to check their own homes. The facility van seats six. Water in the ditch along the street. Branch president {bishop} asks for transport out of the order zone and a building with power for the concentrators.",
+   "bldg_damage": "Facility activity room where the branch meets: dry for now; water in the parking lot.",
+   "community": "Deputies on the street; the order zone emptying; no buses on the roads.",
+   "need_local": "YES",
+   "need_neighbor": "YES",
+   "need_hq": "NO",
+   "needs_details": "Wheelchair-accessible transport for the residents (county bus or care-facility vans); a dry, heated building with power for oxygen concentrators; blankets and incontinence supplies.",
+   "vol_count": {
+    "range": {
+     "2": [
+      4,
+      8
+     ],
+     "3": [
+      4,
+      8
+     ]
+    }
+   },
+   "vol_hours": {
+    "range": {
+     "2": [
+      4,
+      10
+     ],
+     "3": [
+      4,
+      10
+     ]
+    }
+   },
+   "vol_activities": "Helping staff pack medications and records; sitting with frightened residents.",
+   "vol_injuries": "NO",
+   "vol_inj_details": ""
+  },
+  "dr_followup": {
+   "inc_type": "Flood (dam failure)",
+   "inc_date": "{today}",
+   "inc_location": "{building}, {city}",
+   "sp_name": "{stake_president}",
+   "sub_name": "{bishop}",
+   "sub_phone": "{bishop_phone}",
+   "sub_email": "{bishop_email}",
+   "miss_safe": "YES",
+   "miss_details": "Missionaries accounted for.",
+   "mem_injuries": {
+    "range": {
+     "1": [
+      0,
+      1
+     ],
+     "2": [
+      1,
+      4
+     ],
+     "3": [
+      2,
+      8
+     ]
+    }
+   },
+   "mem_deaths": {
+    "range": {
+     "1": [
+      0,
+      0
+     ],
+     "2": [
+      0,
+      0
+     ],
+     "3": [
+      0,
+      1
+     ]
+    }
+   },
+   "mem_damaged": {
+    "range": {
+     "1": [
+      2,
+      10
+     ],
+     "2": [
+      12,
+      40
+     ],
+     "3": [
+      35,
+      90
+     ]
+    }
+   },
+   "mem_destroyed": {
+    "range": {
+     "1": [
+      0,
+      0
+     ],
+     "2": [
+      0,
+      3
+     ],
+     "3": [
+      3,
+      12
+     ]
+    }
+   },
+   "mem_details": {
+    "pick": {
+     "1": [
+      "{unit} UPDATE: water in a few basements; families back in their homes north of the warning line; counts corrected."
+     ],
+     "2": [
+      "{unit} UPDATE after block checks: counts corrected; homes nearest the water flooded to the first floor; families at relatives and the warming centre."
+     ],
+     "3": [
+      "{unit} UPDATE after block checks: counts corrected; whole streets flooded to the first floor; two homes moved off their foundations; families at the warming centre."
+     ]
+    }
+   },
+   "bldg_damage": {
+    "pick": {
+     "1": [
+      "None"
+     ],
+     "2": [
+      "Meetinghouse at {building}: water in the parking lot; building dry."
+     ],
+     "3": [
+      "Meetinghouse at {building}: water inside, about 40 cm; closed."
+     ]
+    }
+   },
+   "community": {
+    "pick": {
+     "1": [
+      "Power out south of Center Street; cell down; boil-water order."
+     ],
+     "2": [
+      "Power and cell out; boil-water order; streets closed by the police."
+     ],
+     "3": [
+      "Power and cell out; boil-water order; mud and debris in the streets; bridge out."
+     ]
+    }
+   },
+   "need_local": "YES",
+   "need_neighbor": {
+    "yes": {
+     "1": 0.0,
+     "2": 0.5,
+     "3": 0.8
+    }
+   },
+   "need_hq": {
+    "yes": {
+     "1": 0.0,
+     "2": 0.1,
+     "3": 0.5
+    }
+   },
+   "needs_details": {
+    "pick": {
+     "1": [
+      "Pumps for basements."
+     ],
+     "2": [
+      "Water, cleaning kits, boots, gloves; pumps; a dry place for families tonight."
+     ],
+     "3": [
+      "Water, cleaning kits, boots, gloves, wet/dry vacuums; mud-out crews tomorrow; a dry heated place for 60 people tonight."
+     ]
+    }
+   },
+   "vol_count": {
+    "range": {
+     "1": [
+      4,
+      12
+     ],
+     "2": [
+      12,
+      30
+     ],
+     "3": [
+      20,
+      45
+     ]
+    }
+   },
+   "vol_hours": {
+    "range": {
+     "1": [
+      10,
+      30
+     ],
+     "2": [
+      30,
+      90
+     ],
+     "3": [
+      60,
+      180
+     ]
+    }
+   },
+   "vol_activities": "Block checks complete; moving belongings; sandbags; warming centre.",
+   "vol_injuries": {
+    "yes": {
+     "1": 0.0,
+     "2": 0.1,
+     "3": 0.2
+    }
+   },
+   "vol_inj_details": {
+    "pick": {
+     "1": [
+      ""
+     ],
+     "2": [
+      ""
+     ],
+     "3": [
+      "One volunteer slipped in mud and twisted an ankle."
+     ]
+    }
+   }
+  },
+  "dr_relay": {
+   "inc_type": "Flood (dam failure)",
+   "inc_date": "{today}",
+   "inc_location": "{building}, {city}",
+   "sp_name": "{stake_president}",
+   "sub_name": "{bishop}",
+   "sub_phone": "{bishop_phone}",
+   "sub_email": "{bishop_email}",
+   "miss_safe": "YES",
+   "miss_details": "Missionaries of {unit} accounted for.",
+   "mem_injuries": "1",
+   "mem_deaths": "0",
+   "mem_damaged": "24",
+   "mem_destroyed": "2",
+   "mem_details": "RELAYED BY VOICE through a north-bench station, 30 words: {unit}: all accounted for but one family; one injured, treated; 24 homes flooded, two destroyed; no power; need 30 cases water, 40 cleaning kits, boots; access on foot from the north.",
+   "bldg_damage": "Meetinghouse at {building}: water in the parking lot; building dry.",
+   "community": "Power and cell out; streets flooded; bridge out.",
+   "need_local": "YES",
+   "need_neighbor": "YES",
+   "need_hq": "NO",
+   "needs_details": "30 cases of water, 40 cleaning kits, boots; one family to be found.",
+   "vol_count": "14",
+   "vol_hours": "40",
+   "vol_activities": "Door knocks; carrying belongings.",
+   "vol_injuries": "NO",
+   "vol_inj_details": ""
+  },
+  "so_initial": {
+   "req_stake": "{stake}",
+   "order_date": "{today}",
+   "req_del_date": "{tomorrow}",
+   "del_contact": "{bishop} ({unit})",
+   "del_phone": "{bishop_phone}",
+   "del_addr": "{stake_center}",
+   "del_city": "{stake_center_city}",
+   "del_state": "{state}",
+   "del_zip": "{stake_center_zip}",
+   "items": {
+    "range": {
+     "2": {
+      "wa01": [
+       10,
+       25
+      ],
+      "kb01": [
+       15,
+       40
+      ],
+      "pi02": [
+       20,
+       40
+      ],
+      "pi17": [
+       6,
+       12
+      ],
+      "gs10": [
+       1,
+       3
+      ]
+     },
+     "3": {
+      "wa01": [
+       20,
+       50
+      ],
+      "kb01": [
+       40,
+       90
+      ],
+      "pi02": [
+       40,
+       80
+      ],
+      "pi17": [
+       10,
+       24
+      ],
+      "pi18": [
+       6,
+       12
+      ],
+      "gs10": [
+       2,
+       5
+      ],
+      "tl20": [
+       2,
+       6
+      ],
+      "tl28": [
+       2,
+       6
+      ],
+      "pi15": [
+       1,
+       2
+      ]
+     }
+    }
+   },
+   "other_desc1": "Rubber boots (size 8) and waders",
+   "other_qty1": {
+    "range": {
+     "2": [
+      4,
+      10
+     ],
+     "3": [
+      10,
+      20
+     ]
+    }
+   },
+   "other_desc2": {
+    "pick": {
+     "2": [
+      ""
+     ],
+     "3": [
+      "Dehumidifiers"
+     ]
+    }
+   },
+   "other_qty2": {
+    "pick": {
+     "2": [
+      ""
+     ],
+     "3": [
+      "4"
+     ]
+    }
+   }
+  },
+  "so_care": {
+   "req_stake": "{stake}",
+   "order_date": "{today}",
+   "req_del_date": "{today}",
+   "del_contact": "{bishop} ({unit})",
+   "del_phone": "{bishop_phone}",
+   "del_addr": "{stake_center}",
+   "del_city": "{stake_center_city}",
+   "del_state": "{state}",
+   "del_zip": "{stake_center_zip}",
+   "items": {
+    "range": {
+     "2": {
+      "wa01": [
+       8,
+       15
+      ],
+      "gs01": [
+       3,
+       6
+      ],
+      "kb02": [
+       2,
+       4
+      ]
+     },
+     "3": {
+      "wa01": [
+       12,
+       24
+      ],
+      "gs01": [
+       5,
+       8
+      ],
+      "kb02": [
+       4,
+       8
+      ]
+     }
+    }
+   },
+   "other_desc1": "Cots for care-facility residents moved out of the order zone",
+   "other_qty1": {
+    "range": {
+     "2": [
+      20,
+      30
+     ],
+     "3": [
+      30,
+      50
+     ]
+    }
+   },
+   "other_desc2": "Adult incontinence supplies (cases)",
+   "other_qty2": {
+    "range": {
+     "2": [
+      2,
+      4
+     ],
+     "3": [
+      4,
+      8
+     ]
+    }
+   }
+  },
+  "so_shelter": {
+   "req_stake": "{stake}",
+   "order_date": "{today}",
+   "req_del_date": "{today}",
+   "del_contact": "{bishop} ({unit})",
+   "del_phone": "{bishop_phone}",
+   "del_addr": "{building}",
+   "del_city": "{city}",
+   "del_state": "{state}",
+   "del_zip": "{zip}",
+   "items": {
+    "range": {
+     "0": {
+      "gs01": [
+       4,
+       10
+      ],
+      "kb02": [
+       6,
+       16
+      ],
+      "kb03": [
+       10,
+       30
+      ],
+      "wa01": [
+       10,
+       30
+      ],
+      "gs05": [
+       1,
+       3
+      ]
+     }
+    }
+   },
+   "other_desc1": "Cots for the warming centre",
+   "other_qty1": {
+    "range": {
+     "0": [
+      30,
+      80
+     ]
+    }
+   },
+   "other_desc2": "Dry clothing for children, sizes 2 to 12 (boxes)",
+   "other_qty2": {
+    "range": {
+     "0": [
+      2,
+      6
+     ]
+    }
+   }
+  },
+  "wcl_initial": {
+   "log_date": "{today}",
+   "log_location": "{unit} area, {city}",
+   "chief_name": "{crew_chief}",
+   "chief_stake": "{stake}",
+   "chief_ward": "{unit}",
+   "chief_hrs": {
+    "range": {
+     "1": [
+      2,
+      4
+     ],
+     "2": [
+      3,
+      5
+     ],
+     "3": [
+      3,
+      6
+     ]
+    }
+   },
+   "chief_phone": "{crew_chief_phone}",
+   "crew": {
+    "count": {
+     "1": [
+      3,
+      6
+     ],
+     "2": [
+      4,
+      8
+     ],
+     "3": [
+      5,
+      10
+     ]
+    },
+    "hrs": {
+     "1": [
+      2,
+      4
+     ],
+     "2": [
+      2,
+      5
+     ],
+     "3": [
+      3,
+      6
+     ]
+    },
+    "wo": {
+     "pick": {
+      "1": [
+       "Sandbags at basement windows",
+       "Moving belongings upstairs",
+       "Welfare checks"
+      ],
+      "2": [
+       "Door knocks in the order zone",
+       "Moving belongings",
+       "Rides to the warming centre",
+       "Sandbags"
+      ],
+      "3": [
+       "Carrying people and pets out",
+       "Door knocks",
+       "Moving belongings",
+       "Warming centre staffing"
+      ]
+     }
+    }
+   },
+   "safety_cert": "true"
+  },
+  "wcl_host": {
+   "log_date": "{today}",
+   "log_location": "Warming centre at the meetinghouse at {building}, {city}",
+   "chief_name": "{crew_chief}",
+   "chief_stake": "{stake}",
+   "chief_ward": "{unit}",
+   "chief_hrs": "4",
+   "chief_phone": "{crew_chief_phone}",
+   "crew": {
+    "count": {
+     "0": [
+      4,
+      8
+     ]
+    },
+    "hrs": {
+     "0": [
+      2,
+      5
+     ]
+    },
+    "wo": {
+     "pick": {
+      "0": [
+       "Sign-in and family records",
+       "Cots and blankets",
+       "Hot drinks and meals",
+       "Child care corner",
+       "Parking and runner"
+      ]
+     }
+    }
+   },
+   "safety_cert": "true"
+  },
+  "wcl_mudout": {
+   "log_date": "{today}",
+   "log_location": "Reopened streets in {unit}, {city}",
+   "chief_name": "{crew_chief}",
+   "chief_stake": "{stake}",
+   "chief_ward": "{unit}",
+   "chief_hrs": "3",
+   "chief_phone": "{crew_chief_phone}",
+   "crew": {
+    "count": {
+     "3": [
+      5,
+      9
+     ]
+    },
+    "hrs": {
+     "3": [
+      2,
+      3
+     ]
+    },
+    "wo": {
+     "pick": {
+      "3": [
+       "Mud-out: wet carpet and furniture out",
+       "Mud-out: drywall to 1.2 m",
+       "Photographs for the homeowner before work",
+       "Shovelling mud from garages"
+      ]
+     }
+    }
+   },
+   "safety_cert": "true"
+  },
+  "wcl_unsupervised": {
+   "log_date": "{today}",
+   "log_location": "Flooded streets south of the stake center, {city}",
+   "chief_name": "Unknown (walk-up crew from another stake, no team leader)",
+   "chief_stake": "Unknown",
+   "chief_ward": "",
+   "chief_hrs": "2",
+   "chief_phone": "",
+   "crew": {
+    "count": {
+     "0": [
+      3,
+      6
+     ],
+     "1": [
+      3,
+      6
+     ],
+     "2": [
+      3,
+      6
+     ],
+     "3": [
+      3,
+      6
+     ]
+    },
+    "hrs": {
+     "0": [
+      1,
+      2
+     ],
+     "1": [
+      1,
+      2
+     ],
+     "2": [
+      1,
+      2
+     ],
+     "3": [
+      1,
+      2
+     ]
+    },
+    "wo": {
+     "pick": {
+      "0": [
+       "Carrying belongings through standing water"
+      ],
+      "1": [
+       "Carrying belongings through standing water"
+      ],
+      "2": [
+       "Carrying belongings through standing water",
+       "Pushing stalled cars"
+      ],
+      "3": [
+       "Carrying belongings through standing water",
+       "Pushing stalled cars"
+      ]
+     }
+    }
+   },
+   "safety_cert": "false"
+  }
+ },
+ "roles": [
+  {
+   "id": "controller",
+   "title": "Controller (runs the simulator)",
+   "cards": [
+    {
+     "t": -10,
+     "text": "Before T0: EOC (Emergency Operations Center) server and simulator running; a drill event open on the EOC with 'DRILL' in its name; the invented Juniper Plains pack loaded (check the privacy badge); on the Setup tab say what this simulator plays (a Stake EOC, a Satellite EOC's wards, or the councils of a Council / Area EOC) and which wards a satellite covers; every role player has their card and their device."
+    },
+    {
+     "t": -5,
+     "text": "Several EOC laptops: every simulator on the same scenario and seed. Agree one start time and enter it on each Run tab (Schedule). Do not start until every EOC shows Ready."
+    },
+    {
+     "t": 0,
+     "text": "Start the run. Read the opening narrative aloud: Sunday, rain, the dam seeping, an evacuation order. Do not say the dam will fail."
+    },
+    {
+     "t": 38,
+     "text": "The dam fails. Read the breach note aloud. From here the clock matters: water reaches Copper Ridge at T+45, south Larkspur at T+70, Alder Flat at T+140."
+    },
+    {
+     "t": 80,
+     "text": "Confirm the EOC header shows C (Contingency) after the Stake President's decision. If the players have not stepped down by T+85, ask the specialist what the triggers are."
+    },
+    {
+     "t": 92,
+     "text": "Hand the paper form to the runner player for the ward with no HAM operator. Watch that the EOC types it in."
+    },
+    {
+     "t": 236,
+     "text": "Hot wash from the checklist; then the after-action report (Hot wash tab): read the do-better list out by role and paste the text into the drill-feedback issue."
+    }
+   ]
+  },
+  {
+   "id": "stake_president",
+   "title": "Stake President",
+   "cards": [
+    {
+     "t": 0,
+     "text": "You are at home getting ready for church. Your phone works but calls fail one in three. {specialist} (Welfare and Self-Reliance Specialist, emergency communications) and {erd} (Emergency Response Director, ERD) will reach you."
+    },
+    {
+     "t": 3,
+     "text": "Decide about the 9:00 meetings now: cancelled or not, which buildings, how members are told. You decide; the ERD or the specialist announces it."
+    },
+    {
+     "t": 5,
+     "text": "The specialist will recommend how members in the order and warning zones are told. You decide the area, the action and the channels."
+    },
+    {
+     "t": 27,
+     "text": "Missionaries not accounted for: direct the search and the call to the mission office; nothing goes up the line until the facts are known."
+    },
+    {
+     "t": 57,
+     "text": "Decide on a Satellite EOC for the wards cut off by the lost bridge, and who leads it."
+    },
+    {
+     "t": 80,
+     "text": "Decide the PACE level (Primary, Alternate, Contingency, Emergency) on the specialist's recommendation; have it announced."
+    },
+    {
+     "t": 153,
+     "text": "A meetinghouse shelters the public only with the Area's approval and a usage agreement. Ask; decide the interim plan; any correction of a rumour goes out once, under your name, after the county has confirmed."
+    },
+    {
+     "t": 175,
+     "text": "Step up to Alternate only after three round-trip successes; later to Primary the same way, ward by ward."
+    }
+   ]
+  },
+  {
+   "id": "specialist",
+   "title": "Welfare and Self-Reliance Specialist (emergency communications)",
+   "cards": [
+    {
+     "t": 0,
+     "text": "Open the stake net on the Saddleback Peak repeater at T+6. Watch the Primary path: note the time of every failed call or text."
+    },
+    {
+     "t": 5,
+     "text": "Recommend member notification to the Stake President: area, action, channels, languages. Log the minute."
+    },
+    {
+     "t": 34,
+     "text": "Spanish: who sends the order and the meeting cancellation in Spanish, and who answers Spanish callers."
+    },
+    {
+     "t": 78,
+     "text": "Two failed attempts in 15 minutes: recommend Contingency (Winlink VARA FM, then VARA HF; FRS and GMRS (Family and General Mobile Radio Service) and the net for voice)."
+    },
+    {
+     "t": 120,
+     "text": "The repeater is on battery: name a relay station and a simplex frequency before it dies, and tell the south."
+    },
+    {
+     "t": 166,
+     "text": "Round-trip test before any step up. Three successes or no recommendation. Before calling Starlink \"up\": an operator, power with hours, open sky."
+    }
+   ]
+  },
+  {
+   "id": "erd",
+   "title": "Emergency Response Director (ERD)",
+   "cards": [
+    {
+     "t": 0,
+     "text": "Get to the stake center. Your first jobs: the meetings decision with the Stake President, the warming-centre building, the care-facility transport."
+    },
+    {
+     "t": 22,
+     "text": "Recommend one building as the warming centre: outside the warning zone, power, parking, toilets, a building lead. Record the decision."
+    },
+    {
+     "t": 60,
+     "text": "City requests come by ICS 213RR (Incident Command System resource request). Own them within 15 minutes; answer by ICS 213 with crew leader, number and time. Crews need a team leader and the safety acknowledgment. No one goes into moving water."
+    },
+    {
+     "t": 145,
+     "text": "Unasked volunteers and donated goods: hold, place with trained team leaders, or send home with thanks. Goods need a receiving site with an inventory owner, or a refusal and redirect."
+    },
+    {
+     "t": 172,
+     "text": "Overnight: fuel, heat, dry clothes, cots, water per person. Quantities on the Supply Order; set it UP."
+    },
+    {
+     "t": 210,
+     "text": "Write the 72-hour posture before the drill ends: shifts, fuel, paper rosters, a second laptop, mud-out tomorrow."
+    }
+   ]
+  },
+  {
+   "id": "bishop",
+   "title": "Bishop or branch president (any ward)",
+   "cards": [
+    {
+     "t": 0,
+     "text": "Your ward's families in the order zone must leave now. Use the ministering lists and the block captains. Who cannot leave on their own?"
+    },
+    {
+     "t": 10,
+     "text": "Send your first Disaster Report while the phones work: who has left, who is still home, who needs a ride, your missionaries."
+    },
+    {
+     "t": 80,
+     "text": "Cell service is gone in the south. Reports go to your ward HAM operator for Winlink, or with a runner on paper."
+    },
+    {
+     "t": 140,
+     "text": "Send an UPDATE report with corrected counts after the block checks. Report families staying with relatives as accounted for."
+    }
+   ]
+  },
+  {
+   "id": "team_leader",
+   "title": "Team Leader / block captain",
+   "cards": [
+    {
+     "t": 0,
+     "text": "Knock on every door on your list in the order zone. Mark each household: left, staying, needs help. Do not enter moving water."
+    },
+    {
+     "t": 86,
+     "text": "A household you cannot find: report it once, with the address. If you learn where they are, report that too, so nobody searches twice."
+    },
+    {
+     "t": 96,
+     "text": "At the destination building, count the care-facility residents off the bus against the list. Report the count and any name not seen."
+    }
+   ]
+  },
+  {
+   "id": "ham",
+   "title": "HAM operator (ward station or net control)",
+   "cards": [
+    {
+     "t": 6,
+     "text": "Net control opens the stake net on the Saddleback Peak repeater. Read the net cards as they come due."
+    },
+    {
+     "t": 81,
+     "text": "Contingency: forms by Winlink VARA FM to the EOC address; VARA HF if no gateway answers. Short messages; the form tag carries the data."
+    },
+    {
+     "t": 130,
+     "text": "Gateways congested: stop tests; life safety first, then the SITREP, then Supply Orders."
+    },
+    {
+     "t": 170,
+     "text": "The repeater is gone: move to the relay frequency the EOC named."
+    }
+   ]
+  },
+  {
+   "id": "eoc",
+   "title": "EOC operator",
+   "cards": [
+    {
+     "t": 0,
+     "text": "Open the drill event; set the SITREP interval leadership gives you; watch the roster fill as first reports arrive by phone."
+    },
+    {
+     "t": 27,
+     "text": "The Missionaries Not Accounted For alert: owned, the Stake President told, a note with the minute."
+    },
+    {
+     "t": 58,
+     "text": "SITREP #1: first assessment as soon as possible, both lines above the stake."
+    },
+    {
+     "t": 82,
+     "text": "Every HIGH item owned; Supply Orders and headquarters-assistance items set UP before the next SITREP."
+    },
+    {
+     "t": 185,
+     "text": "SITREP #2: two numbers for members not accounted for (reported and verified); the six warming-centre figures."
+    }
+   ]
+  },
+  {
+   "id": "satellite_eoc",
+   "title": "Satellite EOC (south of Copper Creek)",
+   "cards": [
+    {
+     "t": 57,
+     "text": "If the Stake President opens you: tell your wards the new Winlink address; collect their reports; roll up to the Stake EOC on its interval, once, without double counting."
+    },
+    {
+     "t": 120,
+     "text": "When the repeater fails you are on simplex or VARA HF. Keep paper copies of every report."
+    }
+   ]
+  },
+  {
+   "id": "receiving_stake",
+   "title": "Receiving stake EOC (north of the water)",
+   "cards": [
+    {
+     "t": 20,
+     "text": "Families from the south are arriving at your meetinghouses. Ask the Stake President which building opens; do not let three buildings open by themselves."
+    },
+    {
+     "t": 112,
+     "text": "Families staying with relatives in your wards: pass the names to their home wards so they are marked accounted for."
+    },
+    {
+     "t": 120,
+     "text": "Order what your warming centre needs (cots, blankets, hygiene kits, food boxes, water) on one Supply Order, and log the crews that run it."
+    }
+   ]
+  },
+  {
+   "id": "area_eoc",
+   "title": "Council / Area EOC (Juniper Springs Stake Center)",
+   "cards": [
+    {
+     "t": 62,
+     "text": "Roll-ups arrive from the stakes without their own laptop. Merge them; answer the welfare line's totals request; send replies down."
+    },
+    {
+     "t": 132,
+     "text": "The AWSRM (Area Welfare and Self-Reliance Manager) wants Supply Order totals by stake and the receiving building for each."
+    }
+   ]
+  },
+  {
+   "id": "awsrm",
+   "title": "Welfare line (WSRM and AWSRM)",
+   "cards": [
+    {
+     "t": 60,
+     "text": "You approve Supply Orders that come UP. The truck is at Bramble Junction, 2.5 hours away; Route 12 from the south is cut."
+    },
+    {
+     "t": 160,
+     "text": "Ask for a delivery point, a receiver and a route before the truck leaves. A \"fulfilled\" answer is not a delivery: ask for confirmation."
+    }
+   ]
+  },
+  {
+   "id": "area_seventy",
+   "title": "Area Seventy (coordinating council line)",
+   "cards": [
+    {
+     "t": 60,
+     "text": "You have email only. Expect SITREP #1 when the stake has any internet; ask for it if it does not come."
+    },
+    {
+     "t": 153,
+     "text": "The public-shelter request comes to you: approve under a usage agreement with the county, or say what the stake should do instead."
+    }
+   ]
+  },
+  {
+   "id": "county_liaison",
+   "title": "County liaison (Larkspur County EOC)",
+   "cards": [
+    {
+     "t": 46,
+     "text": "911 is overloaded. Accept life-safety relays in writing only: address, people and condition, access, call-back path."
+    },
+    {
+     "t": 50,
+     "text": "One written message from each stake every 30 minutes, on the hour and half hour. Refuse family inquiries on county channels."
+    },
+    {
+     "t": 145,
+     "text": "A donations truck nobody asked for wants a church to unload at. Ask the stake where it goes."
+    }
+   ]
+  }
+ ],
+ "hotwash": [
+  {
+   "t": 20,
+   "check": "The 9:00 meetings decision was made by the Stake President, recorded with the channels and the minute, and announced before members left for church.",
+   "how": "Work Items (\"meetings\"): decision text and time; notes log.",
+   "auto": {
+    "items": {
+     "title_contains": "meetings"
+    },
+    "expect": {
+     "min_count": 1,
+     "decision": true
+    }
+   }
+  },
+  {
+   "t": 25,
+   "check": "Member notification for the order and warning zones: the specialist recommended, the Stake President decided, the ERD or specialist announced it, with area, action, channels and languages.",
+   "how": "Work Items (\"notify\"); notes log.",
+   "auto": {
+    "items": {
+     "title_contains": "notify"
+    },
+    "expect": {
+     "min_count": 1,
+     "decision": true
+    }
+   }
+  },
+  {
+   "t": 30,
+   "check": "Missionaries Not Accounted For alert seen within 5 minutes and reported to the Stake President; the call logged as a note.",
+   "how": "Notes log times."
+  },
+  {
+   "t": 45,
+   "check": "Care-facility transport requested through the county (not members' cars for wheelchair users and oxygen), with destination and headcount at departure and arrival.",
+   "how": "Work Items (\"Transport for the residents\"): decision text.",
+   "auto": {
+    "items": {
+     "key_prefix": "sim:wi-care-transport"
+    },
+    "expect": {
+     "min_count": 1,
+     "decision": true,
+     "done_within_min": 30
+    }
+   }
+  },
+  {
+   "t": 50,
+   "check": "Every high-priority work item from the first reports (missionaries, injuries, life safety) had an owner within 10 minutes of appearing.",
+   "how": "Work Items tab: the log shows \"Owner:\" with the time. Or Gather evidence.",
+   "auto": {
+    "items": {
+     "cat": [
+      "missionaries",
+      "life"
+     ]
+    },
+    "expect": {
+     "min_count": 1,
+     "owner_within_min": 10
+    }
+   }
+  },
+  {
+   "t": 52,
+   "check": "The warming-centre question got one recommended building and a lead as its decision within 30 minutes; buildings that opened on their own were confirmed or redirected.",
+   "how": "Work Items: the item is DONE with the decision text. Or Gather evidence.",
+   "auto": {
+    "items": {
+     "key_prefix": "sim:wi-sp-shelter"
+    },
+    "expect": {
+     "min_count": 1,
+     "decision": true,
+     "done_within_min": 30
+    }
+   }
+  },
+  {
+   "t": 57,
+   "check": "Health-and-welfare traffic policy recorded as a work item (path, net control, successor) and announced on the net before the relatives' call at T+60.",
+   "how": "Work Items (\"health and welfare\"); what the net said at T+60.",
+   "auto": {
+    "items": {
+     "title_contains": "health and welfare"
+    },
+    "expect": {
+     "min_count": 1,
+     "decision": true
+    }
+   }
+  },
+  {
+   "t": 65,
+   "check": "The rooftop family was relayed with address, people, access and call-back path; the county acknowledgement is the decision.",
+   "how": "Work Items (\"roof\"): decision text.",
+   "auto": {
+    "items": {
+     "title_contains": "roof"
+    },
+    "expect": {
+     "min_count": 1,
+     "decision": true
+    }
+   }
+  },
+  {
+   "t": 70,
+   "check": "A stake liaison to the county was named and one consolidated message went in the first slot; asks were batched, not sent piecemeal.",
+   "how": "Work Items (\"liaison\"): the decision text."
+  },
+  {
+   "t": 75,
+   "check": "SITREP #1 generated and sent up both lines as soon as possible (first assessment); the line above acknowledged it.",
+   "how": "SITREP header time; Council / Area EOC notes."
+  },
+  {
+   "t": 76,
+   "check": "Before SITREP #1 the Church-headquarters-assistance and Supply Order items were set to UP, so Section I carried them up.",
+   "how": "SITREP #1 Section I; Work Items filter \"Waiting on the line above\". Or Gather evidence.",
+   "auto": {
+    "items": {
+     "cat": [
+      "upward",
+      "supply"
+     ]
+    },
+    "expect": {
+     "min_count": 1,
+     "status_in": [
+      "up",
+      "done"
+     ]
+    }
+   }
+  },
+  {
+   "t": 85,
+   "check": "Step-down to Contingency tied to an observed trigger (two failed attempts), recommended by the specialist, decided by the Stake President, announced on the net; the EOC header showed C.",
+   "how": "Notes log; EOC header; who said what."
+  },
+  {
+   "t": 90,
+   "check": "The Satellite EOC decision for the wards south of Copper Creek was recorded on the stake sheet and in Setup; its wards knew the new Winlink address.",
+   "how": "Setup tab; net log; Work Items (\"Satellite\")."
+  },
+  {
+   "t": 100,
+   "check": "The Spanish-language branch's families were worked as one item and counted once (on the branch's roster row), not again by the geographic wards; the message went out in Spanish.",
+   "how": "Work Items (\"Spanish\"); roster; SITREP totals."
+  },
+  {
+   "t": 110,
+   "check": "The paper form brought by the runner was typed in completely and matched the card.",
+   "how": "Open the form; compare."
+  },
+  {
+   "t": 115,
+   "check": "The ward not heard from was flagged \"not heard from\", not assumed undamaged; a relay or runner attempt is its decision.",
+   "how": "Work Items (\"not heard\"); roster.",
+   "auto": {
+    "items": {
+     "title_contains": "not heard"
+    },
+    "expect": {
+     "min_count": 1,
+     "decision": true
+    }
+   }
+  },
+  {
+   "t": 140,
+   "check": "The household at 415 Alder Street was one work item, closed with \"found\" when the family was seen in Kestrel; the Team Leader was told to stand down.",
+   "how": "Work Items (\"Alder Street\"): one item, status done, decision text. Or Gather evidence.",
+   "auto": {
+    "items": {
+     "title_contains": "Alder Street"
+    },
+    "expect": {
+     "min_count": 1,
+     "max_count": 1,
+     "status_in": [
+      "done"
+     ],
+     "decision": true
+    }
+   }
+  },
+  {
+   "t": 145,
+   "check": "The Pine Hollow rumour was checked with the county before anything went out; one correction under the Stake President's name; nothing in the notes or the SITREP repeats it.",
+   "how": "Work Items (\"Pine Hollow\"): decision text; notes log; SITREP #2.",
+   "auto": {
+    "items": {
+     "title_contains": "Pine Hollow"
+    },
+    "expect": {
+     "min_count": 1,
+     "decision": true
+    }
+   }
+  },
+  {
+   "t": 150,
+   "check": "Starlink was declared up only after a named operator, power with fuel hours and open sky were recorded; the round-trip test followed.",
+   "how": "Work Items (\"Starlink\"): decision text and time."
+  },
+  {
+   "t": 160,
+   "check": "Before the repeater died the EOC had a relay plan (station, frequency, who was told); reports from the river bottoms kept arriving by relay.",
+   "how": "Work Items (\"relay\"); roster after T+170."
+  },
+  {
+   "t": 165,
+   "check": "Every city request (ICS 213RR) was owned within 15 minutes and answered by ICS 213 with a crew leader, a number and an arrival time; no crew went into moving water.",
+   "how": "Work Items named for the city; Messages tab (ICS 213 sent)."
+  },
+  {
+   "t": 170,
+   "check": "Donations and walk-up volunteers: a receiving site with an inventory owner (or a refusal and redirect), and who approved any tasking; no crew without a team leader and the safety acknowledgment.",
+   "how": "Work Items (\"donation\", \"volunteer\"); Work Crew Logs: safety acknowledgment."
+  },
+  {
+   "t": 176,
+   "check": "Step up to Alternate only after three round-trip successes; the test messages are in the notes.",
+   "how": "Notes log."
+  },
+  {
+   "t": 190,
+   "check": "SITREP #2 went on the interval leadership set, with two numbers for members not accounted for (reported and verified) and the six warming-centre figures.",
+   "how": "SITREP #2 text against the Work Items list and the shelter-status item."
+  },
+  {
+   "t": 200,
+   "check": "The undelivered care-facility order was re-raised as a new item and sent UP with an ETA request: a \"fulfilled\" reply was treated as a promise, not a delivery.",
+   "how": "Work Items (\"not delivered\"); the earlier order's decision text.",
+   "auto": {
+    "items": {
+     "title_contains": "not delivered"
+    },
+    "expect": {
+     "min_count": 1,
+     "status_in": [
+      "up",
+      "done"
+     ],
+     "decision": true
+    }
+   }
+  },
+  {
+   "t": 210,
+   "check": "After the AWSRM approvals the Supply Order items were closed DONE with the approval and the truck time as the decision.",
+   "how": "Work Items filter \"Done\"; SITREP #2 Section I. Or Gather evidence.",
+   "auto": {
+    "items": {
+     "cat": "supply"
+    },
+    "expect": {
+     "min_count": 1,
+     "status_in": [
+      "done"
+     ],
+     "decision": true
+    }
+   }
+  },
+  {
+   "t": 220,
+   "check": "Work Crew Logs carry hours per crew member and the safety acknowledgment; the receiving stakes logged their warming-centre crews.",
+   "how": "WCL tab."
+  },
+  {
+   "t": 225,
+   "check": "The 72-hour posture (shifts, fuel, paper copies, second laptop, mud-out tomorrow, no contact for three days) was written down before the drill ended.",
+   "how": "Work Items (\"72\"): decision text.",
+   "auto": {
+    "items": {
+     "title_contains": "72"
+    },
+    "expect": {
+     "min_count": 1,
+     "decision": true
+    }
+   }
+  },
+  {
+   "t": 236,
+   "check": "At the end no high-priority work item was left open without an owner.",
+   "how": "Work Items filter \"No owner\"; wall display alert. Or Gather evidence.",
+   "auto": {
+    "expect": {
+     "no_unowned_high": true
+    }
+   }
+  },
+  {
+   "t": 238,
+   "check": "The event stayed open with all records; the hand-off export works; the after-action report's do-better list was read out by role and the drill-feedback issue drafted.",
+   "how": "Setup tab; export; Hot wash tab."
+  }
+ ],
+ "eocs": {
+  "satellite": {
+   "name": "Satellite EOC south of Copper Creek",
+   "where": {
+    "in": "south_of_copper_creek"
+   },
+   "note": "The wards of Copper Ridge south of the creek, cut off from their stake center when the Route 30 bridge goes (T+45). A Satellite simulator picks these; the Stake simulator marks them as covered by the satellite."
+  },
+  "area": {
+   "name": "Council / Area EOC: Juniper Springs Stake Center (only if the drill opens one)",
+   "note": "An Area simulator plays the councils’ stakes that have no EOC laptop in the drill: their reports arrive as roll-up bundles at the SITREP times."
+  }
+ },
+ "agencies": {
+  "city_eoc": {
+   "name": "Larkspur City EOC",
+   "call": "SIM-LKCITY",
+   "contact": "Duty officer, Larkspur Fire Department",
+   "place": "Fire Station 1, Center Street, Larkspur"
+  },
+  "cr_city_eoc": {
+   "name": "Copper Ridge City EOC",
+   "call": "SIM-CRCITY",
+   "contact": "Duty officer, Copper Ridge Fire Station",
+   "place": "Copper Ridge Fire Station, Route 30"
+  }
+ },
+ "needs": {
+  "note": "What the EOC must do about each inject, in drill minutes. The engine registers a need per work item it sends, per work item the EOC derives from a simulated report, and per report a person must type in (paper card, net card). Categories not listed use the engine defaults.",
+  "defaults": {
+   "missionaries": {
+    "owner": 10,
+    "done": 90,
+    "decision": false,
+    "done_states": [
+     "done"
+    ]
+   },
+   "life": {
+    "owner": 10,
+    "done": 90,
+    "decision": false,
+    "done_states": [
+     "done"
+    ]
+   },
+   "upward": {
+    "owner": 15,
+    "done": 60,
+    "decision": false,
+    "done_states": [
+     "up",
+     "done"
+    ]
+   },
+   "supply": {
+    "owner": 20,
+    "done": 150,
+    "decision": true,
+    "done_states": [
+     "up",
+     "done"
+    ]
+   },
+   "facilities": {
+    "owner": 20,
+    "done": 90,
+    "decision": false,
+    "done_states": [
+     "done"
+    ]
+   },
+   "assist": {
+    "owner": 15,
+    "done": 60,
+    "decision": false,
+    "done_states": [
+     "done"
+    ]
+   },
+   "other": {
+    "owner": 30,
+    "done": 90,
+    "decision": false,
+    "done_states": [
+     "done"
+    ]
+   },
+   "report": {
+    "typed": 25
+   }
+  }
+ },
+ "done": {
+  "note": "The run finishes at T+240 (or Stop). These are the checks the scoreboard shows under \"Done when\"; the after-action report lists them.",
+  "checks": [
+   {
+    "id": "sitrep1",
+    "label": "SITREP #1 generated by T+75 (first assessment as soon as possible)",
+    "sitrep": 1,
+    "by": 75
+   },
+   {
+    "id": "sitrep2",
+    "label": "SITREP #2 generated by T+210 (the interval leadership set)",
+    "sitrep": 2,
+    "by": 210
+   },
+   {
+    "id": "missionaries",
+    "label": "Every missionaries need met (owned, mission office answered, closed when found)",
+    "cat_met": "missionaries"
+   },
+   {
+    "id": "high",
+    "label": "No high-priority need left without an owner",
+    "no_unowned_high": true
+   },
+   {
+    "id": "pct",
+    "label": "At least 70% of the needs met (late counts half)",
+    "pct_min": 70
+   },
+   {
+    "id": "meetings",
+    "label": "Sunday meetings decided and recorded before members left for church (T+3 card)",
+    "need_met": "p-meetings"
+   },
+   {
+    "id": "notify",
+    "label": "Member notification for the order and warning zones recommended, decided and announced in time (T+5 card)",
+    "need_met": "p-alert-members"
+   },
+   {
+    "id": "rumour",
+    "label": "The Pine Hollow rumour verified with the county before relay (T+125 card)",
+    "need_met": "v-rumour-dam"
+   }
+  ]
+ },
+ "lessons_note": "Injects marked \"lesson\" come from the research report docs/SIMULATOR_LESSONS.md (disasters of 2024 to 2026: Helene, Milton, the Los Angeles fires, Noto, Valencia, Kerr County and others). The lesson text is the evidence, in one line, for the hot wash. The places and people of this scenario are invented; the lessons are real.",
+ "agencies_note": "Partner agencies that do not run this system (a city EOC) talk to the stake with the standard Winlink ICS forms: ICS 213RR to ask for resources, ICS 213 for messages and answers. Never a Church form. This invented scenario names its two city EOCs under \"agencies\" ({city_eoc} = Larkspur City EOC, SIM-LKCITY; {cr_city_eoc} = Copper Ridge City EOC, SIM-CRCITY); SIM- call signs are simulator stations, never on the air."
+}

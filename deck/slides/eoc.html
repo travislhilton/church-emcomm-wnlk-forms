@@ -1,0 +1,155 @@
+<section id="eoc" data-transition="fade" style="background:#1A2744;color:#F7F8FA;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;display:flex;flex-direction:column;gap:14px;padding:84px 128px 100px">
+
+<div style="display:flex;flex-direction:column;gap:6px">
+  <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:20px;letter-spacing:0.14em;text-transform:uppercase;color:#C8102E">Emergency Operations Center</p>
+  <h1 style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:56px;font-weight:700;line-height:1.0;color:#F7F8FA">Stake EOC &#8212; Shared, Persistent, Multi-Operator</h1>
+</div>
+
+<div style="display:flex;gap:24px;flex:1">
+
+  <!-- LEFT — Server setup and operator workflow -->
+  <div style="flex:1.1;display:flex;flex-direction:column;gap:8px">
+
+    <div style="background:#0D1526;border:2px solid #5BAD8A;border-radius:12px;padding:20px 24px;display:flex;flex-direction:column;gap:12px">
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:20px;font-weight:700;color:#5BAD8A;text-transform:uppercase;letter-spacing:0.08em">Step 1 — Start the EOC Server (Stake Operator)</p>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <div style="background:#1A2744;border-radius:8px;padding:10px 16px;text-align:center">
+          <p style="font-size:22px">🖥️</p>
+          <p style="font-size:18px;color:#BFD8D5;font-weight:600">Double-click<br><span style="color:#5BAD8A">Church of Jesus Christ EMCOMM EOC Server</span></p>
+        </div>
+        <div style="color:#8BA8C4;font-size:22px">→</div>
+        <div style="background:#1A2744;border-radius:8px;padding:10px 16px;flex:1">
+          <p style="font-size:18px;color:#BFD8D5">Window shows:</p>
+          <p style="font-size:18px;color:#5BAD8A;font-family:'Courier New',monospace;font-weight:700">Listening on http://10.x.x.x:8080</p>
+          <p style="font-size:16px;color:#8BA8C4;margin-top:4px">Every EOC operator opens that URL. Setup tab: <b style="color:#BFD8D5">open an Emergency Event</b>, name the <b style="color:#BFD8D5">must-have roles</b>, set the <b style="color:#BFD8D5">Map data folder</b> (laptop only) for the <b style="color:#BFD8D5">Map tab</b>. <b style="color:#BFD8D5">Wall display</b> for a TV: <span style="font-family:'Courier New',monospace">/wall</span>, press F</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:#24366A;border-radius:12px;padding:20px 24px;display:flex;flex-direction:column;gap:10px">
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:20px;font-weight:700;color:#4A7FC1;text-transform:uppercase;letter-spacing:0.08em">Step 2 — Messages Arrive Automatically (Radio Operator)</p>
+      <div style="display:flex;gap:10px;align-items:center">
+        <div style="background:#1A2744;border-radius:8px;padding:10px 12px;text-align:center;min-width:110px">
+          <p style="font-size:16px;color:#BFD8D5;font-weight:600">Winlink<br>Express</p>
+          <p style="font-size:14px;color:#8BA8C4">Check mail<br>(or auto-check)</p>
+        </div>
+        <div style="color:#8BA8C4">→</div>
+        <div style="background:#1A2744;border-radius:8px;padding:10px 12px;text-align:center;min-width:120px">
+          <p style="font-size:16px;color:#BFD8D5;font-weight:600">.mime files<br>land in Received</p>
+          <p style="font-size:14px;color:#8BA8C4">Watcher checks<br>every 10 sec</p>
+        </div>
+        <div style="color:#8BA8C4">→</div>
+        <div style="background:#1e3a5f;border:2px solid #4A7FC1;border-radius:8px;padding:10px 12px;text-align:center;flex:1">
+          <p style="font-size:15px;color:#90c8f8;font-weight:700">📡 AUTO-INGEST ACTIVE</p>
+          <p style="font-size:14px;color:#BFD8D5">Church forms route to EOC automatically</p>
+          <p style="font-size:13px;color:#8BA8C4;margin-top:4px">Appears on <b style="color:#BFD8D5">all</b> screens within 10 sec · Reads the <b style="color:#BFD8D5">chosen callsign</b>&#8217;s received mail in Winlink</p>
+        </div>
+      </div>
+      <p style="font-size:14px;color:#6B80A0;font-style:italic">Fallback: drag &amp; drop a .mime file onto the EOC browser if auto-ingest is off</p>
+      <p style="font-size:14px;color:#BFD8D5"><b style="color:#D4850A">PACE:</b> the level in force goes in the SITREP header; log every change with the time. SITREP to both lines above the stake on the set interval by email (P/A) or Winlink radio (C).</p>
+    </div>
+
+    <div style="background:#0f2a1a;border:2px solid #5BAD8A;border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:8px">
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:18px;font-weight:700;color:#6ee7b7;text-transform:uppercase;letter-spacing:0.06em">&#127760; Internet Drop Folder — Parallel Path (no Winlink needed)</p>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <div style="background:#1A2744;border-radius:8px;padding:8px 12px;text-align:center;min-width:90px">
+          <p style="font-size:13px;color:#BFD8D5;font-weight:600">Volunteer .txt<br>by email/text/<br>AirDrop/USB</p>
+        </div>
+        <div style="color:#6ee7b7">→</div>
+        <div style="background:#1A2744;border-radius:8px;padding:8px 12px;text-align:center;min-width:90px">
+          <p style="font-size:13px;color:#BFD8D5;font-weight:600">EOC Operator<br>saves to<br>EOC Drop Folder</p>
+        </div>
+        <div style="color:#6ee7b7">→</div>
+        <div style="background:#1e3a1e;border:1px solid #5BAD8A;border-radius:8px;padding:8px 12px;text-align:center;flex:1">
+          <p style="font-size:12px;color:#6ee7b7;font-weight:700">&#127760; INTERNET DROP ACTIVE</p>
+          <p style="font-size:11px;color:#BFD8D5">Auto-ingested ≤10 sec · No radio/Winlink needed</p>
+          <p style="font-size:11px;color:#8BA8C4;margin-top:2px">Desktop shortcut: <i>Church of Jesus Christ EMCOMM EOC Drop Folder</i></p>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:14px">
+      <div style="flex:1;background:#24366A;border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:8px">
+        <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:18px;font-weight:600;color:#D4850A;text-transform:uppercase">Status Badges</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span style="background:#C8102E;color:#fff;padding:4px 10px;border-radius:4px;font-size:15px;font-weight:600">NEW</span>
+          <span style="color:#8BA8C4">→</span>
+          <span style="background:#4A7FC1;color:#fff;padding:4px 10px;border-radius:4px;font-size:15px;font-weight:600">ACK</span>
+          <span style="color:#8BA8C4">→</span>
+          <span style="background:#D4850A;color:#fff;padding:4px 10px;border-radius:4px;font-size:15px;font-weight:600">ASSGN</span>
+          <span style="color:#8BA8C4">→</span>
+          <span style="background:#5BAD8A;color:#fff;padding:4px 10px;border-radius:4px;font-size:15px;font-weight:600">DONE</span>
+        </div>
+        <p style="font-size:16px;color:#8BA8C4">Click to cycle — syncs to all screens. 📄 <b style="color:#BFD8D5">Open</b> shows the whole form. <span style="background:#C8102E;color:#fff;padding:1px 6px;border-radius:3px;font-size:13px;font-weight:700">EXERCISE</span> chips mark drill reports</p>
+      </div>
+      <div style="flex:1;background:#24366A;border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:8px">
+        <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:18px;font-weight:600;color:#BFD8D5;text-transform:uppercase">Shift Handoff</p>
+        <p style="font-size:16px;color:#BFD8D5"><b style="color:#F7F8FA">Export Handoff JSON</b> to USB; the next operator clicks <b style="color:#F7F8FA">Import Handoff JSON</b>. The server keeps everything across reboots. Up the chain: <b style="color:#F7F8FA">Export Roll-up JSON</b>.</p>
+      </div>
+    </div>
+
+    <!-- Networked vs Standalone strip -->
+    <div style="display:flex;gap:14px">
+      <div style="flex:1;background:#0D2010;border:2px solid #5BAD8A;border-radius:8px;padding:12px 16px;display:flex;gap:10px;align-items:center">
+        <span style="font-size:20px">🟢</span>
+        <div>
+          <p style="font-size:16px;color:#5BAD8A;font-weight:700">NETWORKED MODE</p>
+          <p style="font-size:15px;color:#BFD8D5">Server running — data shared &amp; persistent across all browsers</p>
+        </div>
+      </div>
+      <div style="flex:1;background:#1A1200;border:2px solid #D4850A;border-radius:8px;padding:12px 16px;display:flex;gap:10px;align-items:center">
+        <span style="font-size:20px">🟡</span>
+        <div>
+          <p style="font-size:16px;color:#D4850A;font-weight:700">STANDALONE MODE</p>
+          <p style="font-size:15px;color:#BFD8D5">No server — single operator only, data is in-memory</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT — Stats + structure -->
+  <div style="width:340px;display:flex;flex-direction:column;gap:14px">
+
+    <div style="background:#24366A;border-radius:12px;padding:16px 20px">
+      <p style="font-size:15px;color:#8BA8C4;font-style:italic;margin-bottom:10px">Church Hurricanes Helene &amp; Milton (2024)</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="text-align:center"><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:32px;font-weight:700;color:#C8102E">11</p><p style="font-size:14px;color:#BFD8D5">Command Centers</p></div>
+        <div style="text-align:center"><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:32px;font-weight:700;color:#4A7FC1">3,018</p><p style="font-size:14px;color:#BFD8D5">Work Orders</p></div>
+        <div style="text-align:center"><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:32px;font-weight:700;color:#5BAD8A">21K+</p><p style="font-size:14px;color:#BFD8D5">Volunteers</p></div>
+        <div style="text-align:center"><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:32px;font-weight:700;color:#D4850A">311K</p><p style="font-size:14px;color:#BFD8D5">Service Hours</p></div>
+      </div>
+      <p style="font-size:14px;color:#8BA8C4;font-style:italic;margin-top:8px;text-align:center">Our 3 forms track exactly this data</p>
+    </div>
+
+    <div style="background:#24366A;border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:8px">
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:18px;font-weight:600;color:#C8102E;text-transform:uppercase">EOC Levels &#8212; Same Software</p>
+      <div style="background:#1A2744;border-radius:8px;padding:10px 12px;border-left:4px solid #5BAD8A">
+        <p style="font-size:16px;color:#F7F8FA;font-weight:600">Satellite EOC (optional)</p>
+        <p style="font-size:14px;color:#8BA8C4">Ward building; covers assigned wards. Rolls up to the Stake EOC.</p>
+      </div>
+      <div style="background:#1A2744;border-radius:8px;padding:10px 12px;border-left:4px solid #4A7FC1">
+        <p style="font-size:16px;color:#F7F8FA;font-weight:600">Stake EOC</p>
+        <p style="font-size:14px;color:#8BA8C4">One per stake. The Stake President directs; the ERD runs it. Tracks ward reports; sends up to the council line and the welfare line.</p>
+      </div>
+      <div style="background:#1A2744;border-radius:8px;padding:10px 12px;border-left:4px solid #C8102E">
+        <p style="font-size:16px;color:#F7F8FA;font-weight:600">Council / Area EOC (only if opened)</p>
+        <p style="font-size:14px;color:#8BA8C4">Only if the council or welfare region opens one; merges stake roll-ups. Otherwise stakes send to the two lines above them (council, welfare).</p>
+      </div>
+    </div>
+
+    <div style="background:#24366A;border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:6px">
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:18px;font-weight:600;color:#D4850A;text-transform:uppercase">Minimum Hardware</p>
+      <ul style="font-size:15px;color:#BFD8D5;line-height:1.6;padding:0 0 0 18px;margin:0">
+        <li>Windows 10/11 laptop (i3, 8 GB RAM)</li>
+        <li>Python 3 (free)</li>
+        <li>USB audio interface (~$40) for radio</li>
+        <li>UPS (uninterruptible power supply) or battery backup</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<aside>The EOC has two modes: Networked (Python server running, SQLite database, all operators share one view) and Standalone (single HTML file, in-memory only). In networked mode, TWO auto-ingest watchers run: (1) Winlink watcher reads the chosen callsign's received messages in C:\RMS Express\<callsign>\Messages every 10 seconds (only those since the event began) and ingests the Church forms, leaving Winlink's mail untouched; the callsign is chosen once on the watcher bar and saved for every start; (2) Internet Drop Folder watcher polls Documents\Church of Jesus Christ EMCOMM\EOC Drop Folder\ every 10 seconds, ingests Worker Form .txt JSON files from any delivery method (email, text, AirDrop, USB). Both paths produce identical EOC records. Status badges cycle through NEW → ACK → ASSGN → DONE and sync in real time. Shift handoff is Export All → USB → Import on the next operator's browser. The same Message Center runs at a Satellite EOC in a ward building, at the Stake Center, and at the Council / Area EOC when the council or welfare region opens one; the Setup tab sets the level and the parent, and roll-ups move up the chain on the next slide. The Setup tab also flags the roles that must be filled before the EOC is real, and takes the folder of the Church directory export so the Map tab and the wall can draw the wards coloured by roster status; that folder never leaves the laptop. Reports sent with THIS IS AN EXERCISE ticked carry EXERCISE chips, and the wall shows an EXERCISE badge when every report on file is one.</aside>
+</section>

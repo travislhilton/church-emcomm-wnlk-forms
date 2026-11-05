@@ -1,0 +1,93 @@
+{
+ "kind": "church_emcomm_scenario_cards",
+ "v": 1,
+ "code": "CCD-1",
+ "title": "Copper Creek Dam drill, Larkspur Stake (invented example)",
+ "private": false,
+ "scenario": "copper-creek-dam",
+ "scenario_dirs": [],
+ "drill_spec": "../../../simulation/example/juniper-plains/simulation/drill-spec.json",
+ "training": "../../scenario-samples-src/copper-creek-dam.json",
+ "cards": [
+  {
+   "no": "A", "file": "Participant_Briefing", "role": "Every participant: EOC (Emergency Operations Center) operators, HAM (amateur radio) operators, bishops, leaders, role players", "color": "#C8102E",
+   "front": {"title": "Copper Creek Dam: what has happened", "blocks": [
+    {"note": "<b>THIS IS AN EXERCISE</b> in an invented community (the Juniper Plains Area). Every form, message and net call says so. If anything real happens, anyone says <b>“REAL WORLD”</b> on the net or in the room and the drill stops. Never call 911 for the drill.", "kind": "stop"},
+    {"part": "07:50, Sunday 21 March"},
+    {"list": [
+     "Three days of warm rain on deep snow. Copper Creek Dam has seeped since last evening; at 07:40 the seep started carrying mud.",
+     "The sheriff orders Copper Ridge below Route 30 and the Copper Creek corridor through south Larkspur <b>out now</b>.",
+     "The Larkspur River bottoms from Center Street to Alder Flat are <b>warned</b>: get ready to leave.",
+     "+4 °C, light rain. Most members are getting ready for 9:00 sacrament meetings.",
+     "Phones work for now. Nobody knows how long the dam will hold."
+    ]},
+    {"part": "Your first fifteen minutes"},
+    {"steps": [
+     "<b>Your own family first.</b> In the order zone: leave now, by the routes the sheriff gives.<small>Then go to your assignment: the EOC, your ward’s gathering point, your radio.</small>",
+     "<b>Bishops and Team Leaders:</b> account for members and missionaries in the zones.<small>Who has left, who needs a ride, who will not leave.</small>",
+     "<b>HAM operators:</b> check in on the stake net and stand by.<small>The specialist recommends the PACE level (Primary, Alternate, Contingency, Emergency), the Stake President decides it, the net announces it.</small>",
+     "<b>EOC operators:</b> open the Message Center, confirm the drill event and the level.<small>First SITREP (situation report) as soon as you have a first assessment.</small>"
+    ]}
+   ]},
+   "back": {"title": "Who is in this drill and how traffic moves", "blocks": [
+    {"part": "EOCs (Emergency Operations Centers) and partners"},
+    {"auto": "eocs", "compact": true},
+    {"note": "The <b>Larkspur City EOC</b> does not run our system. It asks for Helping Hands crews with <b>ICS 213RR</b> (Incident Command System) Resource Requests on Winlink’s standard form; the stake answers with an <b>ICS 213</b> General Message. Never send it Church forms."},
+    {"part": "The PACE plan"},
+    {"table": {"head": ["Level", "Path", "In this drill"], "rows": [
+     ["<b>P</b>", "Cellular", "Text or email the form file from the phone"],
+     ["<b>A</b>", "Any internet anywhere", "Home, shelter, business, meetinghouse or Starlink Wi-Fi"],
+     ["<b>C</b>", "Radio", "Winlink by VARA FM to the stake EOC, then VARA HF (VARA: the radio modem Winlink uses); voice on FRS/GMRS (Family Radio Service / General Mobile Radio Service) and the stake net"],
+     ["<b>E</b>", "Runner", "Paper form carried to the EOC"]
+    ]}},
+    {"list": [
+     "Step down after <b>two failed attempts in 15 minutes</b>; step back up only after a round-trip test.",
+     "Life safety first: injured, missing and missionaries go at the top of every report.",
+     "Training messages are numbered <b>CCD-1 NN</b> in drill-clock order.",
+     "At the end: the hot wash. Bring what went wrong; that is the point."
+    ]}
+   ]}
+  },
+  {
+   "no": "B", "file": "Controller_and_Evaluators", "role": "Drill controller and evaluators", "color": "#1A2744",
+   "front": {"title": "Running CCD-1: setup and the timeline", "blocks": [
+    {"part": "Before the session"},
+    {"steps": [
+     "<b>Start the EOC (Emergency Operations Center) server and the simulator</b> on the Stake EOC laptop.<small>Simulator Setup: organization pack = the example community (EOC Message Center\\simulation\\example\\juniper-plains), then the drill configuration in its simulation folder (EOC larkspur).</small>",
+     "<b>Open a fresh drill event</b> on every EOC (DRILL in its name).<small>A drill event left over from a rehearsal keeps its SITREP (situation report) clock and traffic.</small>",
+     "<b>Plan the run</b> (Copper Creek Dam failure, same seed on every laptop); check the Run tab lists the items.",
+     "<b>Hand out the cards</b> and the role cards (Roles tab). Load the Winlink training set on the HAM (amateur radio) stations.",
+     "<b>Say go and press Start</b> (or Schedule a start time on every laptop)."
+    ]},
+    {"part": "PACE timeline: Primary, Alternate, Contingency, Emergency (the scenario sets it; players should reach the same decision)"},
+    {"auto": "pace"},
+    {"note": "Several EOC laptops: every simulator on the same scenario and seed; Schedule the same start time on each Run tab."}
+   ]},
+   "back": {"title": "Done when, and what to watch", "blocks": [
+    {"part": "Done-when checks (the scoreboard and the after-action report)"},
+    {"auto": "done"},
+    {"part": "Phases"},
+    {"auto": "phases"},
+    {"note": "Watch for: the 9:00 meetings decided by the Stake President; members in the zones notified on the specialist’s recommendation; the care center moved by county transport, with a roll call at the destination; missionaries owned within 10 minutes; the second-dam rumour checked with the county before anything goes out.", "kind": "warn"},
+    {"note": "At the end: Hot wash tab → <b>Gather evidence from the EOC</b>, then the after-action report."}
+   ]}
+  },
+  {
+   "no": "C", "file": "Winlink_Training_Set", "role": "HAM (amateur radio) operators and the EOC (Emergency Operations Center) Winlink station", "color": "#5BAD8A",
+   "front": {"title": "The CCD-1 Winlink messages, in order", "blocks": [
+    {"note": "Select Template → Global Templates → <b>Church of Jesus Christ EMCOMM Training CCD-1</b> (EMCOMM: emergency communications). Submit, address to the stake EOC (ICS, Incident Command System, requests to the receiving EOC), send by VARA FM or VARA HF (the radio modem Winlink uses) or Telnet."},
+    {"auto": "messages", "compact": true}
+   ]},
+   "back": {"title": "City EOC requests (ICS 213RR) and answers", "blocks": [
+    {"auto": "ics"},
+    {"steps": [
+     "<b>A request arrives</b> from the city’s call sign: the EOC files it as a work item named for the city.",
+     "<b>Own it and decide</b>: the Stake President or the Emergency Response Director says yes, how many, from which wards.",
+     "<b>Answer with an ICS 213 General Message</b> from Winlink’s ICS USA Forms: what you send, where, when, who leads.",
+     "<b>Close the loop</b>: the crew’s Work Crew Log comes back to the stake EOC as a Church form."
+    ]},
+    {"note": "Keep the requests short and numbered. Never put Church forms, member names or ward details in a message to the city.", "kind": "warn"}
+   ]}
+  }
+ ]
+}

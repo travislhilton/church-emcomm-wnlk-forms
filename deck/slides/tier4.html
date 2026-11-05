@@ -1,0 +1,71 @@
+<section id="tier4" data-transition="fade" style="background:#1A2744;color:#F7F8FA;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;display:flex;flex-direction:column;gap:24px;padding:128px 128px 160px">
+<div style="display:flex;align-items:center;gap:20px">
+  <div style="background:#C8102E;border-radius:12px;padding:10px 22px">
+    <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:28px;font-weight:700;color:#F7F8FA">VARA HF</p>
+  </div>
+  <div style="background:#3D2A0A;border:2px solid #D4850A;border-radius:12px;padding:10px 20px">
+    <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:22px;font-weight:600;color:#F2B14D;letter-spacing:0.06em;white-space:nowrap">PACE: C &#183; CONTINGENCY</p>
+  </div>
+  <div>
+    <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:20px;letter-spacing:0.1em;text-transform:uppercase;color:#C8102E">All Local Infrastructure Gone</p>
+    <h1 style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:48px;font-weight:700;line-height:1.0;color:#F7F8FA">HF Radio — When No Local Gateway Answers</h1>
+  </div>
+</div>
+<div style="display:flex;gap:24px;flex:1;align-items:stretch">
+  <div style="flex:1;display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;gap:14px">
+      <div style="flex:1;background:#24366A;border-radius:12px;padding:18px 22px;display:flex;flex-direction:column;gap:8px">
+        <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:22px;font-weight:600;color:#C8102E;text-transform:uppercase">When VARA HF Applies</p>
+        <ul style="font-size:19px;color:#BFD8D5;line-height:1.5;padding:0 0 0 20px;margin:0">
+          <li>Regional disaster &#8212; all cell towers and internet down</li>
+          <li>No VHF/UHF gateway within range</li>
+          <li>Large-scale event (earthquake, hurricane, flood)</li>
+          <li>Can still reach Winlink HF gateways nationwide</li>
+        </ul>
+      </div>
+      <div style="flex:1;background:#24366A;border-radius:12px;padding:18px 22px;display:flex;flex-direction:column;gap:8px">
+        <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:22px;font-weight:600;color:#4A7FC1;text-transform:uppercase">HF Connection Modes</p>
+        <ul style="font-size:19px;color:#BFD8D5;line-height:1.5;padding:0 0 0 20px;margin:0">
+          <li><b style="color:#F7F8FA">VARA HF</b> &#8212; free, fast, software-only (recommended)</li>
+          <li><b style="color:#F7F8FA">Pactor 4</b> &#8212; fastest, but $1,000+ modem</li>
+          <li><b style="color:#F7F8FA">ARDOP</b> (Amateur Radio Digital Open Protocol) &#8212; free, slower fallback built into Winlink Express</li>
+          <li>Typical speed: 40&#8211;4,000 bps; a full report is under 2 KB</li>
+        </ul>
+      </div>
+    </div>
+    <div style="background:#24366A;border-radius:12px;padding:18px 22px;display:flex;flex-direction:column;gap:12px">
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:22px;font-weight:600;color:#4A7FC1;text-transform:uppercase">HF Network Topology &#8212; to the EOC and up to the welfare line</p>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="background:#1A2744;border-radius:8px;padding:12px 16px;text-align:center"><p style="font-size:19px;color:#BFD8D5;font-weight:600">Field / Stake EOC</p><p style="font-size:16px;color:#8BA8C4">HAM w/ HF transceiver</p></div>
+        <x-shape kind="arrow-right" style="width:36px;height:20px;background:#C8102E"></x-shape>
+        <div style="background:#1A2744;border-radius:8px;padding:12px 16px;text-align:center"><p style="font-size:19px;color:#BFD8D5;font-weight:600">HF RMS</p><p style="font-size:16px;color:#8BA8C4">Any US gateway on 80m&#8211;10m</p></div>
+        <x-shape kind="arrow-right" style="width:36px;height:20px;background:#4A7FC1"></x-shape>
+        <div style="background:#1A2744;border-radius:8px;padding:12px 16px;text-align:center"><p style="font-size:19px;color:#BFD8D5;font-weight:600">Winlink CMS</p><p style="font-size:16px;color:#8BA8C4">Holds the message nationwide</p></div>
+        <x-shape kind="arrow-right" style="width:36px;height:20px;background:#4A7FC1"></x-shape>
+        <div style="background:#1A2744;border-radius:8px;padding:12px 16px;text-align:center"><p style="font-size:19px;color:#BFD8D5;font-weight:600">Stake EOC / welfare line</p><p style="font-size:16px;color:#8BA8C4">Picks up by any working connection</p></div>
+      </div>
+    </div>
+    <div style="background:#3D0A12;border:2px solid #C8102E;border-radius:12px;padding:18px 22px;display:flex;flex-direction:column;gap:8px">
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:22px;font-weight:600;color:#C8102E;text-transform:uppercase">Data Entry over HF</p>
+      <p style="font-size:19px;color:#FFD6DE;line-height:1.45">No working devices: HAM operator uses paper Church forms and types the data into the Winlink template &#8212; every field accepts manual entry. Devices but no file transfer: the volunteer reads the fields over FRS/GMRS or the stake net and the operator types them in. All of this is still Contingency; Emergency begins only when HF fails too.</p>
+    </div>
+  </div>
+  <div style="width:400px;display:flex;flex-direction:column;gap:14px">
+    <div style="background:#2D0A14;border:2px solid #C8102E;border-radius:12px;padding:18px 22px;display:flex;flex-direction:column;gap:8px">
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:22px;font-weight:600;color:#C8102E;text-transform:uppercase">Minimum Equipment</p>
+      <ul style="font-size:19px;color:#FFD6DE;line-height:1.5;padding:0 0 0 20px;margin:0">
+        <li><b style="color:#F7F8FA">HAM station:</b> PC + Winlink + HF transceiver (100W, 40/80m) + antenna + VARA HF or Pactor modem</li>
+        <li><b style="color:#F7F8FA">License:</b> General or Amateur Extra (HF privileges)</li>
+        <li><b style="color:#F7F8FA">Power:</b> battery + solar or generator backup</li>
+        <li><b style="color:#F7F8FA">EOC:</b> same HF setup, or any working internet</li>
+      </ul>
+    </div>
+    <div style="background:#24366A;border-radius:12px;padding:18px 22px;display:flex;flex-direction:column;gap:8px;flex:1">
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:22px;font-weight:600;color:#BFD8D5;text-transform:uppercase">Below HF: PACE Emergency</p>
+      <p style="font-size:19px;color:#BFD8D5;line-height:1.45">HF is the last radio path. If it fails too, the field goes to paper and runners, and the Stake EOC reaches the lines above through the stake liaison at the county EOC (county Starlink or satellite phone) or by courier. Queued Winlink messages go out the moment any path returns.</p>
+    </div>
+  </div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;font-size:24px;color:#8BA8C4">Forms and Message Center unchanged over HF &#8212; compact machine tags send a full Disaster Report in seconds at HF speeds</p>
+<aside>VARA HF is — the last radio path, still inside PACE Contingency. The machine-readable format of our forms is a key advantage here: a full disaster report with all fields fits in under 2 kilobytes. The same HF path carries the SITREP up to the welfare line, and because the Winlink CMS holds the message, the welfare line can read it by internet. Below HF is Emergency: a runner with a paper form, or the stake liaison passing the SITREP through the county EOC.</aside>
+</section>

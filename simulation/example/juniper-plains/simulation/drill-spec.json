@@ -1,0 +1,119 @@
+{
+ "kind": "church_emcomm_drill_spec",
+ "v": 1,
+ "name": "Copper Creek Dam drill: Juniper Plains Area (invented example)",
+ "scenario": "copper-creek-dam",
+ "export": "..",
+ "privacy": "pseudonymized",
+ "event": {
+  "name": "DRILL: Copper Creek Dam failure (THIS IS AN EXERCISE)",
+  "type": "Flood",
+  "sitrepHrs": "2",
+  "sitrepBy": "Stake President"
+ },
+ "eocs": [
+  {
+   "id": "larkspur",
+   "level": "stake",
+   "stake": "Larkspur Stake",
+   "manned": "always",
+   "winlink": [
+    "SIM-LKS"
+   ]
+  },
+  {
+   "id": "copper-ridge",
+   "level": "stake",
+   "stake": "Copper Ridge Stake",
+   "manned": "optional",
+   "winlink": [
+    "SIM-CRS"
+   ]
+  },
+  {
+   "id": "alder-flat",
+   "level": "stake",
+   "stake": "Alder Flat Stake",
+   "manned": "optional",
+   "winlink": [
+    "SIM-AFS"
+   ]
+  },
+  {
+   "id": "larkspur-east",
+   "level": "stake",
+   "stake": "Larkspur East Stake",
+   "manned": "optional",
+   "winlink": []
+  },
+  {
+   "id": "larkspur-west",
+   "level": "stake",
+   "stake": "Larkspur West Stake",
+   "manned": "optional",
+   "winlink": []
+  },
+  {
+   "id": "juniper-springs",
+   "level": "stake",
+   "stake": "Juniper Springs Stake",
+   "manned": "optional",
+   "winlink": []
+  },
+  {
+   "id": "kestrel",
+   "level": "stake",
+   "stake": "Kestrel Stake",
+   "manned": "optional",
+   "winlink": []
+  },
+  {
+   "id": "saddleback",
+   "level": "stake",
+   "stake": "Saddleback Stake",
+   "manned": "optional",
+   "winlink": []
+  },
+  {
+   "id": "area",
+   "level": "area",
+   "councils": [
+    "Larkspur Coordinating Council",
+    "Kestrel Coordinating Council"
+   ],
+   "building": "B-SJS-1",
+   "manned": "optional",
+   "winlink": [
+    "SIM-JPA"
+   ],
+   "name": "Council / Area EOC: Juniper Springs Stake Center"
+  }
+ ],
+ "agencies": [
+  {
+   "id": "larkspur-city",
+   "name": "Larkspur City EOC",
+   "call": "SIM-LKCITY",
+   "contact": "Duty officer, Larkspur Fire Department",
+   "place": "Fire Station 1, Center Street (Winlink station, VHF/UHF radios)",
+   "forms": "ICS 213RR (resource requests), ICS 213 (messages and answers); never Church forms",
+   "serves": [
+    "Larkspur Stake",
+    "Larkspur East Stake",
+    "Larkspur West Stake"
+   ]
+  },
+  {
+   "id": "copper-ridge-city",
+   "name": "Copper Ridge City EOC",
+   "call": "SIM-CRCITY",
+   "contact": "Duty officer, Copper Ridge Fire Station",
+   "place": "Copper Ridge Fire Station, Route 30",
+   "forms": "ICS 213RR, ICS 213",
+   "serves": [
+    "Copper Ridge Stake"
+   ]
+  }
+ ],
+ "note": "Invented example: every name, call sign and place is made up. Call signs starting SIM- are simulator stations, never on the air."
+}

@@ -1,0 +1,184 @@
+address_id,org_id,building_id,address_type,address_line_1,address_line_2,address_line_3,address_raw,latitude,longitude,source_url
+A-JPW,JPW,B-WSR,Physical,Larkspur Welfare and Self-Reliance Office,550 N 800 E,,"Larkspur Welfare and Self-Reliance Office
+550 N 800 E
+Larkspur, WL 89701
+United States",40.332447,-117.542933,
+A-U-SLK-B1,U-SLK-B1,B-SLK-F1,Physical,Larkspur Care Center,800 S 700 E,,"Larkspur Care Center
+800 S 700 E
+Larkspur, WL 89701
+United States",40.308112,-117.545289,
+A-SLK,SLK,B-SLK-1,Physical,300 N 200 W,"Larkspur, WL 89701",,"300 N 200 W
+Larkspur, WL 89701
+United States",40.327941,-117.56649,
+A-U-SLK-3,U-SLK-3,B-SLK-1,Physical,300 N 200 W,"Larkspur, WL 89701",,"300 N 200 W
+Larkspur, WL 89701
+United States",40.327941,-117.56649,
+A-U-SLK-5,U-SLK-5,B-SLK-2,Physical,950 S 600 W,"Larkspur, WL 89701",,"950 S 600 W
+Larkspur, WL 89701
+United States",40.305408,-117.575913,
+A-U-SLK-4,U-SLK-4,B-SLK-3,Physical,550 S 500 E,"Larkspur, WL 89701",,"550 S 500 E
+Larkspur, WL 89701
+United States",40.312618,-117.55,
+A-U-SLK-6,U-SLK-6,B-SLK-3,Physical,550 S 500 E,"Larkspur, WL 89701",,"550 S 500 E
+Larkspur, WL 89701
+United States",40.312618,-117.55,
+A-U-SLK-1,U-SLK-1,B-SLK-4,Physical,1250 N 200 E,"Larkspur, WL 89701",,"1250 N 200 E
+Larkspur, WL 89701
+United States",40.345065,-117.557067,
+A-U-SLK-2,U-SLK-2,B-SLK-4,Physical,1250 N 200 E,"Larkspur, WL 89701",,"1250 N 200 E
+Larkspur, WL 89701
+United States",40.345065,-117.557067,
+A-SLE,SLE,B-SLE-1,Physical,150 N 2000 E,"Larkspur, WL 89701",,"150 N 2000 E
+Larkspur, WL 89701
+United States",40.325237,-117.514664,
+A-U-SLE-3,U-SLE-3,B-SLE-1,Physical,150 N 2000 E,"Larkspur, WL 89701",,"150 N 2000 E
+Larkspur, WL 89701
+United States",40.325237,-117.514664,
+A-U-SLE-4,U-SLE-4,B-SLE-1,Physical,150 N 2000 E,"Larkspur, WL 89701",,"150 N 2000 E
+Larkspur, WL 89701
+United States",40.325237,-117.514664,
+A-U-SLE-B1,U-SLE-B1,B-SLE-1,Physical,150 N 2000 E,"Larkspur, WL 89701",,"150 N 2000 E
+Larkspur, WL 89701
+United States",40.325237,-117.514664,
+A-U-SLE-5,U-SLE-5,B-SLE-2,Physical,1150 S 1450 E,"Larkspur, WL 89701",,"1150 S 1450 E
+Larkspur, WL 89701
+United States",40.301803,-117.527621,
+A-U-SLE-6,U-SLE-6,B-SLE-3,Physical,500 S 1700 W,"Copper Ridge, WL 89702",,"500 S 1700 W
+Copper Ridge, WL 89702
+United States",40.304507,-117.501708,
+A-U-SLE-1,U-SLE-1,B-SLE-4,Physical,1300 N 1700 E,"Larkspur, WL 89701",,"1300 N 1700 E
+Larkspur, WL 89701
+United States",40.345967,-117.521732,
+A-U-SLE-2,U-SLE-2,B-SLE-4,Physical,1300 N 1700 E,"Larkspur, WL 89701",,"1300 N 1700 E
+Larkspur, WL 89701
+United States",40.345967,-117.521732,
+A-SLW,SLW,B-SLW-1,Physical,250 N 2000 W,"Larkspur, WL 89701",,"250 N 2000 W
+Larkspur, WL 89701
+United States",40.327039,-117.608893,
+A-U-SLW-3,U-SLW-3,B-SLW-1,Physical,250 N 2000 W,"Larkspur, WL 89701",,"250 N 2000 W
+Larkspur, WL 89701
+United States",40.327039,-117.608893,
+A-U-SLW-4,U-SLW-4,B-SLW-1,Physical,250 N 2000 W,"Larkspur, WL 89701",,"250 N 2000 W
+Larkspur, WL 89701
+United States",40.327039,-117.608893,
+A-U-SLW-5,U-SLW-5,B-SLW-2,Physical,300 S 1950 E,"Saddleback, WL 89706",,"300 S 1950 E
+Saddleback, WL 89706
+United States",40.303605,-117.621849,
+A-U-SLW-6,U-SLW-6,B-SLW-3,Physical,1100 S 1450 W,"Larkspur, WL 89701",,"1100 S 1450 W
+Larkspur, WL 89701
+United States",40.302704,-117.595936,
+A-U-SLW-1,U-SLW-1,B-SLW-4,Physical,1350 N 2300 W,"Larkspur, WL 89701",,"1350 N 2300 W
+Larkspur, WL 89701
+United States",40.346868,-117.61596,
+A-U-SLW-2,U-SLW-2,B-SLW-4,Physical,1350 N 2300 W,"Larkspur, WL 89701",,"1350 N 2300 W
+Larkspur, WL 89701
+United States",40.346868,-117.61596,
+A-U-SCR-B1,U-SCR-B1,B-SCR-F1,Physical,Copper Ridge Retirement Village,50 S 400 E,,"Copper Ridge Retirement Village
+50 S 400 E
+Copper Ridge, WL 89702
+United States",40.312618,-117.452238,
+A-SCR,SCR,B-SCR-1,Physical,450 N 50 E,"Copper Ridge, WL 89702",,"450 N 50 E
+Copper Ridge, WL 89702
+United States",40.321631,-117.460483,
+A-U-SCR-1,U-SCR-1,B-SCR-1,Physical,450 N 50 E,"Copper Ridge, WL 89702",,"450 N 50 E
+Copper Ridge, WL 89702
+United States",40.321631,-117.460483,
+A-U-SCR-2,U-SCR-2,B-SCR-1,Physical,450 N 50 E,"Copper Ridge, WL 89702",,"450 N 50 E
+Copper Ridge, WL 89702
+United States",40.321631,-117.460483,
+A-U-SCR-4,U-SCR-4,B-SCR-2,Physical,750 S 750 W,"Copper Ridge, WL 89702",,"750 S 750 W
+Copper Ridge, WL 89702
+United States",40.3,-117.479329,
+A-U-SCR-5,U-SCR-5,B-SCR-3,Physical,650 S 850 E,"Copper Ridge, WL 89702",,"650 S 850 E
+Copper Ridge, WL 89702
+United States",40.301803,-117.441638,
+A-U-SCR-6,U-SCR-6,B-SCR-3,Physical,650 S 850 E,"Copper Ridge, WL 89702",,"650 S 850 E
+Copper Ridge, WL 89702
+United States",40.301803,-117.441638,
+A-U-SCR-3,U-SCR-3,B-SCR-4,Physical,1050 N 1350 E,"Copper Ridge, WL 89702",,"1050 N 1350 E
+Copper Ridge, WL 89702
+United States",40.332447,-117.429859,
+A-SJS,SJS,B-SJS-1,Physical,100 N 0 E,"Juniper Springs, WL 89703",,"100 N 0 E
+Juniper Springs, WL 89703
+United States",40.409959,-117.561779,
+A-U-SJS-2,U-SJS-2,B-SJS-1,Physical,100 N 0 E,"Juniper Springs, WL 89703",,"100 N 0 E
+Juniper Springs, WL 89703
+United States",40.409959,-117.561779,
+A-U-SJS-1,U-SJS-1,B-SJS-2,Physical,800 S 1200 W,"Juniper Springs, WL 89703",,"800 S 1200 W
+Juniper Springs, WL 89703
+United States",40.393736,-117.590047,
+A-U-SJS-4,U-SJS-4,B-SJS-2,Physical,800 S 1200 W,"Juniper Springs, WL 89703",,"800 S 1200 W
+Juniper Springs, WL 89703
+United States",40.393736,-117.590047,
+A-U-SJS-3,U-SJS-3,B-SJS-3,Physical,700 S 1300 E,"Juniper Springs, WL 89703",,"700 S 1300 E
+Juniper Springs, WL 89703
+United States",40.395539,-117.531154,
+A-U-SJS-6,U-SJS-6,B-SJS-3,Physical,700 S 1300 E,"Juniper Springs, WL 89703",,"700 S 1300 E
+Juniper Springs, WL 89703
+United States",40.395539,-117.531154,
+A-U-SJS-5,U-SJS-5,B-SJS-4,Physical,2000 S 400 E,"Juniper Springs, WL 89703",,"2000 S 400 E
+Juniper Springs, WL 89703
+United States",40.372105,-117.552356,
+A-SKS,SKS,B-SKS-1,Physical,50 N 100 E,"Kestrel, WL 89704",,"50 N 100 E
+Kestrel, WL 89704
+United States",40.481163,-117.547644,
+A-U-SKS-2,U-SKS-2,B-SKS-1,Physical,50 N 100 E,"Kestrel, WL 89704",,"50 N 100 E
+Kestrel, WL 89704
+United States",40.481163,-117.547644,
+A-U-SKS-3,U-SKS-3,B-SKS-1,Physical,50 N 100 E,"Kestrel, WL 89704",,"50 N 100 E
+Kestrel, WL 89704
+United States",40.481163,-117.547644,
+A-U-SKS-1,U-SKS-1,B-SKS-2,Physical,750 N 3000 W,"Kestrel, WL 89704",,"750 N 3000 W
+Kestrel, WL 89704
+United States",40.493781,-117.620671,
+A-U-SKS-4,U-SKS-4,B-SKS-2,Physical,750 N 3000 W,"Kestrel, WL 89704",,"750 N 3000 W
+Kestrel, WL 89704
+United States",40.493781,-117.620671,
+A-U-SKS-6,U-SKS-6,B-SKS-3,Physical,900 S 1900 E,"Kestrel, WL 89704",,"900 S 1900 E
+Kestrel, WL 89704
+United States",40.464038,-117.505242,
+A-U-SKS-5,U-SKS-5,B-SKS-4,Physical,1400 S 750 W,"Kestrel, WL 89704",,"1400 S 750 W
+Kestrel, WL 89704
+United States",40.455025,-117.567668,
+A-SAF,SAF,B-SAF-1,Physical,100 N 100 W,"Alder Flat, WL 89705",,"100 N 100 W
+Alder Flat, WL 89705
+United States",40.229698,-117.564134,
+A-U-SAF-3,U-SAF-3,B-SAF-1,Physical,100 N 100 W,"Alder Flat, WL 89705",,"100 N 100 W
+Alder Flat, WL 89705
+United States",40.229698,-117.564134,
+A-U-SAF-4,U-SAF-4,B-SAF-1,Physical,100 N 100 W,"Alder Flat, WL 89705",,"100 N 100 W
+Alder Flat, WL 89705
+United States",40.229698,-117.564134,
+A-U-SAF-2,U-SAF-2,B-SAF-2,Physical,2500 N 1400 E,"Alder Flat, WL 89705",,"2500 N 1400 E
+Alder Flat, WL 89705
+United States",40.272961,-117.528799,
+A-U-SAF-1,U-SAF-1,B-SAF-3,Physical,1900 N 1750 W,"Alder Flat, WL 89705",,"1900 N 1750 W
+Alder Flat, WL 89705
+United States",40.262145,-117.603003,
+A-U-SAF-5,U-SAF-5,B-SAF-4,Physical,2000 S 800 E,"Alder Flat, WL 89705",,"2000 S 800 E
+Alder Flat, WL 89705
+United States",40.191843,-117.542933,
+A-U-SAF-6,U-SAF-6,B-SAF-4,Physical,2000 S 800 E,"Alder Flat, WL 89705",,"2000 S 800 E
+Alder Flat, WL 89705
+United States",40.191843,-117.542933,
+A-SSB,SSB,B-SSB-1,Physical,100 N 0 E,"Saddleback, WL 89706",,"100 N 0 E
+Saddleback, WL 89706
+United States",40.310816,-117.667785,
+A-U-SSB-3,U-SSB-3,B-SSB-1,Physical,100 N 0 E,"Saddleback, WL 89706",,"100 N 0 E
+Saddleback, WL 89706
+United States",40.310816,-117.667785,
+A-U-SSB-4,U-SSB-4,B-SSB-1,Physical,100 N 0 E,"Saddleback, WL 89706",,"100 N 0 E
+Saddleback, WL 89706
+United States",40.310816,-117.667785,
+A-U-SSB-1,U-SSB-1,B-SSB-2,Physical,2000 N 900 W,"Saddleback, WL 89706",,"2000 N 900 W
+Saddleback, WL 89706
+United States",40.345065,-117.688987,
+A-U-SSB-2,U-SSB-2,B-SSB-2,Physical,2000 N 900 W,"Saddleback, WL 89706",,"2000 N 900 W
+Saddleback, WL 89706
+United States",40.345065,-117.688987,
+A-U-SSB-6,U-SSB-6,B-SSB-3,Physical,1700 S 700 E,"Saddleback, WL 89706",,"1700 S 700 E
+Saddleback, WL 89706
+United States",40.278369,-117.651295,
+A-U-SSB-5,U-SSB-5,B-SSB-4,Physical,3250 S 1100 W,"Saddleback, WL 89706",,"3250 S 1100 W
+Saddleback, WL 89706
+United States",40.250428,-117.693698,

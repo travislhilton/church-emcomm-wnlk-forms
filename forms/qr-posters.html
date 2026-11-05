@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Church of Jesus Christ EMCOMM (Emergency Communications) — QR (Quick Response) Posters</title>
+<style>
+/* ── Page ── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy:  #1A2744;
+  --red:   #C8102E;
+  --blue:  #4A7FC1;
+  --green: #5BAD8A;
+  --bg:    #F0F2F5;
+  --body:  system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+body {
+  background: var(--bg);
+  font-family: var(--body);
+  padding: 24px 16px 48px;
+  color: var(--navy);
+}
+
+/* ── Page header ── */
+.page-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.page-header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 6px;
+}
+.page-header p {
+  font-size: 14px;
+  color: #5A6A80;
+  max-width: 50ch;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+.print-note {
+  display: inline-block;
+  margin-top: 10px;
+  background: var(--navy);
+  color: #fff;
+  font-size: 13px;
+  padding: 6px 16px;
+  border-radius: 20px;
+}
+
+/* ── URL config input ── */
+.url-config {
+  background: #fff;
+  border: 1.5px solid #D1DBE8;
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin: 0 auto 32px;
+  max-width: 600px;
+}
+.url-config label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #5A6A80;
+  margin-bottom: 8px;
+}
+.url-config input {
+  width: 100%;
+  border: 1.5px solid #D1DBE8;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-family: monospace;
+  color: var(--navy);
+  background: #F7F8FA;
+  outline: none;
+}
+.url-config input:focus { border-color: var(--blue); background: #fff; }
+.url-config .hint { font-size: 12px; color: #5A6A80; margin-top: 6px; }
+.url-config .btn-regen {
+  margin-top: 12px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+}
+.url-config .btn-regen:hover { background: #3A6FB1; }
+
+/* ── Poster grid ── */
+.poster-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ── Individual poster card ── */
+.poster {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(26,39,68,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 20px;
+}
+.poster-header {
+  width: 100%;
+  padding: 14px 16px 12px;
+  text-align: center;
+}
+/* Church wordmark — three-line lockup, same as the forms and templates */
+.poster-header .church-line {
+  font-family: 'Times New Roman', Times, Georgia, serif;
+  color: var(--navy);
+  line-height: 1.15;
+  margin-bottom: 8px;
+}
+.poster-header .church-line span { display: block; text-transform: uppercase; }
+.poster-header .wm-top { font-size: 7.5px; letter-spacing: 0.30em; }
+.poster-header .wm-mid { font-size: 19px; letter-spacing: 0.04em; white-space: nowrap; }
+.poster-header .wm-bot { font-size: 8px; letter-spacing: 0.18em; }
+.poster-header .form-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--navy);
+  line-height: 1.1;
+}
+.poster-accent {
+  width: 100%;
+  height: 4px;
+  flex-shrink: 0;
+}
+.accent-red   { background: var(--red); }
+.accent-blue  { background: var(--blue); }
+.accent-green { background: var(--green); }
+.accent-navy  { background: var(--navy); }
+.poster-scan-text {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #5A6A80;
+  margin: 16px 0 8px;
+}
+.qr-wrap {
+  width: 180px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 1px solid #E5EAF0;
+  border-radius: 8px;
+  padding: 4px;
+  margin-bottom: 12px;
+}
+.qr-wrap img, .qr-wrap canvas {
+  max-width: 172px;
+  max-height: 172px;
+}
+.poster-desc {
+  font-size: 12.5px;
+  color: #5A6A80;
+  text-align: center;
+  padding: 0 16px;
+  line-height: 1.5;
+  max-width: 230px;
+}
+.poster-who {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 10px;
+  letter-spacing: 0.04em;
+}
+.who-red   { background: #FFE4E7; color: #9B0018; }
+.who-blue  { background: #D6E8FF; color: #1B4D90; }
+.who-green { background: #D1FAE5; color: #065F46; }
+.who-navy  { background: #DDE5F0; color: #1A2744; }
+
+/* Large main poster */
+.poster-main { grid-column: 1 / -1; }
+.poster-main .qr-wrap { width: 240px; height: 240px; }
+.poster-main .qr-wrap img,
+.poster-main .qr-wrap canvas { max-width: 232px; max-height: 232px; }
+.poster-main .poster-header .form-name { font-size: 26px; }
+.poster-main .poster-scan-text { font-size: 14px; margin-top: 20px; }
+.poster-main .poster-desc { font-size: 14px; max-width: 320px; }
+
+/* Steps on main poster */
+.steps-mini {
+  margin-top: 10px;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  max-width: 340px;
+}
+.step-mini {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  color: #455575;
+}
+.step-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ── Section label ── */
+.section-label {
+  max-width: 900px;
+  margin: 0 auto 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #5A6A80;
+}
+.section-gap { margin-top: 32px; }
+.page-header p.pace-note { margin-top: 12px; max-width: 70ch; font-size: 13px; }
+.poster-pace { font-size: 11px; color: #5A6A80; text-align: center; padding: 10px 20px 0; max-width: 360px; line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Church of Jesus Christ EMCOMM (Emergency Communications) QR (Quick Response) Posters</h1>
+  <p>Print and post these at staging areas, distribution points, and work sites.<br>
+  Volunteers scan with their phone to open the correct form.</p>
+  <span class="print-note">Ctrl+P / Cmd+P to print · Landscape orientation recommended for individual posters</span>
+  <p class="pace-note">These codes open the forms on the internet (GitHub Pages): the Primary path (cellular) and the
+  Alternate path (any internet anywhere) of the PACE (Primary, Alternate, Contingency, Emergency) plan. A phone that
+  opened them once keeps the forms offline. With no internet at all (Contingency and Emergency), scan the QR code on
+  the EOC (Emergency Operations Center) wall display instead: it opens that EOC's own phone page on its Wi-Fi.</p>
+</div>
+
+<!-- URL config -->
+<div class="url-config">
+  <label>Your GitHub Pages base URL (web address) — change this to match your username/repo:</label>
+  <input type="text" id="baseUrl" value="https://travislhilton.github.io/church-emcomm-wnlk-forms">
+  <p class="hint">This sets the destination all QR codes point to. Make sure your repo is public and GitHub Pages is enabled.</p>
+  <button class="btn-regen" onclick="regenerate()">Regenerate QR Codes</button>
+</div>
+
+<!-- Main / landing page poster -->
+<p class="section-label">Main Poster — Post This First (all 3 forms in one scan)</p>
+<div class="poster-grid">
+  <div class="poster poster-main">
+    <div class="poster-accent accent-navy"></div>
+    <div class="poster-header">
+      <div class="church-line"><span class="wm-top">The Church of</span><span class="wm-mid">Jesus Christ</span><span class="wm-bot">of Latter-day Saints</span></div>
+      <div class="form-name">Helping Hands<br>Emergency Response Forms</div>
+    </div>
+    <div class="poster-scan-text">Scan to Fill Your Form</div>
+    <div class="qr-wrap" id="qr-main"></div>
+    <div class="steps-mini">
+      <div class="step-mini"><span class="step-dot">1</span><span>Scan with your phone camera</span></div>
+      <div class="step-mini"><span class="step-dot">2</span><span>Tap your form (Disaster Report, Supply Order, or Work Crew Log)</span></div>
+      <div class="step-mini"><span class="step-dot">3</span><span>Fill it out, tap <strong>Save to Outbox</strong></span></div>
+      <div class="step-mini"><span class="step-dot">4</span><span>Tap <strong>Send to EOC</strong> (Emergency Operations Center), or text or email it to your leader or the EOC. No service? Hand it to a HAM (amateur radio) operator on a USB (Universal Serial Bus) drive. The Stake EOC sends it up the welfare line.</span></div>
+    </div>
+    <div class="poster-pace">No internet at all? Scan the QR code on the EOC wall display instead. It opens that EOC's own page on its Wi-Fi.</div>
+  </div>
+</div>
+
+<!-- Individual form posters -->
+<p class="section-label section-gap">Individual Form Posters — Post at Specific Stations</p>
+<div class="poster-grid">
+
+  <div class="poster">
+    <div class="poster-accent accent-red"></div>
+    <div class="poster-header">
+      <div class="church-line"><span class="wm-top">The Church of</span><span class="wm-mid">Jesus Christ</span><span class="wm-bot">of Latter-day Saints</span></div>
+      <div class="form-name">Disaster Report</div>
+    </div>
+    <div class="poster-scan-text">Scan to Fill This Form</div>
+    <div class="qr-wrap" id="qr-dr"></div>
+    <div class="poster-desc">Property damage, household status, injuries, GPS (Global Positioning System) location</div>
+    <span class="poster-who who-red">Helping Hands Volunteer · ERD (Emergency Response Director)</span>
+  </div>
+
+  <div class="poster">
+    <div class="poster-accent accent-blue"></div>
+    <div class="poster-header">
+      <div class="church-line"><span class="wm-top">The Church of</span><span class="wm-mid">Jesus Christ</span><span class="wm-bot">of Latter-day Saints</span></div>
+      <div class="form-name">Supply Order</div>
+    </div>
+    <div class="poster-scan-text">Scan to Fill This Form</div>
+    <div class="qr-wrap" id="qr-so"></div>
+    <div class="poster-desc">Resources needed — items, quantities, delivery location</div>
+    <span class="poster-who who-blue">Team Leader · ERD</span>
+  </div>
+
+  <div class="poster">
+    <div class="poster-accent accent-green"></div>
+    <div class="poster-header">
+      <div class="church-line"><span class="wm-top">The Church of</span><span class="wm-mid">Jesus Christ</span><span class="wm-bot">of Latter-day Saints</span></div>
+      <div class="form-name">Work Crew Log</div>
+    </div>
+    <div class="poster-scan-text">Scan to Fill This Form</div>
+    <div class="qr-wrap" id="qr-wc"></div>
+    <div class="poster-desc">Crew names, hours, work location, and tasks performed</div>
+    <span class="poster-who who-green">Crew Chief</span>
+  </div>
+
+</div>
+
+<script>
+var BASE = '';
+
+// QR (Quick Response) code generator: byte mode, error correction level M, versions 1-10 (up to 213 characters).
+// Copied from eoc/EOC_Wall_Display.html so this page needs no internet and no library.
+  var QR=(function(){
+    var EXP=[],LOG=[]; (function(){ var x=1; for(var i=0;i<255;i++){ EXP[i]=x; LOG[x]=i; x<<=1; if(x&256) x^=0x11D; } for(var i=255;i<512;i++) EXP[i]=EXP[i-255]; })();
+    function mul(a,b){ return (a&&b)?EXP[LOG[a]+LOG[b]]:0; }
+    function genPoly(n){ var g=[1]; for(var i=0;i<n;i++){ var ng=new Array(g.length+1); for(var k=0;k<ng.length;k++) ng[k]=0; for(var j=0;j<g.length;j++){ ng[j]^=g[j]; ng[j+1]^=mul(g[j],EXP[i]); } g=ng; } return g; }
+    function rsEC(data,n){ var g=genPoly(n), r=[]; for(var k=0;k<n;k++) r.push(0); for(var i=0;i<data.length;i++){ var f=data[i]^r[0]; r.shift(); r.push(0); if(f) for(var j=0;j<n;j++) r[j]^=mul(g[j+1],f); } return r; }
+    // per version (EC level M): [EC codewords per block, [[blocks, data codewords per block], ...]]
+    var BLK=[null,[10,[[1,16]]],[16,[[1,28]]],[26,[[1,44]]],[18,[[2,32]]],[24,[[2,43]]],[16,[[4,27]]],[18,[[4,31]]],[22,[[2,38],[2,39]]],[22,[[3,36],[2,37]]],[26,[[4,43],[1,44]]]];
+    var ALIGN=[null,[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50]];
+    var MASK=[function(r,c){return (r+c)%2===0;},function(r,c){return r%2===0;},function(r,c){return c%3===0;},function(r,c){return (r+c)%3===0;},
+              function(r,c){return (Math.floor(r/2)+Math.floor(c/3))%2===0;},function(r,c){return (r*c)%2+(r*c)%3===0;},
+              function(r,c){return ((r*c)%2+(r*c)%3)%2===0;},function(r,c){return ((r+c)%2+(r*c)%3)%2===0;}];
+    function fmtBits(mask){ var d=mask; var r=d<<10; for(var i=14;i>=10;i--) if(r&(1<<i)) r^=0x537<<(i-10); return ((d<<10)|r)^0x5412; }
+    function verBits(v){ var r=v<<12; for(var i=17;i>=12;i--) if(r&(1<<i)) r^=0x1F25<<(i-12); return (v<<12)|r; }
+    function penalty(g,N){ var p=0,r,c,k,run;
+      for(r=0;r<N;r++){ run=1; for(c=1;c<N;c++){ if(g[r][c]===g[r][c-1]){ run++; if(run===5) p+=3; else if(run>5) p++; } else run=1; } }
+      for(c=0;c<N;c++){ run=1; for(r=1;r<N;r++){ if(g[r][c]===g[r-1][c]){ run++; if(run===5) p+=3; else if(run>5) p++; } else run=1; } }
+      for(r=0;r<N-1;r++) for(c=0;c<N-1;c++){ var s=g[r][c]+g[r][c+1]+g[r+1][c]+g[r+1][c+1]; if(s===0||s===4) p+=3; }
+      var P1=[1,0,1,1,1,0,1,0,0,0,0], P2=[0,0,0,0,1,0,1,1,1,0,1];
+      for(r=0;r<N;r++) for(c=0;c<=N-11;c++){ var a=true,b=true,a2=true,b2=true; for(k=0;k<11;k++){ if(g[r][c+k]!==P1[k]) a=false; if(g[r][c+k]!==P2[k]) b=false; if(g[c+k][r]!==P1[k]) a2=false; if(g[c+k][r]!==P2[k]) b2=false; } if(a||b) p+=40; if(a2||b2) p+=40; }
+      var dark=0; for(r=0;r<N;r++) for(c=0;c<N;c++) dark+=g[r][c]; var pct=dark*100/(N*N), prev=Math.floor(pct/5)*5; p+=Math.min(Math.abs(prev-50),Math.abs(prev+5-50))/5*10; return p; }
+    return function(text, forceMask){
+      var bytes=Array.prototype.slice.call(new TextEncoder().encode(text)), v, cap, i, j, r, c;
+      for(v=1;v<=10;v++){ cap=0; BLK[v][1].forEach(function(b){cap+=b[0]*b[1];}); if(bytes.length+(v<10?2:3)<=cap) break; }
+      if(v>10) return null;
+      var bits=[]; function put(val,len){ for(var k=len-1;k>=0;k--) bits.push((val>>k)&1); }
+      put(4,4); put(bytes.length, v<10?8:16); bytes.forEach(function(b){ put(b,8); });
+      for(i=0;i<4&&bits.length<cap*8;i++) bits.push(0); while(bits.length%8) bits.push(0);
+      var data=[]; for(i=0;i<bits.length;i+=8){ var by=0; for(j=0;j<8;j++) by=(by<<1)|bits[i+j]; data.push(by); }
+      for(i=0;data.length<cap;i++) data.push(i%2?0x11:0xEC);
+      var ecn=BLK[v][0], blocks=[], ecs=[], pos=0;
+      BLK[v][1].forEach(function(b){ for(var k=0;k<b[0];k++){ var d=data.slice(pos,pos+b[1]); pos+=b[1]; blocks.push(d); ecs.push(rsEC(d,ecn)); } });
+      var out=[], maxD=0; blocks.forEach(function(b){ if(b.length>maxD) maxD=b.length; });
+      for(i=0;i<maxD;i++) blocks.forEach(function(b){ if(i<b.length) out.push(b[i]); });
+      for(i=0;i<ecn;i++) ecs.forEach(function(e){ out.push(e[i]); });
+      var N=v*4+17, m=[], fn=[]; for(r=0;r<N;r++){ var mr=[], fr=[]; for(c=0;c<N;c++){ mr.push(0); fr.push(false); } m.push(mr); fn.push(fr); }
+      function set(rr,cc,val){ if(rr<0||cc<0||rr>=N||cc>=N) return; m[rr][cc]=val?1:0; fn[rr][cc]=true; }
+      function finder(r0,c0){ for(var a=-1;a<=7;a++) for(var b=-1;b<=7;b++){ var on=(a>=0&&a<=6&&b>=0&&b<=6)&&(a===0||a===6||b===0||b===6||(a>=2&&a<=4&&b>=2&&b<=4)); set(r0+a,c0+b,on); } }
+      finder(0,0); finder(0,N-7); finder(N-7,0);
+      for(i=8;i<N-8;i++){ set(6,i,i%2===0); set(i,6,i%2===0); }
+      ALIGN[v].forEach(function(ar){ ALIGN[v].forEach(function(ac){ if((ar<=8&&ac<=8)||(ar<=8&&ac>=N-9)||(ar>=N-9&&ac<=8)) return; for(var dr=-2;dr<=2;dr++) for(var dc=-2;dc<=2;dc++) set(ar+dr,ac+dc, Math.max(Math.abs(dr),Math.abs(dc))!==1); }); });
+      set(4*v+9,8,true);
+      for(i=0;i<9;i++){ fn[8][i]=true; fn[i][8]=true; }
+      for(i=N-8;i<N;i++) fn[8][i]=true; for(i=N-7;i<N;i++) fn[i][8]=true;
+      if(v>=7){ for(i=0;i<6;i++) for(j=N-11;j<=N-9;j++){ fn[i][j]=true; fn[j][i]=true; } }
+      var bi=0, dir=-1, row=N-1;
+      for(var col=N-1;col>0;col-=2){ if(col===6) col--;
+        while(true){ for(c=0;c<2;c++){ var cc=col-c; if(!fn[row][cc]){ var byte=out[bi>>3]; m[row][cc]=(byte===undefined)?0:(byte>>(7-(bi&7)))&1; bi++; } }
+          row+=dir; if(row<0||row>=N){ row-=dir; dir=-dir; break; } } }
+      var best=null, bestP=Infinity;
+      for(var mk=0;mk<8;mk++){ if(forceMask!=null&&mk!==forceMask) continue; var g=m.map(function(rw){ return rw.slice(); });
+        for(r=0;r<N;r++) for(c=0;c<N;c++) if(!fn[r][c]&&MASK[mk](r,c)) g[r][c]^=1;
+        var f=fmtBits(mk);
+        for(i=0;i<15;i++){ var b=(f>>(14-i))&1;
+          if(i<6) g[8][i]=b; else if(i===6) g[8][7]=b; else if(i===7) g[8][8]=b; else if(i===8) g[7][8]=b; else g[14-i][8]=b;
+          if(i<7) g[N-1-i][8]=b; else g[8][N-15+i]=b; }
+        if(v>=7){ var vi=verBits(v); for(i=0;i<18;i++){ var vb=(vi>>i)&1; g[Math.floor(i/3)][N-11+i%3]=vb; g[N-11+i%3][Math.floor(i/3)]=vb; } }
+        var p=penalty(g,N); if(p<bestP){ bestP=p; best=g; } }
+      return best;
+    };
+  })();
+
+function makeQR(id, url, size) {
+  size = size || 180;
+  var el = document.getElementById(id);
+  el.innerHTML = '';
+  var g = null;
+  try { g = QR(url); } catch (e) { g = null; }
+  if (!g) {
+    el.innerHTML = '<span style="font-size:11px;color:#999;text-align:center;padding:8px">Error generating QR.<br>Check the URL (213 characters at most).</span>';
+    return;
+  }
+  var N = g.length, q = 4, s = Math.max(2, Math.floor(size / (N + 2 * q)));
+  var cv = document.createElement('canvas');
+  cv.width = cv.height = (N + 2 * q) * s;
+  cv.style.width = cv.style.height = size + 'px';
+  cv.style.imageRendering = 'pixelated';
+  cv.setAttribute('data-url', url);
+  var x = cv.getContext('2d');
+  x.fillStyle = '#fff'; x.fillRect(0, 0, cv.width, cv.height); x.fillStyle = '#000';
+  for (var r = 0; r < N; r++) for (var c = 0; c < N; c++) if (g[r][c]) x.fillRect((c + q) * s, (r + q) * s, s, s);
+  el.appendChild(cv);
+}
+
+function regenerate() {
+  BASE = document.getElementById('baseUrl').value.replace(/\/$/, '');
+  makeQR('qr-main', BASE + '/forms/', 240);
+  makeQR('qr-dr',   BASE + '/templates/disaster-report/Church_of_Jesus_Christ_Disaster_Report_Worker.html', 180);
+  makeQR('qr-so',   BASE + '/templates/supply-order/Church_of_Jesus_Christ_Supply_Order_Worker.html', 180);
+  makeQR('qr-wc',   BASE + '/templates/work-crew-log/Church_of_Jesus_Christ_Work_Crew_Log_Worker.html', 180);
+}
+
+// Generate on load
+window.onload = regenerate;
+</script>
+<p style="text-align:center;font-size:11px;color:#666;margin:12px 0">Church of Jesus Christ EMCOMM is an independent volunteer project created by Travis Hilton (W9TLH), not an official product of The Church of Jesus Christ of Latter-day Saints.</p>
+</body>
+</html>

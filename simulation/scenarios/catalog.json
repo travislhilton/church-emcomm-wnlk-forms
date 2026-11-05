@@ -1,0 +1,250 @@
+{
+  "kind": "church_emcomm_scenario_catalog",
+  "v": 1,
+  "area": "Juniper Plains Area, Larkspur Valley (invented example community)",
+  "note": "Invented drill fiction: the Juniper Plains Area, the Larkspur Valley, its towns, rivers, roads, dam and every organization and person are made up (simulation/example/world.json). Scenarios select units by geography and flags; organization names come from the organization pack at run time. A community's own real scenarios live beside its directory export (<export>/simulation/scenarios/), never in this repository. Independent volunteer project, not an official Church product.",
+  "scenarios": [
+    {
+      "id": "copper-creek-dam",
+      "name": "Copper Creek Dam failure, Larkspur Valley flood",
+      "hazard": "flood (dam failure)",
+      "onset": "rapid",
+      "duration_min": 240,
+      "status": "developed",
+      "applies": {
+        "bbox": [
+          -117.74,
+          40.08,
+          -117.34,
+          40.53
+        ]
+      },
+      "summary": "07:50 on Sunday 21 March, daylight, +4 °C and light rain after three days of warm rain on a deep snowpack. Copper Creek Dam seeps, then fails at T+38. The county orders Copper Ridge below the dam and the Copper Creek corridor through south Larkspur out and warns the river bottoms and Alder Flat; the Stake Presidents must decide about the 9:00 meetings. The flood wave takes the Route 30 bridge at Copper Ridge (T+45), surrounds the Larkspur Care Center and closes the Route 12 bridge (T+70), floods the substation and cuts the fibre (T+75 to T+78), crests through Larkspur West and reaches Alder Flat (T+140). Care-facility residents without transport, missionaries not accounted for, Spanish-speaking families, a dam rumour, unasked volunteers, Supply Orders, a storehouse truck by the long way round, city requests by ICS 213RR and a wet-snow night.",
+      "pace": "P (congested) for 80 minutes, then C when the south loses power and fibre; A at T+175 after a round-trip test; P for the north wards at T+225.",
+      "severity": "feature polygons: band 3 in the flood path of Copper Creek, band 2 in the Larkspur River flood plain or the evacuation-order zone, band 1 in the warning zone, 0 elsewhere (the north stakes host evacuees); care-facility and retirement branches at least 2, the Spanish-language branch at least 1",
+      "sources": [],
+      "lessons": [
+        "late or absent official alert: the stake notifies its own members, in Spanish too",
+        "Sunday meetings cancelled before members drive into the water",
+        "911 saturated: relay life-safety calls in writing",
+        "health-and-welfare traffic policy",
+        "unit not heard from",
+        "county liaison: one consolidated message per slot",
+        "verified versus reported missing (members with relatives)",
+        "care facility without transport, roll call at the destination",
+        "satellite terminal without operator, power or sky",
+        "repeater dies: relay plan, 72-hour posture",
+        "rumour verified before relay",
+        "Winlink congestion: traffic priority",
+        "false fulfilled and duplicate Supply Orders",
+        "public shelter, usage agreement, six shelter figures",
+        "unasked volunteers and goods",
+        "cold wet night, fuel and generators (carbon monoxide)"
+      ]
+    },
+    {
+      "id": "larkspur-fault-m6.9",
+      "name": "Larkspur fault earthquake under the west bench, M 6.9",
+      "hazard": "earthquake",
+      "onset": "sudden",
+      "duration_min": 240,
+      "status": "outline",
+      "applies": {
+        "bbox": [
+          -117.74,
+          40.08,
+          -117.34,
+          40.53
+        ]
+      },
+      "summary": "A winter weekday at 06:30 in the dark. The invented Larkspur fault ruptures along the foot of the west bench from Saddleback to Juniper Springs. Older brick homes and the Larkspur downtown fail; the Center Street bridge is closed for inspection, splitting Larkspur West from the county seat; the river bottoms liquefy around Alder Flat; Copper Creek Dam is inspected and holds. Power out valley-wide, cellular fails within minutes, the Saddleback Peak repeater is damaged.",
+      "pace": "P for 10 minutes, then C (VARA HF where the repeater is down); A at T+170 after a round-trip test; P late in the drill if at all.",
+      "severity": "distance bands 5 / 12 / 30 km from an epicentre under Saddleback; +1 in the river flood plain (liquefaction); care facilities at least band 2",
+      "sources": [],
+      "lessons": [
+        "repeater damaged: simplex and HF from the start",
+        "Satellite EOC behind a closed bridge",
+        "unreinforced masonry, injuries at the meetinghouse",
+        "gas leaks and carbon monoxide in the cold",
+        "missing list verified household by household"
+      ]
+    },
+    {
+      "id": "saddleback-ridge-fire",
+      "name": "Wind-driven wildland fire on Saddleback Ridge",
+      "hazard": "wildfire",
+      "onset": "fast",
+      "duration_min": 180,
+      "status": "outline",
+      "applies": {
+        "bbox": [
+          -117.74,
+          40.08,
+          -117.34,
+          40.53
+        ]
+      },
+      "summary": "A late-August afternoon fire starts on Saddleback Ridge and runs down the west bench on a dry wind. Saddleback and the Larkspur West bench neighbourhoods evacuate; Route 30 west closes for smoke; the Saddleback Peak repeater is threatened and goes off the air when its site burns. Shelters at the Juniper Springs stake center and the fairgrounds for horses and livestock; Supply Orders for cots, water and air filters.",
+      "pace": "P in the valley; C for the bench wards when their cell sites burn; the net moves to simplex when the repeater is lost.",
+      "severity": "band 3 inside the fire polygon on the west bench, band 2 within 2 km of it, band 1 for the rest of Saddleback and Larkspur West, 0 elsewhere",
+      "sources": [],
+      "lessons": [
+        "order without prior warning: zone, timestamp, action",
+        "the repeater site burns: relay plan",
+        "livestock and people without transport",
+        "false alert to the wrong area",
+        "unasked volunteers and donations"
+      ]
+    },
+    {
+      "id": "january-ice-storm",
+      "name": "January ice storm: valley-wide outage, five days of cold",
+      "hazard": "winter storm",
+      "onset": "slow",
+      "duration_min": 120,
+      "status": "outline",
+      "applies": {
+        "bbox": [
+          -117.74,
+          40.08,
+          -117.34,
+          40.53
+        ]
+      },
+      "summary": "Day 2 of an ice storm. Ice-loaded lines and trees have taken power from most of the valley; Route 12 is glare ice; temperatures fall to −18 °C at night. Welfare checks on the elderly, care facilities on generators, meetinghouses opened as warming centres, generator fuel and carbon monoxide.",
+      "pace": "P while cell sites hold battery; A from the stake center Starlink; C as sites go dark on day 2.",
+      "severity": "band 2 everywhere; band 3 for care facilities and for units outside the towns",
+      "sources": [],
+      "lessons": [
+        "heat, fuel and water per person on the Supply Order",
+        "72-hour posture and shift relief",
+        "people sleeping in cars at the shelter",
+        "carbon monoxide from generators indoors"
+      ]
+    },
+    {
+      "id": "downslope-windstorm",
+      "name": "Downslope windstorm out of Copper Creek canyon, 110 km/h gusts",
+      "hazard": "windstorm",
+      "onset": "sudden",
+      "duration_min": 120,
+      "status": "outline",
+      "applies": {
+        "bbox": [
+          -117.74,
+          40.08,
+          -117.34,
+          40.53
+        ]
+      },
+      "summary": "An east wind pours out of the Copper Creek canyon before dawn: trees and lines down across Copper Ridge and east Larkspur, roofs off, thousands without power. A short, common event for practising the normal paths and a scheduled slide to Alternate as cell sites lose backup power.",
+      "pace": "P, then A at T+60 as cell sites lose battery.",
+      "severity": "band 2 in Copper Ridge and east Larkspur, band 1 elsewhere in the Larkspur council, 0 in the Kestrel council",
+      "sources": [],
+      "lessons": [
+        "cell outage timeline: power first, then backhaul",
+        "chainsaw crews: team leaders and the safety acknowledgment"
+      ]
+    },
+    {
+      "id": "kestrel-rail-hazmat",
+      "name": "Rail tank-car release at the Kestrel grain elevators, shelter in place",
+      "hazard": "hazmat",
+      "onset": "sudden",
+      "duration_min": 120,
+      "status": "outline",
+      "applies": {
+        "bbox": [
+          -117.74,
+          40.08,
+          -117.34,
+          40.53
+        ]
+      },
+      "summary": "A derailment at the Kestrel grain elevators ruptures a tank car of anhydrous ammonia on a still morning. The county hazardous-materials team orders shelter in place for a 3 km downwind sector over Kestrel and the Pine Hollow farms. Nobody moves, so no runners and no crews: accountability by phone and radio only until the all-clear.",
+      "pace": "P throughout (an exercise in restraint, not in radio).",
+      "severity": "band 3 inside the plume sector polygon, band 1 within 5 km, 0 elsewhere",
+      "sources": [],
+      "lessons": [
+        "shelter in place versus evacuate: one written authority for the order",
+        "people without transport",
+        "members outside the zone stay home"
+      ]
+    },
+    {
+      "id": "larkspur-river-flood",
+      "name": "Spring snowmelt flood on the Larkspur River, without dam failure",
+      "hazard": "flood",
+      "onset": "slow",
+      "duration_min": 120,
+      "status": "outline",
+      "applies": {
+        "bbox": [
+          -117.74,
+          40.08,
+          -117.34,
+          40.53
+        ]
+      },
+      "summary": "A record snowpack melts in a warm week. Day 3 of high water: the Larkspur River is over its banks from Kestrel through Riverside to Alder Flat; Pine Hollow Creek floods farms above Kestrel. Sandbag crews, pumps, basements, evacuations of the bottoms, days of status reports.",
+      "pace": "P and A throughout; a Contingency slice for crews out of cell range in the bottoms.",
+      "severity": "band 3 inside the river flood plain polygon, band 2 within 1.5 km of it, otherwise 0 to 1",
+      "sources": [],
+      "lessons": [
+        "the stake notifies its own members when the official alert is late",
+        "missing list inflation then verification",
+        "volunteer gridlock: one hub, pre-registered teams",
+        "shelter lost to the water"
+      ]
+    },
+    {
+      "id": "regional-outage",
+      "name": "Regional power and telecom failure, 72 hours, cause unknown",
+      "hazard": "infrastructure",
+      "onset": "sudden",
+      "duration_min": 180,
+      "status": "outline",
+      "applies": {
+        "bbox": [
+          -117.74,
+          40.08,
+          -117.34,
+          40.53
+        ]
+      },
+      "summary": "No damage, no casualties, no power, no cellular, no internet anywhere in the valley for three days. Pure PACE discipline: radio only, then Starlink at the stake center; the coordinating council reached by Winlink HF.",
+      "pace": "C from T+0; A for the EOC's own internet from T+60 (Starlink); never P.",
+      "severity": "band 1 everywhere, band 2 for care facilities",
+      "sources": [],
+      "lessons": [
+        "cell sites die from power, then backhaul: batteries 4 to 8 hours",
+        "no scheduled step-up: plan for no communications for 72 hours"
+      ]
+    },
+    {
+      "id": "route12-mass-casualty",
+      "name": "Multi-vehicle crash with a youth bus on Route 12 in fog",
+      "hazard": "transport",
+      "onset": "sudden",
+      "duration_min": 60,
+      "status": "outline",
+      "applies": {
+        "bbox": [
+          -117.74,
+          40.08,
+          -117.34,
+          40.53
+        ]
+      },
+      "summary": "A Saturday-morning pile-up on Route 12 north of Juniper Springs involves a bus taking youth to a stake activity. Not a Church emergency: the county leads. The Church's role is member accountability and support for families; it practises restraint, correct traffic and the Stake President's judgement about what goes up the line.",
+      "pace": "P throughout.",
+      "severity": "band 2 for the two units nearest the crash site and the youth's home units, 0 elsewhere",
+      "sources": [],
+      "lessons": [
+        "health-and-welfare inquiries flood the net",
+        "the hospital at capacity: families gather at the stake center"
+      ]
+    }
+  ],
+  "lessons_note": "lessons: the failure modes from the 2024–2026 disaster research (docs/SIMULATOR_LESSONS.md) each scenario rehearses, or should when its outline is written out."
+}

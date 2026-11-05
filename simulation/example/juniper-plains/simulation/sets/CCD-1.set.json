@@ -1,0 +1,15 @@
+{
+ "kind": "church_emcomm_sim_set",
+ "v": 1,
+ "code": "CCD-1",
+ "name": "Copper Creek Dam drill, Larkspur Stake (invented example community)",
+ "private": false,
+ "export": "../..",
+ "scenario": "copper-creek-dam",
+ "drill_spec": "../drill-spec.json",
+ "training": "../../../../../training/scenario-samples-src/copper-creek-dam.json",
+ "cards": "../../../../../training/scenario-cards/CCD-1/cards.json",
+ "maps": "all",
+ "out": "../../../../../../church-emcomm-packages",
+ "note": "Invented example: the package shows what a participant package holds. A real community's set file lives beside its directory export, never in a repository."
+}

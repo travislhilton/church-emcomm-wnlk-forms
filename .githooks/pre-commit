@@ -1,0 +1,32 @@
+#!/bin/sh
+# Church of Jesus Christ EMCOMM pre-commit hook. Turn it on once per clone:
+#   git config core.hooksPath .githooks
+# GitHub Pages publishes every committed file. This hook refuses files that must never be
+# committed, runs the public-files check (no real community in public files) and the
+# acronym check (every acronym spelled out at its first use).
+
+staged=$(git diff --cached --name-only --diff-filter=ACMR -z | tr '\0' '\n' |
+  grep -i -E '^(secure data/|forms-source/|\.claude/|eoc/eoc_data\.db|session-screenshots/)')
+if [ -n "$staged" ]; then
+  echo "pre-commit: refusing to commit these files (private data, Church originals, the EOC database or screenshots):" >&2
+  echo "$staged" | sed 's/^/  /' >&2
+  echo "Unstage them with: git rm --cached <path>" >&2
+  exit 1
+fi
+
+top=$(git rev-parse --show-toplevel) || exit 1
+for py in python python3 "py -3"; do
+  if $py -c "import sys; sys.exit(0 if sys.version_info >= (3, 8) else 1)" >/dev/null 2>&1; then
+    if ! $py "$top/testing/test_public_files.py"; then
+      echo "pre-commit: testing/test_public_files.py failed: a public file names something private. Fix it before committing." >&2
+      exit 1
+    fi
+    if ! $py "$top/testing/test_acronyms.py"; then
+      echo "pre-commit: testing/test_acronyms.py failed: an acronym is not spelled out at its first use (run it with --show). Fix it before committing." >&2
+      exit 1
+    fi
+    exit 0
+  fi
+done
+echo "pre-commit: no Python 3.8+ found to run testing/test_public_files.py; install Python 3 (see CONTRIBUTING.md)." >&2
+exit 1

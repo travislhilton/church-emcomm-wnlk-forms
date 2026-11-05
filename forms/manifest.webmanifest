@@ -1,0 +1,17 @@
+{
+  "name": "Church of Jesus Christ EMCOMM",
+  "short_name": "Church of Jesus Christ EMCOMM",
+  "description": "Disaster Report, Supply Order and Work Crew Log forms that work with no signal, with an Outbox and Send to EOC. Independent volunteer project, not an official Church product.",
+  "id": "./index.html",
+  "start_url": "./index.html",
+  "scope": "../",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f0f2f5",
+  "theme_color": "#1a3a5c",
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

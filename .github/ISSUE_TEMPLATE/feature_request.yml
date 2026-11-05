@@ -1,0 +1,32 @@
+name: "Idea / improvement"
+description: Something the system should do, or do differently.
+title: "[Idea] "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: dropdown
+    id: role
+    attributes:
+      label: Who would this help
+      multiple: true
+      options:
+        - Helping Hands Volunteers
+        - Team Leaders / Emergency Response Directors
+        - EMCOMM HAM Operators
+        - EOC Operators
+        - Stake Presidents / Bishops
+        - Council or Area (Area Seventy, WSRM / AWSRM, Area Specialist)
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem or need
+      description: What is hard, slow or missing today? A story from a drill is ideal.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you would like instead
+  - type: markdown
+    attributes:
+      value: |
+        Note: the system stays at three forms (Disaster Report, Supply Order, Work Crew Log) that mirror the Church PDFs. Ideas for a fourth form are welcome as discussion but will not be added.

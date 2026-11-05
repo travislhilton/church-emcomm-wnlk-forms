@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: How to give feedback (read first)
+    url: https://github.com/travislhilton/church-emcomm-wnlk-forms/blob/main/docs/FEEDBACK.md
+    about: What to include, how drill feedback is collected, and what happens to your report.
+  - name: Volunteer forms portal
+    url: https://travislhilton.github.io/church-emcomm-wnlk-forms/forms/
+    about: The phone forms, in case you got here looking for them.

@@ -1,0 +1,15 @@
+{
+  "v": 4,
+  "createdOnFiles": {"v": 1, "at": "2026-10-23T00:00:00Z"},
+  "title": "Church of Jesus Christ EMCOMM",
+  "order": ["cover","disaster-strike","church-comms","challenge","journey","forms","chain","arch","tiers","pace","pace-ladders","pace-roles","tier1","tier2","tier_sat","tier3","contingency-voice","tier4","equip","worker","ham","eoc","work-items","eoc-topology","awsrm","install","pace-sheet","training","simulator","checklist","nextsteps"],
+  "sections": {
+    "s1": {"description": "Why this system exists and how a report travels", "start": "cover"},
+    "s2": {"description": "The 3 forms and chain of command", "start": "forms"},
+    "s3": {"description": "Architecture, what fails in order, and the PACE plan", "start": "arch"},
+    "s4": {"description": "Role-by-role process and equipment", "start": "worker"},
+    "s5": {"description": "Installation, the stake PACE sheet, training, and deployment", "start": "install"}
+  },
+  "faces": {},
+  "designSystems": []
+}

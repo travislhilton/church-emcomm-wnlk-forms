@@ -1,0 +1,50 @@
+session-screenshots/
+testing/_out/
+
+# Secure data (Travis, 2026-10-29): never commit anything in this folder.
+# A local pre-commit hook (.git/hooks/pre-commit) also rejects a forced add.
+/secure data/
+
+# macOS folder metadata
+.DS_Store
+
+# EOC server runtime files (never commit)
+eoc/eoc_data.db*
+eoc/__pycache__/
+eoc/backups/
+
+# Simulator runtime files (runs, pseudonym salt written beside a pack or the test fixture)
+simulation/__pycache__/
+testing/fixtures/simulation/
+__pycache__/
+
+# deep-research scratch (the finished report is copied into docs/)
+research_notes/
+reports/
+
+# Simulator runtime files written beside the invented example community when it is loaded from the repository
+simulation/example/juniper-plains/simulation/runs/
+simulation/example/juniper-plains/simulation/local-roles.json
+
+# The Church's PDFs: never committed (CLAUDE.md rule 9); the README links to the official copies
+/forms-source/
+
+# Claude Code settings hold machine paths
+/.claude/
+
+# A real organization pack, its export and drill files stay outside the repository (docs/COMMUNITY_SETUP.md)
+contacts.csv
+contactmethods.csv
+organizations.csv
+buildings.csv
+building_organizations.csv
+relationships.csv
+addresses.csv
+orgpack.json
+*.local.json
+drill-spec*.json
+drill-config*.json
+building-names.json
+*.set.json
+!simulation/example/**
+!testing/fixtures/**

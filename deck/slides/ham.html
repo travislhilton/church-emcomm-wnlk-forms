@@ -1,0 +1,62 @@
+<section id="ham" data-transition="fade" style="background:#F7F8FA;color:#1A2744;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;display:flex;flex-direction:column;gap:24px;padding:128px 128px 160px">
+<div style="display:flex;flex-direction:column;gap:6px">
+  <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:22px;letter-spacing:0.14px;letter-spacing:0.14em;text-transform:uppercase;color:#C8102E">EMCOMM Operator Role</p>
+  <h1 style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:60px;font-weight:700;line-height:1.05;color:#1A2744">HAM Operator Process</h1>
+  <p style="font-size:24px;color:#6B7A8D">The radio bridge between field teams and the Stake EOC &#8212; and the EOC&#8217;s bridge to the Area at Contingency</p>
+</div>
+<div style="display:flex;gap:24px;flex:1;align-items:stretch">
+  <div style="flex:1;display:flex;flex-direction:column;gap:0;border:2px solid #CBD5E0;border-radius:16px;overflow:hidden">
+    <div style="background:#1A2744;padding:8px 20px"><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:19px;font-weight:600;color:#4A7FC1;text-transform:uppercase">1 &#183; Create the Form in Winlink Express</p></div>
+    <div style="padding:10px 20px;background:#F7F8FA">
+      <ul style="font-size:19px;color:#2D3748;line-height:1.5;padding:0 0 0 20px;margin:0">
+        <li>New Message &#8594; <b>Select Template</b> &#8594; Global Templates &#8594; <b>Church of Jesus Christ EMCOMM Forms</b> &#8594; choose the form (DR / SO / WCL)</li>
+        <li>Fill it in from the voice report on the net, the paper form or the person in front of you; your callsign and station location auto-fill. <b>Save Data</b> keeps a copy</li>
+        <li><b style="color:#C8102E">Drill or training? Tick THIS IS AN EXERCISE</b> (red box at the top): banner in the message, EXERCISE chip at the EOC</li>
+      </ul>
+    </div>
+    <div style="background:#1A2744;padding:8px 20px"><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:19px;font-weight:600;color:#4A7FC1;text-transform:uppercase">2 &#183; Or Load a Volunteer&#8217;s File</p></div>
+    <div style="padding:10px 20px;background:#EEF2F8">
+      <ul style="font-size:19px;color:#2D3748;line-height:1.5;padding:0 0 0 20px;margin:0">
+        <li>Receive the .txt file by text / email (P, A) or AirDrop / Nearby Share / USB (C)</li>
+        <li>Same template &#8594; <b>Load Data</b> &#8594; select the file &#8594; every field fills in. Review; add anything missing</li>
+        <li>To practice: <b>EMCOMM Practice</b> has 7 pre-filled exercise forms &#8212; select one, Submit, send it to your EOC</li>
+      </ul>
+    </div>
+    <div style="background:#1A2744;padding:8px 20px"><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:19px;font-weight:600;color:#4A7FC1;text-transform:uppercase">3 &#183; Send by the PACE Level in Force</p></div>
+    <div style="padding:10px 20px;background:#F7F8FA;display:flex;flex-direction:column;gap:8px">
+      <ul style="font-size:19px;color:#2D3748;line-height:1.5;padding:0 0 0 20px;margin:0">
+        <li>Click <b>Submit</b> &#8212; creates a Winlink message in the Outbox. Address it to <i>your</i> EOC&#8217;s Winlink address from the stake Comms Sheet</li>
+        <li>Open Session: <b style="color:#2D5FA0">A</b> Telnet (any internet) &#8594; <b style="color:#A86200">C</b> VARA FM Winlink (VHF/UHF) &#8594; <b style="color:#A86200">C</b> VARA HF (no local gateway)</li>
+        <li>Verify sent; confirm receipt with the EOC on the net</li>
+      </ul>
+      <div style="background:#FFF8E1;border-left:4px solid #D4850A;border-radius:6px;padding:8px 12px">
+        <p style="font-size:17px;color:#A86200;line-height:1.4"><b>PACE rule:</b> step down after two failed attempts in 15 min or when the Stake President decides it (the ERD or the specialist announces it on the net); step back up only after a test message round-trips. Announce the level at every check-in.</p>
+      </div>
+    </div>
+  </div>
+  <div style="width:470px;display:flex;flex-direction:column;gap:12px">
+    <div style="background:#1A2744;border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:8px">
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:19px;font-weight:600;color:#C8102E;text-transform:uppercase">Install Path</p>
+      <div style="background:#0D1526;border-radius:8px;padding:10px 14px">
+        <p style="font-size:17px;color:#4A7FC1;font-family:'Courier New',monospace;line-height:1.4">C:\RMS Express\Global Folders\Templates\<br>Church of Jesus Christ EMCOMM Forms\<br>Church of Jesus Christ EMCOMM Practice\</p>
+      </div>
+      <p style="font-size:17px;color:#8BA8C4;line-height:1.4">3 .txt definitions + HTML forms, 7 practice forms &#8212; the installer puts them there. Not Standard Templates (overwritten by Winlink updates).</p>
+    </div>
+    <div style="background:#EEF2F8;border:2px solid #4A7FC1;border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:8px">
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:19px;font-weight:600;color:#2D5FA0;text-transform:uppercase">At the EOC Station</p>
+      <ul style="font-size:18px;color:#2D3748;line-height:1.5;padding:0 0 0 20px;margin:0">
+        <li>Run the <b>Church of Jesus Christ EMCOMM EOC Server</b> shortcut</li>
+        <li>Church form Winlink messages <b>auto-ingest</b> within 10 s; emailed forms via the <b>EOC Drop Folder</b></li>
+        <li>Status badges: NEW &#8594; ACK &#8594; ASSGN &#8594; DONE</li>
+        <li>SITREP from the DR tab; send up to the council line and the welfare line by email (P/A) or Winlink radio (C); level in force in the header</li>
+      </ul>
+    </div>
+    <div style="background:#F0F4F8;border-radius:12px;padding:14px 20px">
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:19px;font-weight:600;color:#1A2744;text-transform:uppercase">Keep a Log</p>
+      <p style="font-size:17px;color:#2D3748;line-height:1.45">Time sent, form type, originating address, Winlink message ID, level in force. The Message Center captures this; the paper log is the backup.</p>
+    </div>
+  </div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;font-size:24px;color:#6B7A8D">Training time for HAM operators: 2&#8211;4 hours hands-on filling the templates, Load Data, and switching Telnet &#8594; VARA FM &#8594; HF</p>
+<aside>The HAM operator is the critical link in the system. Every drill message must carry THIS IS AN EXERCISE: the box at the top of each form puts a banner in the message, a prefix in the subject and an exercise tag in the data, and the EOC marks the report as an exercise. The seven practice forms under EMCOMM Practice are already ticked and filled from the simulator's earthquake scenario, so a new operator can send a realistic exercise message in a minute. The most important thing to practice is creating a form in the Winlink template from a report given by voice or on paper and submitting it; then loading a volunteer's .txt file with Load Data, reviewing it and submitting; and then switching the session type by PACE level: Telnet at Alternate, VARA FM at Contingency, HF when no local gateway answers. Do this in a drill before any real event.</aside>
+</section>

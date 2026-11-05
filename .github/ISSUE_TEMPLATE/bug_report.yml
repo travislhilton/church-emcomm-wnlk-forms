@@ -1,0 +1,82 @@
+name: "Bug report — something did not work"
+description: A form, template, the EOC Message Center, the installer or a document did the wrong thing.
+title: "[Bug] "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks — every report from a drill or a real activation makes the next one better. Two minutes is enough; fill in what you can. If you came here from a form, the portal or the EOC Message Center, several boxes are already filled in — check them and add what happened.
+  - type: dropdown
+    id: role
+    attributes:
+      label: Your role when it happened
+      options:
+        - Helping Hands Volunteer (phone form)
+        - Team Leader / Emergency Response Director
+        - EMCOMM HAM Operator (Winlink)
+        - EOC Operator — Satellite, Stake or Council / Area EOC
+        - Stake / Area Welfare and Self-Reliance Specialist
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: part
+    attributes:
+      label: Which part
+      options:
+        - Phone / browser Worker Form (Disaster Report, Supply Order, Work Crew Log)
+        - Winlink Express template (Initial form, Load Data, Viewer, message text)
+        - EOC Message Center (tabs, Open form, SITREP, roll-up, events)
+        - EOC server / auto-ingest (Winlink watcher, Drop Folder)
+        - EOC Wall Display
+        - Installer (BAT or ZIP) / desktop shortcuts
+        - Quick Reference Cards / README / deck / PACE plan
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, what you saw instead. Paste any error text exactly.
+      placeholder: "I tapped Save to My Phone on the Disaster Report and ..."
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to make it happen again
+      placeholder: |
+        1. Open ...
+        2. Tap ...
+        3. See ...
+  - type: input
+    id: env
+    attributes:
+      label: Device, browser and software
+      description: e.g. iPhone 15 Safari · Windows 11 Chrome · Winlink Express 1.7.x · installed from the BAT on 2026-10-29
+  - type: input
+    id: build
+    attributes:
+      label: Software build
+      description: Filled in automatically when you come from a form, the portal or the EOC Message Center.
+      placeholder: "EOC Message Center v1.0 / server 1.0"
+  - type: input
+    id: when
+    attributes:
+      label: When (date, time, and the drill or event name)
+      placeholder: "2026-11-08 19:40 — monthly net / stake tabletop"
+  - type: textarea
+    id: diag
+    attributes:
+      label: Diagnostic info (EOC operators — paste from Setup tab → Copy diagnostic info)
+      render: text
+  - type: checkboxes
+    id: severity
+    attributes:
+      label: Impact
+      options:
+        - label: It blocked the report from getting through (highest priority)
+        - label: There was a workaround
+        - label: Cosmetic / wording only

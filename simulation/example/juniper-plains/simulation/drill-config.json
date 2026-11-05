@@ -1,0 +1,723 @@
+{
+ "kind": "church_emcomm_drill_config",
+ "v": 1,
+ "name": "Copper Creek Dam drill: Juniper Plains Area (invented example)",
+ "scenario": "copper-creek-dam",
+ "privacy": "pseudonymized",
+ "pack": "",
+ "event": {
+  "name": "DRILL: Copper Creek Dam failure (THIS IS AN EXERCISE)",
+  "type": "Flood",
+  "sitrepHrs": "2",
+  "sitrepBy": "Stake President"
+ },
+ "eocs": [
+  {
+   "id": "larkspur",
+   "level": "stake",
+   "manned": "always",
+   "winlink": [
+    "SIM-LKS"
+   ],
+   "name": "Larkspur Stake EOC",
+   "stake": "SLK",
+   "stake_name": "Larkspur Stake",
+   "council": "CLK",
+   "council_name": "Larkspur Coordinating Council",
+   "units": [
+    "U-SLK-1",
+    "U-SLK-2",
+    "U-SLK-3",
+    "U-SLK-4",
+    "U-SLK-5",
+    "U-SLK-6",
+    "U-SLK-B1"
+   ],
+   "unit_names": [
+    "Larkspur 1st Ward",
+    "Larkspur 2nd Ward",
+    "Larkspur 3rd Ward",
+    "Larkspur 4th Ward",
+    "Larkspur 5th Ward",
+    "Larkspur 6th Ward",
+    "Larkspur Care Center Branch"
+   ],
+   "sim": {
+    "role": "stake",
+    "stake": "SLK"
+   },
+   "email": "larkspur-stake-eoc@churchemcomm.sim",
+   "building": {
+    "id": "B-SLK-1",
+    "name": "Larkspur Stake Center",
+    "address": "300 N 200 W, Larkspur, WL 89701, United States",
+    "lat": 40.327941,
+    "lon": -117.56649
+   },
+   "identity": {
+    "eocLevel": "stake",
+    "eocName": "Larkspur Stake EOC",
+    "eocUnits": "Larkspur 1st Ward, Larkspur 2nd Ward, Larkspur 3rd Ward, Larkspur 4th Ward, Larkspur 5th Ward, Larkspur 6th Ward, Larkspur Care Center Branch",
+    "eocLat": "40.327941",
+    "eocLon": "-117.56649",
+    "mapPath": "",
+    "councilName": "Larkspur Coordinating Council — Trevor Isom, Area Seventy",
+    "councilEmail": "trevor.isom@churchemcomm.sim",
+    "councilWinlink": "",
+    "welfareName": "Juniper Plains Welfare and Self-Reliance Region — Levi Carver, WSRM",
+    "welfareEmail": "levi.carver@churchemcomm.sim",
+    "welfareWinlink": "",
+    "parentName": "",
+    "parentEmail": "",
+    "parentWinlink": "",
+    "roles": {
+     "sp": {
+      "name": "Chris Rasband",
+      "phone": "353-555-0190"
+     },
+     "ham": {
+      "name": "Larkspur Stake EOC Winlink station",
+      "phone": "SIM-LKS"
+     }
+    },
+    "agencies": [
+     {
+      "id": "larkspur-city",
+      "name": "Larkspur City EOC",
+      "call": "SIM-LKCITY",
+      "contact": "Duty officer, Larkspur Fire Department",
+      "place": "Fire Station 1, Center Street (Winlink station, VHF/UHF radios)",
+      "forms": "ICS 213RR (resource requests), ICS 213 (messages and answers); never Church forms"
+     }
+    ]
+   },
+   "ifAreaManned": {
+    "parentName": "Council / Area EOC: Juniper Springs Stake Center",
+    "parentEmail": "council-area-eoc-juniper-springs-stake-center@churchemcomm.sim",
+    "parentWinlink": "SIM-JPA"
+   }
+  },
+  {
+   "id": "copper-ridge",
+   "level": "stake",
+   "manned": "optional",
+   "winlink": [
+    "SIM-CRS"
+   ],
+   "name": "Copper Ridge Stake EOC",
+   "stake": "SCR",
+   "stake_name": "Copper Ridge Stake",
+   "council": "CLK",
+   "council_name": "Larkspur Coordinating Council",
+   "units": [
+    "U-SCR-1",
+    "U-SCR-2",
+    "U-SCR-3",
+    "U-SCR-4",
+    "U-SCR-5",
+    "U-SCR-6",
+    "U-SCR-B1"
+   ],
+   "unit_names": [
+    "Copper Ridge 1st Ward",
+    "Copper Ridge 2nd Ward",
+    "Copper Ridge 3rd Ward",
+    "Copper Ridge 4th Ward",
+    "Copper Ridge 5th Ward",
+    "Copper Canyon Ward",
+    "Copper Ridge Retirement Branch"
+   ],
+   "sim": {
+    "role": "stake",
+    "stake": "SCR"
+   },
+   "email": "copper-ridge-stake-eoc@churchemcomm.sim",
+   "building": {
+    "id": "B-SCR-1",
+    "name": "Copper Ridge Stake Center",
+    "address": "450 N 50 E, Copper Ridge, WL 89702, United States",
+    "lat": 40.321631,
+    "lon": -117.460483
+   },
+   "identity": {
+    "eocLevel": "stake",
+    "eocName": "Copper Ridge Stake EOC",
+    "eocUnits": "Copper Ridge 1st Ward, Copper Ridge 2nd Ward, Copper Ridge 3rd Ward, Copper Ridge 4th Ward, Copper Ridge 5th Ward, Copper Canyon Ward, Copper Ridge Retirement Branch",
+    "eocLat": "40.321631",
+    "eocLon": "-117.460483",
+    "mapPath": "",
+    "councilName": "Larkspur Coordinating Council — Trevor Isom, Area Seventy",
+    "councilEmail": "trevor.isom@churchemcomm.sim",
+    "councilWinlink": "",
+    "welfareName": "Juniper Plains Welfare and Self-Reliance Region — Levi Carver, WSRM",
+    "welfareEmail": "levi.carver@churchemcomm.sim",
+    "welfareWinlink": "",
+    "parentName": "",
+    "parentEmail": "",
+    "parentWinlink": "",
+    "roles": {
+     "sp": {
+      "name": "Elijah Stucki",
+      "phone": "948-555-0187"
+     },
+     "ham": {
+      "name": "Copper Ridge Stake EOC Winlink station",
+      "phone": "SIM-CRS"
+     }
+    },
+    "agencies": [
+     {
+      "id": "copper-ridge-city",
+      "name": "Copper Ridge City EOC",
+      "call": "SIM-CRCITY",
+      "contact": "Duty officer, Copper Ridge Fire Station",
+      "place": "Copper Ridge Fire Station, Route 30",
+      "forms": "ICS 213RR, ICS 213"
+     }
+    ]
+   },
+   "ifAreaManned": {
+    "parentName": "Council / Area EOC: Juniper Springs Stake Center",
+    "parentEmail": "council-area-eoc-juniper-springs-stake-center@churchemcomm.sim",
+    "parentWinlink": "SIM-JPA"
+   }
+  },
+  {
+   "id": "alder-flat",
+   "level": "stake",
+   "manned": "optional",
+   "winlink": [
+    "SIM-AFS"
+   ],
+   "name": "Alder Flat Stake EOC",
+   "stake": "SAF",
+   "stake_name": "Alder Flat Stake",
+   "council": "CKS",
+   "council_name": "Kestrel Coordinating Council",
+   "units": [
+    "U-SAF-1",
+    "U-SAF-2",
+    "U-SAF-3",
+    "U-SAF-4",
+    "U-SAF-5",
+    "U-SAF-6"
+   ],
+   "unit_names": [
+    "Alder Flat 1st Ward",
+    "Alder Flat 2nd Ward",
+    "Alder Flat 3rd Ward",
+    "Alder Flat 4th Ward",
+    "Willow Bend Ward",
+    "Meadowlark Ward"
+   ],
+   "sim": {
+    "role": "stake",
+    "stake": "SAF"
+   },
+   "email": "alder-flat-stake-eoc@churchemcomm.sim",
+   "building": {
+    "id": "B-SAF-1",
+    "name": "Alder Flat Stake Center",
+    "address": "100 N 100 W, Alder Flat, WL 89705, United States",
+    "lat": 40.229698,
+    "lon": -117.564134
+   },
+   "identity": {
+    "eocLevel": "stake",
+    "eocName": "Alder Flat Stake EOC",
+    "eocUnits": "Alder Flat 1st Ward, Alder Flat 2nd Ward, Alder Flat 3rd Ward, Alder Flat 4th Ward, Willow Bend Ward, Meadowlark Ward",
+    "eocLat": "40.229698",
+    "eocLon": "-117.564134",
+    "mapPath": "",
+    "councilName": "Kestrel Coordinating Council — Charles Driggs, Area Seventy",
+    "councilEmail": "charles.driggs@churchemcomm.sim",
+    "councilWinlink": "",
+    "welfareName": "Juniper Plains Welfare and Self-Reliance Region — Levi Carver, WSRM",
+    "welfareEmail": "levi.carver@churchemcomm.sim",
+    "welfareWinlink": "",
+    "parentName": "",
+    "parentEmail": "",
+    "parentWinlink": "",
+    "roles": {
+     "sp": {
+      "name": "Darin Jeppson",
+      "phone": "973-555-0105"
+     },
+     "ham": {
+      "name": "Alder Flat Stake EOC Winlink station",
+      "phone": "SIM-AFS"
+     }
+    },
+    "agencies": []
+   },
+   "ifAreaManned": {
+    "parentName": "Council / Area EOC: Juniper Springs Stake Center",
+    "parentEmail": "council-area-eoc-juniper-springs-stake-center@churchemcomm.sim",
+    "parentWinlink": "SIM-JPA"
+   }
+  },
+  {
+   "id": "larkspur-east",
+   "level": "stake",
+   "manned": "optional",
+   "winlink": [],
+   "name": "Larkspur East Stake EOC",
+   "stake": "SLE",
+   "stake_name": "Larkspur East Stake",
+   "council": "CLK",
+   "council_name": "Larkspur Coordinating Council",
+   "units": [
+    "U-SLE-1",
+    "U-SLE-2",
+    "U-SLE-3",
+    "U-SLE-4",
+    "U-SLE-5",
+    "U-SLE-6",
+    "U-SLE-B1"
+   ],
+   "unit_names": [
+    "Larkspur 7th Ward",
+    "Larkspur 8th Ward",
+    "Larkspur 9th Ward",
+    "Larkspur 10th Ward",
+    "Larkspur 11th Ward",
+    "Larkspur 12th Ward",
+    "Larkspur Spanish Branch"
+   ],
+   "sim": {
+    "role": "stake",
+    "stake": "SLE"
+   },
+   "email": "larkspur-east-stake-eoc@churchemcomm.sim",
+   "building": {
+    "id": "B-SLE-1",
+    "name": "Larkspur East Stake Center",
+    "address": "150 N 2000 E, Larkspur, WL 89701, United States",
+    "lat": 40.325237,
+    "lon": -117.514664
+   },
+   "identity": {
+    "eocLevel": "stake",
+    "eocName": "Larkspur East Stake EOC",
+    "eocUnits": "Larkspur 7th Ward, Larkspur 8th Ward, Larkspur 9th Ward, Larkspur 10th Ward, Larkspur 11th Ward, Larkspur 12th Ward, Larkspur Spanish Branch",
+    "eocLat": "40.325237",
+    "eocLon": "-117.514664",
+    "mapPath": "",
+    "councilName": "Larkspur Coordinating Council — Trevor Isom, Area Seventy",
+    "councilEmail": "trevor.isom@churchemcomm.sim",
+    "councilWinlink": "",
+    "welfareName": "Juniper Plains Welfare and Self-Reliance Region — Levi Carver, WSRM",
+    "welfareEmail": "levi.carver@churchemcomm.sim",
+    "welfareWinlink": "",
+    "parentName": "",
+    "parentEmail": "",
+    "parentWinlink": "",
+    "roles": {
+     "sp": {
+      "name": "Byron Barlow",
+      "phone": "418-555-0134"
+     }
+    },
+    "agencies": [
+     {
+      "id": "larkspur-city",
+      "name": "Larkspur City EOC",
+      "call": "SIM-LKCITY",
+      "contact": "Duty officer, Larkspur Fire Department",
+      "place": "Fire Station 1, Center Street (Winlink station, VHF/UHF radios)",
+      "forms": "ICS 213RR (resource requests), ICS 213 (messages and answers); never Church forms"
+     }
+    ]
+   },
+   "ifAreaManned": {
+    "parentName": "Council / Area EOC: Juniper Springs Stake Center",
+    "parentEmail": "council-area-eoc-juniper-springs-stake-center@churchemcomm.sim",
+    "parentWinlink": "SIM-JPA"
+   }
+  },
+  {
+   "id": "larkspur-west",
+   "level": "stake",
+   "manned": "optional",
+   "winlink": [],
+   "name": "Larkspur West Stake EOC",
+   "stake": "SLW",
+   "stake_name": "Larkspur West Stake",
+   "council": "CLK",
+   "council_name": "Larkspur Coordinating Council",
+   "units": [
+    "U-SLW-1",
+    "U-SLW-2",
+    "U-SLW-3",
+    "U-SLW-4",
+    "U-SLW-5",
+    "U-SLW-6"
+   ],
+   "unit_names": [
+    "Larkspur 13th Ward",
+    "Larkspur 14th Ward",
+    "Larkspur 15th Ward",
+    "Larkspur 16th Ward",
+    "Larkspur 17th Ward",
+    "Riverside Ward"
+   ],
+   "sim": {
+    "role": "stake",
+    "stake": "SLW"
+   },
+   "email": "larkspur-west-stake-eoc@churchemcomm.sim",
+   "building": {
+    "id": "B-SLW-1",
+    "name": "Larkspur West Stake Center",
+    "address": "250 N 2000 W, Larkspur, WL 89701, United States",
+    "lat": 40.327039,
+    "lon": -117.608893
+   },
+   "identity": {
+    "eocLevel": "stake",
+    "eocName": "Larkspur West Stake EOC",
+    "eocUnits": "Larkspur 13th Ward, Larkspur 14th Ward, Larkspur 15th Ward, Larkspur 16th Ward, Larkspur 17th Ward, Riverside Ward",
+    "eocLat": "40.327039",
+    "eocLon": "-117.608893",
+    "mapPath": "",
+    "councilName": "Larkspur Coordinating Council — Trevor Isom, Area Seventy",
+    "councilEmail": "trevor.isom@churchemcomm.sim",
+    "councilWinlink": "",
+    "welfareName": "Juniper Plains Welfare and Self-Reliance Region — Levi Carver, WSRM",
+    "welfareEmail": "levi.carver@churchemcomm.sim",
+    "welfareWinlink": "",
+    "parentName": "",
+    "parentEmail": "",
+    "parentWinlink": "",
+    "roles": {
+     "sp": {
+      "name": "Lorin Sumsion",
+      "phone": "453-555-0155"
+     }
+    },
+    "agencies": [
+     {
+      "id": "larkspur-city",
+      "name": "Larkspur City EOC",
+      "call": "SIM-LKCITY",
+      "contact": "Duty officer, Larkspur Fire Department",
+      "place": "Fire Station 1, Center Street (Winlink station, VHF/UHF radios)",
+      "forms": "ICS 213RR (resource requests), ICS 213 (messages and answers); never Church forms"
+     }
+    ]
+   },
+   "ifAreaManned": {
+    "parentName": "Council / Area EOC: Juniper Springs Stake Center",
+    "parentEmail": "council-area-eoc-juniper-springs-stake-center@churchemcomm.sim",
+    "parentWinlink": "SIM-JPA"
+   }
+  },
+  {
+   "id": "juniper-springs",
+   "level": "stake",
+   "manned": "optional",
+   "winlink": [],
+   "name": "Juniper Springs Stake EOC",
+   "stake": "SJS",
+   "stake_name": "Juniper Springs Stake",
+   "council": "CKS",
+   "council_name": "Kestrel Coordinating Council",
+   "units": [
+    "U-SJS-1",
+    "U-SJS-2",
+    "U-SJS-3",
+    "U-SJS-4",
+    "U-SJS-5",
+    "U-SJS-6"
+   ],
+   "unit_names": [
+    "Juniper Springs 1st Ward",
+    "Juniper Springs 2nd Ward",
+    "Juniper Springs 3rd Ward",
+    "Juniper Springs 4th Ward",
+    "Juniper Springs 5th Ward",
+    "Larkspur Heights Ward"
+   ],
+   "sim": {
+    "role": "stake",
+    "stake": "SJS"
+   },
+   "email": "juniper-springs-stake-eoc@churchemcomm.sim",
+   "building": {
+    "id": "B-SJS-1",
+    "name": "Juniper Springs Stake Center",
+    "address": "100 N 0 E, Juniper Springs, WL 89703, United States",
+    "lat": 40.409959,
+    "lon": -117.561779
+   },
+   "identity": {
+    "eocLevel": "stake",
+    "eocName": "Juniper Springs Stake EOC",
+    "eocUnits": "Juniper Springs 1st Ward, Juniper Springs 2nd Ward, Juniper Springs 3rd Ward, Juniper Springs 4th Ward, Juniper Springs 5th Ward, Larkspur Heights Ward",
+    "eocLat": "40.409959",
+    "eocLon": "-117.561779",
+    "mapPath": "",
+    "councilName": "Kestrel Coordinating Council — Charles Driggs, Area Seventy",
+    "councilEmail": "charles.driggs@churchemcomm.sim",
+    "councilWinlink": "",
+    "welfareName": "Juniper Plains Welfare and Self-Reliance Region — Levi Carver, WSRM",
+    "welfareEmail": "levi.carver@churchemcomm.sim",
+    "welfareWinlink": "",
+    "parentName": "",
+    "parentEmail": "",
+    "parentWinlink": "",
+    "roles": {
+     "sp": {
+      "name": "Albert Garff",
+      "phone": "631-555-0100"
+     }
+    },
+    "agencies": []
+   },
+   "ifAreaManned": {
+    "parentName": "Council / Area EOC: Juniper Springs Stake Center",
+    "parentEmail": "council-area-eoc-juniper-springs-stake-center@churchemcomm.sim",
+    "parentWinlink": "SIM-JPA"
+   }
+  },
+  {
+   "id": "kestrel",
+   "level": "stake",
+   "manned": "optional",
+   "winlink": [],
+   "name": "Kestrel Stake EOC",
+   "stake": "SKS",
+   "stake_name": "Kestrel Stake",
+   "council": "CKS",
+   "council_name": "Kestrel Coordinating Council",
+   "units": [
+    "U-SKS-1",
+    "U-SKS-2",
+    "U-SKS-3",
+    "U-SKS-4",
+    "U-SKS-5",
+    "U-SKS-6"
+   ],
+   "unit_names": [
+    "Kestrel 1st Ward",
+    "Kestrel 2nd Ward",
+    "Kestrel 3rd Ward",
+    "North Fork Ward",
+    "Pine Hollow Ward",
+    "Elk Meadow Ward"
+   ],
+   "sim": {
+    "role": "stake",
+    "stake": "SKS"
+   },
+   "email": "kestrel-stake-eoc@churchemcomm.sim",
+   "building": {
+    "id": "B-SKS-1",
+    "name": "Kestrel Stake Center",
+    "address": "50 N 100 E, Kestrel, WL 89704, United States",
+    "lat": 40.481163,
+    "lon": -117.547644
+   },
+   "identity": {
+    "eocLevel": "stake",
+    "eocName": "Kestrel Stake EOC",
+    "eocUnits": "Kestrel 1st Ward, Kestrel 2nd Ward, Kestrel 3rd Ward, North Fork Ward, Pine Hollow Ward, Elk Meadow Ward",
+    "eocLat": "40.481163",
+    "eocLon": "-117.547644",
+    "mapPath": "",
+    "councilName": "Kestrel Coordinating Council — Charles Driggs, Area Seventy",
+    "councilEmail": "charles.driggs@churchemcomm.sim",
+    "councilWinlink": "",
+    "welfareName": "Juniper Plains Welfare and Self-Reliance Region — Levi Carver, WSRM",
+    "welfareEmail": "levi.carver@churchemcomm.sim",
+    "welfareWinlink": "",
+    "parentName": "",
+    "parentEmail": "",
+    "parentWinlink": "",
+    "roles": {
+     "sp": {
+      "name": "Shane Fenn",
+      "phone": "919-555-0179"
+     }
+    },
+    "agencies": []
+   },
+   "ifAreaManned": {
+    "parentName": "Council / Area EOC: Juniper Springs Stake Center",
+    "parentEmail": "council-area-eoc-juniper-springs-stake-center@churchemcomm.sim",
+    "parentWinlink": "SIM-JPA"
+   }
+  },
+  {
+   "id": "saddleback",
+   "level": "stake",
+   "manned": "optional",
+   "winlink": [],
+   "name": "Saddleback Stake EOC",
+   "stake": "SSB",
+   "stake_name": "Saddleback Stake",
+   "council": "CKS",
+   "council_name": "Kestrel Coordinating Council",
+   "units": [
+    "U-SSB-1",
+    "U-SSB-2",
+    "U-SSB-3",
+    "U-SSB-4",
+    "U-SSB-5",
+    "U-SSB-6"
+   ],
+   "unit_names": [
+    "Saddleback 1st Ward",
+    "Saddleback 2nd Ward",
+    "Saddleback 3rd Ward",
+    "Saddleback 4th Ward",
+    "Dry Gulch Ward",
+    "Cedar Bench Ward"
+   ],
+   "sim": {
+    "role": "stake",
+    "stake": "SSB"
+   },
+   "email": "saddleback-stake-eoc@churchemcomm.sim",
+   "building": {
+    "id": "B-SSB-1",
+    "name": "Saddleback Stake Center",
+    "address": "100 N 0 E, Saddleback, WL 89706, United States",
+    "lat": 40.310816,
+    "lon": -117.667785
+   },
+   "identity": {
+    "eocLevel": "stake",
+    "eocName": "Saddleback Stake EOC",
+    "eocUnits": "Saddleback 1st Ward, Saddleback 2nd Ward, Saddleback 3rd Ward, Saddleback 4th Ward, Dry Gulch Ward, Cedar Bench Ward",
+    "eocLat": "40.310816",
+    "eocLon": "-117.667785",
+    "mapPath": "",
+    "councilName": "Kestrel Coordinating Council — Charles Driggs, Area Seventy",
+    "councilEmail": "charles.driggs@churchemcomm.sim",
+    "councilWinlink": "",
+    "welfareName": "Juniper Plains Welfare and Self-Reliance Region — Levi Carver, WSRM",
+    "welfareEmail": "levi.carver@churchemcomm.sim",
+    "welfareWinlink": "",
+    "parentName": "",
+    "parentEmail": "",
+    "parentWinlink": "",
+    "roles": {
+     "sp": {
+      "name": "Wade Trane",
+      "phone": "446-555-0125"
+     }
+    },
+    "agencies": []
+   },
+   "ifAreaManned": {
+    "parentName": "Council / Area EOC: Juniper Springs Stake Center",
+    "parentEmail": "council-area-eoc-juniper-springs-stake-center@churchemcomm.sim",
+    "parentWinlink": "SIM-JPA"
+   }
+  },
+  {
+   "id": "area",
+   "level": "area",
+   "manned": "optional",
+   "winlink": [
+    "SIM-JPA"
+   ],
+   "name": "Council / Area EOC: Juniper Springs Stake Center",
+   "councils": [
+    "CLK",
+    "CKS"
+   ],
+   "council_names": [
+    "Larkspur Coordinating Council",
+    "Kestrel Coordinating Council"
+   ],
+   "stakes": [
+    "SLK",
+    "SLE",
+    "SLW",
+    "SCR",
+    "SJS",
+    "SKS",
+    "SAF",
+    "SSB"
+   ],
+   "stake_names": [
+    "Larkspur Stake",
+    "Larkspur East Stake",
+    "Larkspur West Stake",
+    "Copper Ridge Stake",
+    "Juniper Springs Stake",
+    "Kestrel Stake",
+    "Alder Flat Stake",
+    "Saddleback Stake"
+   ],
+   "sim": {
+    "role": "area",
+    "councils": [
+     "CLK",
+     "CKS"
+    ]
+   },
+   "email": "council-area-eoc-juniper-springs-stake-center@churchemcomm.sim",
+   "building": {
+    "id": "B-SJS-1",
+    "name": "Juniper Springs Stake Center",
+    "address": "100 N 0 E, Juniper Springs, WL 89703, United States",
+    "lat": 40.409959,
+    "lon": -117.561779
+   },
+   "identity": {
+    "eocLevel": "area",
+    "eocName": "Council / Area EOC: Juniper Springs Stake Center",
+    "eocUnits": "Larkspur Stake, Larkspur East Stake, Larkspur West Stake, Copper Ridge Stake, Juniper Springs Stake, Kestrel Stake, Alder Flat Stake, Saddleback Stake",
+    "eocLat": "40.409959",
+    "eocLon": "-117.561779",
+    "mapPath": "",
+    "councilName": "Larkspur Coordinating Council — Trevor Isom, Area Seventy · Kestrel Coordinating Council — Charles Driggs, Area Seventy",
+    "councilEmail": "trevor.isom@churchemcomm.sim, charles.driggs@churchemcomm.sim",
+    "councilWinlink": "",
+    "welfareName": "Juniper Plains Area Self-Reliance Office — Valerie Bingham, AWSRM",
+    "welfareEmail": "valerie.bingham@churchemcomm.sim",
+    "welfareWinlink": "",
+    "parentName": "",
+    "parentEmail": "",
+    "parentWinlink": "",
+    "roles": {
+     "seventy": {
+      "name": "Trevor Isom, Charles Driggs",
+      "phone": "405-555-0166, 389-555-0147"
+     },
+     "wsrm": {
+      "name": "Levi Carver",
+      "phone": "883-555-0106"
+     },
+     "ham": {
+      "name": "Council / Area EOC: Juniper Springs Stake Center Winlink station",
+      "phone": "SIM-JPA"
+     }
+    },
+    "agencies": [
+     {
+      "id": "larkspur-city",
+      "name": "Larkspur City EOC",
+      "call": "SIM-LKCITY",
+      "contact": "Duty officer, Larkspur Fire Department",
+      "place": "Fire Station 1, Center Street (Winlink station, VHF/UHF radios)",
+      "forms": "ICS 213RR (resource requests), ICS 213 (messages and answers); never Church forms"
+     },
+     {
+      "id": "copper-ridge-city",
+      "name": "Copper Ridge City EOC",
+      "call": "SIM-CRCITY",
+      "contact": "Duty officer, Copper Ridge Fire Station",
+      "place": "Copper Ridge Fire Station, Route 30",
+      "forms": "ICS 213RR, ICS 213"
+     }
+    ]
+   }
+  }
+ ],
+ "area": "area",
+ "note": "Built by simulation/drillconfig.py from the drill spec and the organization pack. Holds organization names and pseudonymized contacts: keep it in secure data/, never commit it."
+}

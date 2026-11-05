@@ -1,0 +1,28 @@
+# One working tree can be used from Windows and from macOS (the Windows VM sees the Mac's folder), and Git for
+# Windows turns core.autocrlf on while git on a Mac leaves it off. These rules decide line endings by file, so
+# every machine sees the same bytes whatever its git settings; without them a Mac reports every CRLF file as changed.
+* text=auto eol=lf
+
+# Winlink Express only parses template definitions with CRLF line endings; with LF it reads the whole file as one
+# line ("Form file does not exist"). That holds for the practice forms and training sets too, not only templates/.
+*.txt text eol=crlf
+
+# Windows batch and PowerShell files: CRLF in every checkout (cmd.exe can mis-read labels and GOTO in an LF batch file)
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# macOS / Linux launchers and the installer run under bash: keep LF (a CRLF shebang breaks them)
+*.sh text eol=lf
+*.command text eol=lf
+
+# git hooks run under sh: keep LF
+.githooks/* text eol=lf
+
+*.pdf binary
+*.png binary
+*.zip binary
+
+# The one-file installer is served from the repository as committed (GitHub Pages) and uploaded to the release:
+# store it byte for byte as built (CRLF), with no line-ending conversion in either direction.
+dist/*.bat -text

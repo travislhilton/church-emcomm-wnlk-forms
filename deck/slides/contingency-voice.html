@@ -1,0 +1,113 @@
+<section id="contingency-voice" data-transition="fade" style="background:#1A2744;color:#F7F8FA;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;display:flex;flex-direction:column;gap:36px;padding:128px 128px 160px">
+<div style="display:flex;align-items:center;gap:24px">
+  <div style="background:#D4850A;border-radius:12px;padding:12px 24px">
+    <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:28px;font-weight:700;color:#F7F8FA">PACE C</p>
+  </div>
+  <div>
+    <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:22px;letter-spacing:0.1em;text-transform:uppercase;color:#D4850A">Contingency &#8212; No Internet Anywhere</p>
+    <h1 style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:56px;font-weight:700;line-height:1.0;color:#F7F8FA">Radio Carries Both the Forms and the Voice</h1>
+  </div>
+</div>
+
+<svg viewBox="0 0 1664 500" width="1664" height="500" font-family="system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif">
+  <defs>
+    <marker id="cv-amber" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto"><path d="M0,0 L16,8 L0,16 z" fill="#D4850A"/></marker>
+    <marker id="cv-blue" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto"><path d="M0,0 L16,8 L0,16 z" fill="#4A7FC1"/></marker>
+    <marker id="cv-dim" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto"><path d="M0,0 L16,8 L0,16 z" fill="#8BA8C4"/></marker>
+  </defs>
+
+  <!-- Lane labels -->
+  <text x="0" y="22" font-family="system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif" font-size="20" font-weight="600" fill="#D4850A" letter-spacing="2">DATA LANE &#8212; THE FORMS (WINLINK)</text>
+  <text x="0" y="312" font-family="system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif" font-size="20" font-weight="600" fill="#4A7FC1" letter-spacing="2">VOICE LANE &#8212; COORDINATION AND REPORTS WITHOUT A HAM IN REACH</text>
+  <line x1="0" y1="282" x2="1380" y2="282" stroke="#ffffff20" stroke-width="2" stroke-dasharray="8 8"/>
+
+  <!-- ===== DATA LANE ===== -->
+  <!-- Volunteer phone -->
+  <rect x="0" y="48" width="210" height="96" rx="12" fill="#24366A" stroke="#D4850A" stroke-width="2"/>
+  <text x="105" y="86" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif" font-size="22" font-weight="600" fill="#F7F8FA">Volunteer phone</text>
+  <text x="105" y="114" text-anchor="middle" font-size="17" fill="#BFD8D5">.txt saved on device</text>
+  <line x1="218" y1="96" x2="340" y2="96" stroke="#D4850A" stroke-width="3" marker-end="url(#cv-amber)"/>
+  <text x="279" y="80" text-anchor="middle" font-size="14" fill="#FFE8C0">AirDrop / USB</text>
+  <text x="279" y="124" text-anchor="middle" font-size="14" fill="#FFE8C0">Nearby Share</text>
+  <!-- HAM station -->
+  <rect x="348" y="48" width="250" height="96" rx="12" fill="#D4850A"/>
+  <text x="473" y="86" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif" font-size="22" font-weight="600" fill="#F7F8FA">HAM station</text>
+  <text x="473" y="114" text-anchor="middle" font-size="16" fill="#FFE8C0">Winlink: Load Data &#8594; Submit</text>
+  <line x1="606" y1="96" x2="738" y2="96" stroke="#D4850A" stroke-width="3" marker-end="url(#cv-amber)"/>
+  <text x="672" y="80" text-anchor="middle" font-size="14" fill="#FFE8C0">VHF/UHF VARA FM</text>
+  <text x="672" y="124" text-anchor="middle" font-size="14" fill="#FFE8C0">VARA FM modem</text>
+  <!-- RMS gateway -->
+  <rect x="746" y="48" width="210" height="96" rx="12" fill="#24366A" stroke="#D4850A" stroke-width="2"/>
+  <text x="851" y="86" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif" font-size="22" font-weight="600" fill="#F7F8FA">Local RMS gateway</text>
+  <text x="851" y="114" text-anchor="middle" font-size="17" fill="#BFD8D5">50&#8211;150 km reach</text>
+  <line x1="964" y1="96" x2="1086" y2="96" stroke="#D4850A" stroke-width="3" marker-end="url(#cv-amber)"/>
+  <!-- CMS -->
+  <rect x="1094" y="48" width="200" height="96" rx="12" fill="#24366A" stroke="#D4850A" stroke-width="2"/>
+  <text x="1194" y="86" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif" font-size="22" font-weight="600" fill="#F7F8FA">Winlink CMS</text>
+  <text x="1194" y="114" text-anchor="middle" font-size="17" fill="#BFD8D5">stores until picked up</text>
+  <line x1="1302" y1="96" x2="1392" y2="96" stroke="#D4850A" stroke-width="3" marker-end="url(#cv-amber)"/>
+  <!-- HF alternate -->
+  <path d="M473,146 C473,210 560,214 740,214" fill="none" stroke="#8BA8C4" stroke-width="3" stroke-dasharray="8 7" marker-end="url(#cv-dim)"/>
+  <rect x="748" y="184" width="372" height="62" rx="10" fill="#0F1A30" stroke="#8BA8C4" stroke-width="2"/>
+  <text x="934" y="210" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif" font-size="19" font-weight="600" fill="#F7F8FA">No local gateway answers? VARA HF</text>
+  <text x="934" y="234" text-anchor="middle" font-size="15" fill="#BFD8D5">40 m / 80 m to any RMS in the country · General+</text>
+  <path d="M1122,214 C1170,214 1194,200 1194,152" fill="none" stroke="#8BA8C4" stroke-width="3" stroke-dasharray="8 7" marker-end="url(#cv-dim)"/>
+
+  <!-- ===== VOICE LANE ===== -->
+  <rect x="0" y="340" width="210" height="96" rx="12" fill="#24366A" stroke="#4A7FC1" stroke-width="2"/>
+  <text x="105" y="378" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif" font-size="22" font-weight="600" fill="#F7F8FA">Volunteers &amp; crews</text>
+  <text x="105" y="406" text-anchor="middle" font-size="17" fill="#BFD8D5">FRS/GMRS handhelds</text>
+  <line x1="218" y1="388" x2="340" y2="388" stroke="#4A7FC1" stroke-width="3" marker-end="url(#cv-blue)"/>
+  <text x="279" y="372" text-anchor="middle" font-size="14" fill="#D6E8FF">ward FRS/GMRS</text>
+  <text x="279" y="416" text-anchor="middle" font-size="14" fill="#D6E8FF">channel</text>
+  <!-- Team Leader -->
+  <rect x="348" y="340" width="250" height="96" rx="12" fill="#4A7FC1"/>
+  <text x="473" y="378" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif" font-size="22" font-weight="600" fill="#F7F8FA">Team Leader</text>
+  <text x="473" y="406" text-anchor="middle" font-size="16" fill="#D6E8FF">monitors the ward channel</text>
+  <line x1="606" y1="388" x2="738" y2="388" stroke="#4A7FC1" stroke-width="3" marker-end="url(#cv-blue)"/>
+  <text x="672" y="372" text-anchor="middle" font-size="14" fill="#D6E8FF">reads the report</text>
+  <text x="672" y="416" text-anchor="middle" font-size="14" fill="#D6E8FF">to a stake HAM</text>
+  <!-- Stake net -->
+  <rect x="746" y="340" width="548" height="96" rx="12" fill="#24366A" stroke="#4A7FC1" stroke-width="2"/>
+  <text x="1020" y="372" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif" font-size="22" font-weight="600" fill="#F7F8FA">Stake VHF/UHF amateur voice net</text>
+  <rect x="770" y="388" width="240" height="34" rx="6" fill="#4A7FC1"/>
+  <text x="890" y="411" text-anchor="middle" font-size="16" font-weight="600" fill="#F7F8FA">1st: stake repeater</text>
+  <rect x="1030" y="388" width="240" height="34" rx="6" fill="#0F1A30" stroke="#4A7FC1" stroke-width="2"/>
+  <text x="1150" y="411" text-anchor="middle" font-size="16" font-weight="600" fill="#D6E8FF">2nd: published simplex</text>
+  <line x1="1302" y1="388" x2="1392" y2="388" stroke="#4A7FC1" stroke-width="3" marker-end="url(#cv-blue)"/>
+
+  <!-- ===== STAKE EOC (spans both lanes) ===== -->
+  <rect x="1400" y="40" width="264" height="404" rx="14" fill="#0F1A30" stroke="#F7F8FA" stroke-width="2"/>
+  <text x="1532" y="80" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif" font-size="26" font-weight="600" fill="#F7F8FA">Stake EOC</text>
+  <rect x="1418" y="100" width="228" height="86" rx="8" fill="#3D2A0A" stroke="#D4850A" stroke-width="2"/>
+  <text x="1532" y="130" text-anchor="middle" font-size="17" font-weight="600" fill="#FFE8C0">Winlink auto-ingest</text>
+  <text x="1532" y="154" text-anchor="middle" font-size="15" fill="#FFE8C0">form appears in the</text>
+  <text x="1532" y="174" text-anchor="middle" font-size="15" fill="#FFE8C0">Message Center in ~10 s</text>
+  <rect x="1418" y="344" width="228" height="86" rx="8" fill="#0A1A3D" stroke="#4A7FC1" stroke-width="2"/>
+  <text x="1532" y="374" text-anchor="middle" font-size="17" font-weight="600" fill="#D6E8FF">Net control</text>
+  <text x="1532" y="398" text-anchor="middle" font-size="15" fill="#D6E8FF">types the fields into the</text>
+  <text x="1532" y="418" text-anchor="middle" font-size="15" fill="#D6E8FF">template or Message Center</text>
+  <text x="1532" y="236" text-anchor="middle" font-size="16" fill="#8BA8C4">Same records, same SITREP,</text>
+  <text x="1532" y="258" text-anchor="middle" font-size="16" fill="#8BA8C4">whichever lane</text>
+  <text x="1532" y="292" text-anchor="middle" font-size="15" font-weight="600" fill="#F7F8FA">&#8593; To the Area: SITREP + forms</text>
+  <text x="1532" y="312" text-anchor="middle" font-size="15" fill="#BFD8D5">by VARA FM / HF into the CMS;</text>
+  <text x="1532" y="330" text-anchor="middle" font-size="15" fill="#BFD8D5">AWSRM picks up by any connection</text>
+</svg>
+
+<div style="display:flex;gap:16px">
+  <div style="flex:1;background:#24366A;border-radius:12px;padding:18px 22px;display:flex;flex-direction:column;gap:6px">
+    <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:19px;font-weight:600;color:#D4850A;text-transform:uppercase;letter-spacing:0.06em">VARA FM carries the form</p>
+    <p style="font-size:19px;color:#BFD8D5;line-height:1.4">A full Disaster Report is under 2 KB &#8212; seconds on VARA FM, still fast on HF. The record arrives exactly as the volunteer typed it.</p>
+  </div>
+  <div style="flex:1;background:#24366A;border-radius:12px;padding:18px 22px;display:flex;flex-direction:column;gap:6px">
+    <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:19px;font-weight:600;color:#4A7FC1;text-transform:uppercase;letter-spacing:0.06em">Voice carries the urgent</p>
+    <p style="font-size:19px;color:#BFD8D5;line-height:1.4">Injuries, hazards, &#8220;we need help now&#8221; &#8212; and the report from a Team Leader with no HAM in reach. FRS needs no license; a GMRS repeater does.</p>
+  </div>
+  <div style="flex:1;background:#24366A;border-radius:12px;padding:18px 22px;display:flex;flex-direction:column;gap:6px">
+    <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:19px;font-weight:600;color:#C8102E;text-transform:uppercase;letter-spacing:0.06em">Stay off county frequencies</p>
+    <p style="font-size:19px;color:#BFD8D5;line-height:1.4">The county reaches amateur radio at its own Emergency level and tasks ARES hams. Keep the stake net off county, NIFOG (National Interoperability Field Operations Guide) and ARES channels; know which of our HAMs the county will call.</p>
+  </div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;font-size:24px;color:#8BA8C4">Voice sits at Contingency, not Emergency: a working radio path beside VARA FM. Emergency means no radio works at all</p>
+<aside>Contingency is the level this whole system was built for, so it gets its own picture. Two lanes run at once. The data lane is the Winlink path: file to the HAM by AirDrop or USB, template loaded, sent by VHF/UHF VARA FM to the local RMS gateway, or by VARA HF to any gateway in the country if nothing local answers. The voice lane is how coordination and reports move when there is no HAM within reach of a crew: volunteers on the ward FRS/GMRS channel to their Team Leader, Team Leaders to the stake amateur net, repeater first and the published simplex frequency when the repeater is down, and net control at the EOC types the fields in. The right-hand box is the point: both lanes end in the same Message Center and the same SITREP.</aside>
+</section>

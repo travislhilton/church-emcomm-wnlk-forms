@@ -1,0 +1,76 @@
+<section id="tiers" data-transition="fade" style="background:#1A2744;color:#F7F8FA;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;display:flex;flex-direction:column;gap:32px;padding:128px 128px 160px">
+<div style="display:flex;flex-direction:column;gap:8px">
+  <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:22px;letter-spacing:0.14em;text-transform:uppercase;color:#C8102E">Connectivity Planning</p>
+  <h1 style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:64px;font-weight:700;line-height:1.0;color:#F7F8FA">What Fails, in Order, and the PACE Level for Each</h1>
+  <p style="font-size:26px;color:#8BA8C4">Infrastructure fails in a predictable sequence: cell first, then wired internet, then satellite. Each step has its PACE (Primary, Alternate, Contingency, Emergency) level</p>
+</div>
+<div style="display:flex;gap:20px;flex:1">
+  <div style="flex:1;background:linear-gradient(180deg,#5BAD8A 0%,#3D8B69 100%);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="background:#ffffff25;border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center">
+        <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:28px;font-weight:700;color:#F7F8FA">P</p>
+      </div>
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:24px;font-weight:600;color:#F7F8FA">Full<br>Connectivity</p>
+    </div>
+    <div style="background:#ffffff30;border-radius:6px;padding:4px 12px;width:fit-content"><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:600;color:#F7F8FA;letter-spacing:0.08em">PACE: P · PRIMARY</p></div>
+    <p style="font-size:20px;color:#E0F5EC;line-height:1.5">Cell + wired internet + satellite all working normally.</p>
+    <div style="height:1px;background:#ffffff30"></div>
+    <p style="font-size:20px;color:#E0F5EC;font-weight:600">Winlink: Telnet</p>
+    <p style="font-size:20px;color:#E0F5EC">Share: Email, SMS (text message), AirDrop</p>
+  </div>
+  <div style="flex:1;background:linear-gradient(180deg,#4A7FC1 0%,#2D5FA0 100%);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="background:#ffffff25;border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center">
+        <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:28px;font-weight:700;color:#F7F8FA">A</p>
+      </div>
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:24px;font-weight:600;color:#F7F8FA">Cell Down,<br>Internet Works</p>
+    </div>
+    <div style="background:#ffffff30;border-radius:6px;padding:4px 12px;width:fit-content"><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:600;color:#F7F8FA;letter-spacing:0.08em">PACE: A · ALTERNATE</p></div>
+    <p style="font-size:20px;color:#D6E8FF;line-height:1.5"><b>Cell fails first</b> — 2–4 hr battery backup, congestion, tower damage.</p>
+    <div style="height:1px;background:#ffffff30"></div>
+    <p style="font-size:20px;color:#D6E8FF;font-weight:600">Winlink: Telnet (wired)</p>
+    <p style="font-size:20px;color:#D6E8FF">Share: Email, USB, local Wi-Fi</p>
+  </div>
+  <div style="flex:1;background:linear-gradient(180deg,#7B62C8 0%,#5A44A8 100%);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="background:#ffffff25;border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center">
+        <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:28px;font-weight:700;color:#F7F8FA">A</p>
+      </div>
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:24px;font-weight:600;color:#F7F8FA">Internet Down,<br>Starlink Works</p>
+    </div>
+    <div style="background:#ffffff30;border-radius:6px;padding:4px 12px;width:fit-content"><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:600;color:#F7F8FA;letter-spacing:0.08em">PACE: A · ALTERNATE</p></div>
+    <p style="font-size:20px;color:#E8E0FF;line-height:1.5">Wired internet out. Starlink&#8217;s orbital signal is unaffected &#8212; needs only 100W power.</p>
+    <div style="height:1px;background:#ffffff30"></div>
+    <p style="font-size:20px;color:#E8E0FF;font-weight:600">Winlink: Telnet over Starlink</p>
+    <p style="font-size:20px;color:#E8E0FF">Share: USB, Wi-Fi Direct</p>
+  </div>
+  <div style="flex:1;background:linear-gradient(180deg,#D4850A 0%,#A86200 100%);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="background:#ffffff25;border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center">
+        <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:28px;font-weight:700;color:#F7F8FA">C</p>
+      </div>
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:24px;font-weight:600;color:#F7F8FA">All Internet Down,<br>VHF/UHF Radio</p>
+    </div>
+    <div style="background:#ffffff30;border-radius:6px;padding:4px 12px;width:fit-content"><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:600;color:#F7F8FA;letter-spacing:0.08em">PACE: C · CONTINGENCY</p></div>
+    <p style="font-size:20px;color:#FFE8C0;line-height:1.5">No internet path. Amateur radio with the VARA FM modem via the local RMS (Radio Message Server) gateway.</p>
+    <div style="height:1px;background:#ffffff30"></div>
+    <p style="font-size:20px;color:#FFE8C0;font-weight:600">Winlink: VHF/UHF VARA FM</p>
+    <p style="font-size:20px;color:#FFE8C0">Share: USB, physical handoff</p>
+  </div>
+  <div style="flex:1;background:linear-gradient(180deg,#C8102E 0%,#9A0020 100%);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="background:#ffffff25;border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center">
+        <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:28px;font-weight:700;color:#F7F8FA">C</p>
+      </div>
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:24px;font-weight:600;color:#F7F8FA">No Local Gateway,<br>HF Radio</p>
+    </div>
+    <div style="background:#ffffff30;border-radius:6px;padding:4px 12px;width:fit-content"><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:600;color:#F7F8FA;letter-spacing:0.08em">PACE: C · CONTINGENCY</p></div>
+    <p style="font-size:20px;color:#FFD6DE;line-height:1.5">All local infrastructure destroyed. HF reaches gateways nationwide. Below this: PACE E, the runner.</p>
+    <div style="height:1px;background:#ffffff30"></div>
+    <p style="font-size:20px;color:#FFD6DE;font-weight:600">Winlink: HF (VARA HF)</p>
+    <p style="font-size:20px;color:#FFD6DE">Share: USB, FRS/GMRS voice relay</p>
+  </div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;font-size:24px;color:#8BA8C4">Forms, templates and Message Center work the same at every level. This slide says what has failed; the PACE plan (next slide) says what we do</p>
+<aside>Cell is the first to fail — typically 2–4 hours of battery backup, heavy congestion from the start. Wired internet (fiber/cable backbone) is more resilient. Starlink is very resilient because its orbital signal is unaffected by ground-level infrastructure damage. Amateur radio needs only a battery. Each card carries its PACE level: cell is Primary; any surviving internet, wired or Starlink, is Alternate; VARA FM and then VARA HF radio are Contingency. Below HF there is no electronic path at all; that is Emergency, the runner.</aside>
+</section>

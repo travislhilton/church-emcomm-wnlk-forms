@@ -1,0 +1,624 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Church Disaster Report (CCD-1 18)</title>
+<style type="text/css">
+body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; margin: 4px; background: #fff; }
+table { border-collapse: collapse; }
+table.outer { width: 750px; border: 2px solid #000; }
+table.outer td { padding: 4px 6px; vertical-align: top; }
+table.fields { width: 100%; border: 1px solid #999; }
+table.fields td { border: 1px solid #999; padding: 3px 5px; vertical-align: bottom; }
+.hdr { background-color: #c8d8f0; font-weight: bold; font-size: 13px; text-align: center; border-bottom: 2px solid #000; }
+.sechdr { background-color: #dee9f9; font-weight: bold; font-style: italic; font-size: 12px; }
+.lbl { font-size: 10px; color: #444; }
+input[type=text], input[type=date], input[type=tel], input[type=email] { width: 98%; border: none; border-bottom: 1px solid #888; font-size: 12px; font-family: Arial, Helvetica, sans-serif; background: transparent; }
+input[type=date] { width: auto; }
+textarea { width: 99%; border: 1px solid #999; font-size: 12px; font-family: Arial, Helvetica, sans-serif; resize: vertical; }
+input[type=submit] { border: 2px solid green; border-radius: 3px; background-color: #fff; padding: 3px 10px; font-size: 13px; cursor: pointer; }
+input[type=reset]  { border: 2px solid red;   border-radius: 3px; background-color: #fff; padding: 3px 10px; font-size: 13px; cursor: pointer; }
+input[type=button] { border: 2px solid #0f88f2; border-radius: 3px; background-color: #fff; padding: 3px 10px; font-size: 13px; cursor: pointer; }
+.logo { line-height: 1.25; font-family: 'Times New Roman', Times, Georgia, serif; color: #000; text-align: center; }
+.logo .top { font-size: 11px; letter-spacing: 0.20em; font-weight: normal; text-transform: uppercase; display: block; }
+.logo .mid { font-size: 27px; font-weight: normal; letter-spacing: 0.03em; text-transform: uppercase; display: block; white-space: nowrap; line-height: 1.1; }
+.logo .bot { font-size: 12px; letter-spacing: 0.12em; font-weight: normal; text-transform: uppercase; display: block; }
+.exbox { border:2px solid #b00000; background:#fff3f3; padding:4px 8px; margin:4px 0 6px; font-size:13px; font-weight:bold; color:#b00000; }
+.exbox small { font-weight:normal; color:#444; }
+</style>
+<script type="text/javascript">
+
+function AutoGrow(el) {
+  if (el.clientHeight < el.scrollHeight) {
+    el.style.height = el.scrollHeight + "px";
+    if (el.clientHeight < el.scrollHeight)
+      el.style.height = (el.scrollHeight * 2 - el.clientHeight) + "px";
+  }
+}
+
+// Winlink sends the message body as ISO-8859-1 and the form data as plain-text XML:
+// swap the smart quotes, dashes and non-breaking spaces a phone keyboard inserts for plain ASCII.
+function asciiClean(s) {
+  return String(s == null ? '' : s)
+    .replace(/[\u2018\u2019\u201A\u2032\u00B4]/g, "'").replace(/[\u201C\u201D\u201E\u2033]/g, '"')
+    .replace(/[\u2013\u2014\u2015\u2212]/g, '-').replace(/\u2026/g, '...').replace(/[\u00A0\u2007\u202F]/g, ' ')
+    .replace(/[\u2022\u25CF\u25AA]/g, '*').replace(/\r\n?/g, '\n');
+}
+// The message body Winlink sends: plain ASCII with CRLF line ends
+function winlinkBody(s) { return asciiClean(s).replace(/\n/g, '\r\n'); }
+function cleanAllFields() {
+  var els = document.querySelectorAll('#myform input[type=text], #myform input[type=tel], #myform input[type=email], #myform textarea');
+  for (var i = 0; i < els.length; i++) { var c = asciiClean(els[i].value); if (c !== els[i].value) els[i].value = c; }
+}
+// Fields Load Data must never overwrite: Winlink fills them when the form opens
+var LOAD_SKIP = {testCall:1, parseme:1, msg_body:1, attached_text:1, attached_file:1, GPS:1, stn_lat:1, stn_lon:1, stn_grid:1, op_callsign:1, fileToLoad:1, loc_src:1, subj_prefix:1};
+function fv(id) { var e = document.getElementById(id); return e ? asciiClean(e.value).replace(/\s+$/, '').trim() : ''; }
+
+function rb(name) {
+  var els = document.getElementsByName(name);
+  for (var i = 0; i < els.length; i++) { if (els[i].checked) return els[i].value; }
+  return '(not selected)';
+}
+
+function pad(s, w) { s = String(s); while (s.length < w) s += ' '; return s; }
+function row(label, val) { return pad(label + ':', 38) + ' ' + (val || '(blank)') + '\n'; }
+function line(n) { var s=''; for(var i=0;i<n;i++) s+='-'; return s+'\n'; }
+
+// THIS IS AN EXERCISE (like the ICS 213): banner at the top of the message, EXERCISE- subject prefix, |exercise=YES in the tag
+function exOn() { var e = document.getElementById('exercise'); return !!(e && e.checked); }
+function exChanged() { var p = document.getElementById('subj_prefix'); if (p) p.value = exOn() ? 'EXERCISE - ' : ''; }
+function exBanner() { exChanged(); return exOn() ? '*** THIS IS AN EXERCISE *** THIS IS AN EXERCISE *** THIS IS AN EXERCISE ***\n\n' : ''; }
+function buildMsg() {
+  var m = exBanner();
+  m += '============================================================\n';
+  m += '     Church Disaster Report\n';
+  m += '     The Church of Jesus Christ of Latter-day Saints\n';
+  m += '============================================================\n\n';
+  m += 'REPORTING PERIOD\n';
+  m += row('  From', fmtDate(fv('period_from')));
+  m += row('  To', fmtDate(fv('period_to')));
+  m += '\n';
+  m += line(60);
+  m += 'INCIDENT\n';
+  m += row('  Date', fmtDate(fv('inc_date')));
+  m += row('  Location', fv('inc_location'));
+  m += row('  Type', fv('inc_type'));
+  m += row('  Stake', fv('inc_stake'));
+  if (fv('inc_ward')) m += row('  Ward', fv('inc_ward'));
+  m += '\n';
+  m += row('  Stake President', fv('sp_name'));
+  m += row('    Phone', fv('sp_phone'));
+  m += row('    Email', fv('sp_email'));
+  m += '\n';
+  m += row('  Person Submitting Report', fv('sub_name'));
+  m += row('    Phone', fv('sub_phone'));
+  m += row('    Email', fv('sub_email'));
+  m += '\n';
+  m += line(60);
+  m += 'REPORT DETAILS\n\n';
+  m += 'Full-Time Missionaries\n';
+  m += row('  All missionaries safe and accounted for', rb('miss_safe'));
+  if (fv('miss_details')) m += '  Additional details: ' + fv('miss_details') + '\n';
+  m += '\n';
+  m += 'Church Members\n';
+  m += row('  Member injuries', fv('mem_injuries') || '0');
+  m += row('  Member deaths', fv('mem_deaths') || '0');
+  m += row('  Member homes damaged', fv('mem_damaged') || '0');
+  m += row('  Member homes destroyed', fv('mem_destroyed') || '0');
+  if (fv('mem_details')) m += '  Additional details: ' + fv('mem_details') + '\n';
+  m += '\n';
+  m += 'Church Buildings\n';
+  m += '  Damage to facilities:\n  ' + (fv('bldg_damage') || '(none reported)') + '\n\n';
+  m += 'Community\n';
+  m += '  ' + (fv('community') || '(not provided)') + '\n\n';
+  m += 'Volunteers\n';
+  m += row('  Number of volunteers', fv('vol_count') || '0');
+  m += row('  Total volunteer hours', fv('vol_hours') || '0');
+  if (fv('vol_activities')) m += '  Activities: ' + fv('vol_activities') + '\n';
+  m += row('  Volunteer injuries or accidents', rb('vol_injuries'));
+  if (fv('vol_inj_details')) m += '  Additional details: ' + fv('vol_inj_details') + '\n';
+  m += '\n';
+  m += 'Anticipated Needs\n';
+  m += row('  Local Church facilities needed', rb('need_local'));
+  m += row('  Assistance from neighboring units needed', rb('need_neighbor'));
+  m += row('  Assistance from Church HQ needed', rb('need_hq'));
+  if (fv('needs_details')) m += '  Additional details: ' + fv('needs_details') + '\n';
+  m += '\n';
+  var sLat=fv('stn_lat_d'), sLon=fv('stn_lon_d'), sGrid=fv('stn_grid_d');
+  if (sLat || sLon) {
+    m += line(60);
+    m += 'SENDER LOCATION\n';
+    if (sLat) m += row('  Latitude', sLat);
+    if (sLon) m += row('  Longitude', sLon);
+    if (sGrid) m += row('  Grid Square', sGrid);
+    if (fv('loc_src')) m += row('  Source', fv('loc_src'));
+    m += '\n';
+  }
+  m += line(60);
+  m += 'SUBMITTED BY\n';
+  if (fv('op_callsign')) m += '  Callsign:     ' + fv('op_callsign') + '\n';
+  if (fv('op_name'))     m += '  Name:         ' + fv('op_name') + '\n';
+  if (fv('op_position')) m += '  Position:     ' + fv('op_position') + '\n';
+  m += '\n';
+  m += line(60);
+  m += 'Sender: ' + fv('testCall') + ' | Form: PD60000184 | Via Winlink\n';
+  m += '============================================================\n';
+  // Machine-parseable data line for EOC rollup tools — do not edit
+  // CSV rollup line (Oregon/Winlink standard — paste into spreadsheet column A)
+  m += '\nCSV,' + fv('inc_stake') + ',' + fmtDate(fv('inc_date')) + ',' + fv('inc_location') + ',' +
+       fv('inc_type') + ',' + rb('miss_safe') + ',' + (fv('mem_injuries')||'0') + ',' +
+       (fv('mem_deaths')||'0') + ',' + (fv('mem_damaged')||'0') + ',' +
+       (fv('mem_destroyed')||'0') + ',' + (fv('vol_count')||'0') + ',' +
+       (fv('vol_hours')||'0') + ',' + rb('need_local') + ',' + rb('need_neighbor') + ',' +
+       rb('need_hq') + ',' + fv('sub_name') + ',' + fv('sub_phone') + '\n';
+  m += '\n[Church-DR|' + (exOn() ? 'exercise=YES|' : '') + 'stake=' + fv('inc_stake') +
+       (fv('inc_ward') ? '|ward=' + fv('inc_ward') : '') +
+       '|date=' + fmtDate(fv('inc_date')) +
+       '|location=' + fv('inc_location') +
+       '|type=' + fv('inc_type') +
+       '|miss_safe=' + rb('miss_safe') +
+       '|mem_inj=' + (fv('mem_injuries')||'0') +
+       '|mem_dead=' + (fv('mem_deaths')||'0') +
+       '|homes_dmg=' + (fv('mem_damaged')||'0') +
+       '|homes_dest=' + (fv('mem_destroyed')||'0') +
+       '|vol_count=' + (fv('vol_count')||'0') +
+       '|vol_hrs=' + (fv('vol_hours')||'0') +
+       '|vol_inj=' + rb('vol_injuries') +
+       '|need_local=' + rb('need_local') +
+       '|need_neighbor=' + rb('need_neighbor') +
+       '|need_hq=' + rb('need_hq') +
+       '|submitter=' + fv('sub_name') +
+       '|phone=' + fv('sub_phone') +
+       '|sp=' + fv('sp_name') +
+       (fv('stn_lat_d') ? '|lat=' + fv('stn_lat_d') : '') +
+       (fv('stn_lon_d') ? '|lon=' + fv('stn_lon_d') : '') +
+       (fv('stn_grid_d') ? '|grid=' + fv('stn_grid_d') : '') +
+       (fv('op_callsign') ? '|op_call=' + fv('op_callsign') : '') +
+       (fv('op_name')     ? '|op_name=' + fv('op_name')     : '') +
+       (fv('op_position') ? '|op_pos='  + fv('op_position') : '') + ']\n';
+  return m;
+}
+
+function formDataToObject(elForm) {
+  var fields = elForm.querySelectorAll('input, select, textarea'), o = {};
+  for (var i = 0; i < fields.length; i++) {
+    var f = fields[i], k = f.name || f.id;
+    if (!k || f.type === 'button' || f.type === 'submit' || f.type === 'reset') continue;
+    if (k === 'parseme' || k === 'msg_body' || f.type === 'file') continue;
+    switch (f.type) {
+      case 'checkbox': o[k] = +f.checked; break;
+      case 'radio': if (o[k] === undefined) o[k] = ''; if (f.checked) o[k] = f.value; break;
+      default: o[k] = f.value;
+    }
+  }
+  document.getElementById('parseme').value = JSON.stringify(o, null, 2);
+}
+
+function populateForm() {
+  var o = null;
+  try {
+    o = JSON.parse(document.getElementById('parseme').value.replace(/^\uFEFF/, ''));
+    if (!o || typeof o !== 'object') return;
+    for (var k in o) {
+      var el = document.getElementById(k) || document.querySelector('[name="' + k + '"]');
+      if (!el) continue;
+      if (LOAD_SKIP[k]) continue;
+      if (el.type === 'date' && !o[k] && el.value) continue;   // keep today's default when the file has no date
+      if (el.type === 'radio') {
+        var rads = document.querySelectorAll('[name="' + k + '"]');
+        for (var j = 0; j < rads.length; j++) rads[j].checked = (rads[j].value === o[k]);
+      } else if (typeof o[k] === 'number') {
+        el.checked = !!o[k];
+      } else if (el.type === 'date') {
+        el.value = toIsoDate(o[k]);
+      } else {
+        el.value = o[k];
+      }
+    }
+  } catch(e) {}
+  reconcileGPS(o);
+}
+
+function SaveData() {
+  formDataToObject(document.getElementById('myform'));
+  var title = 'Church_Disaster_Report_' + DateStr() + '.txt';
+  saveTextFile(document.getElementById('parseme').value, title);
+}
+// Chrome / Edge: a real Save As dialog so the operator chooses the folder; other browsers: name prompt + download
+function saveTextFile(txt, title) {
+  if (window.showSaveFilePicker) {
+    window.showSaveFilePicker({suggestedName: title, types: [{description: 'Church form data (.txt)', accept: {'text/plain': ['.txt']}}]})
+      .then(function(h) { return h.createWritable().then(function(w) { return w.write(txt).then(function() { return w.close(); }); }); })
+      .catch(function(e) { if (!e || e.name !== 'AbortError') legacySave(txt, title); });
+    return;
+  }
+  title = prompt('Save as:', title);
+  if (!title) return;
+  legacySave(txt, title);
+}
+function legacySave(txt, title) {
+  var blob = new Blob([txt], {type: 'text/plain'});
+  if (window.navigator.msSaveBlob) { window.navigator.msSaveBlob(blob, title); return; }
+  var a = document.createElement('a'); a.href = window.URL.createObjectURL(blob);
+  a.download = title; a.style.display = 'none'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+function DateStr() {
+  var d = new Date();
+  var y = d.getFullYear(), mo = ('0'+(d.getMonth()+1)).slice(-2), day = ('0'+d.getDate()).slice(-2);
+  var h = ('0'+d.getHours()).slice(-2), mi = ('0'+d.getMinutes()).slice(-2);
+  return y+'-'+mo+'-'+day+'_'+h+mi;
+}
+
+function todayIso() {
+  var d = new Date();
+  return d.getFullYear() + '-' + ('0'+(d.getMonth()+1)).slice(-2) + '-' + ('0'+d.getDate()).slice(-2);
+}
+function fmtDate(v) {
+  if (!v) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v.slice(5,7) + '/' + v.slice(8,10) + '/' + v.slice(0,4);
+  return v;
+}
+function toIsoDate(v) {
+  if (!v) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+  var p = v.split('/');
+  if (p.length === 3 && p[2].length === 4) return p[2] + '-' + p[0].padStart(2,'0') + '-' + p[1].padStart(2,'0');
+  return '';
+}
+
+function Checkifinbrowser() {
+  var x = document.getElementById('testCall').value;
+  if (x.indexOf('{Msg') > -1) {
+    document.getElementById('submitbtn').style.visibility = 'hidden';
+    document.getElementById('browser-warning').style.display = '';
+  }
+}
+
+// ---- GPS / Sender Location ----
+function latLonToGridSquare(lat, lon) {
+  var U = 'ABCDEFGHIJKLMNOPQRSTUVWX';
+  lat = parseFloat(lat); lon = parseFloat(lon);
+  if (isNaN(lat) || isNaN(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) return '';
+  var aLat = lat + 90, aLon = lon + 180;
+  return U[Math.trunc(aLon/20)] + U[Math.trunc(aLat/10)] +
+         Math.trunc((aLon/2) % 10) + '' + Math.trunc(aLat % 10);
+}
+function updateGrid() {
+  var gs = latLonToGridSquare(document.getElementById('stn_lat_d').value,
+                               document.getElementById('stn_lon_d').value);
+  document.getElementById('stn_grid_d').value = gs;
+}
+function initGPS() {
+  var gps  = document.getElementById('GPS').value;
+  var lat0 = document.getElementById('stn_lat').value;
+  var lon0 = document.getElementById('stn_lon').value;
+  var gr0  = document.getElementById('stn_grid').value;
+  // {GPS_SIGNED_DECIMAL} is a live GPS fix when Winlink has a receiver,
+  // otherwise the literal "(Not available)" -- only use it if both halves
+  // are numbers; else fall back to the station lat/lon from Winlink setup.
+  if (gps && gps.indexOf('{') < 0) {
+    var p = gps.trim().split(/[\s,]+/);
+    if (p.length >= 2 && !isNaN(parseFloat(p[0])) && !isNaN(parseFloat(p[1]))) { lat0 = p[0]; lon0 = p[1]; }
+  }
+  var ld = document.getElementById('stn_lat_d'), ll = document.getElementById('stn_lon_d');
+  if (lat0 && lat0.indexOf('{') < 0 && !isNaN(parseFloat(lat0))) ld.value = parseFloat(lat0).toFixed(4);
+  if (lon0 && lon0.indexOf('{') < 0 && !isNaN(parseFloat(lon0))) ll.value = parseFloat(lon0).toFixed(4);
+  if (gr0 && gr0.indexOf('{') < 0 && gr0.trim()) document.getElementById('stn_grid_d').value = gr0.trim();
+  else updateGrid();
+  setLocSrc(ld.value && ll.value ? 'STATION' : '');
+}
+// Where the Sender Location came from -- shown under the fields and sent in
+// the message body so the EOC knows whether it is the field worker's position
+// or the HAM operator's station.
+var LOC_SRC = {
+  FIELD:         'Field worker device GPS (from loaded form)',
+  STATION:       'HAM operator station (Winlink setup)',
+  STATION_NOGPS: 'HAM operator station (Winlink setup) - loaded form had no GPS',
+  MANUAL:        'Entered by operator'
+};
+function setLocSrc(code) {
+  var txt = LOC_SRC[code] || '';
+  document.getElementById('loc_src').value = txt;
+  var n = document.getElementById('loc_src_note');
+  if (n) n.textContent = txt ? 'Source: ' + txt : '';
+}
+// After Load Data: keep the field worker's GPS if the loaded file carried a
+// usable lat/lon; otherwise stamp the form with this station's location.
+function reconcileGPS(o) {
+  var ld = document.getElementById('stn_lat_d'), ll = document.getElementById('stn_lon_d');
+  var fileHasFix = o && !isNaN(parseFloat(o.stn_lat_d)) && !isNaN(parseFloat(o.stn_lon_d));
+  if (fileHasFix) {
+    ld.value = o.stn_lat_d; ll.value = o.stn_lon_d;
+    if (!document.getElementById('stn_grid_d').value) updateGrid();
+    setLocSrc('FIELD');
+  } else {
+    ld.value = ''; ll.value = ''; document.getElementById('stn_grid_d').value = '';
+    initGPS();
+    if (ld.value && ll.value) setLocSrc('STATION_NOGPS');
+  }
+}
+// ---- end GPS ----
+
+window.onload = function() {
+  Checkifinbrowser();
+  initGPS();
+  var tc = document.getElementById('testCall').value;
+  if (tc && tc.indexOf('{') < 0) document.getElementById('op_callsign').value = tc;
+  var t = todayIso();
+  document.getElementById('period_from').value = t;
+  document.getElementById('period_to').value   = t;
+  document.getElementById('inc_date').value    = t;
+  document.getElementById('fileToLoad').addEventListener('change', function(e) {
+    var f = e.target.files[0]; if (!f) return;
+    var r = new FileReader();
+    r.onload = function(ev) {
+      document.getElementById('parseme').value = ev.target.result;
+      populateForm();
+    };
+    r.readAsText(f, 'UTF-8');
+    e.target.value = '';   // forget the file so nothing rides along with the submit
+  });
+};
+
+</script>
+</head>
+
+<body>
+<form id="myform" method="post" enctype="multipart/form-data"
+      action="http://{FormServer}:{FormPort}"
+      onsubmit="
+        cleanAllFields();
+        var msg = winlinkBody(buildMsg());
+        document.getElementById('msg_body').value = msg;
+        formDataToObject(this);
+        return confirm('Submit Disaster Report via Winlink?\n\nClick OK, then close the form window to return to the message editor.');
+      ">
+
+<!-- HIDDEN WINLINK FIELDS -->
+<input type="hidden" name="testCall"      id="testCall"      value="{MsgSender}" />
+<input type="hidden" id="parseme"       value="" />
+<input type="hidden" name="msg_body" id="msg_body" value="" />
+<input type="hidden" name="subj_prefix" id="subj_prefix" value="EXERCISE - " />
+<input type="hidden" name="GPS"      id="GPS"      value="{GPS_SIGNED_DECIMAL}" />
+<input type="hidden" name="stn_lat"  id="stn_lat"  value="{Latitude}" />
+<input type="hidden" name="stn_lon"  id="stn_lon"  value="{Longitude}" />
+<input type="hidden" name="stn_grid" id="stn_grid"  value="{GridSquare}" />
+
+<table class="outer" cellspacing="0" cellpadding="0">
+
+  <!-- HEADER -->
+  <tr>
+    <td width="160" style="border-right:1px solid #999; padding:6px;">
+      <div class="logo">
+        <span class="top">The Church of</span>
+        <span class="mid">Jesus Christ</span>
+        <span class="bot">of Latter-day Saints</span>
+      </div>
+    </td>
+    <td>
+      <div class="hdr">DISASTER REPORT</div>
+      <div class="exbox" style="color:#1a3a5c;border-color:#1a3a5c;background:#eef3fa">TRAINING FORM CCD-1 18 &mdash; Copper Creek Dam failure drill, Larkspur Stake, 11:05 on the drill day. UPDATE after block checks: corrected counts, the four Spanish-speaking families reached, homes flooded. Shows a follow-up report replacing estimates with counts. Change anything, then Submit and send it to your EOC.</div>
+      <div class="exbox" id="exbox"><label><input type="checkbox" id="exercise" name="exercise" value="YES" onchange="exChanged()" checked="checked" /> THIS IS AN EXERCISE</label> <small>&mdash; tick for every drill, test or training message; the EOC (Emergency Operations Center) marks it as an exercise</small></div>
+      <table class="fields" style="border:none;">
+        <tr>
+          <td style="border:none; border-bottom:1px solid #999; width:50%;">
+            <div class="lbl">Reporting Period — From (date)</div>
+            <input type="date"  id="period_from" name="period_from" value="2027-03-21" />
+          </td>
+          <td style="border:none; border-bottom:1px solid #999;">
+            <div class="lbl">To (date)</div>
+            <input type="date"  id="period_to" name="period_to" value="2027-03-21" />
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- INCIDENT -->
+  <tr><td colspan="2" class="sechdr">Incident</td></tr>
+  <tr><td colspan="2" style="padding:0;">
+    <table class="fields">
+      <tr>
+        <td width="40%"><div class="lbl">Date</div><input type="date"  id="inc_date" name="inc_date" value="2027-03-21" /></td>
+        <td><div class="lbl">Location</div><input type="text"  id="inc_location" name="inc_location" placeholder="City, State" value="Larkspur 6th Ward boundaries (UPDATE to the 08:20 report)" /></td>
+      </tr>
+      <tr>
+        <td><div class="lbl">Type (e.g. earthquake, flood, fire)</div><input type="text"  id="inc_type" name="inc_type" value="Flood (dam failure)" /></td>
+        <td><div class="lbl">Stake</div><input type="text"  id="inc_stake" name="inc_stake" value="Larkspur Stake" /></td>
+      </tr>
+      <tr>
+        <td colspan="2"><div class="lbl">Ward (optional &mdash; only if this report covers one ward; a Satellite or Stake EOC tracks reports by ward)</div><input type="text"  id="inc_ward" name="inc_ward" value="Larkspur 6th Ward" /></td>
+      </tr>
+      <tr>
+        <td><div class="lbl">Stake President</div><input type="text"  id="sp_name" name="sp_name" value="Parker Dorrance" /></td>
+        <td width="30%"><div class="lbl">Phone Number</div><input type="tel"  id="sp_phone" name="sp_phone" value="555-0111" /></td>
+        <td><div class="lbl">Email Address</div><input type="email"  id="sp_email" name="sp_email" value="parker.dorrance@churchemcomm.sim" /></td>
+      </tr>
+      <tr>
+        <td><div class="lbl">Person Submitting Report</div><input type="text"  id="sub_name" name="sub_name" value="Bishop Heber Bramwell" /></td>
+        <td><div class="lbl">Phone Number</div><input type="tel"  id="sub_phone" name="sub_phone" value="555-0172" /></td>
+        <td><div class="lbl">Email Address</div><input type="email"  id="sub_email" name="sub_email" value="heber.bramwell@churchemcomm.sim" /></td>
+      </tr>
+    </table>
+  </td></tr>
+
+  <!-- REPORT DETAILS HEADER -->
+  <tr><td colspan="2" class="sechdr" style="background:#e0e8e0;">Report Details</td></tr>
+
+  <!-- FULL-TIME MISSIONARIES -->
+  <tr><td colspan="2" style="padding:0;">
+    <table class="fields">
+      <tr><td colspan="3" class="sechdr">Full-Time Missionaries</td></tr>
+      <tr>
+        <td width="55%">
+          <div class="lbl">All missionaries are safe and accounted for:</div>
+          <label><input type="radio" name="miss_safe" value="YES" checked="checked" /> Yes</label> &nbsp;
+          <label><input type="radio" name="miss_safe" value="NO" /> No</label>
+        </td>
+        <td>
+          <div class="lbl">Additional details</div>
+          <textarea id="miss_details" name="miss_details" rows="2" onkeyup="AutoGrow(this)">No missionaries live in the ward boundaries.</textarea>
+        </td>
+      </tr>
+    </table>
+  </td></tr>
+
+  <!-- CHURCH MEMBERS -->
+  <tr><td colspan="2" style="padding:0;">
+    <table class="fields">
+      <tr><td colspan="4" class="sechdr">Church Members</td></tr>
+      <tr>
+        <td><div class="lbl">Member Injuries</div><input type="text"  id="mem_injuries" name="mem_injuries" placeholder="0" style="width:60px;" value="0" /></td>
+        <td><div class="lbl">Member Deaths</div><input type="text"  id="mem_deaths" name="mem_deaths" placeholder="0" style="width:60px;" value="0" /></td>
+        <td><div class="lbl">Homes Damaged</div><input type="text"  id="mem_damaged" name="mem_damaged" placeholder="0" style="width:60px;" value="34" /></td>
+        <td><div class="lbl">Homes Destroyed</div><input type="text"  id="mem_destroyed" name="mem_destroyed" placeholder="0" style="width:60px;" value="2" /></td>
+      </tr>
+      <tr>
+        <td colspan="4"><div class="lbl">Additional details</div>
+        <textarea id="mem_details" name="mem_details" rows="2" onkeyup="AutoGrow(this)">Block checks complete: 34 homes with water inside (30 to 90 cm), two mobile homes on Aspen Court moved off their pads (destroyed). All 88 households accounted for: the four Spanish-speaking families are at the high school shelter (verified by the Team Leader in person at 10:40). 14 families at the warming centre, the rest with relatives.</textarea></td>
+      </tr>
+    </table>
+  </td></tr>
+
+  <!-- CHURCH BUILDINGS -->
+  <tr><td colspan="2" style="padding:0;">
+    <table class="fields">
+      <tr><td class="sechdr">Church Buildings</td></tr>
+      <tr><td><div class="lbl">Damage to Church facilities</div>
+        <textarea id="bldg_damage" name="bldg_damage" rows="3" onkeyup="AutoGrow(this)">Meetinghouse at 550 South 500 East: 20 cm of water inside; closed.</textarea></td></tr>
+    </table>
+  </td></tr>
+
+  <!-- COMMUNITY -->
+  <tr><td colspan="2" style="padding:0;">
+    <table class="fields">
+      <tr><td class="sechdr">Community</td></tr>
+      <tr><td><div class="lbl">Effect on community, including infrastructure such as power, water supplies, and communications</div>
+        <textarea id="community" name="community" rows="3" onkeyup="AutoGrow(this)">No power, no cell, boil-water order south of Center Street. Streets closed by the police.</textarea></td></tr>
+    </table>
+  </td></tr>
+
+  <!-- VOLUNTEERS -->
+  <tr><td colspan="2" style="padding:0;">
+    <table class="fields">
+      <tr><td colspan="3" class="sechdr">Volunteers</td></tr>
+      <tr>
+        <td width="40%"><div class="lbl">Number of Volunteers</div><input type="text"  id="vol_count" name="vol_count" placeholder="0" value="16" /></td>
+        <td><div class="lbl">Total Number of Volunteer Hours</div><input type="text"  id="vol_hours" name="vol_hours" placeholder="0" value="35" /></td>
+      </tr>
+      <tr>
+        <td colspan="2"><div class="lbl">Description of volunteer activities</div>
+          <textarea id="vol_activities" name="vol_activities" rows="2" onkeyup="AutoGrow(this)">Block checks in English and Spanish; rides; moving belongings.</textarea></td>
+      </tr>
+      <tr>
+        <td>
+          <div class="lbl">Volunteer injuries or accidents:</div>
+          <label><input type="radio" name="vol_injuries" value="YES" /> Yes</label> &nbsp;
+          <label><input type="radio" name="vol_injuries" value="NO" checked="checked" /> No</label>
+        </td>
+        <td><div class="lbl">Additional details</div>
+          <textarea id="vol_inj_details" name="vol_inj_details" rows="2" onkeyup="AutoGrow(this)"></textarea></td>
+      </tr>
+    </table>
+  </td></tr>
+
+  <!-- ANTICIPATED NEEDS -->
+  <tr><td colspan="2" style="padding:0;">
+    <table class="fields">
+      <tr><td colspan="3" class="sechdr">Anticipated Needs</td></tr>
+      <tr>
+        <td width="33%">
+          <div class="lbl">Local Church facilities are needed:</div>
+          <label><input type="radio" name="need_local" value="YES" checked="checked" /> Yes</label> &nbsp;
+          <label><input type="radio" name="need_local" value="NO" /> No</label>
+        </td>
+        <td width="33%">
+          <div class="lbl">Assistance from neighboring Church units is needed:</div>
+          <label><input type="radio" name="need_neighbor" value="YES" checked="checked" /> Yes</label> &nbsp;
+          <label><input type="radio" name="need_neighbor" value="NO" /> No</label>
+        </td>
+        <td>
+          <div class="lbl">Assistance from Church headquarters is needed:</div>
+          <label><input type="radio" name="need_hq" value="YES" /> Yes</label> &nbsp;
+          <label><input type="radio" name="need_hq" value="NO" checked="checked" /> No</label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3"><div class="lbl">Additional details</div>
+          <textarea id="needs_details" name="needs_details" rows="2" onkeyup="AutoGrow(this)">Cleaning kits, boots, gloves; mud-out crews when the county reopens the streets; Spanish-speaking volunteers for the crews.</textarea></td>
+      </tr>
+    </table>
+  </td></tr>
+
+  <!-- SENDER LOCATION -->
+  <tr><td colspan="2" class="sechdr">Sender Location</td></tr>
+  <tr><td colspan="2" style="padding:0;">
+    <table class="fields">
+      <tr>
+        <td width="30%">
+          <div class="lbl">Latitude (decimal)</div>
+          <input type="text"  id="stn_lat_d" name="stn_lat_d" placeholder="e.g. 38.5567" style="width:130px;" onchange="updateGrid(); setLocSrc('MANUAL')" value="40.31262" />
+        </td>
+        <td width="30%">
+          <div class="lbl">Longitude (decimal)</div>
+          <input type="text"  id="stn_lon_d" name="stn_lon_d" placeholder="e.g. -111.0937" style="width:130px;" onchange="updateGrid(); setLocSrc('MANUAL')" value="-117.55000" />
+        </td>
+        <td>
+          <div class="lbl">Grid Square</div>
+          <input type="text"  id="stn_grid_d" name="stn_grid_d" style="width:60px;" readonly="readonly" value="DN10fh" />
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" style="padding:2px 4px;">
+          <div id="loc_src_note" class="lbl" style="font-style:italic;"></div>
+          <input type="hidden" id="loc_src" name="loc_src" value="" />
+        </td>
+      </tr>
+    </table>
+  </td></tr>
+
+  <!-- SUBMITTED BY -->
+  <tr><td colspan="2" class="sechdr">Submitted By (Winlink Operator)</td></tr>
+  <tr><td colspan="2" style="padding:0;">
+    <table class="fields">
+      <tr>
+        <td width="18%">
+          <div class="lbl">Callsign (auto)</div>
+          <input type="text" id="op_callsign" name="op_callsign" style="width:90px;" readonly="readonly" />
+        </td>
+        <td width="35%">
+          <div class="lbl">Operator Name</div>
+          <input type="text"  id="op_name" name="op_name" style="width:98%;" value="Teresa Lund" />
+        </td>
+        <td>
+          <div class="lbl">Position / Title</div>
+          <input type="text"  id="op_position" name="op_position" style="width:98%;" value="Ward emergency communications (HAM) operator" />
+        </td>
+      </tr>
+    </table>
+  </td></tr>
+
+  <!-- BUTTONS -->
+  <tr><td colspan="2" style="background:#f0f0f0; padding:6px;">
+    <input type="submit" id="submitbtn" value="Submit via Winlink" />
+    &nbsp;
+    <input type="button" value="Save Data" onclick="SaveData()" />
+    &nbsp;
+    <input type="button" value="Load Data" onclick="document.getElementById('fileToLoad').click()" />
+    <input type="file" id="fileToLoad" accept=".txt" style="display:none;" />
+    &nbsp;
+    <input type="reset" value="Reset Form" />
+    <br/><small style="color:#555;">&#9432; <b>Load Data</b> opens the <b>.txt</b> file a volunteer saved from the browser Worker form (<em>Save to My Phone</em>) and fills every field automatically. Review, then click <em>Submit via Winlink</em>. Address it to your EOC's Winlink address (stake Comms Sheet). <b>Save Data</b> writes the same kind of file from this form.</small>
+    &nbsp;&nbsp;
+    <small>Version 1.0 | Form PD60000184 | Church of Jesus Christ EMCOMM (Emergency Communications)</small>
+  </td></tr>
+  <tr id="browser-warning" style="display:none;"><td colspan="2" style="background:#fffde8; border:2px solid #c8a800; padding:8px; font-size:12px; font-weight:bold; color:#7a5c00;">
+    &#9888; Running outside Winlink Express &mdash; Submit is disabled. Fill the form, then use <em>Save Data</em> to save a file for your radio operator.
+  </td></tr>
+
+</table>
+</form>
+</body>
+</html>
+

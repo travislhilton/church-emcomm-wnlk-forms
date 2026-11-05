@@ -1,0 +1,5 @@
+Form:CCD-1_16_Supply_Order_Larkspur_1st_Ward.html,Church_of_Jesus_Christ_Supply_Order_Viewer.html
+To:
+Subject:<var subj_prefix>Church Supply Order: <var req_stake> (<var order_date>)
+Msg:
+<var msg_body>

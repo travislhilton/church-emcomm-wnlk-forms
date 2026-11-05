@@ -1,0 +1,88 @@
+<section id="eoc-topology" data-transition="fade" style="background:#F7F8FA;color:#1A2744;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;display:flex;flex-direction:column;gap:18px;padding:88px 128px 100px">
+
+<div style="display:flex;flex-direction:column;gap:6px">
+  <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:20px;letter-spacing:0.14em;text-transform:uppercase;color:#C8102E">More Than One EOC</p>
+  <h1 style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:54px;font-weight:700;line-height:1.0;color:#1A2744">Satellite &#8594; Stake Center &#8594; Area: One Message Center, Three Levels</h1>
+  <p style="font-size:22px;color:#6B7A8D">Same software at every EOC. Each one names itself, its parent, and the wards it covers &#8212; then rolls its records up without anyone re-keying them.</p>
+</div>
+
+<div style="display:flex;gap:28px;flex:1">
+
+  <!-- LEFT — topology SVG -->
+  <div style="flex:1.25;background:#1A2744;border-radius:16px;padding:18px 22px;display:flex;flex-direction:column;gap:8px">
+    <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:19px;font-weight:600;color:#5BAD8A;text-transform:uppercase;letter-spacing:0.08em">Who reports to whom</p>
+    <svg viewBox="0 0 960 560" width="100%" height="560" style="display:block" font-family="Public Sans,Arial,sans-serif">
+      <defs>
+        <marker id="arrUp" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L10,5 L0,10 z" fill="#5BAD8A"/></marker>
+        <marker id="arrUpB" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L10,5 L0,10 z" fill="#4A7FC1"/></marker>
+      </defs>
+
+      <!-- Council / Area EOC (only if opened) -->
+      <rect x="300" y="18" width="360" height="86" rx="12" fill="#C8102E"/>
+      <text x="480" y="52" text-anchor="middle" font-size="24" font-weight="700" fill="#F7F8FA">COUNCIL / AREA EOC (if opened)</text>
+      <text x="480" y="80" text-anchor="middle" font-size="16" fill="#FFD6DE">else: SITREP to Area Seventy + welfare line (WSRM → AWSRM) · roster = stakes</text>
+
+      <!-- Stake Center EOC -->
+      <rect x="300" y="196" width="360" height="86" rx="12" fill="#4A7FC1"/>
+      <text x="480" y="230" text-anchor="middle" font-size="24" font-weight="700" fill="#F7F8FA">STAKE CENTER EOC</text>
+      <text x="480" y="258" text-anchor="middle" font-size="16" fill="#D6E8FF">Stake President directs · roster = wards · merges satellites</text>
+
+      <!-- Satellite EOCs -->
+      <rect x="40" y="374" width="270" height="86" rx="12" fill="#2D8B69"/>
+      <text x="175" y="404" text-anchor="middle" font-size="21" font-weight="700" fill="#F7F8FA">SATELLITE EOC 1</text>
+      <text x="175" y="430" text-anchor="middle" font-size="15" fill="#D4F5E6">ward building · wards A, B, C</text>
+      <rect x="650" y="374" width="270" height="86" rx="12" fill="#2D8B69"/>
+      <text x="785" y="404" text-anchor="middle" font-size="21" font-weight="700" fill="#F7F8FA">SATELLITE EOC 2</text>
+      <text x="785" y="430" text-anchor="middle" font-size="15" fill="#D4F5E6">far side of the river · wards F, G</text>
+
+      <!-- Wards (volunteers) -->
+      <g font-size="15" fill="#BFD8D5">
+        <rect x="40" y="508" width="270" height="40" rx="8" fill="#24366A"/><text x="175" y="534" text-anchor="middle">Wards A B C — volunteers, HAMs, FRS/GMRS</text>
+        <rect x="345" y="508" width="270" height="40" rx="8" fill="#24366A"/><text x="480" y="534" text-anchor="middle">Wards D E — report straight to Stake Center</text>
+        <rect x="650" y="508" width="270" height="40" rx="8" fill="#24366A"/><text x="785" y="534" text-anchor="middle">Wards F G — volunteers, HAMs, FRS/GMRS</text>
+      </g>
+
+      <!-- arrows: wards -> EOCs -->
+      <line x1="175" y1="508" x2="175" y2="466" stroke="#8BA8C4" stroke-width="3" marker-end="url(#arrUp)"/>
+      <line x1="785" y1="508" x2="785" y2="466" stroke="#8BA8C4" stroke-width="3" marker-end="url(#arrUp)"/>
+      <line x1="480" y1="508" x2="480" y2="288" stroke="#8BA8C4" stroke-width="3" marker-end="url(#arrUpB)"/>
+
+      <!-- arrows: satellites -> stake center -->
+      <path d="M175,374 L175,330 L400,330 L400,288" fill="none" stroke="#5BAD8A" stroke-width="4" marker-end="url(#arrUpB)"/>
+      <path d="M785,374 L785,330 L560,330 L560,288" fill="none" stroke="#5BAD8A" stroke-width="4" marker-end="url(#arrUpB)"/>
+      <text x="268" y="322" text-anchor="middle" font-size="15" fill="#5BAD8A" font-weight="600">roll-up .json + SITREP</text>
+      <text x="692" y="322" text-anchor="middle" font-size="15" fill="#5BAD8A" font-weight="600">roll-up .json + SITREP</text>
+
+      <!-- arrow: stake -> area -->
+      <line x1="480" y1="196" x2="480" y2="110" stroke="#5BAD8A" stroke-width="4" marker-end="url(#arrUp)"/>
+      <text x="500" y="158" font-size="15" fill="#5BAD8A" font-weight="600">roll-up .json + SITREP (set interval)</text>
+      <text x="460" y="158" text-anchor="end" font-size="14" fill="#8BA8C4">P/A email · C Winlink · E USB</text>
+    </svg>
+  </div>
+
+  <!-- RIGHT — how a roll-up moves + rules -->
+  <div style="width:560px;display:flex;flex-direction:column;gap:14px">
+
+    <div style="background:#EEF2F8;border:2px solid #4A7FC1;border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:8px">
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:19px;font-weight:600;color:#4A7FC1;text-transform:uppercase">How a roll-up moves &#8212; same PACE ladder</p>
+      <div style="display:flex;gap:10px;align-items:flex-start"><span style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:20px;font-weight:700;color:#2D8B69;width:44px;flex-shrink:0">P/A</span><p style="font-size:17px;color:#2D3748;line-height:1.4">Setup tab &#8594; <b>Export Roll-up JSON</b> ("only new" ticked) &#8594; attach to an email to the parent EOC's drop email. The parent's Drop Folder merges it in 10 s, zero-touch.</p></div>
+      <div style="display:flex;gap:10px;align-items:flex-start"><span style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:20px;font-weight:700;color:#D4850A;width:44px;flex-shrink:0">C</span><p style="font-size:17px;color:#2D3748;line-height:1.4">Same file attached to a <b>Winlink</b> message (VARA FM, or HF) to the parent's Winlink address &#8212; about 1 KB per record. The parent's Winlink watcher merges it.</p></div>
+      <div style="display:flex;gap:10px;align-items:flex-start"><span style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:20px;font-weight:700;color:#C8102E;width:44px;flex-shrink:0">E</span><p style="font-size:17px;color:#2D3748;line-height:1.4"><b>USB drive</b> with the printed SITREP by runner &#8594; Drop Folder or <b>Import Roll-up JSON (merge)</b>.</p></div>
+    </div>
+
+    <div style="background:#1A2744;border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:6px">
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:19px;font-weight:600;color:#5BAD8A;text-transform:uppercase">Nothing is counted twice</p>
+      <p style="font-size:17px;color:#BFD8D5;line-height:1.45">A merge skips any record already on file &#8212; by id, Winlink Message-ID, or form content &#8212; and keeps the parent's own status and notes. The same Disaster Report can arrive by Winlink forward <i>and</i> in a roll-up and appear once.</p>
+    </div>
+
+    <div style="background:#FFF8EC;border:2px solid #D4850A;border-radius:12px;padding:14px 20px;display:flex;flex-direction:column;gap:6px">
+      <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:19px;font-weight:600;color:#A86200;text-transform:uppercase">Volunteers change nothing</p>
+      <p style="font-size:17px;color:#2D3748;line-height:1.45">Each ward is assigned to one EOC on the stake sheet (§6d). Its Team Leader card carries <i>that</i> EOC's drop email, Winlink address and net. The SITREP shows <b>Section H: Reporting EOCs</b>, so the Stake sees which satellite &#8212; and the Area which stake &#8212; has gone quiet.</p>
+    </div>
+
+  </div>
+</div>
+
+<p style="position:absolute;left:128px;bottom:64px;font-size:24px;color:#6B7A8D">Open a Satellite EOC when wards cannot reach the Stake Center: roads cut, river between, Stake Center dark, or one team swamped</p>
+<aside>This is the answer to "what if the Stake Center is not reachable, or one part of the stake is cut off?" The same installer choice [3] and the same Message Center run at a ward building as a Satellite EOC, at the Stake Center, and at a Council / Area EOC if the council or welfare region opens one; otherwise the Stake EOC sends straight to the two lines above it, the Area Seventy's council and the welfare line. The only configuration is the Setup tab: level, name, wards covered, and the parent EOC's drop email and Winlink address. The level changes the vocabulary — wards at a Satellite or Stake EOC, stakes at a Council / Area EOC — and the Disaster Report has an optional Ward field for it. Roll-up is one JSON file that rides the same PACE ladder as the SITREP: email attachment at Primary and Alternate, Winlink attachment at Contingency, USB at Emergency. The parent never has to click anything on the first two; the Drop Folder and the Winlink watcher recognise a roll-up and merge it. Dedupe is by id, Winlink Message-ID and a content hash, so forwarding originals and sending a roll-up never double-counts. Import Handoff is a different button: it replaces everything and is only for shift change.</aside>
+</section>

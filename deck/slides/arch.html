@@ -1,0 +1,78 @@
+<section id="arch" data-transition="fade" style="background:#F7F8FA;color:#1A2744;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;display:flex;flex-direction:column;gap:32px;padding:128px 128px 160px">
+<div style="display:flex;flex-direction:column;gap:8px">
+  <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:22px;letter-spacing:0.14em;text-transform:uppercase;color:#C8102E">System Architecture</p>
+  <h1 style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:64px;font-weight:700;line-height:1.05;color:#1A2744">How All the Pieces Fit Together</h1>
+</div>
+<div style="display:flex;gap:16px;flex:1;align-items:stretch">
+  <div style="display:flex;flex-direction:column;gap:8px;width:280px">
+    <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:22px;font-weight:600;color:#6B7A8D;text-align:center;text-transform:uppercase;letter-spacing:0.1em">Layer 1</p>
+    <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:26px;font-weight:600;color:#2D3748;text-align:center">Field Capture</p>
+    <p style="font-size:20px;color:#C8102E;font-weight:600;text-align:center;text-transform:uppercase;letter-spacing:0.08em">Ward Level</p>
+    <div style="background:#F0F4F8;border:2px solid #CBD5E0;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:12px;flex:1">
+      <p style="font-size:22px;color:#2D3748;font-weight:600;text-align:center">Worker Forms</p>
+      <p style="font-size:20px;color:#6B7A8D;text-align:center;line-height:1.5">Any phone, tablet, or PC<br>No install, no account<br>Works fully offline</p>
+      <div style="background:#ffffff;border-radius:8px;padding:12px">
+        <p style="font-size:20px;color:#4A7FC1;text-align:center">Save .txt · Share · Load Draft</p>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:center;padding:0 8px">
+    <x-shape kind="arrow-right" style="width:48px;height:32px;background:#4A7FC1"></x-shape>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px;width:300px">
+    <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:22px;font-weight:600;color:#6B7A8D;text-align:center;text-transform:uppercase;letter-spacing:0.1em">Layer 2</p>
+    <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:26px;font-weight:600;color:#2D3748;text-align:center">HAM Station</p>
+    <p style="font-size:20px;color:#C8102E;font-weight:600;text-align:center;text-transform:uppercase;letter-spacing:0.08em">Ward / Stake</p>
+    <div style="background:#EEF2F8;border:2px solid #4A7FC1;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:12px;flex:1">
+      <p style="font-size:22px;color:#1A2744;font-weight:600;text-align:center">Winlink Express</p>
+      <p style="font-size:20px;color:#6B7A8D;text-align:center;line-height:1.5">Church of Jesus Christ EMCOMM Templates<br>Load Data from .txt file<br>Submit via radio or internet</p>
+      <div style="background:#ffffff;border-radius:8px;padding:12px">
+        <p style="font-size:20px;color:#4A7FC1;text-align:center">Disaster Report · Supply Order<br>Work Crew Log</p>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:center;padding:0 8px">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+      <x-shape kind="arrow-right" style="width:48px;height:32px;background:#C8102E"></x-shape>
+      <p style="font-size:20px;color:#C8102E;font-weight:600;text-align:center">Winlink<br>Network<br><span style="font-size:14px">(radio)</span></p>
+      <div style="margin-top:6px;background:#0f2a1a;border:1px solid #5BAD8A;border-radius:6px;padding:5px 8px;text-align:center">
+        <p style="font-size:13px;color:#6ee7b7;font-weight:600">OR</p>
+        <p style="font-size:12px;color:#6ee7b7">&#127760; Internet<br>Drop Folder</p>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px;width:300px">
+    <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:22px;font-weight:600;color:#6B7A8D;text-align:center;text-transform:uppercase;letter-spacing:0.1em">Layer 3</p>
+    <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:26px;font-weight:600;color:#2D3748;text-align:center">Stake EOC</p>
+    <p style="font-size:20px;color:#C8102E;font-weight:600;text-align:center;text-transform:uppercase;letter-spacing:0.08em">Stake Level</p>
+    <div style="background:#1A2744;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:10px;flex:1">
+      <p style="font-size:22px;color:#BFD8D5;font-weight:600;text-align:center">EOC Message Center</p>
+      <div style="background:#0D2010;border:1px solid #5BAD8A;border-radius:8px;padding:10px">
+        <p style="font-size:17px;color:#5BAD8A;font-weight:600;text-align:center">Python Server (local)</p>
+        <p style="font-size:15px;color:#8BA8C4;text-align:center">SQLite · port 8080 · shared on the local network (LAN)</p>
+      </div>
+      <p style="font-size:18px;color:#8BA8C4;text-align:center;line-height:1.5">Browser dashboard on EOC laptop<br>Other operators connect via the Wi-Fi web address (URL)<br>Parses all 3 form types · SITREPs</p>
+      <div style="background:#ffffff15;border-radius:8px;padding:10px">
+        <p style="font-size:18px;color:#BFD8D5;text-align:center">Work Items · Roster · Reports<br>Supply Orders · Crew Logs · Notes</p>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:center;padding:0 8px">
+    <x-shape kind="arrow-right" style="width:48px;height:32px;background:#4A7FC1"></x-shape>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px;width:240px">
+    <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:22px;font-weight:600;color:#6B7A8D;text-align:center;text-transform:uppercase;letter-spacing:0.1em">Layer 4</p>
+    <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:26px;font-weight:600;color:#2D3748;text-align:center">Council / Area</p>
+    <p style="font-size:20px;color:#C8102E;font-weight:600;text-align:center;text-transform:uppercase;letter-spacing:0.08em">Area Level</p>
+    <div style="background:#F0F4F8;border:2px solid #C8102E;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:12px;flex:1">
+      <p style="font-size:22px;color:#1A2744;font-weight:600;text-align:center">WSRM &#8594; AWSRM</p>
+      <p style="font-size:20px;color:#6B7A8D;text-align:center;line-height:1.5">Welfare line receives Winlink<br>approves Supply Orders<br>Council gets the SITREP</p>
+      <div style="background:#ffffff;border-radius:8px;padding:12px">
+        <p style="font-size:20px;color:#C8102E;text-align:center">Responds via Winlink</p>
+      </div>
+    </div>
+  </div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;font-size:24px;color:#6B7A8D">Two doors into the EOC: Drop Folder (P / A) and Winlink (A Telnet, C radio). The same Winlink reaches the welfare line at every level</p>
+<aside>The key architectural insight: two parallel paths into the EOC. Path A (radio): volunteers → HAM operator loads .txt into Winlink → sends by radio → EOC auto-ingests from Winlink Received folder. Path B (internet): volunteers → email/text/AirDrop .txt to EOC operator → operator saves to EOC Drop Folder → auto-ingested within 10 seconds. Both paths produce identical records in the EOC. Radio is the primary path when cell/internet is down; internet path is faster when connectivity is available. The chain is field &#8594; Satellite EOC &#8594; Stake EOC &#8594; the council line (Area Seventy) and the welfare line (WSRM, AWSRM): the same Message Center at a Satellite EOC rolls up to the Stake Center, and the Stake EOC rolls up to the Council / Area EOC when the council or welfare region opens one — see the EOC topology slide.</aside>
+</section>

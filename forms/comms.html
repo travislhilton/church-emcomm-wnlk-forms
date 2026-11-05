@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Church of Jesus Christ EMCOMM (Emergency Communications) — Comms Sheet</title>
+<!--
+  Stake comms sheet for phones: points of contact, where reports go (EOC Winlink
+  addresses and drop emails), Winlink gateways in order, voice nets.
+  The stake Welfare and Self-Reliance Specialist exports the sheet from the EOC
+  Message Center (Setup tab -> Comms Sheet -> Export sheet JSON) and sends it
+  to volunteers and HAMs. Open it here with "Load sheet file" — it stays on the
+  phone (localStorage) and works offline afterwards. A sheet published in this
+  repository can also be opened by code:  comms.html?stake=<code>  ->  comms/<code>.json
+-->
+<style>
+:root{--navy:#1A2744;--red:#C8102E;--blue:#4A7FC1;--green:#5BAD8A;--amber:#D4850A;--bg:#F7F8FA;--card:#fff;--text:#1A2744;--muted:#6B7A8D;--border:#D1DBE8}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px;line-height:1.5}
+.page{max-width:560px;margin:0 auto;padding:22px 16px 60px}
+.church-name{text-align:center;margin-bottom:14px;font-family:'Times New Roman',Times,Georgia,serif;color:var(--navy);line-height:1.2}
+.church-top{display:block;font-size:10px;letter-spacing:.3em;text-transform:uppercase}
+.church-mid{display:block;font-size:24px;letter-spacing:.04em;text-transform:uppercase;line-height:1.1;white-space:nowrap}
+.church-bot{display:block;font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+.divider{width:48px;height:2px;background:var(--red);margin:10px auto}
+h1{text-align:center;font-size:20px;color:var(--navy);margin-bottom:2px}
+.sub{text-align:center;font-size:13px;color:var(--muted);margin-bottom:16px}
+.card{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.card h2{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:14px}
+.row:last-child{border-bottom:none}
+.row .k{color:var(--navy);font-weight:600;min-width:0}
+.row .k small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.row .v{text-align:right;min-width:0;word-break:break-word}
+.row .v a{color:var(--blue);text-decoration:none;font-weight:600}
+.ev{background:#FEF3C7;border:1.5px solid #F59E0B;border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:14px}
+.ev b{color:#92400E}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.btn{flex:1;min-width:140px;background:var(--navy);color:#fff;border:none;border-radius:10px;padding:12px 10px;font-size:14px;font-weight:600;cursor:pointer;text-align:center}
+.btn.sec{background:#EEF2F8;color:var(--navy)}
+.empty{text-align:center;color:var(--muted);padding:24px 10px;font-size:14px}
+.meta{font-size:12px;color:var(--muted);text-align:center;margin-bottom:12px}
+.foot{font-size:12px;color:var(--muted);line-height:1.55;margin-top:14px}
+.foot p{margin-top:6px}
+.pace-title{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);font-weight:700;margin-top:0}
+.pace{border-collapse:collapse;width:100%;margin-top:4px;color:var(--text)}
+.pace td{padding:4px 6px 4px 0;vertical-align:top;border-bottom:1px solid var(--border)}
+.pace tr:last-child td{border-bottom:none}
+.pace td:first-child{width:26px;font-weight:800;font-size:14px;text-align:center;padding-right:8px}
+.pace .p{color:var(--green)}.pace .a{color:var(--blue)}.pace .c{color:var(--amber)}.pace .e{color:var(--red)}
+pre{white-space:pre-wrap;font-size:12px}
+.home{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 6px;margin:0 0 4px -6px;font:600 17px/1 Arial,Helvetica,sans-serif;color:#1a3a5c;text-decoration:none}.home span{font-size:28px;line-height:1;margin-top:-3px}
+@media print{.home,.btns,.meta,.foot{display:none}body{background:#fff}.card{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="page">
+  <a class="home" href="index.html"><span>&#8249;</span>Home</a>
+  <div class="church-name"><span class="church-top">The Church of</span><span class="church-mid">Jesus Christ</span><span class="church-bot">of Latter-day Saints</span></div>
+  <div class="divider"></div>
+  <h1>EMCOMM Comms Sheet</h1>
+  <p class="sub" id="sub">Emergency communications — who to call, where reports go, which nets to use</p>
+
+  <div class="btns">
+    <label class="btn">&#128194; Load sheet file<input type="file" accept=".json,application/json" style="display:none" onchange="loadFile(event)"></label>
+    <button class="btn sec" onclick="window.print()">&#128424; Print</button>
+    <button class="btn sec" onclick="shareText()">&#8599; Share as text</button>
+  </div>
+  <p class="meta" id="meta"></p>
+  <div id="ev" class="ev" style="display:none"></div>
+  <div id="view"><div class="empty">No sheet loaded yet.<br>Ask the stake Welfare and Self-Reliance Specialist (emergency communications) for the comms sheet file (<i>church_comms_sheet_….json</i>) and tap <b>Load sheet file</b>. It stays on this phone and works without service afterwards.</div></div>
+
+  <div class="foot">
+    <p class="pace-title">PACE levels (Primary, Alternate, Contingency, Emergency) &#8212; which path to use</p>
+    <table class="pace">
+      <tr><td class="p">P</td><td><b>Primary</b> &#8212; cell and internet up: text or email the form file</td></tr>
+      <tr><td class="a">A</td><td><b>Alternate</b> &#8212; any surviving internet: Wi-Fi anywhere, Starlink</td></tr>
+      <tr><td class="c">C</td><td><b>Contingency</b> &#8212; radio: forms by Winlink over VHF/UHF (very high / ultra high frequency) with VARA FM (VARA: the sound-card radio modem Winlink uses), then HF (high frequency) with VARA HF; voice on the nets above</td></tr>
+      <tr><td class="e">E</td><td><b>Emergency</b> &#8212; runner with the paper form (<b>Print</b> under the form, or a blank form filled by hand)</td></tr>
+    </table>
+    <p><b>Rule:</b> step down a level after two failed attempts in 15 minutes, or when the Stake President decides it on the specialist's recommendation. Step back up only after a test message round-trips.</p>
+    <p>Reports travel field &#8594; Satellite EOC (Emergency Operations Center) &#8594; Stake EOC &#8594; the council line (Area Seventy) and the welfare line (Welfare and Self-Reliance Manager, WSRM, then the Area Welfare and Self-Reliance Manager, AWSRM).</p>
+    <p style="margin-top:8px"><a href="index.html" style="color:inherit">Back to the forms</a> &middot; An independent volunteer project supporting Church emergency communications, not an official product of The Church of Jesus Christ of Latter-day Saints.</p>
+  </div>
+</div>
+<script>
+var TABLES=[
+  {key:'contacts', title:'Points of contact', k:['role'], sub:['name'], v:['phone','winlink','email']},
+  {key:'eocs', title:'Where reports go (EOCs)', k:['level'], sub:['name'], v:['winlink','email','phone']},
+  {key:'gateways', title:'Winlink gateways — try in this order', k:['call'], sub:['loc','notes'], v:['freq','mode']},
+  {key:'nets', title:'Voice nets', k:['name'], sub:['when'], v:['freq','offset','tone','mode']}
+];
+var data=null;
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function fmt(ms){ if(!ms) return ''; var d=new Date(ms); return d.toLocaleDateString()+' '+d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); }
+function val(k,v){ if(!v) return ''; if(k==='phone') return '<a href="tel:'+esc(v.replace(/[^+\d]/g,''))+'">'+esc(v)+'</a>'; if(k==='email') return '<a href="mailto:'+esc(v)+'">'+esc(v)+'</a>'; if(k==='tone') return 'T '+esc(v); return esc(v); }
+function render(){
+  var s=(data&&data.sheet)||{}, h='';
+  document.getElementById('sub').textContent=(s.org?s.org+' — emergency communications':'Emergency communications')+' — who to call, where reports go, which nets to use';
+  document.getElementById('meta').textContent=data?('Sheet dated '+fmt(data.updatedMs)+(data.from&&data.from.name?' · from '+data.from.name:'')+' · replace it when a newer one arrives'):'';
+  var ev=document.getElementById('ev'); var lines=(data&&data.eventLines)||[]; ev.style.display=lines.length?'':'none'; ev.innerHTML='<b>For this event:</b> '+lines.map(esc).join(' · ');
+  TABLES.forEach(function(t){ var rows=(s[t.key]||[]).filter(function(r){return Object.keys(r).some(function(k){return r[k];});}); if(!rows.length) return;
+    h+='<div class="card"><h2>'+esc(t.title)+'</h2>'+rows.map(function(r){ return '<div class="row"><div class="k">'+esc(t.k.map(function(k){return r[k];}).filter(Boolean).join(' ')||'—')+(t.sub.some(function(k){return r[k];})?'<small>'+esc(t.sub.map(function(k){return r[k];}).filter(Boolean).join(' · '))+'</small>':'')+'</div><div class="v">'+t.v.map(function(k){return val(k,r[k]);}).filter(Boolean).join('<br>')+'</div></div>'; }).join('')+'</div>'; });
+  if(s.schedule) h+='<div class="card"><h2>Net schedule</h2><pre>'+esc(s.schedule)+'</pre></div>';
+  if(s.notes) h+='<div class="card"><h2>Other notes</h2><pre>'+esc(s.notes)+'</pre></div>';
+  document.getElementById('view').innerHTML=h||'<div class="empty">The sheet is empty.</div>';
+}
+function take(d, src){ if(!d||d.kind!=='church_comms_sheet'||!d.sheet){ alert('That is not a comms sheet file.'); return; } data=d; try{ localStorage.setItem('church_comms_sheet', JSON.stringify(d)); }catch(e){} render(); }
+function loadFile(e){ var f=e.target.files[0]; e.target.value=''; if(!f) return; var r=new FileReader(); r.onload=function(ev){ var d; try{ d=JSON.parse(ev.target.result); }catch(err){ alert('Could not read that file.'); return; } take(d,'file'); }; r.readAsText(f); }
+function asText(){ var s=(data&&data.sheet)||{}, out=['EMCOMM COMMS SHEET'+(s.org?' — '+s.org:''),'Sheet dated '+fmt(data&&data.updatedMs)]; TABLES.forEach(function(t){ var rows=(s[t.key]||[]); if(!rows.length) return; out.push(''); out.push(t.title.toUpperCase()); rows.forEach(function(r){ out.push('  '+Object.keys(r).filter(function(k){return r[k];}).map(function(k){return k+': '+r[k];}).join(' | ')); }); }); if(s.schedule){ out.push(''); out.push('NET SCHEDULE'); out.push(s.schedule); } if(s.notes){ out.push(''); out.push('NOTES'); out.push(s.notes); } out.push(''); out.push('PACE LEVELS'); out.push('  P Primary     - cell and internet: text or email the form file'); out.push('  A Alternate   - any surviving internet (Wi-Fi anywhere, Starlink)'); out.push('  C Contingency - radio: forms by Winlink VHF/UHF VARA FM, then VARA HF; voice on the nets above'); out.push('  E Emergency   - runner with the paper form'); out.push('  Rule: step down after two failed attempts in 15 min or when the Stake President declares it; back up only after a test message round-trips.'); return out.join('\n'); }
+function shareText(){ if(!data){ alert('Load a sheet first.'); return; } var t=asText(); if(navigator.share){ navigator.share({title:'EMCOMM Comms Sheet', text:t}).catch(function(){}); } else if(navigator.clipboard){ navigator.clipboard.writeText(t).then(function(){ alert('Copied as text — paste it into a message.'); }); } }
+(function(){
+  var q={}; location.search.replace(/^\?/,'').split('&').forEach(function(p){ var kv=p.split('='); if(kv[0]) q[decodeURIComponent(kv[0])]=decodeURIComponent(kv[1]||''); });
+  try{ var raw=localStorage.getItem('church_comms_sheet'); if(raw){ data=JSON.parse(raw); render(); } }catch(e){}
+  if(q.stake && /^[A-Za-z0-9_-]+$/.test(q.stake)){
+    fetch('comms/'+q.stake+'.json',{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); }).then(function(d){ if(!data || (d.updatedMs||0)>=(data.updatedMs||0)) take(d,'url'); }).catch(function(){ if(!data) document.getElementById('view').innerHTML='<div class="empty">No published sheet for "'+esc(q.stake)+'". Load the sheet file instead.</div>'; });
+  }
+})();
+</script>
+</body>
+</html>

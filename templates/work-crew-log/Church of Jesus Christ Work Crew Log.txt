@@ -1,0 +1,5 @@
+Form:Church_of_Jesus_Christ_Work_Crew_Log.html,Church_of_Jesus_Christ_Work_Crew_Log_Viewer.html
+To:
+Subject:<var subj_prefix>Church Work Crew Log: <var chief_stake> - <var chief_name> (<var log_date>)
+Msg:
+<var msg_body>

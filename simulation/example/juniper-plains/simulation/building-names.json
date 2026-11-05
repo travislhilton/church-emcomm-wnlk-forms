@@ -1,0 +1,282 @@
+[
+ {
+  "building_id": "B-SLK-1",
+  "address": "300 N 200 W, Larkspur, WL 89701, United States",
+  "name": "Larkspur Stake Center",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SLK-2",
+  "address": "950 S 600 W, Larkspur, WL 89701, United States",
+  "name": "Larkspur Meetinghouse, 950 S 600 W",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SLK-3",
+  "address": "550 S 500 E, Larkspur, WL 89701, United States",
+  "name": "Larkspur Meetinghouse, 550 S 500 E",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SLK-4",
+  "address": "1250 N 200 E, Larkspur, WL 89701, United States",
+  "name": "Larkspur Meetinghouse, 1250 N 200 E",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SLE-1",
+  "address": "150 N 2000 E, Larkspur, WL 89701, United States",
+  "name": "Larkspur East Stake Center",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SLE-2",
+  "address": "1150 S 1450 E, Larkspur, WL 89701, United States",
+  "name": "Larkspur Meetinghouse, 1150 S 1450 E",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SLE-3",
+  "address": "500 S 1700 W, Copper Ridge, WL 89702, United States",
+  "name": "Copper Ridge Meetinghouse, 500 S 1700 W",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SLE-4",
+  "address": "1300 N 1700 E, Larkspur, WL 89701, United States",
+  "name": "Larkspur Meetinghouse, 1300 N 1700 E",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SLW-1",
+  "address": "250 N 2000 W, Larkspur, WL 89701, United States",
+  "name": "Larkspur West Stake Center",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SLW-2",
+  "address": "300 S 1950 E, Saddleback, WL 89706, United States",
+  "name": "Saddleback Meetinghouse, 300 S 1950 E",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SLW-3",
+  "address": "1100 S 1450 W, Larkspur, WL 89701, United States",
+  "name": "Larkspur Meetinghouse, 1100 S 1450 W",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SLW-4",
+  "address": "1350 N 2300 W, Larkspur, WL 89701, United States",
+  "name": "Larkspur Meetinghouse, 1350 N 2300 W",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SCR-1",
+  "address": "450 N 50 E, Copper Ridge, WL 89702, United States",
+  "name": "Copper Ridge Stake Center",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SCR-2",
+  "address": "750 S 750 W, Copper Ridge, WL 89702, United States",
+  "name": "Copper Ridge Meetinghouse, 750 S 750 W",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SCR-3",
+  "address": "650 S 850 E, Copper Ridge, WL 89702, United States",
+  "name": "Copper Ridge Meetinghouse, 650 S 850 E",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SCR-4",
+  "address": "1050 N 1350 E, Copper Ridge, WL 89702, United States",
+  "name": "Copper Ridge Meetinghouse, 1050 N 1350 E",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SJS-1",
+  "address": "100 N 0 E, Juniper Springs, WL 89703, United States",
+  "name": "Juniper Springs Stake Center",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SJS-2",
+  "address": "800 S 1200 W, Juniper Springs, WL 89703, United States",
+  "name": "Juniper Springs Meetinghouse, 800 S 1200 W",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SJS-3",
+  "address": "700 S 1300 E, Juniper Springs, WL 89703, United States",
+  "name": "Juniper Springs Meetinghouse, 700 S 1300 E",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SJS-4",
+  "address": "2000 S 400 E, Juniper Springs, WL 89703, United States",
+  "name": "Juniper Springs Meetinghouse, 2000 S 400 E",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SKS-1",
+  "address": "50 N 100 E, Kestrel, WL 89704, United States",
+  "name": "Kestrel Stake Center",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SKS-2",
+  "address": "750 N 3000 W, Kestrel, WL 89704, United States",
+  "name": "Kestrel Meetinghouse, 750 N 3000 W",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SKS-3",
+  "address": "900 S 1900 E, Kestrel, WL 89704, United States",
+  "name": "Kestrel Meetinghouse, 900 S 1900 E",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SKS-4",
+  "address": "1400 S 750 W, Kestrel, WL 89704, United States",
+  "name": "Kestrel Meetinghouse, 1400 S 750 W",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SAF-1",
+  "address": "100 N 100 W, Alder Flat, WL 89705, United States",
+  "name": "Alder Flat Stake Center",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SAF-2",
+  "address": "2500 N 1400 E, Alder Flat, WL 89705, United States",
+  "name": "Alder Flat Meetinghouse, 2500 N 1400 E",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SAF-3",
+  "address": "1900 N 1750 W, Alder Flat, WL 89705, United States",
+  "name": "Alder Flat Meetinghouse, 1900 N 1750 W",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SAF-4",
+  "address": "2000 S 800 E, Alder Flat, WL 89705, United States",
+  "name": "Alder Flat Meetinghouse, 2000 S 800 E",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SSB-1",
+  "address": "100 N 0 E, Saddleback, WL 89706, United States",
+  "name": "Saddleback Stake Center",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SSB-2",
+  "address": "2000 N 900 W, Saddleback, WL 89706, United States",
+  "name": "Saddleback Meetinghouse, 2000 N 900 W",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SSB-3",
+  "address": "1700 S 700 E, Saddleback, WL 89706, United States",
+  "name": "Saddleback Meetinghouse, 1700 S 700 E",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-SSB-4",
+  "address": "3250 S 1100 W, Saddleback, WL 89706, United States",
+  "name": "Saddleback Meetinghouse, 3250 S 1100 W",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example building."
+ },
+ {
+  "building_id": "B-WSR",
+  "address": "Larkspur Welfare and Self-Reliance Office, 550 N 800 E, Larkspur, WL 89701, United States",
+  "name": "Larkspur Welfare and Self-Reliance Office",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example facility."
+ },
+ {
+  "building_id": "B-SLK-F1",
+  "address": "Larkspur Care Center, 800 S 700 E, Larkspur, WL 89701, United States",
+  "name": "Larkspur Care Center",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example facility."
+ },
+ {
+  "building_id": "B-SCR-F1",
+  "address": "Copper Ridge Retirement Village, 50 S 400 E, Copper Ridge, WL 89702, United States",
+  "name": "Copper Ridge Retirement Village",
+  "basis": "invented",
+  "source_url": null,
+  "note": "Invented example facility."
+ }
+]

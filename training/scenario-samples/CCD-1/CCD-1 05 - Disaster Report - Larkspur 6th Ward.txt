@@ -1,0 +1,5 @@
+Form:CCD-1_05_Disaster_Report_Larkspur_6th_Ward.html,Church_of_Jesus_Christ_Disaster_Report_Viewer.html
+To:
+Subject:<var subj_prefix>Church Disaster Report: <var inc_stake> - <var inc_type> (<var inc_date>)
+Msg:
+<var msg_body>

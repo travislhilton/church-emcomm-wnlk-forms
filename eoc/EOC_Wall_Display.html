@@ -1,0 +1,825 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Church of Jesus Christ EMCOMM — EOC Wall Display</title>
+<!--
+  EOC Wall Display ("big board") for a TV, projector or spare monitor in the EOC.
+  Read-only common operating picture, refreshed from the EOC server every 10 s.
+  Open it from the EOC server:  http://<server-ip>:8080/wall   then press F for full screen.
+  No internet needed: no external fonts, scripts or images.
+  Options (URL):  ?refresh=10  seconds between refreshes   ?sitrep=2  SITREP interval (hours; overrides the event's interval on this screen only)
+                  ?latest=12   rows in the Latest Arrivals list
+-->
+<style>
+:root{
+  --bg:#0B1220; --panel:#131C2E; --panel2:#182440; --line:#24324F; --fg:#F2F5F9; --muted:#9FB0C8;
+  --red:#E0263F; --amber:#F2A20C; --green:#3FBF7F; --blue:#4F8FE0; --navy:#1A2744; --purple:#8A6CE0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:calc(0.52vw + 0.52vh);}
+body{background:var(--bg);color:var(--fg);font-family:"Segoe UI",Arial,Helvetica,sans-serif;height:100vh;overflow:hidden;display:flex;flex-direction:column;padding:1.2vh 1.2vw;gap:1vh;}
+.hdr{display:flex;align-items:center;gap:2vw;border-bottom:2px solid var(--line);padding-bottom:0.8vh}
+#fsbtn{position:fixed;right:1vw;bottom:1.2vh;z-index:50;font:600 15px/1 Arial,Helvetica,sans-serif;padding:10px 16px;border-radius:8px;border:1px solid rgba(255,255,255,.35);background:rgba(10,20,40,.75);color:#fff;cursor:pointer;opacity:.85;transition:opacity .3s}
+body.isfs #fsbtn{opacity:0;pointer-events:none}
+body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
+@media print{#fsbtn{display:none}}
+.hdr .eoc{min-width:22vw}
+.hdr .eoc .n{font-size:2.1rem;font-weight:800;line-height:1.05}
+.hdr .eoc .l{font-size:1.1rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:.3rem}
+.hdr .ev{flex:1;text-align:center;min-width:0}
+.hdr .ev .n{font-size:2.6rem;font-weight:800;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr .ev .s{font-size:1.15rem;color:var(--muted);margin-top:.3rem}
+.hdr .ev .closed{display:inline-block;background:var(--amber);color:#111;font-weight:800;padding:.1rem .7rem;border-radius:.4rem;margin-left:.6rem;font-size:1.1rem;vertical-align:middle}
+.hdr .clock{text-align:right;min-width:16vw}
+.hdr .clock .t{font-size:3.4rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+.hdr .clock .d{font-size:1.1rem;color:var(--muted);margin-top:.3rem}
+.drillbar{display:none;background:#4c1d95;color:#ede9fe;border-radius:.6rem;padding:.4vh .8vw;font-size:1.35rem;font-weight:700;align-items:center;gap:1.2vw;flex-wrap:wrap}
+.drillbar.show{display:flex}.drillbar b{color:#fff}
+#alerts{display:none;background:var(--red);color:#fff;border-radius:.6rem;padding:.5vh .6vw;font-size:1.5rem;font-weight:700;line-height:1.35;flex-wrap:wrap;gap:.4vh .5vw}
+#alerts.warn{background:var(--amber);color:#111}
+#alerts.show{display:flex}
+#alerts .al{display:inline-block;background:#00000033;border-radius:.4rem;padding:.15rem .7rem}
+/* KPI tiles size to their content (a fixed height let the bottom line spill into the panels below) */
+.tiles{display:grid;grid-template-columns:repeat(8,1fr);gap:0.8vw}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:.8rem;padding:.9vh .8vw;display:flex;flex-direction:column;justify-content:space-between;gap:.4vh;min-width:0;overflow:hidden}
+.tile .k{font-size:.95rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;line-height:1.15;max-width:100%}
+.tile .k .kx{display:block;font-size:.72rem;text-transform:none;letter-spacing:0;margin-top:.15rem}
+.tile .v{font-size:3.6rem;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tile .v.pair{font-size:2.9rem}
+.tile .v small{font-size:1.4rem;color:var(--muted);font-weight:600}
+.tile .sub{font-size:.95rem;color:var(--muted);line-height:1.25;max-width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.tile.pace{align-items:center;text-align:center}
+.tile.pace .v{font-size:5rem}
+.tile.pace.P{background:#113D2B;border-color:var(--green)} .tile.pace.A{background:#13305A;border-color:var(--blue)}
+.tile.pace.C{background:#5A3A05;border-color:var(--amber)} .tile.pace.E{background:#5A0E1B;border-color:var(--red)}
+.tile.pace.none{border-style:dashed}
+.tile.hot{border-color:var(--red);background:#2A1420}
+.main{flex:1;display:grid;grid-template-columns:5fr 4fr 3fr;gap:0.8vw;min-height:0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:.8rem;padding:1vh 0.9vw;display:flex;flex-direction:column;min-height:0;min-width:0}
+.panel h2{font-size:1.15rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:.7vh;display:flex;justify-content:space-between;align-items:baseline}
+.panel h2 span{font-weight:600;letter-spacing:0;text-transform:none;font-size:1rem}
+.body{flex:1;min-height:0;overflow:hidden}
+/* roster chips */
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(11.5vw,1fr));gap:.5vh .4vw;align-content:start}
+.chip{border-radius:.5rem;padding:.5vh .6vw;background:var(--panel2);border-left:.45rem solid var(--muted);min-width:0}
+.chip .n{font-size:1.25rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip .s{font-size:.95rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip.reported{border-left-color:var(--green)} .chip.voice{border-left-color:var(--blue)}
+.chip.waiting{border-left-color:var(--muted)} .chip.overdue{border-left-color:var(--red);background:#2A1420}
+.chip.overdue .s{color:#FF9DAA;font-weight:700} .chip.missno{border-left-color:var(--red);background:var(--red)} .chip.missno .s{color:#fff;font-weight:800}
+.left{display:flex;flex-direction:column;gap:0.8vw;min-height:0}
+.legend{display:flex;gap:1vw;font-size:.95rem;color:var(--muted);margin-top:.6vh;flex-wrap:wrap}
+.legend i{display:inline-block;width:.9rem;height:.9rem;border-radius:.2rem;vertical-align:-.1rem;margin-right:.3rem}
+/* latest list */
+.list{display:flex;flex-direction:column;gap:.45vh}
+.row{display:grid;grid-template-columns:5.2rem 3.6rem 1fr auto;gap:.6vw;align-items:center;background:var(--panel2);border-radius:.45rem;padding:.45vh .6vw;font-size:1.2rem;min-width:0}
+.row .t{color:var(--muted);font-variant-numeric:tabular-nums;font-size:1.05rem}
+.row .b{font-weight:800;font-size:.95rem;text-align:center;border-radius:.3rem;padding:.15rem .2rem;color:#fff}
+.b.dr{background:var(--red)} .b.so{background:var(--blue)} .b.wcl{background:var(--green);color:#06281A}
+.row .u{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .u small{color:var(--muted);font-size:1rem}
+.row .st{font-size:.9rem;font-weight:800;border-radius:.3rem;padding:.15rem .45rem}
+.st.new{background:var(--red);color:#fff} .st.ack{background:var(--blue);color:#fff} .st.assigned{background:var(--amber);color:#111} .st.complete{background:var(--green);color:#06281A}
+.st.new.stale{background:var(--amber);color:#111}  /* NEW for more than 30 min: nobody has acknowledged it */
+.row.fresh{outline:2px solid var(--amber)}
+.more{font-size:1rem;color:var(--muted);padding:.3vh .6vw}
+/* left column: roster takes the room, needs sit under it. Right column: each panel sizes to its rows; notes take what is left */
+.left{display:flex;flex-direction:column;gap:.8vh;min-height:0;overflow:hidden}
+.left .panel:first-child{flex:1 1 auto}
+.left #p-needs{flex:0 1 auto}
+.right{display:flex;flex-direction:column;gap:.8vh;min-height:0;overflow:hidden}
+.right .panel{flex:0 1 auto;min-height:0}
+.right #p-comms{flex:0 2 auto}
+.right #p-actions{flex:3 1 9rem;min-height:0}
+.right #p-notes{flex:1 1 6rem;min-height:0}
+.act{display:grid;grid-template-columns:auto 1fr;gap:.5vw;align-items:center;font-size:1.08rem;padding:.3vh 0;border-bottom:1px solid var(--line);line-height:1.3;min-width:0}
+.act .p{font-weight:800;font-size:.85rem;border-radius:.3rem;padding:.1rem .4rem;white-space:nowrap;margin-top:.1rem}
+.act .p.p1{background:var(--red);color:#fff} .act .p.p2{background:var(--amber);color:#111} .act .p.p3{background:var(--panel2);color:var(--muted)} .act .p.up{background:#5b21b6;color:#fff}
+.act .x{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap} .act .x small{color:var(--muted);font-size:.95rem}
+.left .panel{min-height:0}
+.kv{display:flex;justify-content:space-between;gap:.5vw;font-size:1.08rem;padding:.22vh 0;border-bottom:1px solid var(--line)}
+.kv .v.wrap{white-space:normal;line-height:1.25}
+.kv.sep{margin-top:.4vh;padding-top:.5vh;border-top:1px solid var(--line);border-bottom:none;color:var(--muted);font-size:.95rem;text-transform:uppercase;letter-spacing:.08em}
+.kv:last-child{border-bottom:none}
+.kv .k{color:var(--muted)} .kv .v{font-weight:700;text-align:right;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kv .v.bad{color:#FF9DAA} .kv .v.good{color:var(--green)}
+.dot{display:inline-block;width:.9rem;height:.9rem;border-radius:50%;background:var(--muted);margin-right:.4rem;vertical-align:-.05rem}
+.dot.on{background:var(--green);box-shadow:0 0 .6rem var(--green)} .dot.off{background:var(--red)}
+.note{font-size:1.1rem;padding:.3vh 0;border-bottom:1px solid var(--line);line-height:1.3}
+.note .t{color:var(--muted);font-size:.95rem;margin-right:.4rem;font-variant-numeric:tabular-nums}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:2vw;font-size:1rem;color:var(--muted);border-top:1px solid var(--line);padding-top:.6vh}
+.foot b{color:var(--fg)}
+/* join block: QR code for the operator page + the LAN URLs, big enough to scan from across the room */
+.join{display:flex;align-items:center;gap:.9vw;min-width:0}
+.qr{width:10.5vh;height:10.5vh;flex-shrink:0;border-radius:.4rem;background:#fff;image-rendering:pixelated}
+.join .j1{font-size:1.25rem;color:var(--fg);font-weight:600;line-height:1.3}
+.join .j1 b{color:#FFD58A}
+.join .j2{font-size:1rem;color:var(--muted);margin-top:.3vh}
+#offline{display:none;position:fixed;inset:0;background:#0B1220E6;z-index:9;align-items:center;justify-content:center;flex-direction:column;gap:2vh;text-align:center}
+#offline.show{display:flex}
+#offline .big{font-size:4rem;font-weight:800;color:var(--amber)}
+#offline .sm{font-size:1.6rem;color:var(--muted)}
+.empty{color:var(--muted);font-size:1.2rem;padding:1vh 0}
+@media (max-aspect-ratio: 4/3){ .tiles{grid-template-columns:repeat(4,1fr);height:auto} .main{grid-template-columns:1fr 1fr} .right{grid-column:1/-1;flex-direction:row} }
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="eoc"><div class="n" id="eoc-name">EOC</div><div class="l" id="eoc-level">Emergency Operations Center</div></div>
+  <div class="ev"><div class="n" id="ev-name">No event named</div><div class="s" id="ev-sub">Set the event on the Setup tab of the EOC Message Center</div></div>
+  <div class="clock"><div class="t" id="clock">--:--</div><div class="d" id="date"></div></div>
+</div>
+
+<div id="drillbar" class="drillbar"></div>
+<div id="alerts"></div>
+
+<div class="tiles">
+  <div class="tile pace none" id="t-pace"><div class="k">PACE level in force<span class="kx">Primary · Alternate · Contingency · Emergency</span></div><div class="v" id="pace-v">—</div><div class="sub" id="pace-sub">not set</div></div>
+  <div class="tile" id="t-reports"><div class="k">Reports received</div><div class="v" id="rep-v">0</div><div class="sub" id="rep-sub">0 new · 0 in work</div></div>
+  <div class="tile" id="t-units"><div class="k" id="units-k">Wards reported</div><div class="v" id="units-v">0<small>/0</small></div><div class="sub" id="units-sub">—</div></div>
+  <div class="tile" id="t-homes"><div class="k">Homes damaged / destroyed</div><div class="v pair" id="homes-v">0 <small>/</small> 0</div><div class="sub">from Disaster Reports</div></div>
+  <div class="tile" id="t-life"><div class="k">Injured / deaths</div><div class="v pair" id="life-v">0 <small>/</small> 0</div><div class="sub" id="life-sub">members</div></div>
+  <div class="tile" id="t-vol"><div class="k">Volunteers · hours</div><div class="v pair" id="vol-v">0 <small>·</small> 0</div><div class="sub" id="vol-sub">Disaster Reports + Work Crew Logs</div></div>
+  <div class="tile" id="t-so"><div class="k">Supply orders open</div><div class="v" id="so-v">0</div><div class="sub" id="so-sub">0 received · 0 done</div></div>
+  <div class="tile" id="t-sitrep"><div class="k">Next SITREP (situation report) due</div><div class="v" id="sit-v">—</div><div class="sub" id="sit-sub">—</div></div>
+</div>
+
+<div class="main">
+  <div class="left">
+    <div class="panel" id="p-map" style="display:none;flex:0 0 34%;min-height:22vh">
+      <h2>Map <span id="map-sum"></span></h2>
+      <div class="body"><canvas id="wallmap" style="width:100%;height:100%;display:block;border-radius:.5rem"></canvas></div>
+    </div>
+    <div class="panel">
+      <h2><span style="font-size:1.15rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em" id="roster-h">Ward roster</span><span id="roster-sum"></span></h2>
+      <div class="body"><div class="chips" id="chips"></div><div class="empty" id="chips-empty" style="display:none">No roster yet — add wards (or stakes at a Council / Area EOC) on the Roster tab.</div></div>
+      <div class="legend"><span><i style="background:var(--green)"></i>Reported</span><span><i style="background:var(--blue)"></i>Voice contact</span><span><i style="background:var(--muted)"></i>Waiting</span><span><i style="background:var(--red)"></i>Overdue / missionaries not accounted for</span></div>
+    </div>
+    <div class="panel" id="p-needs">
+      <h2>Needs &amp; top supply items</h2>
+      <div class="body" id="needs"></div>
+    </div>
+  </div>
+  <div class="panel">
+    <h2>Latest arrivals <span id="latest-sum"></span></h2>
+    <div class="body"><div class="list" id="latest"></div><div class="empty" id="latest-empty" style="display:none">No reports yet. Winlink and Drop Folder arrivals appear here within 10 seconds.</div></div>
+  </div>
+  <div class="right">
+    <div class="panel">
+      <h2>Comms &amp; server</h2>
+      <div class="body" id="comms"></div>
+    </div>
+    <div class="panel" id="p-comms" style="display:none">
+      <h2>Nets &amp; contacts <span id="comms-sub"></span></h2>
+      <div class="body" id="nets"></div>
+    </div>
+    <div class="panel" id="p-actions" style="display:none">
+      <h2>Work items <span id="act-sum"></span></h2>
+      <div class="body" id="actions"></div>
+    </div>
+    <div class="panel" id="p-notes">
+      <h2>Latest notes</h2>
+      <div class="body" id="notes"></div>
+    </div>
+  </div>
+</div>
+
+<div class="foot">
+  <div class="join" id="wifi-join" style="display:none">
+    <canvas id="qr-wifi" class="qr" title="Scan with the phone camera to join the EOC Wi-Fi"></canvas>
+    <div>
+      <div class="j1"><b>1</b> Join the EOC Wi-Fi</div>
+      <div class="j2" id="wifi-name">—</div>
+    </div>
+  </div>
+  <div class="join">
+    <canvas id="qr" class="qr" title="Scan to open this EOC's phone page: new reports and Send to EOC"></canvas>
+    <div>
+      <div class="j1"><span id="step2"></span>Send reports: scan the code, or open <b id="join-url">this server's web address</b></div>
+      <div class="j2">New forms, Send to EOC, the app&#8217;s Outbox · Operators: <b id="op-url">/</b> · Wall: <b id="wall-url">/wall</b> (<b>F</b> full screen)</div>
+    </div>
+  </div>
+  <div id="refreshed">—</div>
+  <div>Church of Jesus Christ EMCOMM (emergency communications) · an independent volunteer project by Travis Hilton (W9TLH)</div>
+</div>
+
+<div id="offline"><div class="big">EOC SERVER NOT RESPONDING</div><div class="sm" id="offline-sm">Showing the last picture received. Check the server window on the EOC PC.</div></div>
+
+<script>
+(function(){
+  var Q = {}; location.search.replace(/^\?/,'').split('&').forEach(function(p){ if(!p) return; var kv=p.split('='); Q[decodeURIComponent(kv[0])]=decodeURIComponent(kv[1]||''); });
+  var REFRESH = Math.max(3, parseInt(Q.refresh,10)||10) * 1000;
+  var SITREP_Q = parseFloat(Q.sitrep)||0;   // ?sitrep=N overrides the event's interval on this screen only
+  var SITREP_H = SITREP_Q||0;               // otherwise the interval EOC leadership set on the Setup tab (0 = not set: never invented)
+  var LATEST_N = Math.max(3, parseInt(Q.latest,10)||12);
+  var LEVEL = {satellite:'Satellite EOC', stake:'Stake EOC', area:'Council / Area EOC'};
+  var last = {msgs:[], roster:[], incident:{}, notes:[], status:null, watcher:null, drop:null, ok:false, at:0};
+  var seen = {}; var firstLoad = true;
+
+  // Supply Order catalog (form id, Church item number, short name) — same rows as SO_ITEMS in the Message Center.
+  var ITEMS=[['gs01','008092','Blankets (case of 10)'],['gs02','007126','ERS dashboard signs (pkg)'],['gs03','007002','Chalk line'],['gs04','007250','Duct tape (roll)'],['gs05','007058','First aid kit'],['gs06','007017','Furring strips'],['gs07','007125','Magnetic ERS sign'],['gs08','007201','Nails 8d (case)'],['gs09','009021','Tarp 20×30'],['gs10','007008','Trash bags (case)'],
+    ['tl01','007205','Bow saw'],['tl02','007213','Box fan'],['tl03','007086','Chain oil'],['tl04','007078','Chain saw'],['tl05','007082','Chain saw chain'],['tl06','007084','Chain saw file'],['tl07','007089','Chain saw safety kit'],['tl08','007230','Chaps'],['tl09','007088','2-cycle engine oil'],['tl10','007072','Extension cord 100 ft'],['tl11','007203','Garden rake'],['tl12','007080','Gas can 1 gal'],['tl13','007074','Gas can 5 gal'],['tl14','007075','Gas funnel'],['tl15','007070','Generator 5 kW'],['tl16','007200','Claw hammers (case)'],['tl17','007091','Ice sled'],['tl18','007231','Pallet jack'],['tl19','009048','Pry bar'],['tl20','007216','Submersible pump + hose'],['tl21','007081','Push broom'],['tl22','007010','Rope 100 ft'],['tl23','007071','Shovel, round'],['tl24','007062','Shovel, square'],['tl25','007054','Shovel, wide-scoop'],['tl26','007090','Wheelbarrows (pallet)'],['tl27','007212','Utility knife'],['tl28','007211','Wet/dry vacuum'],['tl29','009046','Wrecking bar'],
+    ['pi01','007140','Body bags (case)'],['pi02','007102','Gloves, all-purpose'],['pi03','003381','Rubber gloves M (case)'],['pi04','003375','Rubber gloves L (case)'],['pi05','003376','Rubber gloves XL (case)'],['pi06','007130','HH T-shirt M'],['pi07','007131','HH T-shirt L'],['pi08','007132','HH T-shirt XL'],['pi09','007133','HH T-shirt XXL'],['pi10','007134','HH T-shirt XXXL'],['pi11','007155','HH vests (case)'],['pi12','007232','Coveralls L'],['pi13','007233','Coveralls XL'],['pi14','007234','Coveralls XXL'],['pi15','007120','N95 masks (case)'],['pi16','007240','Rubber boots 8'],['pi17','007242','Rubber boots 10'],['pi18','007244','Rubber boots 12'],['pi19','007108','Rubber-coated gloves M'],['pi20','007107','Rubber-coated gloves L'],['pi21','007109','Rubber-coated gloves XL'],['pi22','007208','Safety glasses'],
+    ['wa01','007098','Bottled water (case)'],['kb01','007110','Cleaning kits'],['kb02','008096','Hygiene kits'],['kb03','007175','Food boxes']];
+  var ITEM_NAME={}; ITEMS.forEach(function(r){ ITEM_NAME[r[0]]={num:r[1],name:r[2]}; ITEM_NAME[r[1]]={num:r[1],name:r[2]}; });
+  function itemKey(k){ var it=ITEM_NAME[k]; if(it) return it.num; return k; }
+  function itemName(k){ var it=ITEM_NAME[k]; if(it) return it.name; if(k.indexOf('LOCAL-')===0) return k.slice(6)+' (local)'; return 'Item '+k; }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function ni(v){ var n=parseInt(v,10); return isNaN(n)?0:n; }
+  function nf(v){ var n=parseFloat(v); return isNaN(n)?0:n; }
+  function isYes(v){ var u=String(v||'').toUpperCase().trim(); return u==='YES'||u==='Y'; }
+  function isNo(v){ var u=String(v||'').toUpperCase().trim(); return u==='NO'||u==='N'; }
+  function isEx(m){ var s=m&&m[m.type]; return !!(s && /^(yes|1|true|on)$/i.test(String(s.exercise||''))); }
+  function pad2(n){ return n<10?'0'+n:''+n; }
+  function hm(ts){ var d=new Date(ts); return pad2(d.getHours())+':'+pad2(d.getMinutes()); }
+  function dhm(ts){ var d=new Date(ts); return (d.getMonth()+1)+'/'+d.getDate()+' '+hm(ts); }
+  function ago(ts){ if(!ts) return '—'; var m=Math.round((Date.now()-ts)/60000); if(m<1) return 'just now'; if(m<60) return m+' min ago'; var h=Math.floor(m/60); if(h>=3) return h+' h ago'; return h+' h '+(m%60)+' min ago'; }
+  function dur(ms){ if(ms<0) ms=0; var m=Math.floor(ms/60000); var h=Math.floor(m/60); return h+'h '+pad2(m%60)+'m'; }
+  function level(){ return (last.incident&&last.incident.eocLevel)||'stake'; }
+  function unitOf(m){ var lv=level();
+    if(m.type==='dr') return lv==='area' ? (m.dr.stake||'') : (m.dr.ward||m.dr.stake||'');
+    if(m.type==='so') return m.so.stake||'';
+    if(m.type==='wcl') return lv==='area' ? (m.wcl.chief_stake||'') : (m.wcl.chief_ward||m.wcl.chief_stake||'');
+    return ''; }
+  // A record from another EOC's roll-up may be malformed: only dr / so / wcl with an object behind it count.
+  function norm(row){ var d={}; try{ d=JSON.parse(row.data_json||'{}'); }catch(e){} if(!d||typeof d!=='object'||Array.isArray(d)) d={};
+    d.id=String(row.id||''); d.ts=Number(row.received_ms)||0; d.status=String(row.status||'new'); d.type=String(d.type||row.type||'').toLowerCase();
+    if(['dr','so','wcl'].indexOf(d.type)<0) d.type='';
+    if(d.type && (!d[d.type] || typeof d[d.type]!=='object' || Array.isArray(d[d.type]))) d[d.type]={}; return d; }
+
+  function tick(){ var n=new Date(); document.getElementById('clock').textContent=pad2(n.getHours())+':'+pad2(n.getMinutes());
+    document.getElementById('date').textContent=n.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'}); }
+  setInterval(tick,1000); tick();
+  setInterval(drawDrill,1000);
+
+  function drillScore(d){ var s=d&&d.score; if(!s||!s.total) return ''; var bad=(s.overdue||0)+(s.missed||0); return 'Needs met <b>'+(s.met+s.late)+'/'+s.total+'</b>'+(bad?' · <b style="color:#fca5a5">'+bad+' overdue</b>':'')+(s.pct!=null?' · <b>'+s.pct+'%</b>':''); }
+  function drawDrill(){
+    var d = last.status && last.status.drill, el=document.getElementById('drillbar'); if(!el) return;
+    if(!d||!d.active){
+      // a DRILL event with no simulator run: say so, so an empty wall does not look broken
+      var en=(last.status&&last.status.activeEventName)||'';
+      if(/DRILL/i.test(en)){ el.className='drillbar show'; el.innerHTML='<span>&#127919; DRILL event open</span><b>'+esc(en)+'</b><span>No simulator run has started: on the simulator, Session tab \u2192 Reset for the session, then GO.</span>'; return; }
+      el.className='drillbar'; return; }
+    var role={satellite:'Satellite EOC',stake:'Stake EOC',area:'Council / Area EOC'}[d.role]||d.role||'', when='';
+    if(d.status==='scheduled'&&d.start_at_ms){ var left=Math.round((d.start_at_ms-Date.now())/1000); when= left>0 ? 'starts at '+hm(d.start_at_ms)+' · in '+Math.floor(left/60)+':'+pad2(left%60) : 'starting…'; }
+    else if(d.status==='running'){ var e2=(d.elapsed_min||0)+Math.max(0,(Date.now()-(d.seen_ms||Date.now()))/60000)*(d.speed||1); var s=Math.round(e2*60); when='T+'+pad2(Math.floor(s/60))+':'+pad2(s%60)+' · '+(d.speed||1)+'×'; }
+    else when=(d.status==='planned'&&d.session)?'ready: waiting for the trainer\'s GO':(d.status||'planned');
+    el.className='drillbar show';
+    el.innerHTML='<span>&#127919; DRILL</span><b>'+esc(d.scenario||'')+'</b><span>this EOC plays <b>'+esc(d.site_label||role)+'</b></span><span><b>'+esc(when)+'</b></span>'+(drillScore(d)?'<span>'+drillScore(d)+'</span>':'')+'<span style="margin-left:auto">Ready: '+((d.ready||[]).length?esc(d.ready.join(', ')):'nobody yet')+'</span>';
+  }
+
+  function getJ(u){ return fetch(u,{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); }); }
+  // Map tile: the units coloured like the roster chips (module between the EMCOMM-MAP markers; data from /map/)
+  var WMAP=null, WMAP_LOADED=false, WMAP_FAIL=false;
+  function wallUnitStatus(name){
+    var key=String(name||'').toLowerCase().replace(/\s+/g,' ').trim(), inc=last.incident, now=Date.now();
+    var r=null; (last.roster||[]).forEach(function(x){ if(String(x.name||'').toLowerCase().replace(/\s+/g,' ').trim()===key) r=x; });
+    var ld=null; (last.msgs||[]).forEach(function(m){ if(m.type==='dr' && String(unitOf(m)||'').toLowerCase().replace(/\s+/g,' ').trim()===key && (!ld||m.ts>ld.ts)) ld=m; });
+    if(ld){ var d=ld.dr; if(isNo(d.miss_safe)||ni(d.mem_inj)>0||ni(d.mem_dead)>0) return {cls:'alert'}; if(isYes(d.need_local)||isYes(d.need_neighbor)||isYes(d.need_hq)) return {cls:'needs'}; return {cls:'ok'}; }
+    if(r&&r.voiceContact) return {cls:'voice'};
+    if(r&&r.expectedMinutes&&inc.startTs&&(now-inc.startTs)>r.expectedMinutes*60000) return {cls:'overdue'};
+    return {cls:'none'};
+  }
+  function renderWallMap(reported, total, inc){
+    var p=document.getElementById('p-map'), ok=!!(last.status&&last.status.map);
+    if(!ok||WMAP_FAIL||typeof EMCOMM_MAP==='undefined'){ p.style.display='none'; return; }
+    p.style.display='';
+    if(!WMAP){ WMAP=EMCOMM_MAP.create(document.getElementById('wallmap'), {interactive:false, labels:true, minLabelPx:18, background:'#101a2c'}); }
+    WMAP.setLevel(level()); WMAP.setStatus(wallUnitStatus);
+    WMAP.setFocus((last.roster||[]).map(function(r){ return r.name; }).concat(String(inc.eocUnits||'').split(/[,;\n]+/)).map(function(s){ return String(s||'').trim(); }).filter(Boolean));
+    var mk=[]; if(inc.eocLat&&inc.eocLon) mk.push({lon:+inc.eocLon, lat:+inc.eocLat, kind:'eoc'});
+    (last.msgs||[]).forEach(function(m){ var s=m[m.type]; if(s&&s.lat&&s.lon&&!isNaN(parseFloat(s.lat))) mk.push({lon:+s.lon, lat:+s.lat, kind:'report'}); });
+    WMAP.setMarkers(mk);
+    var withNeeds=(last.msgs||[]).filter(function(m){ return m.type==='dr' && (isYes(m.dr.need_local)||isYes(m.dr.need_neighbor)||isYes(m.dr.need_hq)); }).length;
+    document.getElementById('map-sum').textContent=reported+' of '+total+' '+(level()==='area'?'stakes':'wards')+' reported'+(withNeeds?' · '+withNeeds+' with needs':'');
+    if(!WMAP_LOADED){ WMAP_LOADED=true; WMAP.load('/map').then(function(){ WMAP.fit(); }).catch(function(){ WMAP_FAIL=true; p.style.display='none'; }); return; }
+    WMAP.resize(); WMAP.draw();
+  }
+  function refresh(){
+    Promise.all([getJ('/api/status'), getJ('/api/incident'), getJ('/api/messages'), getJ('/api/roster'), getJ('/api/notes'),
+                 getJ('/api/watcher/status').catch(function(){return null;}), getJ('/api/drop/status').catch(function(){return null;}),
+                 getJ('/api/comms').catch(function(){return null;}), getJ('/api/actions').catch(function(){return [];})])
+    .then(function(r){
+      last.status=r[0]; last.incident=r[1]||{}; last.msgs=(Array.isArray(r[2])?r[2]:[]).map(norm).filter(function(m){ return m.type; }); last.roster=Array.isArray(r[3])?r[3].filter(function(x){ return x&&typeof x==='object'; }):[]; last.notes=Array.isArray(r[4])?r[4].filter(function(x){ return x&&typeof x==='object'; }):[]; last.watcher=r[5]; last.drop=r[6]; last.comms=r[7]; last.actions=Array.isArray(r[8])?r[8]:[];
+      last.ok=true; last.at=Date.now();
+      document.getElementById('offline').classList.remove('show');
+      render();
+    }).catch(function(e){
+      last.ok=false;
+      document.getElementById('offline-sm').textContent='Showing the picture from '+(last.at?dhm(last.at):'— (nothing received yet)')+'. Check the server window on the EOC PC. ('+(e&&e.message||e)+')';
+      document.getElementById('offline').classList.add('show');
+    });
+  }
+
+  function render(){
+    fits=[];
+    var inc=last.incident, msgs=last.msgs, roster=last.roster, now=Date.now();
+    var lv=level(), unitP = lv==='area'?'Stakes':'Wards';
+    // header
+    document.getElementById('eoc-name').textContent = inc.eocName || (LEVEL[lv]||'EOC');
+    document.getElementById('eoc-level').textContent = (LEVEL[lv]||'EOC') + (inc.eocUnits?' · '+inc.eocUnits:'');
+    var evn=document.getElementById('ev-name'); evn.innerHTML = (inc.name?esc(inc.name):'No event named') + (inc.eventStatus==='closed'?'<span class="closed">CLOSED</span>':'')
+      + (msgs.length && msgs.every(isEx) ? '<span class="closed" style="background:#991b1b;color:#fff">EXERCISE</span>' : '');
+    var sub=[]; if(inc.type) sub.push(inc.type); if(inc.area) sub.push(inc.area); if(inc.startTs) sub.push('started '+dhm(inc.startTs)+' · '+dur(now-inc.startTs)+' elapsed');
+    if(inc.ic) sub.push('Lead: '+inc.ic); if(inc.op) sub.push('Operator: '+inc.op);
+    document.getElementById('ev-sub').textContent = sub.join('  ·  ') || 'Set the event on the Setup tab of the EOC Message Center';
+
+    // PACE
+    var p=String(inc.pace||'').toUpperCase().charAt(0); var tp=document.getElementById('t-pace');
+    tp.className='tile pace '+(p?p:'none');
+    var PN={P:'Primary — cell + internet',A:'Alternate — any internet / Wi-Fi',C:'Contingency — radio: VARA FM / HF',E:'Emergency — runner / paper'};
+    document.getElementById('pace-v').textContent = p||'—';
+    document.getElementById('pace-sub').textContent = p ? (PN[p]+(inc.paceTs?' · since '+hm(inc.paceTs):'')) : 'not set — Setup tab → Active event details';
+
+    // counts
+    var drs=msgs.filter(function(m){return m.type==='dr';}), sos=msgs.filter(function(m){return m.type==='so';}), wcls=msgs.filter(function(m){return m.type==='wcl';});
+    var nNew=msgs.filter(function(m){return m.status==='new';}).length, nWork=msgs.filter(function(m){return m.status==='ack'||m.status==='assigned';}).length;
+    document.getElementById('rep-v').textContent=msgs.length;
+    document.getElementById('rep-sub').textContent=drs.length+' DR · '+sos.length+' SO · '+wcls.length+' WCL · '+nNew+' new';
+    document.getElementById('t-reports').className='tile'+(nNew?' hot':'');
+    var inj=0,dead=0,dmg=0,dest=0,vol=0,hrs=0,missNo=[],needL=[],needN=[],needH=[];
+    drs.forEach(function(m){ var r=m.dr, u=unitOf(m)||'?'; inj+=ni(r.mem_inj); dead+=ni(r.mem_dead); dmg+=ni(r.homes_dmg); dest+=ni(r.homes_dest); vol+=ni(r.vol_count); hrs+=ni(r.vol_hrs);
+      if(isNo(r.miss_safe)) missNo.push(u); if(isYes(r.need_local)) needL.push(u); if(isYes(r.need_neighbor)) needN.push(u); if(isYes(r.need_hq)) needH.push(u); });
+    var wcrew=0,whrs=0; wcls.forEach(function(m){ wcrew+=ni(m.wcl.crew_count); whrs+=nf(m.wcl.total_hrs); });
+    document.getElementById('homes-v').innerHTML=dmg+' <small>/</small> '+dest;
+    document.getElementById('life-v').innerHTML=inj+' <small>/</small> '+dead;
+    document.getElementById('t-life').className='tile'+((inj||dead)?' hot':'');
+    document.getElementById('vol-v').innerHTML=(vol+wcrew)+' <small>·</small> '+Math.round(hrs+whrs);
+    var soOpen=sos.filter(function(m){return m.status!=='complete';}).length;
+    document.getElementById('so-v').textContent=soOpen; document.getElementById('so-sub').textContent=sos.length+' received · '+(sos.length-soOpen)+' done';
+    document.getElementById('t-so').className='tile'+(soOpen?' hot':'');
+
+    // roster
+    document.getElementById('units-k').textContent=unitP+' reported'; document.getElementById('roster-h').textContent=(lv==='area'?'Stake':'Ward')+' roster';
+    var chips=document.getElementById('chips'), chipsEmpty=document.getElementById('chips-empty');
+    var reported=0, overdue=[], html='';
+    var byUnit={}; drs.forEach(function(m){ var k=(unitOf(m)||'').toLowerCase(); if(!byUnit[k]||m.ts>byUnit[k].ts) byUnit[k]=m; });
+    // No roster yet? Seed the board from the units named on the Setup tab ("Larkspur 1st, Larkspur 2nd, Riverside") so it is useful from minute one.
+    var seeded=false;
+    if(!roster.length && inc.eocUnits){ roster=String(inc.eocUnits).split(/[,;\n]+/).map(function(s){return s.trim();}).filter(Boolean).map(function(n){ return {name:n}; }); seeded=roster.length>0; }
+    roster.slice().sort(function(a,b){ return (a.name||'').localeCompare(b.name||''); }).forEach(function(r){
+      var ld=byUnit[(r.name||'').toLowerCase()]; var cls='waiting', st=seeded?'Waiting — add to the Roster tab for a due time':'Waiting';
+      if(ld && isNo(ld.dr.miss_safe)){ cls='missno'; st='MISSIONARIES NOT ACCOUNTED FOR'; reported++; }
+      else if(ld){ cls='reported'; st='Reported '+hm(ld.ts)+' · '+ago(ld.ts); reported++; }
+      else if(r.voiceContact){ cls='voice'; st='Voice '+(r.voiceContactTs?hm(r.voiceContactTs):''); reported++; }
+      else if(r.expectedMinutes && inc.startTs && (now-inc.startTs)>r.expectedMinutes*60000){ cls='overdue'; st='OVERDUE — expected by '+hm(inc.startTs+r.expectedMinutes*60000); overdue.push(r.name); }
+      else if(r.expectedMinutes && inc.startTs){ st='Due by '+hm(inc.startTs+r.expectedMinutes*60000); }
+      html+='<div class="chip '+cls+'"><div class="n">'+esc(r.name)+'</div><div class="s">'+esc(st)+'</div></div>';
+    });
+    chips.innerHTML=html; chipsEmpty.style.display=roster.length?'none':'';
+    renderWallMap(reported, roster.length, inc);
+    document.getElementById('units-v').innerHTML=reported+'<small>/'+roster.length+'</small>';
+    document.getElementById('units-sub').textContent=(roster.length-reported)+' not heard from'+(overdue.length?' · '+overdue.length+' overdue':'');
+    document.getElementById('t-units').className='tile'+(overdue.length?' hot':'');
+    document.getElementById('roster-sum').textContent=reported+' of '+roster.length+' reported';
+
+    // latest arrivals
+    var list=document.getElementById('latest'), le=document.getElementById('latest-empty');
+    var latest=msgs.slice().sort(function(a,b){return b.ts-a.ts;}).slice(0,LATEST_N);
+    list.innerHTML=latest.map(function(m){
+      var r=m[m.type]||{}, sum='';
+      if(m.type==='dr') sum=(ni(r.mem_inj)+' inj · '+ni(r.mem_dead)+' dead · '+ni(r.homes_dmg)+' dmg · '+ni(r.homes_dest)+' dest')+(isNo(r.miss_safe)?' · MISS NO':'');
+      else if(m.type==='so') sum=((r.items||'').split(';').filter(Boolean).length||'?')+' item types'+(r.req_del_date||r.del_date?' · needed '+(r.req_del_date||r.del_date):'');
+      else if(m.type==='wcl') sum=ni(r.crew_count)+' crew · '+nf(r.total_hrs)+' h'+(r.chief?' · chief '+r.chief:'');
+      if(isEx(m)) sum='EXERCISE · '+sum;
+      var fresh = !firstLoad && !seen[m.id];
+      var stale = m.status==='new' && (now-m.ts)>30*60000;   // unacknowledged for 30 min
+      return '<div class="row'+(fresh?' fresh':'')+'"><div class="t">'+hm(m.ts)+'</div><div class="b '+esc(m.type)+'">'+esc(m.type.toUpperCase())+'</div><div class="u">'+esc(unitOf(m)||'?')+(m.via?' <small>via '+esc(m.via)+'</small>':'')+'<br><small>'+esc(sum)+'</small></div><div class="st '+esc(m.status)+(stale?' stale':'')+'" title="'+(stale?'NEW for '+ago(m.ts):'')+'">'+({new:'NEW',ack:'ACK',assigned:'ASSGN',complete:'DONE'}[m.status]||esc(String(m.status).toUpperCase()))+'</div></div>';
+    }).join('');
+    msgs.forEach(function(m){ seen[m.id]=1; }); firstLoad=false;
+    le.style.display=msgs.length?'none':''; document.getElementById('latest-sum').textContent=msgs.length?'last '+ago(Math.max.apply(null,msgs.map(function(m){return m.ts;}))):'';
+    fits.push([list, msgs.length]);
+
+    // needs (the one line that must be readable wraps instead of truncating) + top supply items in the same panel
+    var nd=''; nd+='<div class="kv"><span class="k">Missionaries not accounted for</span><span class="v wrap '+(missNo.length?'bad':'good')+'">'+(missNo.length?esc(missNo.join(', ')):'none reported')+'</span></div>';
+    nd+='<div class="kv"><span class="k">Need local Church facilities</span><span class="v wrap">'+(needL.length?esc(needL.join(', ')):'—')+'</span></div>';
+    nd+='<div class="kv"><span class="k">Need neighboring unit help</span><span class="v wrap">'+(needN.length?esc(needN.join(', ')):'—')+'</span></div>';
+    nd+='<div class="kv"><span class="k">Request Church HQ support</span><span class="v wrap '+(needH.length?'bad':'')+'">'+(needH.length?esc(needH.join(', ')):'—')+'</span></div>';
+    // supplies (by item key from the tag string num:qty;...) — the catalog names carry the unit ("case", "pkg", "pallet")
+    var agg={}; sos.forEach(function(m){ ((m.so&&m.so.items)||'').split(';').forEach(function(p){ var c=p.lastIndexOf(':'); if(c<1) return; var k=p.slice(0,c).trim(), q=ni(p.slice(c+1)); if(!k||!q) return; k=itemKey(k); agg[k]=(agg[k]||0)+q; }); });
+    var top=Object.keys(agg).map(function(k){return {k:k,q:agg[k]};}).sort(function(a,b){return b.q-a.q;}).slice(0,3);
+    nd+='<div class="kv sep"><span class="k">Top supply items'+(sos.length?' · '+soOpen+' order'+(soOpen===1?'':'s')+' open':'')+'</span></div>';
+    nd+= top.length ? top.map(function(t){ return '<div class="kv"><span class="k">'+esc(itemName(t.k))+'</span><span class="v">'+t.q+'</span></div>'; }).join('') : '<div class="kv"><span class="k">No supply orders</span><span class="v">—</span></div>';
+    document.getElementById('needs').innerHTML=nd;
+
+    // comms & server (the server itself is implied: if it stops answering, the offline overlay says so)
+    var w=last.watcher, d=last.drop, lastArr=msgs.length?Math.max.apply(null,msgs.map(function(m){return m.ts;})):0;
+    var cm='';
+    cm+='<div class="kv"><span class="k"><span class="dot '+(w&&w.enabled?'on':'off')+'"></span>Winlink auto-ingest</span><span class="v">'+(w?(w.enabled?('on · '+(w.ingested||0)+' ingested'):'off'):'—')+'</span></div>';
+    cm+='<div class="kv"><span class="k"><span class="dot '+(d&&d.enabled?'on':'off')+'"></span>Drop Folder</span><span class="v">'+(d?(d.enabled?('on · '+(d.ingested||0)+' ingested'):'off'):'—')+'</span></div>';
+    cm+='<div class="kv"><span class="k">Last arrival</span><span class="v">'+(lastArr?ago(lastArr):'—')+'</span></div>';
+    var rl=(inc.rollups||[]); var lastRoll=inc.lastRollupTs||0;
+    cm+='<div class="kv"><span class="k">Roll-ups</span><span class="v">'+(lastRoll?'sent '+ago(lastRoll):'none sent')+' · '+rl.length+' received</span></div>';
+    document.getElementById('comms').innerHTML=cm;
+
+    // SITREP due: every N hours (the event's interval) from the last SITREP generated or roll-up sent, else from event start
+    SITREP_H = SITREP_Q || ([2,4,8,12,24].indexOf(parseInt(inc.sitrepHrs,10))>=0 ? parseInt(inc.sitrepHrs,10) : 0);
+    var base=Math.max(inc.lastSitrepTs||0, lastRoll)||inc.startTs||0, sv=document.getElementById('sit-v'), ss=document.getElementById('sit-sub');
+    if(!SITREP_H){ sv.textContent='—'; ss.textContent='SITREP interval not set: ask EOC leadership'; document.getElementById('t-sitrep').className='tile'; }
+    else if(base){ var due=base+SITREP_H*3600000; while(due<now-SITREP_H*3600000) due+=SITREP_H*3600000; var left=due-now;
+      sv.textContent=hm(due); ss.textContent=(left<0?'OVERDUE by '+dur(-left):'in '+dur(left))+' · every '+SITREP_H+' h'; document.getElementById('t-sitrep').className='tile'+(left<0?' hot':''); }
+    else { sv.textContent='—'; ss.textContent='every '+SITREP_H+' h from event start'; }
+
+    // nets & contacts (comms sheet + event-only lines)
+    var cs=(last.comms&&last.comms.sheet)||{}, evl=String(inc.commsEvent||'').split('\n').map(function(s){return s.trim();}).filter(Boolean);
+    var pc=document.getElementById('p-comms'), ch='';
+    evl.forEach(function(l){ ch+='<div class="kv" style="background:#5A3A05;border-radius:.3rem;padding:.3vh .4vw"><span class="v" style="color:#FFD58A;white-space:normal;text-align:left">'+esc(l)+'</span></div>'; });
+    // Room is tight on a TV: the first few rows of each table — the full sheet is on the Comms tab and the printed copy.
+    (cs.nets||[]).slice(0,2).forEach(function(n){ if(!n.name&&!n.freq) return; ch+='<div class="kv"><span class="k">'+esc(n.name||'Net')+'</span><span class="v">'+esc([n.freq,n.offset,n.tone?'T '+n.tone:''].filter(Boolean).join(' '))+'</span></div>'; });
+    (cs.gateways||[]).slice(0,2).forEach(function(g){ if(!g.call&&!g.freq) return; ch+='<div class="kv"><span class="k">RMS '+esc(g.call||'')+'</span><span class="v">'+esc([g.freq,g.mode].filter(Boolean).join(' '))+'</span></div>'; });
+    (cs.eocs||[]).slice(0,2).forEach(function(e){ if(!e.winlink&&!e.email) return; ch+='<div class="kv"><span class="k">'+esc(e.level||e.name||'EOC')+'</span><span class="v">'+esc(e.winlink||e.email)+'</span></div>'; });
+    (cs.contacts||[]).slice(0,1).forEach(function(c){ if(!c.name&&!c.phone) return; ch+='<div class="kv"><span class="k">'+esc(c.role||c.name)+'</span><span class="v">'+esc(c.phone||c.winlink||c.email||c.name)+'</span></div>'; });
+    pc.style.display=ch?'':'none'; var netsEl=document.getElementById('nets'); netsEl.innerHTML=ch;
+    if(ch) fits.push([netsEl, netsEl.children.length, 'the Comms tab', netsEl]);
+    document.getElementById('comms-sub').textContent=(last.comms&&last.comms.updatedMs)?'sheet '+dhm(last.comms.updatedMs):'';
+
+    // work items: open ones, waiting-above and high priority first (the operators' Work Items tab has the rest)
+    var acts=(last.actions||[]).filter(function(a){return a.status!=='done';});
+    var rank={up:0,progress:2,open:1}; acts.sort(function(a,b){ var p=(a.prio||2)-(b.prio||2); if(p) return p; var r=(rank[a.status]||1)-(rank[b.status]||1); if(r) return r; return (a.ts||0)-(b.ts||0); });
+    var pa=document.getElementById('p-actions'), ab2=document.getElementById('actions');
+    if(acts.length){
+      var hi=acts.filter(function(a){return a.prio===1;}).length, upN=acts.filter(function(a){return a.status==='up';}).length, nobody=acts.filter(function(a){return !(a.owner||'').trim();}).length;
+      document.getElementById('act-sum').textContent=acts.length+' open'+(hi?' · '+hi+' high':'')+(upN?' · '+upN+' waiting above':'')+(nobody?' · '+nobody+' no owner':'');
+      ab2.innerHTML=acts.slice(0,8).map(function(a){ return '<div class="act"><span class="p '+(a.status==='up'?'up':'p'+(a.prio||2))+'">'+(a.status==='up'?'UP':a.prio===1?'HIGH':a.prio===3?'low':'')+'</span><span class="x" title="'+esc(a.next||'')+'">'+esc(a.title)+' <small>'+(a.from?'from '+esc(a.from)+' · ':'')+esc(a.owner?a.owner:'no owner')+'</small></span></div>'; }).join('');
+      pa.style.display=''; fits.push([ab2, acts.length, 'the Work Items tab', ab2]);
+    } else { pa.style.display='none'; ab2.innerHTML=''; }
+
+    // notes (the panel takes whatever height is left; rows that do not fit are hidden behind "+ N more")
+    var nt=last.notes.slice().sort(function(a,b){return (b.ts||0)-(a.ts||0);}).slice(0,6);
+    var nb=document.getElementById('notes'); nb.innerHTML = nt.length ? nt.map(function(n){ return '<div class="note"><span class="t">'+hm(n.ts)+'</span>'+esc(n.text)+'</div>'; }).join('') : '<div class="empty">No notes</div>';
+    if(nt.length) fits.push([nb, last.notes.length, 'the Notes tab', nb]);
+
+    // alerts
+    var al=[]; if(missNo.length) al.push('MISSIONARIES NOT ACCOUNTED FOR: '+missNo.join(', ')+' — contact '+(lv==='area'?'stake presidents':'bishops')+' now');
+    if(dead) al.push(dead+' member death'+(dead>1?'s':'')+' reported'); if(inj) al.push(inj+' member'+(inj>1?'s':'')+' injured');
+    if(needH.length) al.push('Church HQ support requested by '+needH.join(', '));
+    if(overdue.length) al.push('Overdue: '+overdue.join(', '));
+    var hiNo=acts.filter(function(a){return a.prio===1 && !(a.owner||'').trim();}).length; if(hiNo) al.push(hiNo+' high-priority work item'+(hiNo>1?'s':'')+' with no owner');
+    var ab=document.getElementById('alerts'); var warnOnly = !missNo.length && !dead && !inj && !needH.length;
+    if(inc.eventStatus==='closed') al.push('This event is CLOSED — open a new event on the Setup tab for a new emergency');
+    ab.className = al.length ? ('show'+(warnOnly?' warn':'')) : ''; ab.innerHTML = al.map(function(a){ return '<span class="al">'+esc(a)+'</span>'; }).join('');
+
+    // join URLs: the server's LAN address (not this page's origin, which is "localhost" on the server PC itself)
+    // The main code opens this EOC's phone page (/m): new forms with Send to EOC, and the app's
+    // Send to EOC reads the EOC address from the same code. Operators use the address itself.
+    var join=(last.status&&last.status.lanUrl)||location.origin;
+    document.getElementById('join-url').textContent=join.replace(/^https?:\/\//,'');
+    document.getElementById('op-url').textContent=join.replace(/^https?:\/\//,''); document.getElementById('wall-url').textContent=join.replace(/^https?:\/\//,'')+'/wall';
+    if(join+'/m'!==qrFor){ qrFor=join+'/m'; drawQR(document.getElementById('qr'), qrFor); }
+    // Optional second code: join the EOC Wi-Fi (Setup tab → This EOC → Wi-Fi name / password)
+    var ssid=String(inc.wifiName||''), pw=String(inc.wifiPass||''), wj=document.getElementById('wifi-join');
+    if(ssid){
+      var wesc=function(s){ return s.replace(/([\\;,:"])/g,'\\$1'); };
+      var wtext='WIFI:T:'+(pw?'WPA':'nopass')+';S:'+wesc(ssid)+';'+(pw?'P:'+wesc(pw)+';':'')+';';
+      wj.style.display=''; document.getElementById('step2').innerHTML='<b>2</b> ';
+      document.getElementById('wifi-name').textContent=ssid+(pw?'  ·  password '+pw:'  ·  no password');
+      if(wtext!==qrWifiFor){ qrWifiFor=wtext; drawQR(document.getElementById('qr-wifi'), wtext); }
+    } else { wj.style.display='none'; document.getElementById('step2').innerHTML=''; qrWifiFor=''; }
+    document.getElementById('refreshed').textContent='Refreshed '+hm(last.at)+' · every '+(REFRESH/1000)+' s';
+
+    // Fit the lists last, when the alert strip, tiles and footer have their final height; a second pass settles
+    // the flex column (hiding rows in one panel can give its neighbour more room).
+    for(var pass=0;pass<2;pass++) fits.forEach(function(a){ fitList(a[0],a[1],a[2],a[3]); });
+  }
+  var fits=[];
+
+  // Hide the rows of a list that do not fit its panel and say how many more there are (a TV cannot scroll).
+  function fitList(list, total, where, body){
+    body=body||list.parentNode; where=where||'the operators’ Messages tab';
+    var rows=[].slice.call(list.children).filter(function(r){return !r.classList.contains('more');}), limit=body.getBoundingClientRect().top+body.clientHeight-2, shown=0;
+    rows.forEach(function(r){ r.style.display=''; });
+    var old=body.querySelector('.more'); if(old) old.remove();
+    for(var i=0;i<rows.length;i++){ if(rows[i].getBoundingClientRect().bottom<=limit+1) shown++; else rows[i].style.display='none'; }
+    var hidden=total-shown; if(hidden>0 && shown>0){ var m=document.createElement('div'); m.className='more'; m.textContent='+ '+hidden+' more on '+where; body.appendChild(m);
+      while(shown>1 && m.getBoundingClientRect().bottom>limit+1){ shown--; rows[shown].style.display='none'; m.textContent='+ '+(total-shown)+' more on '+where; } }
+  }
+
+  // ── QR code generator (byte mode, error correction level M, versions 1–10, ≤ 213 characters) ──
+  // Self-contained so the wall needs no internet or library: the QR carries the operator URL above.
+  var qrFor='', qrWifiFor='';
+  var QR=(function(){
+    var EXP=[],LOG=[]; (function(){ var x=1; for(var i=0;i<255;i++){ EXP[i]=x; LOG[x]=i; x<<=1; if(x&256) x^=0x11D; } for(var i=255;i<512;i++) EXP[i]=EXP[i-255]; })();
+    function mul(a,b){ return (a&&b)?EXP[LOG[a]+LOG[b]]:0; }
+    function genPoly(n){ var g=[1]; for(var i=0;i<n;i++){ var ng=new Array(g.length+1); for(var k=0;k<ng.length;k++) ng[k]=0; for(var j=0;j<g.length;j++){ ng[j]^=g[j]; ng[j+1]^=mul(g[j],EXP[i]); } g=ng; } return g; }
+    function rsEC(data,n){ var g=genPoly(n), r=[]; for(var k=0;k<n;k++) r.push(0); for(var i=0;i<data.length;i++){ var f=data[i]^r[0]; r.shift(); r.push(0); if(f) for(var j=0;j<n;j++) r[j]^=mul(g[j+1],f); } return r; }
+    // per version (EC level M): [EC codewords per block, [[blocks, data codewords per block], ...]]
+    var BLK=[null,[10,[[1,16]]],[16,[[1,28]]],[26,[[1,44]]],[18,[[2,32]]],[24,[[2,43]]],[16,[[4,27]]],[18,[[4,31]]],[22,[[2,38],[2,39]]],[22,[[3,36],[2,37]]],[26,[[4,43],[1,44]]]];
+    var ALIGN=[null,[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50]];
+    var MASK=[function(r,c){return (r+c)%2===0;},function(r,c){return r%2===0;},function(r,c){return c%3===0;},function(r,c){return (r+c)%3===0;},
+              function(r,c){return (Math.floor(r/2)+Math.floor(c/3))%2===0;},function(r,c){return (r*c)%2+(r*c)%3===0;},
+              function(r,c){return ((r*c)%2+(r*c)%3)%2===0;},function(r,c){return ((r+c)%2+(r*c)%3)%2===0;}];
+    function fmtBits(mask){ var d=mask; var r=d<<10; for(var i=14;i>=10;i--) if(r&(1<<i)) r^=0x537<<(i-10); return ((d<<10)|r)^0x5412; }
+    function verBits(v){ var r=v<<12; for(var i=17;i>=12;i--) if(r&(1<<i)) r^=0x1F25<<(i-12); return (v<<12)|r; }
+    function penalty(g,N){ var p=0,r,c,k,run;
+      for(r=0;r<N;r++){ run=1; for(c=1;c<N;c++){ if(g[r][c]===g[r][c-1]){ run++; if(run===5) p+=3; else if(run>5) p++; } else run=1; } }
+      for(c=0;c<N;c++){ run=1; for(r=1;r<N;r++){ if(g[r][c]===g[r-1][c]){ run++; if(run===5) p+=3; else if(run>5) p++; } else run=1; } }
+      for(r=0;r<N-1;r++) for(c=0;c<N-1;c++){ var s=g[r][c]+g[r][c+1]+g[r+1][c]+g[r+1][c+1]; if(s===0||s===4) p+=3; }
+      var P1=[1,0,1,1,1,0,1,0,0,0,0], P2=[0,0,0,0,1,0,1,1,1,0,1];
+      for(r=0;r<N;r++) for(c=0;c<=N-11;c++){ var a=true,b=true,a2=true,b2=true; for(k=0;k<11;k++){ if(g[r][c+k]!==P1[k]) a=false; if(g[r][c+k]!==P2[k]) b=false; if(g[c+k][r]!==P1[k]) a2=false; if(g[c+k][r]!==P2[k]) b2=false; } if(a||b) p+=40; if(a2||b2) p+=40; }
+      var dark=0; for(r=0;r<N;r++) for(c=0;c<N;c++) dark+=g[r][c]; var pct=dark*100/(N*N), prev=Math.floor(pct/5)*5; p+=Math.min(Math.abs(prev-50),Math.abs(prev+5-50))/5*10; return p; }
+    return function(text, forceMask){
+      var bytes=Array.prototype.slice.call(new TextEncoder().encode(text)), v, cap, i, j, r, c;
+      for(v=1;v<=10;v++){ cap=0; BLK[v][1].forEach(function(b){cap+=b[0]*b[1];}); if(bytes.length+(v<10?2:3)<=cap) break; }
+      if(v>10) return null;
+      var bits=[]; function put(val,len){ for(var k=len-1;k>=0;k--) bits.push((val>>k)&1); }
+      put(4,4); put(bytes.length, v<10?8:16); bytes.forEach(function(b){ put(b,8); });
+      for(i=0;i<4&&bits.length<cap*8;i++) bits.push(0); while(bits.length%8) bits.push(0);
+      var data=[]; for(i=0;i<bits.length;i+=8){ var by=0; for(j=0;j<8;j++) by=(by<<1)|bits[i+j]; data.push(by); }
+      for(i=0;data.length<cap;i++) data.push(i%2?0x11:0xEC);
+      var ecn=BLK[v][0], blocks=[], ecs=[], pos=0;
+      BLK[v][1].forEach(function(b){ for(var k=0;k<b[0];k++){ var d=data.slice(pos,pos+b[1]); pos+=b[1]; blocks.push(d); ecs.push(rsEC(d,ecn)); } });
+      var out=[], maxD=0; blocks.forEach(function(b){ if(b.length>maxD) maxD=b.length; });
+      for(i=0;i<maxD;i++) blocks.forEach(function(b){ if(i<b.length) out.push(b[i]); });
+      for(i=0;i<ecn;i++) ecs.forEach(function(e){ out.push(e[i]); });
+      var N=v*4+17, m=[], fn=[]; for(r=0;r<N;r++){ var mr=[], fr=[]; for(c=0;c<N;c++){ mr.push(0); fr.push(false); } m.push(mr); fn.push(fr); }
+      function set(rr,cc,val){ if(rr<0||cc<0||rr>=N||cc>=N) return; m[rr][cc]=val?1:0; fn[rr][cc]=true; }
+      function finder(r0,c0){ for(var a=-1;a<=7;a++) for(var b=-1;b<=7;b++){ var on=(a>=0&&a<=6&&b>=0&&b<=6)&&(a===0||a===6||b===0||b===6||(a>=2&&a<=4&&b>=2&&b<=4)); set(r0+a,c0+b,on); } }
+      finder(0,0); finder(0,N-7); finder(N-7,0);
+      for(i=8;i<N-8;i++){ set(6,i,i%2===0); set(i,6,i%2===0); }
+      ALIGN[v].forEach(function(ar){ ALIGN[v].forEach(function(ac){ if((ar<=8&&ac<=8)||(ar<=8&&ac>=N-9)||(ar>=N-9&&ac<=8)) return; for(var dr=-2;dr<=2;dr++) for(var dc=-2;dc<=2;dc++) set(ar+dr,ac+dc, Math.max(Math.abs(dr),Math.abs(dc))!==1); }); });
+      set(4*v+9,8,true);
+      for(i=0;i<9;i++){ fn[8][i]=true; fn[i][8]=true; }
+      for(i=N-8;i<N;i++) fn[8][i]=true; for(i=N-7;i<N;i++) fn[i][8]=true;
+      if(v>=7){ for(i=0;i<6;i++) for(j=N-11;j<=N-9;j++){ fn[i][j]=true; fn[j][i]=true; } }
+      var bi=0, dir=-1, row=N-1;
+      for(var col=N-1;col>0;col-=2){ if(col===6) col--;
+        while(true){ for(c=0;c<2;c++){ var cc=col-c; if(!fn[row][cc]){ var byte=out[bi>>3]; m[row][cc]=(byte===undefined)?0:(byte>>(7-(bi&7)))&1; bi++; } }
+          row+=dir; if(row<0||row>=N){ row-=dir; dir=-dir; break; } } }
+      var best=null, bestP=Infinity;
+      for(var mk=0;mk<8;mk++){ if(forceMask!=null&&mk!==forceMask) continue; var g=m.map(function(rw){ return rw.slice(); });
+        for(r=0;r<N;r++) for(c=0;c<N;c++) if(!fn[r][c]&&MASK[mk](r,c)) g[r][c]^=1;
+        var f=fmtBits(mk);
+        for(i=0;i<15;i++){ var b=(f>>(14-i))&1;
+          if(i<6) g[8][i]=b; else if(i===6) g[8][7]=b; else if(i===7) g[8][8]=b; else if(i===8) g[7][8]=b; else g[14-i][8]=b;
+          if(i<7) g[N-1-i][8]=b; else g[8][N-15+i]=b; }
+        if(v>=7){ var vi=verBits(v); for(i=0;i<18;i++){ var vb=(vi>>i)&1; g[Math.floor(i/3)][N-11+i%3]=vb; g[N-11+i%3][Math.floor(i/3)]=vb; } }
+        var p=penalty(g,N); if(p<bestP){ bestP=p; best=g; } }
+      return best;
+    };
+  })();
+  function drawQR(cv,text){
+    var g=QR(text); if(!g||!cv.getContext){ cv.style.display='none'; return; }
+    var N=g.length, q=4, s=10; cv.width=cv.height=(N+2*q)*s; cv.style.display='';
+    var x=cv.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,cv.width,cv.height); x.fillStyle='#000';
+    for(var r=0;r<N;r++) for(var c=0;c<N;c++) if(g[r][c]) x.fillRect((c+q)*s,(r+q)*s,s,s);
+  }
+  window._qrMatrix=function(t){ return QR(t); };
+
+  // Full screen: the F key, or the button in the corner (always shown outside full screen; in full screen only
+  // while the mouse moves, so the TV picture stays clean)
+  function toggleFs(){ var el=document.documentElement; if(document.fullscreenElement){ document.exitFullscreen(); } else if(el.requestFullscreen){ el.requestFullscreen(); } else if(el.webkitRequestFullscreen){ el.webkitRequestFullscreen(); } }
+  var fsb=document.createElement('button'); fsb.id='fsbtn'; fsb.type='button'; fsb.onclick=toggleFs; document.body.appendChild(fsb);
+  var fsT;
+  function fsLabel(){ var on=!!document.fullscreenElement; fsb.textContent=on?'Exit full screen (F)':'Full screen (F)'; document.body.classList.toggle('isfs',on); }
+  document.addEventListener('fullscreenchange',fsLabel); fsLabel();
+  document.addEventListener('mousemove',function(){ document.body.classList.add('mouse'); clearTimeout(fsT); fsT=setTimeout(function(){ document.body.classList.remove('mouse'); },3000); });
+  document.addEventListener('keydown',function(e){ if((e.key==='f'||e.key==='F') && !e.ctrlKey && !e.metaKey && !e.altKey){ toggleFs(); } });
+  refresh(); setInterval(refresh, REFRESH);
+})();
+</script>
+<!-- EMCOMM-MAP:BEGIN (generated by installer/sync-app-module.py; edit templates/_shared/emcomm-map.js) -->
+<script>
+/* EMCOMM map module — the status map of the EOC Message Center (Map tab) and the wall display (map tile).
+   SINGLE SOURCE: edit this file, then run  python installer/sync-app-module.py
+   which copies it between the EMCOMM-MAP markers in eoc/EOC_Message_Center.html and eoc/EOC_Wall_Display.html.
+   Never edit the copies.
+
+   What it draws (docs/SIMULATOR_DESIGN.md section 6): the units of the geographic dataset
+   (wards and branches at a Stake or Satellite EOC, stakes at a Council / Area EOC) as outlines
+   filled by roster status, meetinghouses as dots, this EOC, and reports that carry a GPS fix.
+   The dataset is served by the EOC server from the folder set on the Setup tab (/map/...).
+   No external dependencies: Web Mercator on a canvas, like the simulator's map.
+
+   var map = EMCOMM_MAP.create(canvasEl, {interactive: true, labels: true, minLabelPx: 11, onSelect: fn});
+   map.load('/map').then(function(info){ ... });      // info.units, info.buildings
+   map.setLevel('stake' | 'satellite' | 'area');      // which polygons are the "units"
+   map.setStatus(function(unitName){ return {cls: 'none'|'ok'|'needs'|'alert'|'overdue'|'voice', text: '...'}; });
+   map.setMarkers([{lon, lat, kind: 'eoc'|'report'|'parent', label: '...'}]);
+   map.setFocus(['Alpha 1st Ward', ...]);               // fit() frames these units when any are on the map
+   map.fit(); map.draw(); map.units() -> [{name, type, stake}], map.select(name)
+*/
+(function () {
+  var R = 6378137, D2R = Math.PI / 180;
+  function merc(lon, lat) { return [R * lon * D2R, R * Math.log(Math.tan(Math.PI / 4 + Math.max(-85, Math.min(85, lat)) * D2R / 2))]; }
+  var COLORS = {
+    none:    {fill: 'rgba(148,163,184,.28)', line: '#64748b'},
+    ok:      {fill: 'rgba(34,197,94,.45)',   line: '#15803d'},
+    needs:   {fill: 'rgba(245,158,11,.50)',  line: '#b45309'},
+    alert:   {fill: 'rgba(220,38,38,.55)',   line: '#991b1b'},
+    overdue: {fill: 'rgba(148,163,184,.28)', line: '#d97706'},
+    voice:   {fill: 'rgba(59,130,246,.42)',  line: '#1d4ed8'}
+  };
+  var MARK = {eoc: '#1d4ed8', parent: '#7c3aed', report: '#111827'};
+
+  function norm(s) { return String(s || '').toLowerCase().replace(/\s+/g, ' ').trim(); }
+  function bboxOf(rings) {
+    var b = null;
+    rings.forEach(function (ring) { ring.forEach(function (p) {
+      if (!b) b = [p[0], p[1], p[0], p[1]];
+      else { if (p[0] < b[0]) b[0] = p[0]; if (p[1] < b[1]) b[1] = p[1]; if (p[0] > b[2]) b[2] = p[0]; if (p[1] > b[3]) b[3] = p[1]; }
+    }); });
+    return b;
+  }
+  function pointInRings(x, y, polys) {   // even-odd over every ring of every polygon
+    var inside = false;
+    polys.forEach(function (rings) { rings.forEach(function (ring) {
+      for (var i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+        var xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1];
+        if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) inside = !inside;
+      }
+    }); });
+    return inside;
+  }
+
+  function create(canvas, opts) {
+    opts = opts || {};
+    var ctx = canvas.getContext('2d'), W = 0, H = 0, dpr = 1;
+    var view = {cx: 0, cy: 0, res: 50};
+    var orgs = [], bldgs = [], markers = [], level = 'stake', statusFn = null, selected = null, loaded = false, loadError = '', focus = null;
+    var labels = opts.labels !== false, minLabel = opts.minLabelPx || 11;
+
+    function resize() {
+      dpr = window.devicePixelRatio || 1;
+      var r = canvas.getBoundingClientRect();
+      W = Math.max(1, Math.round(r.width)); H = Math.max(1, Math.round(r.height));
+      canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function toScr(x, y) { return [(x - view.cx) / view.res + W / 2, H / 2 - (y - view.cy) / view.res]; }
+    function fromScr(sx, sy) { return [view.cx + (sx - W / 2) * view.res, view.cy - (sy - H / 2) * view.res]; }
+    function isUnit(o) { return level === 'area' ? o.type === 'Stake' : (o.type === 'Ward' || o.type === 'Branch'); }
+    function isStakeOutline(o) { return level !== 'area' && o.type === 'Stake'; }
+
+    function load(base) {
+      base = (base || '/map').replace(/\/$/, '');
+      return Promise.all([fetch(base + '/organization_boundaries.geojson').then(function (r) { if (!r.ok) throw new Error('boundaries: HTTP ' + r.status); return r.json(); }),
+                          fetch(base + '/buildings.geojson').then(function (r) { return r.ok ? r.json() : {features: []}; }).catch(function () { return {features: []}; })])
+        .then(function (res) {
+          orgs = []; bldgs = [];
+          (res[0].features || []).forEach(function (f) {
+            var p = f.properties || {}, g = f.geometry; if (!g) return;
+            var polys = g.type === 'Polygon' ? [g.coordinates] : g.type === 'MultiPolygon' ? g.coordinates : [];
+            polys = polys.map(function (rings) { return rings.map(function (ring) { return ring.map(function (c) { return merc(c[0], c[1]); }); }); });
+            if (!polys.length) return;
+            var all = []; polys.forEach(function (rings) { rings.forEach(function (r) { all.push(r); }); });
+            var o = {id: p.org_id, name: p.org_name || '', key: norm(p.org_name), type: p.org_type || '', stake: p.stake_id || '', polys: polys, bbox: bboxOf(all)};
+            o.labelXY = p.label_longitude != null ? merc(p.label_longitude, p.label_latitude) : [(o.bbox[0] + o.bbox[2]) / 2, (o.bbox[1] + o.bbox[3]) / 2];
+            orgs.push(o);
+          });
+          (res[1].features || []).forEach(function (f) {
+            var p = f.properties || {}, g = f.geometry; if (!g || g.type !== 'Point') return;
+            bldgs.push({xy: merc(g.coordinates[0], g.coordinates[1]), names: p.organization_names || [], id: p.building_id});
+          });
+          loaded = true; loadError = '';
+          resize(); fit(); draw();
+          return {units: orgs.filter(isUnit).length, buildings: bldgs.length, orgs: orgs.length};
+        }).catch(function (e) { loaded = false; loadError = String(e.message || e); draw(); throw e; });
+    }
+
+    function fit(pad) {
+      pad = pad || 0.92;
+      var b = null;
+      var mine = focus ? orgs.filter(function (o) { return isUnit(o) && o.bbox && focus[o.key]; }) : [];
+      (mine.length ? mine : orgs).forEach(function (o) { if (!isUnit(o) || !o.bbox) return; b = b ? [Math.min(b[0], o.bbox[0]), Math.min(b[1], o.bbox[1]), Math.max(b[2], o.bbox[2]), Math.max(b[3], o.bbox[3])] : o.bbox.slice(); });
+      if (!b) markers.forEach(function (m) { var xy = merc(m.lon, m.lat); b = b ? [Math.min(b[0], xy[0] - 3000), Math.min(b[1], xy[1] - 3000), Math.max(b[2], xy[0] + 3000), Math.max(b[3], xy[1] + 3000)] : [xy[0] - 3000, xy[1] - 3000, xy[0] + 3000, xy[1] + 3000]; });
+      if (!b || !W) return;
+      view.cx = (b[0] + b[2]) / 2; view.cy = (b[1] + b[3]) / 2;
+      view.res = Math.max((b[2] - b[0]) / (W * pad), (b[3] - b[1]) / (H * pad), 0.05);
+    }
+
+    function tracePolys(polys) {
+      ctx.beginPath();
+      polys.forEach(function (rings) { rings.forEach(function (ring) {
+        var lx = NaN, ly = NaN, first = true;
+        for (var i = 0; i < ring.length; i++) {
+          var sx = (ring[i][0] - view.cx) / view.res + W / 2, sy = H / 2 - (ring[i][1] - view.cy) / view.res;
+          if (!first && Math.abs(sx - lx) < 0.6 && Math.abs(sy - ly) < 0.6) continue;
+          if (first) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
+          first = false; lx = sx; ly = sy;
+        }
+        ctx.closePath();
+      }); });
+    }
+    function onScreen(b) { if (!b) return false; var a = toScr(b[0], b[3]), c = toScr(b[2], b[1]); return !(a[0] > W || c[0] < 0 || a[1] > H || c[1] < 0); }
+
+    var images = [];   // [{img, b: [w, s, e, n] Web Mercator metres, opacity}]: the directory's own map artwork
+    function draw() {
+      if (!W) resize();
+      ctx.fillStyle = opts.background || '#eef2f6'; ctx.fillRect(0, 0, W, H);
+      images.forEach(function (im) {
+        if (!im.img.complete || !im.img.naturalWidth || !onScreen(im.b)) return;
+        var a = toScr(im.b[0], im.b[3]), c = toScr(im.b[2], im.b[1]);
+        ctx.globalAlpha = im.opacity; ctx.drawImage(im.img, a[0], a[1], c[0] - a[0], c[1] - a[1]); ctx.globalAlpha = 1;
+      });
+      if (!loaded) {
+        ctx.fillStyle = '#64748b'; ctx.font = '13px system-ui, sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(loadError ? 'Map data not available: ' + loadError : 'Loading map data…', W / 2, H / 2);
+        return;
+      }
+      // unit polygons, filled by status
+      orgs.forEach(function (o) {
+        if (!isUnit(o) || !onScreen(o.bbox)) return;
+        var st = statusFn ? (statusFn(o.name) || {}) : {}, c = COLORS[st.cls] || COLORS.none;
+        tracePolys(o.polys);
+        ctx.fillStyle = c.fill; ctx.fill();
+        ctx.lineWidth = st.cls === 'overdue' ? 3 : 1.2; ctx.strokeStyle = c.line;
+        if (st.cls === 'overdue') ctx.setLineDash([6, 4]);
+        ctx.stroke(); ctx.setLineDash([]);
+        if (selected && o.key === selected) { ctx.lineWidth = 3; ctx.strokeStyle = '#111827'; ctx.stroke(); }
+      });
+      // stake outlines behind the wards, thin
+      orgs.forEach(function (o) {
+        if (!isStakeOutline(o) || !onScreen(o.bbox)) return;
+        tracePolys(o.polys); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(30,41,59,.55)'; ctx.stroke();
+      });
+      // meetinghouses
+      bldgs.forEach(function (b) {
+        var s = toScr(b.xy[0], b.xy[1]); if (s[0] < -6 || s[0] > W + 6 || s[1] < -6 || s[1] > H + 6) return;
+        ctx.beginPath(); ctx.arc(s[0], s[1], 3.2, 0, Math.PI * 2); ctx.fillStyle = '#1e293b'; ctx.fill();
+        ctx.lineWidth = 1; ctx.strokeStyle = '#fff'; ctx.stroke();
+      });
+      // labels (only when they fit: the unit's box must be wider than the text)
+      if (labels) {
+        ctx.font = 'bold ' + minLabel + 'px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        orgs.forEach(function (o) {
+          if (!isUnit(o) || !onScreen(o.bbox)) return;
+          var wpx = (o.bbox[2] - o.bbox[0]) / view.res, hpx = (o.bbox[3] - o.bbox[1]) / view.res;
+          var txt = o.name.replace(/ (Ward|Branch|Stake)$/i, '');
+          if (ctx.measureText(txt).width > wpx * 0.9 || hpx < minLabel * 2) return;
+          var s = toScr(o.labelXY[0], o.labelXY[1]);
+          ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.strokeText(txt, s[0], s[1]);
+          ctx.fillStyle = '#0f172a'; ctx.fillText(txt, s[0], s[1]);
+        });
+      }
+      // markers: reports as small squares, EOCs as rings
+      markers.forEach(function (m) {
+        if (m.lon == null || m.lat == null || isNaN(m.lon) || isNaN(m.lat)) return;
+        var xy = merc(+m.lon, +m.lat), s = toScr(xy[0], xy[1]); if (s[0] < -12 || s[0] > W + 12 || s[1] < -12 || s[1] > H + 12) return;
+        ctx.fillStyle = MARK[m.kind] || MARK.report;
+        if (m.kind === 'report') { ctx.fillRect(s[0] - 3.5, s[1] - 3.5, 7, 7); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.strokeRect(s[0] - 3.5, s[1] - 3.5, 7, 7); }
+        else { ctx.beginPath(); ctx.arc(s[0], s[1], 7, 0, Math.PI * 2); ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = '#fff'; ctx.stroke(); ctx.beginPath(); ctx.arc(s[0], s[1], 2.5, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill(); }
+        if (labels && m.label) { ctx.font = 'bold ' + minLabel + 'px system-ui, sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.strokeText(m.label, s[0] + 10, s[1]); ctx.fillStyle = MARK[m.kind] || MARK.report; ctx.fillText(m.label, s[0] + 10, s[1]); }
+      });
+      // scale bar
+      var target = 120 * view.res, step = Math.pow(10, Math.floor(Math.log(target) / Math.LN10)), n = target / step, len = (n >= 5 ? 5 : n >= 2 ? 2 : 1) * step;
+      var px = len / view.res, label = len >= 1000 ? (len / 1000) + ' km' : len + ' m';
+      ctx.fillStyle = 'rgba(255,255,255,.8)'; ctx.fillRect(8, H - 26, px + 16, 20);
+      ctx.strokeStyle = '#111827'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(16, H - 12); ctx.lineTo(16 + px, H - 12); ctx.stroke();
+      ctx.fillStyle = '#111827'; ctx.font = '11px system-ui, sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'bottom'; ctx.fillText(label, 16, H - 14);
+    }
+
+    function unitAt(sx, sy) {
+      var p = fromScr(sx, sy), hit = null;
+      orgs.forEach(function (o) { if (isUnit(o) && o.bbox && p[0] >= o.bbox[0] && p[0] <= o.bbox[2] && p[1] >= o.bbox[1] && p[1] <= o.bbox[3] && pointInRings(p[0], p[1], o.polys)) hit = o; });
+      return hit;
+    }
+    function zoomAt(f, sx, sy) { var m = fromScr(sx, sy); view.res = Math.min(Math.max(view.res / f, 0.05), 50000); var n = fromScr(sx, sy); view.cx += m[0] - n[0]; view.cy += m[1] - n[1]; draw(); }
+
+    if (opts.interactive) {
+      var drag = null, moved = false;
+      canvas.style.cursor = 'grab';
+      canvas.addEventListener('mousedown', function (e) { drag = {x: e.clientX, y: e.clientY, cx: view.cx, cy: view.cy}; moved = false; canvas.style.cursor = 'grabbing'; });
+      window.addEventListener('mousemove', function (e) { if (!drag) return; var dx = e.clientX - drag.x, dy = e.clientY - drag.y; if (Math.abs(dx) + Math.abs(dy) > 3) moved = true; view.cx = drag.cx - dx * view.res; view.cy = drag.cy + dy * view.res; draw(); });
+      window.addEventListener('mouseup', function (e) {
+        if (!drag) return; var was = moved; drag = null; canvas.style.cursor = 'grab'; if (was) return;
+        var r = canvas.getBoundingClientRect(), o = unitAt(e.clientX - r.left, e.clientY - r.top);
+        selected = o ? o.key : null; draw(); if (opts.onSelect) opts.onSelect(o ? {name: o.name, type: o.type, stake: o.stake} : null);
+      });
+      canvas.addEventListener('wheel', function (e) { e.preventDefault(); var r = canvas.getBoundingClientRect(); zoomAt(e.deltaY < 0 ? 1.25 : 0.8, e.clientX - r.left, e.clientY - r.top); }, {passive: false});
+      canvas.addEventListener('dblclick', function (e) { var r = canvas.getBoundingClientRect(); zoomAt(2, e.clientX - r.left, e.clientY - r.top); });
+      // touch: one finger pans, pinch zooms
+      var tp = null;
+      canvas.addEventListener('touchstart', function (e) { if (e.touches.length === 1) tp = {x: e.touches[0].clientX, y: e.touches[0].clientY, cx: view.cx, cy: view.cy}; else if (e.touches.length === 2) tp = {d: Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY), res: view.res}; }, {passive: true});
+      canvas.addEventListener('touchmove', function (e) { if (!tp) return; e.preventDefault(); if (e.touches.length === 1 && tp.x != null) { view.cx = tp.cx - (e.touches[0].clientX - tp.x) * view.res; view.cy = tp.cy + (e.touches[0].clientY - tp.y) * view.res; } else if (e.touches.length === 2 && tp.d) { var d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); view.res = Math.min(Math.max(tp.res * tp.d / Math.max(d, 1), 0.05), 50000); } draw(); }, {passive: false});
+      canvas.addEventListener('touchend', function () { tp = null; }, {passive: true});
+    }
+    window.addEventListener('resize', function () { if (canvas.offsetWidth) { resize(); draw(); } });
+
+    return {
+      load: load, draw: draw, resize: resize,
+      fit: function () { resize(); fit(); draw(); },
+      zoom: function (f) { zoomAt(f, W / 2, H / 2); },
+      setLevel: function (l) { level = l === 'area' ? 'area' : (l || 'stake'); },
+      setStatus: function (fn) { statusFn = fn; },
+      setMarkers: function (list) { markers = list || []; },
+      setImages: function (list) {   // [{url, bounds: [w, s, e, n] Web Mercator metres, opacity}]
+        images = (list || []).map(function (o) { var img = new Image(); img.onload = draw; img.src = o.url; return {img: img, b: o.bounds, opacity: o.opacity == null ? 0.6 : o.opacity}; });
+        draw();
+      },
+      focusOn: function (b) { if (!b) return; resize(); view.cx = (b[0] + b[2]) / 2; view.cy = (b[1] + b[3]) / 2; view.res = Math.max((b[2] - b[0]) / (W || 1), (b[3] - b[1]) / (H || 1)) * 1.05; draw(); },
+      setFocus: function (names) { focus = null; if (names && names.length) { focus = {}; names.forEach(function (n) { focus[norm(n)] = true; }); } },
+      select: function (name) { selected = name ? norm(name) : null; draw(); },
+      units: function () { return orgs.filter(isUnit).map(function (o) { return {name: o.name, type: o.type, stake: o.stake}; }); },
+      loaded: function () { return loaded; },
+      norm: norm
+    };
+  }
+  window.EMCOMM_MAP = {create: create, merc: merc};
+})();
+</script>
+<!-- EMCOMM-MAP:END -->
+</body>
+</html>

@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Church of Jesus Christ EMCOMM — Supply Order</title>
+<style>
+* { box-sizing: border-box; }
+body { font-family: Arial, Helvetica, sans-serif; font-size: 16px; margin: 0; padding: 0; background: #f0f2f5; color: #222; }
+.card { background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.12); border-radius: 8px; margin: 12px 16px; overflow: hidden; }
+.sec-hdr { background: #1a3a5c; color: #fff; font-size: 14px; font-weight: bold; padding: 10px 14px; }
+.frow { padding: 10px 14px; border-bottom: 1px solid #eee; }
+.frow:last-child { border-bottom: none; }
+label { font-size: 13px; color: #444; font-weight: 600; display: block; margin-bottom: 4px; }
+input[type=text], input[type=tel], input[type=date] {
+  width: 100%; padding: 10px 12px; font-size: 16px; font-family: Arial, Helvetica, sans-serif;
+  border: 1.5px solid #bbb; border-radius: 6px; background: #fafeff;
+  appearance: none; -webkit-appearance: none; }
+input:focus { outline: none; border-color: #1a3a5c; }
+.two-col { }
+@media(min-width:600px) { .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0; } }
+.three-col { }
+@media(min-width:500px) { .three-col { display: grid; grid-template-columns: 1fr 70px 100px; gap: 0; } }
+.instructions { background: #dbeafe; border-left: 4px solid #1a3a5c; margin: 0 16px 4px; padding: 12px 14px;
+  border-radius: 0 6px 6px 0; font-size: 14px; line-height: 1.5; }
+.page-header { display:flex; align-items:center; justify-content:space-between; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,.12); border-radius:8px; margin:12px 16px 4px; padding:12px 16px; gap:8px; }
+.btn-row { display:flex; gap:10px; margin:10px 16px; }
+.btn-save { flex:1; height:52px; background:#1a6b3c; color:#fff; font-size:16px; font-weight:bold; border:none; border-radius:8px; cursor:pointer; }
+.btn-save:active { background:#145630; }
+.btn-share { flex:1; height:52px; background:#1a3a5c; color:#fff; font-size:16px; font-weight:bold; border:none; border-radius:8px; cursor:pointer; }
+.btn-share:active { background:#142e4a; }
+.btn-load { background:none; border:none; color:#666; font-size:13px; text-decoration:underline; cursor:pointer; padding:2px 0; }
+table.items { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.items thead tr { background: #eef2f8; }
+table.items th { text-align: left; padding: 6px 8px; font-size: 13px; color: #333; }
+table.items th.num-col, table.items th.unit-col, table.items th.qty-col { text-align: center; }
+table.items td { padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
+table.items td.num-col, table.items td.unit-col { text-align: center; color: #777; font-size: 12px; }
+table.items td.qty-col { padding: 4px; }
+input.qty { width: 100%; padding: 8px 4px; font-size: 16px; text-align: center;
+  border: 1.5px solid #bbb; border-radius: 4px; background: #fafeff; }
+input.qty:focus { outline: none; border-color: #1a3a5c; }
+.sub-sec-hdr { background: #eef2f8; font-weight: bold; font-size: 13px; padding: 6px 8px; color: #1a3a5c; }
+.btn-gps { width:100%; height:46px; background:#1a3a5c; color:#fff; font-size:15px; font-weight:bold; border:none; border-radius:8px; cursor:pointer; }
+.btn-gps:active { background:#142e4a; }
+.btn-gps:disabled { opacity:.6; cursor:default; }
+.gps-status { font-size:13px; color:#555; margin-top:6px; line-height:1.4; }
+.gps-status.ok { color:#1a6b3c; }
+.gps-status.err { color:#b00020; }
+.gps-off .sec-hdr { background:#8a94a0; }
+.gps-off .btn-gps { background:#9aa3ad; opacity:1; }
+.gps-off input[type=text] { background:#ececec; color:#888; }
+.gps-off label { color:#999; }
+.gps-manual { display:none; font-size:13px; color:#1a3a5c; text-decoration:underline; margin-top:6px; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div style="font-family:'Times New Roman',Times,serif;line-height:1.15;text-align:center;">
+    <div style="font-size:7px;letter-spacing:.35em;text-transform:uppercase;color:#1a3a5c;">The Church of</div>
+    <div style="font-size:20px;letter-spacing:.04em;font-weight:bold;color:#1a3a5c;">Jesus Christ</div>
+    <div style="font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:#1a3a5c;">of Latter-day Saints</div>
+  </div>
+  <div style="text-align:right;">
+    <div style="font-size:17px;font-weight:bold;color:#1a3a5c;line-height:1.2;">Emergency Supply Order</div>
+    <div style="font-size:11px;color:#666;margin-top:3px;">Worker Form</div>
+  </div>
+</div>
+
+<div class="instructions">
+  <strong>How to use this form:</strong><br/>
+  1. Fill in the fields below. Your GPS (Global Positioning System) location fills itself in when the phone allows it.<br/>
+  2. <strong>On the EOC (Emergency Operations Center) Wi-Fi?</strong> Tap <strong>Send to EOC</strong>. The EOC has it in seconds and you see a green &ldquo;received&rdquo; screen. No files to save.<br/>
+  3. <strong>No signal where you are?</strong> Tap <strong>Save to Outbox</strong>. The report stays on this phone; save as many as you need. When you reach the EOC Wi-Fi, tap <strong>Send to EOC</strong> and scan the EOC QR (Quick Response) code on the wall.<br/>
+  4. <strong>Have cell service or internet?</strong> (Any Wi-Fi with internet counts &mdash; home, a shelter, a business, a neighbor, a meetinghouse, Starlink.) Tap <strong>Share by text or email</strong> and send the file straight to whoever you report to — your Team Leader, Emergency Response Director, Church leader, or your Stake or Satellite EOC (Emergency Operations Center).<br/>
+  5. <strong>Cannot reach the EOC at all?</strong> Tap <strong>Save to My Phone</strong> and get the file to an EMCOMM (emergency communications) HAM (amateur radio) operator any way you can — USB (Universal Serial Bus) drive, AirDrop, or Android Nearby Share (these work phone-to-phone with no signal). They load it into Winlink and send it to the Stake EOC by radio. The Stake EOC sends it up the welfare line (the Welfare and Self-Reliance Manager, WSRM, then the Area Welfare and Self-Reliance Manager, AWSRM).<br/>
+  6. <strong>Nothing works at all (Emergency)?</strong> Paper goes by hand. If a printer is on your Wi-Fi, or offers its own Wi-Fi (Wi-Fi Direct), tap <strong>Print</strong> and give the printed form to your Crew Chief or a runner. No printer? Copy the report onto a blank paper form and keep it in your Outbox too. <a href="?blank=1">Print blank forms</a> before an event and keep a few with a pen in your go-bag.
+</div>
+
+<div class="emcomm-actions"></div>
+<div style="margin:0 16px 8px;text-align:center;">
+  <button class="btn-load" onclick="document.getElementById('loadInput').click()">&#128194; Load Saved Draft</button>
+  <input type="file" id="loadInput" accept=".txt" style="display:none;" onchange="loadFromFile(this)" />
+</div>
+
+<form id="myform">
+
+<div class="card" style="border:2px solid #b00000;">
+  <div class="frow"><label style="font-size:15px;font-weight:bold;color:#b00000;"><input type="checkbox" id="exercise" name="exercise" value="YES" /> THIS IS AN EXERCISE</label>
+  <div style="font-size:12px;color:#555;margin-top:4px;">Tick this for every drill, test or training report. The EOC (Emergency Operations Center) marks it as an exercise.</div></div>
+</div>
+
+<!-- GPS Location -->
+<div class="card" id="gpsCard">
+  <div class="sec-hdr">Your GPS (Global Positioning System) Location</div>
+  <div class="frow">
+    <button type="button" class="btn-gps" id="gpsBtn" onclick="getGPS(false)">&#128205; Get GPS Location</button>
+    <div class="gps-status" id="gpsStatus">Tap to capture your coordinates (allow location access if asked).</div>
+    <a href="#" class="gps-manual" id="gpsManual" onclick="gpsEnableManual();return false;">Enter coordinates manually</a>
+  </div>
+  <div class="two-col">
+    <div class="frow">
+      <label for="stn_lat_d">Latitude</label>
+      <input type="text" id="stn_lat_d" name="stn_lat_d" inputmode="decimal" placeholder="e.g. 40.2338" onchange="updateGrid()" />
+    </div>
+    <div class="frow">
+      <label for="stn_lon_d">Longitude</label>
+      <input type="text" id="stn_lon_d" name="stn_lon_d" inputmode="decimal" placeholder="e.g. -111.6585" onchange="updateGrid()" />
+    </div>
+  </div>
+  <input type="hidden" id="stn_grid_d" name="stn_grid_d" />
+</div>
+
+<!-- Delivery Information -->
+<div class="card">
+  <div class="sec-hdr">Delivery Information</div>
+  <div class="two-col">
+    <div class="frow">
+      <label for="req_stake">Requesting Stake</label>
+      <input type="text" id="req_stake" name="req_stake" />
+    </div>
+    <div class="frow">
+      <label for="stake_pres">Stake President</label>
+      <input type="text" id="stake_pres" name="stake_pres" />
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="frow">
+      <label for="del_contact">Delivery Contact Name</label>
+      <input type="text" id="del_contact" name="del_contact" />
+    </div>
+    <div class="frow">
+      <label for="del_phone">Phone (with area code)</label>
+      <input type="tel" id="del_phone" name="del_phone" placeholder="(801) 555-0100" />
+    </div>
+  </div>
+  <div class="frow">
+    <label for="order_date">Order Date</label>
+    <input type="date" id="order_date" name="order_date" style="max-width:200px;" />
+  </div>
+  <div class="frow">
+    <label for="del_addr">Delivery Street Address</label>
+    <input type="text" id="del_addr" name="del_addr" />
+  </div>
+  <div class="three-col">
+    <div class="frow">
+      <label for="del_city">City</label>
+      <input type="text" id="del_city" name="del_city" />
+    </div>
+    <div class="frow">
+      <label for="del_state">State</label>
+      <input type="text" id="del_state" name="del_state" maxlength="2" placeholder="UT" />
+    </div>
+    <div class="frow">
+      <label for="del_zip">Zip code</label>
+      <input type="text" id="del_zip" name="del_zip" maxlength="10" placeholder="84601" inputmode="numeric" />
+    </div>
+  </div>
+</div>
+
+<!-- Items table -->
+<div class="card">
+  <div class="sec-hdr">Supplies — Enter quantities below (leave blank if not ordering)</div>
+  <table class="items">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th class="num-col" style="width:70px;">Item #</th>
+        <th class="unit-col" style="width:55px;">Unit</th>
+        <th class="qty-col" style="width:64px;">Qty</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="4" class="sub-sec-hdr">General Supplies</td></tr>
+      <tr><td>Blanket — 3-lb. poly fleece (10 per case)</td><td class="num-col">008092</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" id="gs01" name="gs01" inputmode="numeric" /></td></tr>
+      <tr><td>Card stock Emergency Response Services dashboard signs (25 per package)</td><td class="num-col">007126</td><td class="unit-col">package</td><td class="qty-col"><input type="text" class="qty" id="gs02" name="gs02" inputmode="numeric" /></td></tr>
+      <tr><td>Chalk line with chalk</td><td class="num-col">007002</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="gs03" name="gs03" inputmode="numeric" /></td></tr>
+      <tr><td>Duct tape roll, 60 yd. x 2" wide</td><td class="num-col">007250</td><td class="unit-col">roll</td><td class="qty-col"><input type="text" class="qty" id="gs04" name="gs04" inputmode="numeric" /></td></tr>
+      <tr><td>First aid kit (basic)</td><td class="num-col">007058</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="gs05" name="gs05" inputmode="numeric" /></td></tr>
+      <tr><td>Furring strips</td><td class="num-col">007017</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="gs06" name="gs06" inputmode="numeric" /></td></tr>
+      <tr><td>Magnetic Emergency Response Services sign</td><td class="num-col">007125</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="gs07" name="gs07" inputmode="numeric" /></td></tr>
+      <tr><td>Nails, 8d (8-penny) (25 lbs. per case)</td><td class="num-col">007201</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" id="gs08" name="gs08" inputmode="numeric" /></td></tr>
+      <tr><td>Tarp (20' x 30')</td><td class="num-col">009021</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="gs09" name="gs09" inputmode="numeric" /></td></tr>
+      <tr><td>Trash bags, 45-gallon (200 per case)</td><td class="num-col">007008</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" id="gs10" name="gs10" inputmode="numeric" /></td></tr>
+
+      <tr><td colspan="4" class="sub-sec-hdr">Tools</td></tr>
+      <tr><td>Bow saw, 21"</td><td class="num-col">007205</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl01" name="tl01" inputmode="numeric" /></td></tr>
+      <tr><td>Box fan</td><td class="num-col">007213</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl02" name="tl02" inputmode="numeric" /></td></tr>
+      <tr><td>Chain oil (1 quart)</td><td class="num-col">007086</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl03" name="tl03" inputmode="numeric" /></td></tr>
+      <tr><td>Chain saw</td><td class="num-col">007078</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl04" name="tl04" inputmode="numeric" /></td></tr>
+      <tr><td>Chain saw chain</td><td class="num-col">007082</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl05" name="tl05" inputmode="numeric" /></td></tr>
+      <tr><td>Chain saw file</td><td class="num-col">007084</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl06" name="tl06" inputmode="numeric" /></td></tr>
+      <tr><td>Chain saw safety kit (helmet and face mask with hearing protection)</td><td class="num-col">007089</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl07" name="tl07" inputmode="numeric" /></td></tr>
+      <tr><td>Chaps</td><td class="num-col">007230</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl08" name="tl08" inputmode="numeric" /></td></tr>
+      <tr><td>Engine oil, 2-cycle (1 quart)</td><td class="num-col">007088</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl09" name="tl09" inputmode="numeric" /></td></tr>
+      <tr><td>Extension cord, 100'</td><td class="num-col">007072</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl10" name="tl10" inputmode="numeric" /></td></tr>
+      <tr><td>Garden rake</td><td class="num-col">007203</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl11" name="tl11" inputmode="numeric" /></td></tr>
+      <tr><td>Gas can, 1-gallon</td><td class="num-col">007080</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl12" name="tl12" inputmode="numeric" /></td></tr>
+      <tr><td>Gas can, 5-gallon</td><td class="num-col">007074</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl13" name="tl13" inputmode="numeric" /></td></tr>
+      <tr><td>Gas funnel</td><td class="num-col">007075</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl14" name="tl14" inputmode="numeric" /></td></tr>
+      <tr><td>Generator, 5 kW</td><td class="num-col">007070</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl15" name="tl15" inputmode="numeric" /></td></tr>
+      <tr><td>Hammers, claw (36 per case)</td><td class="num-col">007200</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl16" name="tl16" inputmode="numeric" /></td></tr>
+      <tr><td>Ice sled (for hauling debris)</td><td class="num-col">007091</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl17" name="tl17" inputmode="numeric" /></td></tr>
+      <tr><td>Pallet jack</td><td class="num-col">007231</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl18" name="tl18" inputmode="numeric" /></td></tr>
+      <tr><td>Pry bar, 12" x 15"</td><td class="num-col">009048</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl19" name="tl19" inputmode="numeric" /></td></tr>
+      <tr><td>Pump, .5 hp submersible residential (110 V) with 50' garden hose</td><td class="num-col">007216</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl20" name="tl20" inputmode="numeric" /></td></tr>
+      <tr><td>Push broom with handle</td><td class="num-col">007081</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl21" name="tl21" inputmode="numeric" /></td></tr>
+      <tr><td>Rope, 100' x 1/4"</td><td class="num-col">007010</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl22" name="tl22" inputmode="numeric" /></td></tr>
+      <tr><td>Shovel, round</td><td class="num-col">007071</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl23" name="tl23" inputmode="numeric" /></td></tr>
+      <tr><td>Shovel, square</td><td class="num-col">007062</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl24" name="tl24" inputmode="numeric" /></td></tr>
+      <tr><td>Shovel, wide-scoop</td><td class="num-col">007054</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl25" name="tl25" inputmode="numeric" /></td></tr>
+      <tr><td>Unassembled wheelbarrows with non-flat tires (if fewer than 25 are needed, purchase locally)</td><td class="num-col">007090</td><td class="unit-col">pallet</td><td class="qty-col"><input type="text" class="qty" id="tl26" name="tl26" inputmode="numeric" /></td></tr>
+      <tr><td>Utility knife with blades</td><td class="num-col">007212</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl27" name="tl27" inputmode="numeric" /></td></tr>
+      <tr><td>Wet/dry vacuum</td><td class="num-col">007211</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl28" name="tl28" inputmode="numeric" /></td></tr>
+      <tr><td>Wrecking bar, gooseneck, 30" x 36"</td><td class="num-col">009046</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl29" name="tl29" inputmode="numeric" /></td></tr>
+
+      <tr><td colspan="4" class="sub-sec-hdr">Personal Items</td></tr>
+      <tr><td>Body bags (12 per case)</td><td class="num-col">007140</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" id="pi01" name="pi01" inputmode="numeric" /></td></tr>
+      <tr><td>Gloves, all-purpose</td><td class="num-col">007102</td><td class="unit-col">pair</td><td class="qty-col"><input type="text" class="qty" id="pi02" name="pi02" inputmode="numeric" /></td></tr>
+      <tr><td>Heavy rubber gloves (M) (144 pairs per case)</td><td class="num-col">003381</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" id="pi03" name="pi03" inputmode="numeric" /></td></tr>
+      <tr><td>Heavy rubber gloves (L) (144 pairs per case)</td><td class="num-col">003375</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" id="pi04" name="pi04" inputmode="numeric" /></td></tr>
+      <tr><td>Heavy rubber gloves (XL) (144 pairs per case)</td><td class="num-col">003376</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" id="pi05" name="pi05" inputmode="numeric" /></td></tr>
+      <tr><td>Helping Hands T-shirt (M), short-sleeve</td><td class="num-col">007130</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="pi06" name="pi06" inputmode="numeric" /></td></tr>
+      <tr><td>Helping Hands T-shirt (L), short-sleeve</td><td class="num-col">007131</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="pi07" name="pi07" inputmode="numeric" /></td></tr>
+      <tr><td>Helping Hands T-shirt (XL), short-sleeve</td><td class="num-col">007132</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="pi08" name="pi08" inputmode="numeric" /></td></tr>
+      <tr><td>Helping Hands T-shirt (XXL), short-sleeve</td><td class="num-col">007133</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="pi09" name="pi09" inputmode="numeric" /></td></tr>
+      <tr><td>Helping Hands T-shirt (XXXL), short-sleeve</td><td class="num-col">007134</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="pi10" name="pi10" inputmode="numeric" /></td></tr>
+      <tr><td>Helping Hands vests (72 per case)</td><td class="num-col">007155</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" id="pi11" name="pi11" inputmode="numeric" /></td></tr>
+      <tr><td>Hooded disposable coveralls (L)</td><td class="num-col">007232</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="pi12" name="pi12" inputmode="numeric" /></td></tr>
+      <tr><td>Hooded disposable coveralls (XL)</td><td class="num-col">007233</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="pi13" name="pi13" inputmode="numeric" /></td></tr>
+      <tr><td>Hooded disposable coveralls (XXL)</td><td class="num-col">007234</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="pi14" name="pi14" inputmode="numeric" /></td></tr>
+      <tr><td>N95 masks with ventilation (160 masks per case)</td><td class="num-col">007120</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" id="pi15" name="pi15" inputmode="numeric" /></td></tr>
+      <tr><td>Rubber boots (size 8)</td><td class="num-col">007240</td><td class="unit-col">pair</td><td class="qty-col"><input type="text" class="qty" id="pi16" name="pi16" inputmode="numeric" /></td></tr>
+      <tr><td>Rubber boots (size 10)</td><td class="num-col">007242</td><td class="unit-col">pair</td><td class="qty-col"><input type="text" class="qty" id="pi17" name="pi17" inputmode="numeric" /></td></tr>
+      <tr><td>Rubber boots (size 12)</td><td class="num-col">007244</td><td class="unit-col">pair</td><td class="qty-col"><input type="text" class="qty" id="pi18" name="pi18" inputmode="numeric" /></td></tr>
+      <tr><td>Rubber-coated gloves (M), 1 pair</td><td class="num-col">007108</td><td class="unit-col">pair</td><td class="qty-col"><input type="text" class="qty" id="pi19" name="pi19" inputmode="numeric" /></td></tr>
+      <tr><td>Rubber-coated gloves (L), 1 pair</td><td class="num-col">007107</td><td class="unit-col">pair</td><td class="qty-col"><input type="text" class="qty" id="pi20" name="pi20" inputmode="numeric" /></td></tr>
+      <tr><td>Rubber-coated gloves (XL), 1 pair</td><td class="num-col">007109</td><td class="unit-col">pair</td><td class="qty-col"><input type="text" class="qty" id="pi21" name="pi21" inputmode="numeric" /></td></tr>
+      <tr><td>Safety glasses</td><td class="num-col">007208</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="pi22" name="pi22" inputmode="numeric" /></td></tr>
+
+      <tr><td colspan="4" class="sub-sec-hdr">Water</td></tr>
+      <tr><td>Bottled water (24 bottles per case)</td><td class="num-col">007098</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" id="wa01" name="wa01" inputmode="numeric" /></td></tr>
+      <tr><td colspan="4" class="sub-sec-hdr">Kits and Food Boxes</td></tr>
+      <tr><td>Cleaning kits (84 kits per pallet)</td><td class="num-col">007110</td><td class="unit-col">kit</td><td class="qty-col"><input type="text" class="qty" id="kb01" name="kb01" inputmode="numeric" /></td></tr>
+      <tr><td>Hygiene kits (5 per case, 560 per pallet)</td><td class="num-col">008096</td><td class="unit-col">kit</td><td class="qty-col"><input type="text" class="qty" id="kb02" name="kb02" inputmode="numeric" /></td></tr>
+      <tr><td>Food boxes (56 boxes per pallet)</td><td class="num-col">007175</td><td class="unit-col">box</td><td class="qty-col"><input type="text" class="qty" id="kb03" name="kb03" inputmode="numeric" /></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Other Items -->
+<div class="card">
+  <div class="sec-hdr">Other Items (not in catalog)</div>
+  <div style="padding:8px 14px 4px;font-size:13px;color:#555;">Contact area welfare manager (1-801-240-0450) for direction and budget approval on non-catalog items.</div>
+  <table class="items" style="margin:0;">
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th class="num-col" style="width:80px;">Item #</th>
+        <th class="unit-col" style="width:65px;">Unit</th>
+        <th class="qty-col" style="width:64px;">Qty</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="qty-col"><input type="text" class="qty" id="other_desc1" name="other_desc1" style="text-align:left;" placeholder="Description" /></td>
+        <td class="qty-col"><input type="text" class="qty" id="other_num1" name="other_num1" /></td>
+        <td class="qty-col"><input type="text" class="qty" id="other_unit1" name="other_unit1" /></td>
+        <td class="qty-col"><input type="text" class="qty" id="other_qty1" name="other_qty1" inputmode="numeric" /></td>
+      </tr>
+      <tr>
+        <td class="qty-col"><input type="text" class="qty" id="other_desc2" name="other_desc2" style="text-align:left;" placeholder="Description" /></td>
+        <td class="qty-col"><input type="text" class="qty" id="other_num2" name="other_num2" /></td>
+        <td class="qty-col"><input type="text" class="qty" id="other_unit2" name="other_unit2" /></td>
+        <td class="qty-col"><input type="text" class="qty" id="other_qty2" name="other_qty2" inputmode="numeric" /></td>
+      </tr>
+      <tr>
+        <td class="qty-col"><input type="text" class="qty" id="other_desc3" name="other_desc3" style="text-align:left;" placeholder="Description" /></td>
+        <td class="qty-col"><input type="text" class="qty" id="other_num3" name="other_num3" /></td>
+        <td class="qty-col"><input type="text" class="qty" id="other_unit3" name="other_unit3" /></td>
+        <td class="qty-col"><input type="text" class="qty" id="other_qty3" name="other_qty3" inputmode="numeric" /></td>
+      </tr>
+      <tr>
+        <td class="qty-col"><input type="text" class="qty" id="other_desc4" name="other_desc4" style="text-align:left;" placeholder="Description" /></td>
+        <td class="qty-col"><input type="text" class="qty" id="other_num4" name="other_num4" /></td>
+        <td class="qty-col"><input type="text" class="qty" id="other_unit4" name="other_unit4" /></td>
+        <td class="qty-col"><input type="text" class="qty" id="other_qty4" name="other_qty4" inputmode="numeric" /></td>
+      </tr>
+      <tr>
+        <td class="qty-col"><input type="text" class="qty" id="other_desc5" name="other_desc5" style="text-align:left;" placeholder="Description" /></td>
+        <td class="qty-col"><input type="text" class="qty" id="other_num5" name="other_num5" /></td>
+        <td class="qty-col"><input type="text" class="qty" id="other_unit5" name="other_unit5" /></td>
+        <td class="qty-col"><input type="text" class="qty" id="other_qty5" name="other_qty5" inputmode="numeric" /></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Authorization -->
+<div class="card">
+  <div class="sec-hdr">Signatures</div>
+  <div class="two-col">
+    <div class="frow">
+      <label for="req_sig">Requester Signature / Name</label>
+      <input type="text" id="req_sig" name="req_sig" />
+    </div>
+    <div class="frow">
+      <label for="req_sig_date">Date</label>
+      <input type="date" id="req_sig_date" name="req_sig_date" />
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="frow">
+      <label for="req_del_date">Requested Delivery Date</label>
+      <input type="date" id="req_del_date" name="req_del_date" />
+    </div>
+    <div class="frow">
+      <label for="awm_sig">Area Welfare Manager Signature / Name</label>
+      <input type="text" id="awm_sig" name="awm_sig" />
+    </div>
+  </div>
+</div>
+
+<!-- Project -->
+<div class="card">
+  <div class="sec-hdr">Project (if known)</div>
+  <div class="two-col">
+    <div class="frow">
+      <label for="proj_num">Project Number</label>
+      <input type="text" id="proj_num" name="proj_num" />
+    </div>
+    <div class="frow">
+      <label for="proj_name">Project Name</label>
+      <input type="text" id="proj_name" name="proj_name" />
+    </div>
+  </div>
+</div>
+
+</form>
+
+<div class="emcomm-actions"></div>
+<p style="margin:0 16px 20px;font-size:12px;color:#6B7A8D;line-height:1.45">Something not working, or notes after a drill? Tell your Emergency Response Director or the stake specialist: what you did, what you saw, which phone. With a GitHub account you can file it directly: <a href="#" onclick="return openIssue('bug')" style="color:#4A7FC1">report a problem</a> (this form, your device and the date are filled in for you) &middot; <a href="#" onclick="return openIssue('drill')" style="color:#4A7FC1">drill feedback</a>.</p>
+
+<script>
+var ISSUE_FORM = 'Supply Order', ISSUE_ROLE = 'Team Leader / Emergency Response Director';
+function openIssue(kind) {
+  var base = 'https://github.com/travislhilton/church-emcomm-wnlk-forms/issues/new?template=';
+  var env = navigator.userAgent + ' · ' + (location.protocol === 'file:' ? 'installed copy' : 'opened from ' + location.host) + ' · ' + screen.width + 'x' + screen.height;
+  var f = kind === 'drill'
+    ? {template: 'drill_feedback.yml', title: '[Drill] ' + ISSUE_FORM + ' Worker form — ', drill: todayIso() + ' ', role: ISSUE_ROLE}
+    : {template: 'bug_report.yml', title: '[Bug] ' + ISSUE_FORM + ' Worker form: ', role: ISSUE_ROLE, part: 'Phone / browser Worker Form (Disaster Report, Supply Order, Work Crew Log)', env: env, when: new Date().toString(), build: 'Worker form v1.0 (' + ISSUE_FORM + ')'};
+  var u = base + f.template; for (var k in f) { if (k !== 'template' && f[k]) u += '&' + k + '=' + encodeURIComponent(f[k]); }
+  window.open(u, '_blank'); return false;
+}
+function todayIso() {
+  var d = new Date(); var mo = d.getMonth()+1, dy = d.getDate();
+  return d.getFullYear() + '-' + (mo<10?'0':'')+mo + '-' + (dy<10?'0':'')+dy;
+}
+function formDataToObject(form) {
+  var o = {};
+  for (var i = 0; i < form.elements.length; i++) {
+    var el = form.elements[i]; if (!el.name) continue;
+    if (el.type==='checkbox') o[el.name]=el.checked;
+    else if (el.type==='radio') { if (el.checked) o[el.name]=el.value; }
+    else o[el.name]=el.value;
+  }
+  return o;
+}
+var FILENAME = 'Church_Supply_Order_Worker.txt';
+function getFileContent() {
+  return JSON.stringify(formDataToObject(document.getElementById('myform')), null, 2);
+}
+function saveLocally() {
+  var blob = new Blob([getFileContent()], {type:'text/plain'});
+  // 1. Chrome / Edge on a computer: a real Save As dialog so you choose the folder
+  if (window.showSaveFilePicker) {
+    window.showSaveFilePicker({suggestedName: FILENAME, types:[{description:'Church form data (.txt)', accept:{'text/plain':['.txt']}}]})
+      .then(function(h) { return h.createWritable().then(function(w) { return w.write(blob).then(function() { return w.close(); }); }); })
+      .catch(function(e) { if (!e || e.name !== 'AbortError') downloadFile(blob); });
+    return;
+  }
+  // 2. iPhone / iPad / Android: the share sheet -- tap "Save to Files" and pick the folder
+  var file = new File([blob], FILENAME, {type:'text/plain'});
+  if (navigator.share && navigator.canShare && navigator.canShare({files:[file]})) {
+    navigator.share({files:[file], title: FILENAME}).catch(function(e) { if (!e || e.name !== 'AbortError') downloadFile(blob); });
+    return;
+  }
+  // 3. Anything else: plain browser download
+  downloadFile(blob);
+}
+function downloadFile(blob) {
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = FILENAME; a.style.display='none';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+async function shareFile() {
+  var blob = new Blob([getFileContent()], {type:'text/plain'});
+  var file = new File([blob], FILENAME, {type:'text/plain'});
+  if (navigator.share && navigator.canShare && navigator.canShare({files:[file]})) {
+    try { await navigator.share({files:[file], title:'Church Supply Order'}); return; }
+    catch(e) { if (e.name !== 'AbortError') downloadFile(blob); return; }
+  }
+  downloadFile(blob);
+}
+function loadFromFile(input) {
+  var file = input.files[0]; if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var obj = JSON.parse(e.target.result);
+      var form = document.getElementById('myform');
+      for (var k in obj) {
+        var el = form.elements[k]; if (!el) continue;
+        if (el.type === 'checkbox') el.checked = obj[k];
+        else el.value = obj[k];
+      }
+    } catch(ex) { alert('Could not load file: ' + ex.message); }
+  };
+  reader.readAsText(file); input.value = '';
+}
+function latLonToGridSquare(lat, lon) {
+  var U = 'ABCDEFGHIJKLMNOPQRSTUVWX';
+  lat = parseFloat(lat); lon = parseFloat(lon);
+  if (isNaN(lat) || isNaN(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) return '';
+  var aLat = lat + 90, aLon = lon + 180;
+  return U[Math.trunc(aLon/20)] + U[Math.trunc(aLat/10)] +
+         Math.trunc((aLon/2) % 10) + '' + Math.trunc(aLat % 10);
+}
+function updateGrid() {
+  document.getElementById('stn_grid_d').value = latLonToGridSquare(
+    document.getElementById('stn_lat_d').value, document.getElementById('stn_lon_d').value);
+}
+function setGpsStatus(msg, cls) {
+  var s = document.getElementById('gpsStatus');
+  s.textContent = msg; s.className = 'gps-status' + (cls ? ' ' + cls : '');
+}
+function gpsSetOff(off) {
+  document.getElementById('gpsCard').className = off ? 'card gps-off' : 'card';
+  document.getElementById('stn_lat_d').disabled = off;
+  document.getElementById('stn_lon_d').disabled = off;
+  document.getElementById('gpsManual').style.display = off ? 'block' : 'none';
+}
+function gpsEnableManual() {
+  gpsSetOff(false);
+  setGpsStatus('Type latitude and longitude in decimal degrees.', '');
+  document.getElementById('stn_lat_d').focus();
+}
+function getGPS(auto) {
+  var btn = document.getElementById('gpsBtn');
+  if (!navigator.geolocation) { gpsSetOff(true); btn.disabled = true; setGpsStatus('This device cannot provide a GPS location.', ''); return; }
+  btn.disabled = true;
+  setGpsStatus('Finding your location' + (auto ? '' : ' (allow location access if asked)') + '…');
+  navigator.geolocation.getCurrentPosition(function(pos) {
+    var lat = pos.coords.latitude.toFixed(5), lon = pos.coords.longitude.toFixed(5);
+    gpsSetOff(false);
+    document.getElementById('stn_lat_d').value = lat;
+    document.getElementById('stn_lon_d').value = lon;
+    updateGrid();
+    setGpsStatus('Location captured: ' + lat + ', ' + lon + ' (±' + Math.round(pos.coords.accuracy) + ' m)', 'ok');
+    btn.disabled = false;
+  }, function(err) {
+    if (err.code === 3) { btn.disabled = false; setGpsStatus('Location timed out. Tap Get GPS Location to try again.', 'err'); return; }
+    // code 1 also covers a locally opened copy: browsers allow geolocation only on https
+    gpsSetOff(true);
+    setGpsStatus(err.code === 1 ? 'Location access is not available here. Open the form from the online portal link and allow location access.'
+                                : 'This device cannot provide a GPS location right now.', '');
+  }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 120000 });
+}
+// Start when the page is parsed, not on 'load' (which waits on every file; offline on an iPhone that can be a minute)
+document.addEventListener('DOMContentLoaded', function() {
+  var blank = /[?&](blank|print)=1(&|$)/.test(location.search);   // blank form, or a print copy (its answers come with it): no date, no GPS
+  if (!blank) { document.getElementById('order_date').value = todayIso(); document.getElementById('req_sig_date').value = todayIso(); }
+  if (!blank && !document.getElementById('stn_lat_d').value) getGPS(true);
+  EMCOMM.init({form: 'so', formEl: document.getElementById('myform'),
+               onReset: function() { document.getElementById('order_date').value = todayIso(); document.getElementById('req_sig_date').value = todayIso(); getGPS(true); }});
+});
+</script>
+<!-- EMCOMM-APP:BEGIN (generated by installer/sync-app-module.py; edit templates/_shared/emcomm-app.js) -->
+<script>
+/* Church of Jesus Christ EMCOMM app module — Outbox, Send to EOC, offline app.
+   SINGLE SOURCE: edit this file, then run  python installer/sync-app-module.py
+   which copies it between the EMCOMM-APP markers in the three Worker forms and the portal
+   (forms/index.html). Never edit the copies.
+
+   Where a page runs decides what Send does (E.ctx):
+     'eoc'    served by an EOC server on the EOC Wi-Fi (http://<laptop>:8080/forms/dr):
+              Send posts straight to that server (/api/upload), which relays to another EOC
+              on the LAN when the phone picks one. Phones cannot share GPS with a plain-http
+              page, so the EOC location (Setup tab) is filled in instead.
+     'portal' the GitHub Pages portal / installed Church of Jesus Christ EMCOMM app (https, works offline through
+              sw.js): Save to Outbox keeps finished reports on the phone; Send to EOC hands
+              them to the EOC's /receive page in the URL fragment (an https page may not
+              fetch a plain-http LAN address, but it may navigate to one).
+     'file'   an installed copy opened from disk: same as portal, without the offline app.
+   Phones are clients only; the EOC server on the laptop is the only server. */
+(function () {
+  var APP_VERSION = '2026-11-05.1';   // bump with any change the EOC server must know about (see FORMS_VERSION in eoc_server.py)
+  var OUTBOX_KEY = 'church_outbox_v1', EOCS_KEY = 'church_eocs_v1', PENDING_KEY = 'church_outbox_pending_v1';
+  var FORM_NAME = {dr: 'Disaster Report', so: 'Supply Order', wcl: 'Work Crew Log'};
+  var FILENAME = {dr: 'Church_Disaster_Report_Worker.txt', so: 'Church_Supply_Order_Worker.txt', wcl: 'Church_Work_Crew_Log_Worker.txt'};
+  var FORM_PATH = {
+    dr: 'templates/disaster-report/Church_of_Jesus_Christ_Disaster_Report_Worker.html',
+    so: 'templates/supply-order/Church_of_Jesus_Christ_Supply_Order_Worker.html',
+    wcl: 'templates/work-crew-log/Church_of_Jesus_Christ_Work_Crew_Log_Worker.html'
+  };
+  var MAX_LINK = 60000;   // characters of packed reports per hand-off link (phones handle far more; this stays safe)
+  var E = window.EMCOMM = {version: APP_VERSION, ctx: 'other', eoc: null, opts: {}, currentId: null};
+
+  // ── Small helpers ───────────────────────────────────────────────────────────
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]; }); }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+  function hm(ts) { var d = new Date(ts); return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
+  function when(ts) { return new Date(ts).toLocaleString([], {month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'}); }
+  function lsGet(k, def) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch (e) { return def; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
+  function root() {   // site root of the portal: '/church-emcomm-wnlk-forms/' on GitHub Pages, '/' on a dev server
+    var p = location.pathname, i = p.indexOf('/templates/');
+    if (i < 0) i = p.indexOf('/forms/');
+    return i < 0 ? null : p.slice(0, i + 1);
+  }
+  function params() { var o = {}; location.search.replace(/^\?/, '').split('&').forEach(function (kv) { var i = kv.indexOf('='); if (i > 0) o[kv.slice(0, i)] = decodeURIComponent(kv.slice(i + 1)); }); return o; }
+  function hashParams() { var o = {}; location.hash.replace(/^#/, '').split('&').forEach(function (kv) { var i = kv.indexOf('='); if (i > 0) o[kv.slice(0, i)] = decodeURIComponent(kv.slice(i + 1)); else if (kv) o[kv] = ''; }); return o; }
+  function isStandalone() { return (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true; }
+
+  // ── Outbox (reports kept on this phone until an EOC confirms them) ─────────
+  // Two copies: localStorage (read at once, everywhere) and IndexedDB (the durable one: a write is on disk when
+  // its transaction completes). iOS can drop the newest localStorage writes when an app is closed from the app
+  // switcher (field test 2026-10-31: a saved report was gone). On every start the two are merged.
+  var IDB_NAME = 'emcomm', IDB_STORE = 'kv', idbP = null, lastWrite = Promise.resolve(true);
+  function within(p, ms, dflt) { return Promise.race([p, new Promise(function (res) { setTimeout(function () { res(dflt); }, ms); })]); }
+  function idb() {
+    if (!idbP) idbP = within(new Promise(function (res) {
+      try {
+        if (!window.indexedDB) { res(null); return; }
+        var rq = indexedDB.open(IDB_NAME, 1);
+        rq.onupgradeneeded = function () { rq.result.createObjectStore(IDB_STORE); };
+        rq.onsuccess = function () { res(rq.result); };
+        rq.onerror = rq.onblocked = function () { res(null); };
+      } catch (e) { res(null); }
+    }), 3000, null);
+    return idbP;
+  }
+  function idbGet(key) {
+    return idb().then(function (db) {
+      if (!db) return undefined;
+      return within(new Promise(function (res) {
+        try { var rq = db.transaction(IDB_STORE, 'readonly').objectStore(IDB_STORE).get(key); rq.onsuccess = function () { res(rq.result); }; rq.onerror = function () { res(undefined); }; }
+        catch (e) { res(undefined); }
+      }), 3000, undefined);
+    });
+  }
+  function idbSet(key, val) {
+    return idb().then(function (db) {
+      if (!db) return false;
+      return within(new Promise(function (res) {
+        try { var tx = db.transaction(IDB_STORE, 'readwrite'); tx.objectStore(IDB_STORE).put(val, key); tx.oncomplete = function () { res(true); }; tx.onerror = tx.onabort = function () { res(false); }; }
+        catch (e) { res(false); }
+      }), 3000, false);
+    });
+  }
+  function obAll() { var a = lsGet(OUTBOX_KEY, []); return Array.isArray(a) ? a : []; }
+  function obPut(a) {
+    var copy = JSON.parse(JSON.stringify(a));
+    lastWrite = lastWrite.then(function () { return idbSet(OUTBOX_KEY, copy); });
+    if (!lsSet(OUTBOX_KEY, a)) {
+      // the durable copy may still hold it; the page reads localStorage, so tell the volunteer now
+      alert('This phone could not save the report (storage is full or blocked). Use Save to My Phone instead.');
+      return false;
+    }
+    return true;
+  }
+  function mergeOutbox(a, b) {   // union by id; a sent copy wins, otherwise the newest save
+    var m = {};
+    a.concat(b).forEach(function (r) {
+      if (!r || !r.id) return;
+      var o = m[r.id];
+      if (!o || (o.status !== 'sent' && (r.status === 'sent' || (r.savedAt || 0) > (o.savedAt || 0)))) m[r.id] = r;
+    });
+    return Object.keys(m).map(function (k) { return m[k]; }).sort(function (x, y) { return (y.savedAt || 0) - (x.savedAt || 0); });
+  }
+  function restoreOutbox() {   // on start: bring back anything only one copy kept
+    return idbGet(OUTBOX_KEY).then(function (saved) {
+      saved = Array.isArray(saved) ? saved : [];
+      var ls = obAll(), merged = mergeOutbox(ls, saved);
+      var have = {}; ls.forEach(function (r) { have[r.id] = 1; });
+      var back = merged.filter(function (r) { return !have[r.id] && r.status !== 'sent'; }).length;
+      if (JSON.stringify(merged) !== JSON.stringify(ls)) lsSet(OUTBOX_KEY, merged);
+      if (JSON.stringify(merged) !== JSON.stringify(saved)) lastWrite = lastWrite.then(function () { return idbSet(OUTBOX_KEY, merged); });
+      return back;
+    }).catch(function () { return 0; });
+  }
+  function obWaiting() { return obAll().filter(function (r) { return r.status !== 'sent'; }); }
+  function obUpsert(rep) {
+    var a = obAll(), i = -1;
+    a.forEach(function (r, j) { if (r.id === rep.id) i = j; });
+    if (i >= 0) a[i] = Object.assign(a[i], rep); else a.unshift(rep);
+    return obPut(a);
+  }
+  function obMarkSent(ids, to) {
+    var set = {}; ids.forEach(function (x) { set[x] = 1; });
+    var n = 0, a = obAll().map(function (r) { if (set[r.id] && r.status !== 'sent') { r.status = 'sent'; r.sentTo = to || ''; r.sentAt = Date.now(); n++; } return r; });
+    // keep the 30 most recent sent reports as a record; waiting ones are never trimmed
+    var sent = a.filter(function (r) { return r.status === 'sent'; }).sort(function (x, y) { return (y.sentAt || 0) - (x.sentAt || 0); }).slice(0, 30);
+    var keep = {}; sent.forEach(function (r) { keep[r.id] = 1; });
+    obPut(a.filter(function (r) { return r.status !== 'sent' || keep[r.id]; }));
+    return n;
+  }
+  function obDelete(id) { obPut(obAll().filter(function (r) { return r.id !== id; })); }
+  E.outbox = {all: obAll, waiting: obWaiting, flush: function () { return lastWrite; }, restore: restoreOutbox};
+
+  function titleOf(form, d) {
+    var f = function (k) { return String(d[k] || '').trim(); };
+    var parts = form === 'dr' ? [f('inc_stake'), f('inc_ward'), f('inc_type'), f('inc_location'), f('inc_date')]
+              : form === 'so' ? [f('req_stake'), f('del_city'), f('order_date')]
+              : form === 'wcl' ? [f('chief_name'), f('log_location'), f('log_date')] : [];
+    var ex = /^(yes|1|true|on)$/i.test(f('exercise')) ? 'EXERCISE · ' : '';
+    return ex + (parts.filter(Boolean).join(' · ') || '(no details yet)');
+  }
+  function formData() {
+    if (E.opts.getData) return E.opts.getData();
+    var form = E.opts.formEl, o = {};
+    if (!form) return o;
+    for (var i = 0; i < form.elements.length; i++) {
+      var el = form.elements[i]; if (!el.name) continue;
+      if (el.type === 'checkbox') o[el.name] = el.checked;
+      else if (el.type === 'radio') { if (o[el.name] === undefined) o[el.name] = ''; if (el.checked) o[el.name] = el.value; }
+      else o[el.name] = el.value;
+    }
+    return o;
+  }
+  function populate(obj) {
+    var form = E.opts.formEl; if (!form) return;
+    for (var k in obj) {
+      var el = form.elements[k]; if (!el) continue;
+      if (typeof RadioNodeList !== 'undefined' && el instanceof RadioNodeList) { for (var j = 0; j < el.length; j++) el[j].checked = (el[j].value === obj[k]); }
+      else if (el.type === 'checkbox') el.checked = !!obj[k];
+      else el.value = obj[k];
+    }
+  }
+  function hasContent(d) {   // more than the fields the form fills in by itself (dates, GPS)
+    var auto = /^(stn_|period_|inc_date$|order_date$|req_sig_date$|log_date$)/;
+    return Object.keys(d).some(function (k) { return !auto.test(k) && d[k] !== '' && d[k] !== false && d[k] != null; });
+  }
+  function currentReport() {
+    var d = formData(), form = E.opts.form;
+    return {id: E.currentId || uid(), form: form, filename: FILENAME[form], title: titleOf(form, d), savedAt: Date.now(), data: d, status: 'waiting', app: APP_VERSION};
+  }
+  function formUrl(form, id) {
+    var q = id ? '?outbox=' + encodeURIComponent(id) : '';
+    if (E.ctx === 'eoc') return '/forms/' + form + q;
+    var r = root();
+    if (r !== null) return r + FORM_PATH[form] + q;
+    return FORM_PATH[form].split('/').pop() + q;   // installed copy: the three forms sit in one folder
+  }
+
+  // ── UI: styles, toast, sheet (modal) ──────────────────────────────────────
+  var CSS = ''
+    + '.ea-wrap{margin:10px 16px}'
+    + '.ea-big{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:56px;margin:8px 0;padding:10px 14px;border:none;border-radius:10px;background:#1a3a5c;color:#fff;font-size:17px;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none}'
+    + '.ea-big.green{background:#1a6b3c}.ea-big:disabled{opacity:.55}'
+    + '.ea-links{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;font-size:14px;margin:4px 0 2px}'
+    + '.ea-links a,.ea-link{color:#1a3a5c;text-decoration:underline;cursor:pointer;background:none;border:none;font:inherit;padding:4px 0}'
+    + '.ea-count{display:inline-block;min-width:20px;border-radius:10px;background:#b45309;color:#fff;font-size:12px;font-weight:700;padding:0 6px;margin-left:4px}'
+    + '.ea-banner{position:sticky;top:0;z-index:50;background:#fff7e0;border-bottom:2px solid #b45309;padding:10px 14px;font-size:15px}'
+    + '.ea-banner .b{display:flex;gap:8px;margin-top:8px}.ea-banner button{flex:1;min-height:44px;border-radius:8px;border:none;font-weight:700;font-size:15px;cursor:pointer}'
+    + '.ea-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1d2733;color:#fff;padding:10px 18px;border-radius:20px;font-size:14px;z-index:300;max-width:90vw;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.25)}'
+    + '.ea-ov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:flex-end;justify-content:center}'
+    + '.ea-sheet{background:#fff;color:#1d2733;width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:16px 16px 0 0;padding:16px 16px max(18px,env(safe-area-inset-bottom));font-family:Arial,Helvetica,sans-serif}'
+    + '@media(min-width:600px){.ea-ov{align-items:center}.ea-sheet{border-radius:16px}}'
+    + '.ea-sheet h3{margin:0 0 6px;font-size:19px}.ea-sheet p{margin:6px 0;font-size:15px;line-height:1.45}'
+    + '.ea-muted{color:#5d6b7a;font-size:14px}'
+    + '.ea-item{border-top:1px solid #e3e7ec;padding:10px 0;display:flex;gap:10px;align-items:center}.ea-item:first-child{border-top:none}'
+    + '.ea-item .t{flex:1;min-width:0}.ea-item .t b{display:block}.ea-item button{min-height:40px;padding:0 12px;border-radius:8px;border:1.5px solid #c9d1da;background:#fff;font-weight:600;cursor:pointer}'
+    + '.ea-in{width:100%;padding:12px;font-size:18px;border:1.5px solid #bbb;border-radius:8px;margin:6px 0}'
+    + '.ea-ok{background:#e7f6ec;border:2px solid #1a6b3c;border-radius:12px;padding:14px;margin:8px 0}.ea-ok .h{font-size:21px;font-weight:800;color:#1a6b3c}'
+    + '.ea-err{background:#fdecee;border:2px solid #b00020;border-radius:12px;padding:12px;margin:8px 0}'
+    + '.ea-video{width:100%;border-radius:10px;background:#000;aspect-ratio:1/1;object-fit:cover}'
+    + '.ea-sec{display:block;width:100%;min-height:48px;margin:6px 0;border:1.5px solid #c9d1da;border-radius:10px;background:#fff;color:#1d2733;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit}'
+    + '.ea-home{display:flex;align-items:center;gap:6px;width:max-content;margin:6px 12px -4px;min-height:44px;padding:0 6px;font:600 17px/1 Arial,Helvetica,sans-serif;color:#1a3a5c;text-decoration:none;-webkit-tap-highlight-color:rgba(26,58,92,.15)}'
+    + '.ea-home span{font-size:28px;line-height:1;margin-top:-3px}'
+    + '.ea-blank-bar{position:sticky;top:0;z-index:60;background:#fff7e0;border-bottom:2px solid #b45309;padding:10px 14px;font-size:15px;line-height:1.4}'
+    + '.ea-blank-bar .ea-big{margin:8px 0 2px}'
+    // Printing (Emergency path: the paper goes by hand): the page prints #ea-paper only, a copy laid out
+    // like the Church form it is based on (paperSheet below), filled from the form on screen or blank
+    + '#ea-paper{display:none}'
+    + '@media print{'
+    +   '*{-webkit-print-color-adjust:exact;print-color-adjust:exact}'
+    +   'html,body{background:#fff!important;margin:0!important;padding:0!important}'
+    +   'body>*:not(#ea-paper){display:none!important}'
+    +   '#ea-paper{display:block!important}'
+    + '}'
+    + '#ea-paper{color:#000;background:#fff;font:8pt/1.25 Arial,Helvetica,sans-serif;text-align:left}'
+    + '#ea-paper *{box-sizing:border-box}'
+    + '#ea-paper .pp-page{page-break-after:always;break-after:page}'
+    + '#ea-paper .pp-page:last-child{page-break-after:auto;break-after:auto}'
+    + '#ea-paper .pp-head{display:flex;gap:.3in;margin:0 0 .1in}'
+    + '#ea-paper .pp-logo{width:1.85in;flex:none;white-space:nowrap;text-align:center;font-family:Georgia,"Times New Roman",serif;padding-top:2pt}'
+    + '#ea-paper .pp-logo .a{font-size:8.5pt;letter-spacing:.06em}'
+    + '#ea-paper .pp-logo .b{font-size:17pt;line-height:1.05;letter-spacing:.02em}'
+    + '#ea-paper .pp-ttl{flex:1;min-width:0}'
+    + '#ea-paper .pp-tline{display:flex;justify-content:space-between;align-items:flex-end;gap:.15in;border-bottom:1.5pt solid #000;padding-bottom:2pt}'
+    + '#ea-paper h1{font:bold 11pt/1.2 Arial,Helvetica,sans-serif;margin:0;padding:0;color:#000;background:none;border:none}'
+    + '#ea-paper h2{font:bold 11pt/1.2 Arial,Helvetica,sans-serif;margin:0 0 4pt;padding:0;color:#000;background:none}'
+    + '#ea-paper .pp-ex{color:#c8102e;font-weight:bold;font-size:8pt;white-space:nowrap}'
+    + '#ea-paper .pp-ex .pp-bx{border-color:#c8102e}'
+    + '#ea-paper .pp-hsub{font-weight:bold;font-size:7pt;border-bottom:.6pt solid #000;padding:2pt 0}'
+    + '#ea-paper .pp-hf{border-bottom:.6pt solid #000;min-height:.3in;padding-top:1pt}'
+    + '#ea-paper .pp-intro{font-size:9.5pt;color:#222}'
+    + '#ea-paper .pp-sec{border-top:1.5pt solid #000;font-weight:bold;font-size:7.5pt;padding:1pt 0}'
+    + '#ea-paper .pp-sub{border-top:.6pt solid #000;font-weight:bold;font-style:italic;font-size:7.5pt;padding:1pt 0}'
+    + '#ea-paper .pp-add{font-weight:normal;font-style:normal;color:#555}'
+    + '#ea-paper table{width:100%;border-collapse:collapse;table-layout:fixed;margin:0;background:none}'
+    + '#ea-paper td,#ea-paper th{border:none;border-top:.6pt solid #000;border-left:.6pt solid #000;vertical-align:top;padding:1pt 3pt 2pt;background:none;color:#000;font-size:8pt;text-align:left}'
+    + '#ea-paper td:first-child,#ea-paper th:first-child{border-left:none;padding-left:0}'
+    + '#ea-paper .pp-last td{border-bottom:.6pt solid #000}'
+    + '#ea-paper .pp-l{font-size:7pt;color:#222}'
+    + '#ea-paper .pp-v{font-size:9pt;min-height:.17in;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere}'
+    + '#ea-paper .pp-bx{display:inline-block;width:7.5pt;height:7.5pt;border:.6pt solid #000;font:bold 7pt/7pt Arial,Helvetica,sans-serif;text-align:center;vertical-align:-1.5pt;margin:0 2pt 0 0}'
+    + '#ea-paper .pp-yn{display:block;font-size:7.5pt;margin-top:2pt}'
+    + '#ea-paper .pp-it th{font-weight:normal;font-size:7.5pt;text-align:center;padding:3pt}'
+    + '#ea-paper .pp-it td{font-size:7.5pt;line-height:1.15;padding:1pt 3pt;height:.155in;vertical-align:middle}'
+    + '#ea-paper .pp-it td.d{padding-left:6pt}'
+    + '#ea-paper .pp-it td.c,#ea-paper .pp-it td.q{text-align:center}'
+    + '#ea-paper .pp-it td.q{font-size:8.5pt;line-height:1;font-weight:bold}'
+    + '#ea-paper .pp-it td.g{font-weight:bold;font-style:italic;padding-left:0}'
+    + '#ea-paper .pp-it td.k{font-size:7pt;line-height:1.2}'
+    + '#ea-paper .pp-it tr.o td{height:.23in}'
+    + '#ea-paper .pp-grey td{background:#e6e7e8}'
+    + '#ea-paper .pp-wc th{font-weight:bold;font-style:italic;font-size:7.5pt;text-align:center;vertical-align:middle;padding:3pt 2pt}'
+    + '#ea-paper .pp-wc th span{font-weight:normal}'
+    + '#ea-paper .pp-wc td{height:.235in;vertical-align:middle;font-size:8.5pt;line-height:1.1}'
+    + '#ea-paper .pp-wc td.n{font-size:7pt;color:#555;text-align:center;padding:0}'
+    + '#ea-paper .pp-note{font-size:6.5pt;margin-top:2pt}'
+    + '#ea-paper .pp-cert{font-size:8pt;margin-top:4pt}'
+    + '#ea-paper .pp-foot{border-top:.6pt solid #000;margin-top:.06in;padding-top:2pt;font-size:6pt;line-height:1.2;display:flex;justify-content:space-between;gap:.25in;color:#222}'
+    + '#ea-paper .pp-foot .r{text-align:right;max-width:52%}';
+  function addStyle() { if ($('ea-style')) return; var s = document.createElement('style'); s.id = 'ea-style'; s.textContent = CSS; document.head.appendChild(s); }
+  var toastT;
+  function toast(msg) {
+    var t = $('ea-toast'); if (!t) { t = document.createElement('div'); t.id = 'ea-toast'; t.className = 'ea-toast'; document.body.appendChild(t); }
+    t.textContent = msg; t.style.display = 'block'; clearTimeout(toastT); toastT = setTimeout(function () { t.style.display = 'none'; }, 3500);
+  }
+  function sheet(html) {
+    closeSheet();
+    var ov = document.createElement('div'); ov.className = 'ea-ov'; ov.id = 'ea-ov';
+    ov.innerHTML = '<div class="ea-sheet" role="dialog" aria-modal="true">' + html + '</div>';
+    ov.addEventListener('click', function (e) { if (e.target === ov) closeSheet(); });
+    document.body.appendChild(ov);
+    return ov.firstChild;
+  }
+  function closeSheet() { stopScan(); var ov = $('ea-ov'); if (ov) ov.remove(); }
+  E.closeSheet = closeSheet;
+
+  // ── Action bar inside each form (.emcomm-actions placeholders) ────────────
+  function renderActions() {
+    var n = obWaiting().length, cnt = n ? '<span class="ea-count">' + n + '</span>' : '';
+    var h;
+    if (E.ctx === 'eoc') {
+      var nm = (E.eoc && E.eoc.eocName) || 'the EOC';
+      h = '<button type="button" class="ea-big green" onclick="EMCOMM.sendNow()">&#128228; Send to ' + esc(nm) + '</button>'
+        + '<div class="ea-links">' + (n ? '<button type="button" class="ea-link" onclick="EMCOMM.openOutbox()">Outbox' + cnt + '</button>' : '')
+        + '<button type="button" class="ea-link" onclick="saveLocally()">Save to My Phone</button>'
+        + '<button type="button" class="ea-link" onclick="EMCOMM.printForm()">Print</button>'
+        + '<a href="/m">EOC phone page</a></div>';
+    } else {
+      h = '<button type="button" class="ea-big green" onclick="EMCOMM.saveToOutbox()">&#128229; Save to Outbox</button>'
+        + '<button type="button" class="ea-big" onclick="EMCOMM.sendToEoc()">&#128228; Send to EOC</button>'
+        + '<div class="ea-links"><button type="button" class="ea-link" onclick="EMCOMM.openOutbox()">Outbox' + cnt + '</button>'
+        + '<button type="button" class="ea-link" onclick="shareFile()">Share by text or email</button>'
+        + '<button type="button" class="ea-link" onclick="saveLocally()">Save to My Phone</button>'
+        + '<button type="button" class="ea-link" onclick="EMCOMM.printForm()">Print</button></div>';
+    }
+    document.querySelectorAll('.emcomm-actions').forEach(function (el) { el.className = 'emcomm-actions ea-wrap'; el.innerHTML = h; });
+    var pc = $('emcomm-outbox');   // portal card
+    if (pc) renderPortalCard(pc);
+  }
+  function renderPortalCard(el) {
+    var n = obWaiting().length;
+    el.innerHTML = '<div style="font-weight:700;font-size:17px;margin-bottom:4px">Outbox' + (n ? ' <span class="ea-count">' + n + '</span>' : '') + '</div>'
+      + '<div class="ea-muted">' + (n ? n + ' report' + (n === 1 ? '' : 's') + ' saved on this phone, waiting to be sent.' : 'No reports waiting. Reports you save with <b>Save to Outbox</b> wait here until you send them.') + '</div>'
+      + (n ? '<button type="button" class="ea-big" onclick="EMCOMM.sendToEoc()">&#128228; Send to EOC</button>' : '')
+      + '<button type="button" class="ea-sec" onclick="EMCOMM.openOutbox()">Open the Outbox</button>';
+  }
+
+  // ── Save to Outbox ────────────────────────────────────────────────────────
+  E.saveToOutbox = function (quiet) {
+    var rep = currentReport();
+    if (!hasContent(rep.data) && !quiet && !confirm('This form looks empty. Save it to the Outbox anyway?')) return null;
+    if (!obUpsert(rep)) return null;
+    E.currentId = rep.id;
+    E.dirty = false;
+    renderActions();
+    if (!quiet) {
+      sheet('<h3>Saving&#8230;</h3>');
+      lastWrite.then(function (durable) {
+        var n = obWaiting().length;
+        sheet('<h3>&#10003; Saved to the Outbox</h3><p>' + esc(FORM_NAME[rep.form]) + ': ' + esc(rep.title) + '</p>'
+          + '<p class="ea-muted">' + n + ' report' + (n === 1 ? '' : 's') + ' waiting on this phone. Send them when you reach the EOC Wi-Fi, or any time you have signal.</p>'
+          + (durable ? '' : '<p class="ea-muted">This browser keeps only one copy. For a spare, also tap <b>Save to My Phone</b>.</p>')
+          + '<button type="button" class="ea-big green" onclick="EMCOMM.newReport()">Start a new ' + esc(FORM_NAME[rep.form]) + '</button>'
+          + '<button type="button" class="ea-sec" onclick="EMCOMM.closeSheet()">Keep editing this one</button>'
+          + '<button type="button" class="ea-sec" onclick="EMCOMM.openOutbox()">Open the Outbox</button>');
+      });
+    }
+    return rep;
+  };
+  E.newReport = function () {
+    closeSheet();
+    if (E.opts.formEl) E.opts.formEl.reset();
+    E.currentId = null;
+    E.dirty = false;
+    try { history.replaceState(null, '', location.pathname); } catch (e) {}
+    if (E.opts.onReset) E.opts.onReset();
+    window.scrollTo(0, 0);
+    toast('New ' + (FORM_NAME[E.opts.form] || 'report') + ' — the last one is safe in the Outbox');
+  };
+
+  // ── Print (Emergency path: the paper goes by hand to the Crew Chief or a runner) ──
+  // Filled or part-filled: prints what is on screen. Blank: the form opened with ?blank=1 (no date, no GPS),
+  // for a stock of paper forms in the go-bag. iPhone: AirPrint; Android: the phone's print service.
+  function isBlank() { return /[?&]blank=1(&|$)/.test(location.search); }
+
+  // ── Home (the app on a home screen has no Back button) ──
+  // Portal / installed app: back to the portal page; EOC Wi-Fi: the EOC phone page. A form opened from a file
+  // on a computer has nowhere to go back to, so it gets no link. Asks first when typing is not in the Outbox.
+  function homeUrl() {
+    if (E.ctx === 'eoc') return '/m';
+    if (/^https?:$/.test(location.protocol) && /\/templates\/[^/]+\/[^/]+$/.test(location.pathname)) return '../../forms/index.html';
+    return '';
+  }
+  function homeBar() {
+    if (!E.opts.form || $('ea-home')) return;
+    var u = homeUrl(); if (!u) return;
+    var a = document.createElement('a');
+    a.id = 'ea-home'; a.className = 'ea-home'; a.href = u;
+    a.innerHTML = '<span>&#8249;</span>' + (E.ctx === 'eoc' ? 'EOC phone page' : 'Home');
+    a.addEventListener('click', function (e) {
+      if (E.dirty && !confirm('Leave this form?\n\nWhat you typed is not in the Outbox yet. Tap Cancel, then Save to Outbox to keep it.')) e.preventDefault();
+    });
+    var hdr = document.querySelector('.page-header');
+    if (hdr) hdr.parentNode.insertBefore(a, hdr); else document.body.insertBefore(a, document.body.firstChild);
+  }
+  E.dirty = false;
+
+  // The paper copy follows the layout of the Church form it is based on (same sections, labels, order and
+  // proportions), plus the fields this project adds (THIS IS AN EXERCISE, ward, sender GPS, safety box).
+  // The footer says which form it is based on and that it is not an official Church form.
+  var PAPER = {
+    dr: {code: 'PD60000184', name: 'Disaster Report', ed: '4/16', land: false},
+    so: {code: 'PD10052205', name: 'Emergency Response Supply Order Form', ed: '6/15', land: false},
+    wcl: {code: 'PD10052209', name: 'Cleanup Work Crew Volunteer Hours', ed: '8/14', land: true}
+  };
+  // Supply Order items exactly as the Church form lists them: [field id, item, item number, ordering unit]
+  var SO_ITEMS = [
+    ['General Supplies'],
+    ['gs01', 'Blanket—3-lb. poly fleece (10 per case)', '008092', 'case'],
+    ['gs02', 'Card stock Emergency Response Services dashboard signs (25 per package)', '007126', 'package'],
+    ['gs03', 'Chalk line with chalk', '007002', 'each'],
+    ['gs04', 'Duct tape roll, 60 yd. x 2" wide', '007250', 'roll'],
+    ['gs05', 'First aid kit (basic)', '007058', 'each'],
+    ['gs06', 'Furring strips', '007017', 'each'],
+    ['gs07', 'Magnetic Emergency Response Services sign', '007125', 'each'],
+    ['gs08', 'Nails, 8d (8-penny) (25 lbs. per case)', '007201', 'case'],
+    ['gs09', "Tarp (20' x 30')", '009021', 'each'],
+    ['gs10', 'Trash bags, 45-gallon (200 per case)', '007008', 'case'],
+    ['Tools'],
+    ['tl01', 'Bow saw, 21"', '007205', 'each'],
+    ['tl02', 'Box fan', '007213', 'each'],
+    ['tl03', 'Chain oil (1 quart)', '007086', 'each'],
+    ['tl04', 'Chain saw', '007078', 'each'],
+    ['tl05', 'Chain saw chain', '007082', 'each'],
+    ['tl06', 'Chain saw file', '007084', 'each'],
+    ['tl07', 'Chain saw safety kit (helmet and face mask with hearing protection)', '007089', 'each'],
+    ['tl08', 'Chaps', '007230', 'each'],
+    ['tl09', 'Engine oil, 2-cycle (1 quart)', '007088', 'each'],
+    ['tl10', "Extension cord, 100'", '007072', 'each'],
+    ['tl11', 'Garden rake', '007203', 'each'],
+    ['tl12', 'Gas can, 1-gallon', '007080', 'each'],
+    ['tl13', 'Gas can, 5-gallon', '007074', 'each'],
+    ['tl14', 'Gas funnel', '007075', 'each'],
+    ['tl15', 'Generator, 5 kW', '007070', 'each'],
+    ['tl16', 'Hammers, claw (36 per case)', '007200', 'each'],
+    ['tl17', 'Ice sled (for hauling debris)', '007091', 'each'],
+    ['tl18', 'Pallet jack', '007231', 'each'],
+    ['tl19', 'Pry bar, 12" x 15"', '009048', 'each'],
+    ['tl20', "Pump, .5 hp submersible residential (110 V) with 50' garden hose", '007216', 'each'],
+    ['tl21', 'Push broom with handle', '007081', 'each'],
+    ['tl22', "Rope, 100' x 1/4\"", '007010', 'each'],
+    ['tl23', 'Shovel, round', '007071', 'each'],
+    ['tl24', 'Shovel, square', '007062', 'each'],
+    ['tl25', 'Shovel, wide-scoop', '007054', 'each'],
+    ['tl26', 'Unassembled wheelbarrows with non-flat tires (if fewer than 25 are needed, purchase locally)', '007090', 'pallet'],
+    ['tl27', 'Utility knife with blades', '007212', 'each'],
+    ['tl28', 'Wet/dry vacuum', '007211', 'each'],
+    ['tl29', 'Wrecking bar, gooseneck, 30" x 36"', '009046', 'each'],
+    ['/'],   // page 2
+    ['Personal Items'],
+    ['pi01', 'Body bags (12 per case)', '007140', 'case'],
+    ['pi02', 'Gloves, all-purpose', '007102', 'pair'],
+    ['pi03', 'Heavy rubber gloves (M) (144 pairs per case)', '003381', 'case'],
+    ['pi04', 'Heavy rubber gloves (L) (144 pairs per case)', '003375', 'case'],
+    ['pi05', 'Heavy rubber gloves (XL) (144 pairs per case)', '003376', 'case'],
+    ['pi06', 'Helping Hands T-shirt (M), short-sleeve', '007130', 'each'],
+    ['pi07', 'Helping Hands T-shirt (L), short-sleeve', '007131', 'each'],
+    ['pi08', 'Helping Hands T-shirt (XL), short-sleeve', '007132', 'each'],
+    ['pi09', 'Helping Hands T-shirt (XXL), short-sleeve', '007133', 'each'],
+    ['pi10', 'Helping Hands T-shirt (XXXL), short-sleeve', '007134', 'each'],
+    ['pi11', 'Helping Hands vests (72 per case)', '007155', 'case'],
+    ['pi12', 'Hooded disposable coveralls (L)', '007232', 'each'],
+    ['pi13', 'Hooded disposable coveralls (XL)', '007233', 'each'],
+    ['pi14', 'Hooded disposable coveralls (XXL)', '007234', 'each'],
+    ['pi15', 'N95 masks with ventilation (160 masks per case)', '007120', 'case'],
+    ['pi16', 'Rubber boots (size 8)', '007240', 'pair'],
+    ['pi17', 'Rubber boots (size 10)', '007242', 'pair'],
+    ['pi18', 'Rubber boots (size 12)', '007244', 'pair'],
+    ['pi19', 'Rubber-coated gloves (M), 1 pair', '007108', 'pair'],
+    ['pi20', 'Rubber-coated gloves (L), 1 pair', '007107', 'pair'],
+    ['pi21', 'Rubber-coated gloves (XL), 1 pair', '007109', 'pair'],
+    ['pi22', 'Safety glasses', '007208', 'each'],
+    ['Water'],
+    ['wa01', 'Bottled water (24 bottles per case)', '007098', 'case'],
+    ['Kits and Food Boxes'],
+    ['kb01', 'Cleaning kits—84 kits per pallet: hand soap (1), cleaning rag (2), liquid dish soap (1), dust masks, not N95 (5), liquid bleach (1), long-handled sink brush (1), Mr. Clean multipurpose cleaner, 20–28 oz. (1), iron-shaped scrub brush (2), heavy-duty rubber gloves (2 pairs), quart spray bottle (1), safety goggles (1), combo scrubbing sponges (2), regular sponge (1), roll of 20–25 trash bags (1), powdered cleanser (1), 5-gallon bucket with lid (1)', '007110', 'kit'],
+    ['kb02', 'Hygiene kits—5 kits per case, 560 kits per pallet: bars of soap, 5.5 oz. (2), combs (2), hand towels (2), toothbrushes (4), toothpaste (1), ziplock bag, 10" x 13" (1)', '008096', 'kit'],
+    ['kb03', 'Food boxes—56 boxes per pallet: beef stew (2), chili (2), chicken noodle soup (2), applesauce (1), peanut butter (1), strawberry jam (1), tuna fish (4), Toasted O’s (1), fruit drink mix (1), raisins (1), granola (1), nonfat dry milk (1), can opener (1), water filtration bottle (1)', '007175', 'box']
+  ];
+  E.SO_ITEMS = SO_ITEMS;
+  function pv(id) {
+    var el = $(id); if (!el) return '';
+    var v = String(el.value || '');
+    if (el.type === 'date' && /^\d{4}-\d{2}-\d{2}$/.test(v)) v = v.slice(5, 7) + '/' + v.slice(8, 10) + '/' + v.slice(0, 4);
+    return v;
+  }
+  function pon(id) { var el = $(id); return !!(el && el.checked); }
+  function pradio(name) { var el = document.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : ''; }
+  function bx(on) { return '<span class="pp-bx">' + (on ? 'X' : '') + '</span>'; }
+  function yn(name) { var v = pradio(name); return '<span class="pp-yn">' + bx(v === 'YES') + 'Yes &nbsp;' + bx(v === 'NO') + 'No</span>'; }
+  // one ruled row of labelled cells: [label html, value, width %, {h: min height in inches, html: raw content}]
+  function prow(cells, cls) {
+    return '<table' + (cls ? ' class="' + cls + '"' : '') + '><tr>' + cells.map(function (c) {
+      var o = c[3] || {};
+      return '<td style="width:' + c[2] + '%"><div class="pp-l">' + c[0] + '</div>'
+        + (o.html != null ? o.html : '<div class="pp-v"' + (o.h ? ' style="min-height:' + o.h + 'in"' : '') + '>' + esc(c[1]) + '</div>') + '</td>';
+    }).join('') + '</tr></table>';
+  }
+  function plogo() { return '<div class="pp-logo"><div class="a">THE CHURCH OF</div><div class="b">JESUS CHRIST</div><div class="a">OF LATTER-DAY SAINTS</div></div>'; }
+  function pex() { return '<span class="pp-ex">' + bx(pon('exercise')) + 'THIS IS AN EXERCISE</span>'; }
+  function pgps() {
+    return '<div class="pp-sub">Sender location <span class="pp-add">(GPS, Global Positioning System; added by Church of Jesus Christ EMCOMM, optional)</span></div>'
+      + prow([['Latitude', pv('stn_lat_d'), 34], ['Longitude', pv('stn_lon_d'), 33], ['Grid square', pv('stn_grid_d'), 33]], 'pp-last');
+  }
+  function pfoot(f, page) {
+    var d = new Date();
+    var note = isBlank() ? 'Fill in by hand.' : 'Printed ' + d.toLocaleDateString() + ' ' + hm(d.getTime()) + ' from the phone form.';
+    return '<div class="pp-foot"><div>' + esc(note) + ' Give it to your Crew Chief or a runner for the EOC (Emergency Operations Center); '
+      + 'a HAM (amateur radio) operator or the EOC types it in.</div>'
+      + '<div class="r">' + (page ? page + ' &nbsp; ' : '') + 'Based on Church form ' + f.code + ' (' + esc(f.name) + ', ' + f.ed + '). '
+      + 'Not an official Church form: printed by Church of Jesus Christ EMCOMM, an independent volunteer project.</div></div>';
+  }
+  function paperDR(f) {
+    return '<div class="pp-page">'
+      + '<div class="pp-head">' + plogo() + '<div class="pp-ttl"><div class="pp-tline"><h1>Disaster Report</h1>' + pex() + '</div>'
+      +   '<div class="pp-hsub">Reporting Period</div>'
+      +   '<div class="pp-hf"><div class="pp-l">From (date)</div><div class="pp-v">' + esc(pv('period_from')) + '</div></div>'
+      +   '<div class="pp-hf"><div class="pp-l">To (date)</div><div class="pp-v">' + esc(pv('period_to')) + '</div></div></div></div>'
+      + '<div class="pp-sec">Incident</div>'
+      + prow([['Date', pv('inc_date'), 50], ['Location', pv('inc_location'), 50]])
+      + prow([['Type', pv('inc_type'), 50], ['Stake', pv('inc_stake'), 25], ['Ward <span class="pp-add">(if the report covers one ward)</span>', pv('inc_ward'), 25]])
+      + prow([['Stake president', pv('sp_name'), 40], ['Phone number', pv('sp_phone'), 19], ['Email address', pv('sp_email'), 41]])
+      + prow([['Person submitting report', pv('sub_name'), 40], ['Phone number', pv('sub_phone'), 19], ['Email address', pv('sub_email'), 41]])
+      + '<div class="pp-sec">Report Details</div>'
+      + '<div class="pp-sub">Full-Time Missionaries</div>'
+      + prow([['All missionaries are safe and accounted for.', '', 33, {html: yn('miss_safe')}], ['Additional details', pv('miss_details'), 67, {h: .22}]])
+      + '<div class="pp-sub">Church Members</div>'
+      + prow([['Number of member injuries', pv('mem_injuries'), 25], ['Number of member deaths', pv('mem_deaths'), 25],
+              ['Number of member homes damaged', pv('mem_damaged'), 25], ['Number of member homes destroyed', pv('mem_destroyed'), 25]])
+      + prow([['Additional details', pv('mem_details'), 100, {h: .46}]])
+      + '<div class="pp-sub">Church Buildings</div>'
+      + prow([['Damage to Church facilities', pv('bldg_damage'), 100, {h: .46}]])
+      + '<div class="pp-sub">Community</div>'
+      + prow([['Effect on community, including infrastructure such as power, water supplies, and communications', pv('community'), 100, {h: .46}]])
+      + '<div class="pp-sub">Volunteers</div>'
+      + prow([['Number of volunteers', pv('vol_count'), 50], ['Total number of volunteer hours', pv('vol_hours'), 50]])
+      + prow([['Description of volunteer activities', pv('vol_activities'), 100, {h: .2}]])
+      + prow([['Volunteer injuries or accidents', '', 100, {html: yn('vol_injuries')}]])
+      + prow([['Additional details', pv('vol_inj_details'), 100, {h: .42}]])
+      + '<div class="pp-sub">Anticipated Needs</div>'
+      + prow([['Local Church facilities are needed.', '', 33.3, {html: yn('need_local')}],
+              ['Assistance from neighboring Church units is needed.', '', 33.3, {html: yn('need_neighbor')}],
+              ['Assistance from Church headquarters is needed.', '', 33.4, {html: yn('need_hq')}]])
+      + prow([['Additional details', pv('needs_details'), 100, {h: .42}]])
+      + pgps() + pfoot(f) + '</div>';
+  }
+  function paperSO(f) {
+    var head = '<tr><th style="width:63%">Item</th><th style="width:12.5%">Item number</th><th style="width:12.5%">Ordering unit</th><th style="width:12%">Quantity</th></tr>';
+    var pages = [[]], p = 0;
+    SO_ITEMS.forEach(function (it) {
+      if (it[0] === '/') { pages.push([]); p++; return; }
+      if (it.length === 1) { pages[p].push('<tr><td class="g" colspan="4">' + esc(it[0]) + '</td></tr>'); return; }
+      pages[p].push('<tr><td class="d' + (it[0].charAt(0) === 'k' ? ' k' : '') + '">' + esc(it[1]) + '</td><td class="c">' + it[2] + '</td><td class="c">' + it[3]
+        + '</td><td class="q">' + esc(pv(it[0])) + '</td></tr>');
+    });
+    var other = '<tr><td class="g" colspan="4">Other Items <span class="pp-add" style="color:#000;font-style:normal">If an item is not listed and needs to be purchased locally, please contact the area welfare manager for direction and budget approval at <span style="white-space:nowrap">1-801-240-0450</span>.</span></td></tr>';
+    for (var i = 1; i <= 5; i++) {
+      other += '<tr class="o"><td class="d">' + esc(pv('other_desc' + i)) + '</td><td class="c">' + esc(pv('other_num' + i)) + '</td><td class="c">'
+        + esc(pv('other_unit' + i)) + '</td><td class="q">' + esc(pv('other_qty' + i)) + '</td></tr>';
+    }
+    return '<div class="pp-page">'
+      + '<div class="pp-head">' + plogo() + '<div class="pp-ttl"><div class="pp-tline"><h1>Emergency Response Supply Order Form</h1>' + pex() + '</div></div></div>'
+      + '<div class="pp-sec">Delivery Information</div>'
+      + prow([['Requesting stake', pv('req_stake'), 50], ['Stake president', pv('stake_pres'), 50]])
+      + prow([['Delivery contact', pv('del_contact'), 50], ['Phone (with area code)', pv('del_phone'), 27], ['Order date', pv('order_date'), 23]])
+      + prow([['Delivery address', pv('del_addr'), 50], ['City', pv('del_city'), 27], ['State', pv('del_state'), 12], ['Zip code', pv('del_zip'), 11]])
+      + '<div class="pp-sec">Supplies Information</div>'
+      + '<table class="pp-it pp-last">' + head + pages[0].join('') + '</table>'
+      + pfoot(f) + '</div>'
+      + '<div class="pp-page"><h2>Emergency Response Supply Order Form—continued</h2>'
+      + '<div class="pp-sec">Supplies Information—continued</div>'
+      + '<table class="pp-it pp-last">' + head + pages[1].join('') + other + '</table>'
+      + '<div class="pp-sec">Signatures</div>'
+      + prow([['Requester’s signature', pv('req_sig'), 75], ['Date', pv('req_sig_date'), 25]])
+      + prow([['Area welfare manager’s signature', pv('awm_sig'), 75], ['Requested delivery date', pv('req_del_date'), 25]])
+      + '<div class="pp-sec">Internal Use Only</div>'
+      + prow([['Project number', pv('proj_num'), 50], ['Project name', pv('proj_name'), 50]], 'pp-grey')
+      + pgps() + pfoot(f, 2) + '</div>';
+  }
+  function paperWCL(f) {
+    var w = ['18%', '19.5%', '14.5%'];
+    var rows = '';
+    for (var i = 1; i <= 16; i++) {
+      rows += '<tr><td>' + esc(pv('crew_name' + i)) + '</td><td></td><td>' + esc(pv('crew_stake' + i)) + '</td><td>' + esc(pv('crew_ward' + i))
+        + '</td><td>' + esc(pv('crew_hrs' + i)) + '</td><td>' + esc(pv('crew_wo' + i)) + '</td><td>' + esc(pv('crew_addr' + i)) + '</td></tr>';
+    }
+    return '<div class="pp-page">'
+      + '<div class="pp-head">' + plogo() + '<div class="pp-ttl"><div class="pp-tline"><h1>Cleanup Work Crew Volunteer Hours</h1>' + pex() + '</div>'
+      +   prow([['', '', 84, {html: '<div class="pp-intro">Use this form to record cleanup work crew volunteer hours and manage the assignment of work orders to crews.</div>'}],
+                ['Date', pv('log_date'), 16]], 'pp-hrow')
+      +   '<div class="pp-hf" style="border-top:.6pt solid #000"><div class="pp-l">Location (city, state, and zip code)</div><div class="pp-v">' + esc(pv('log_location')) + '</div></div>'
+      + '</div></div>'
+      + '<div class="pp-sec">Crew Chief</div>'
+      + '<table class="pp-wc"><tr><th style="width:' + w[0] + '">Name <span>(please print)</span></th><th style="width:' + w[1] + '">Signature*</th><th style="width:' + w[2] + '">Stake</th>'
+      +   '<th style="width:26.5%">Ward</th><th style="width:9.5%">Hours worked</th><th style="width:12%">Cell phone<br>(with area code)</th></tr>'
+      +   '<tr><td style="height:.3in">' + esc(pv('chief_name')) + '</td><td></td><td>' + esc(pv('chief_stake')) + '</td><td>' + esc(pv('chief_ward')) + '</td><td>'
+      +   esc(pv('chief_hrs')) + '</td><td>' + esc(pv('chief_phone')) + '</td></tr></table>'
+      + '<div class="pp-sec">Crew</div>'
+      + '<table class="pp-wc pp-last"><tr><th style="width:' + w[0] + '">Name <span>(please print)</span></th><th style="width:' + w[1] + '">Signature*</th><th style="width:' + w[2] + '">Stake</th>'
+      +   '<th style="width:16%">Ward</th><th style="width:5.2%">Hours worked</th><th style="width:5.3%">Work order number</th><th style="width:21.5%">Work order address</th></tr>'
+      +   rows + '</table>'
+      + '<div class="pp-note">*By signing this log, you acknowledge that you have received safety orientation and training specific to the tasks and projects assigned. You also represent that you are physically able to perform the assigned tasks.</div>'
+      + '<div class="pp-cert">' + bx(pon('safety_cert')) + '<b>Crew Chief:</b> I certify that all crew members received a safety orientation and are physically able to perform their assigned tasks. <span class="pp-add">(added by Church of Jesus Christ EMCOMM)</span></div>'
+      + pgps() + pfoot(f) + '</div>';
+  }
+  function buildPaper() {
+    var form = E.opts && E.opts.form, f = PAPER[form];
+    if (!f) return null;
+    var el = $('ea-paper');
+    if (!el) { el = document.createElement('div'); el.id = 'ea-paper'; el.setAttribute('aria-hidden', 'true'); document.body.appendChild(el); }
+    el.innerHTML = form === 'dr' ? paperDR(f) : form === 'so' ? paperSO(f) : paperWCL(f);
+    var ps = $('ea-page');   // Letter, the Church form's orientation
+    if (!ps) { ps = document.createElement('style'); ps.id = 'ea-page'; document.head.appendChild(ps); }
+    ps.textContent = '@page{size:letter ' + (f.land ? 'landscape' : 'portrait') + ';margin:' + '.4in' + '}';
+    return el;
+  }
+  E.buildPaper = buildPaper;
+  var paperT;
+  function paperSoon() { clearTimeout(paperT); paperT = setTimeout(buildPaper, 400); }
+  window.addEventListener('beforeprint', buildPaper);
+  // An app started from the iPhone home screen ignores window.print() (Travis, 2026-10-31: "nothing happened").
+  // There, Print opens this page in the phone's browser view (it can print, and has Done to come back) with
+  // ?print=1; a filled form's answers ride in the link fragment, packed without compression so the browser view
+  // opens within the tap.
+  function iosApp() {
+    return isStandalone() && (/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+  }
+  function printOutside() {
+    var base = location.href.split('#')[0].replace(/([?&])print=1(&|$)/, '$1').replace(/[?&]$/, '');
+    var u = base + (base.indexOf('?') < 0 ? '?' : '&') + 'print=1';
+    var d = formData();
+    if (!isBlank() && hasContent(d)) u += '#p=j' + b64url(new TextEncoder().encode(JSON.stringify({v: 1, kind: 'church_print', data: d})));
+    var w = null;
+    try { w = window.open(u, '_blank'); } catch (e) {}
+    if (!w) location.href = u;
+  }
+  function unb64url(s) {
+    s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '=';
+    var b = atob(s), u8 = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u8[i] = b.charCodeAt(i); return u8;
+  }
+  function printView() {   // the page opened by printOutside (or any ?print=1 link): fill it in, then print
+    if (!/[?&]print=1(&|$)/.test(location.search) || !E.opts.form) return;
+    var m = /[#&]p=j([A-Za-z0-9_-]+)/.exec(location.hash);
+    if (m) { try { var o = JSON.parse(new TextDecoder().decode(unb64url(m[1]))); if (o && o.data) populate(o.data); } catch (e) {} }
+    buildPaper();
+    var b = document.createElement('div'); b.id = 'ea-print-bar'; b.className = 'ea-blank-bar';
+    b.innerHTML = '<b>Ready to print: ' + esc(FORM_NAME[E.opts.form]) + (isBlank() ? ' (blank)' : '') + '.</b> Tap Print. If nothing opens, tap the Share button, then Print.'
+      + '<button type="button" class="ea-big" onclick="EMCOMM.printForm()">&#128424; Print</button>'
+      + '<span class="ea-muted">When you are done, tap <b>Done</b> to go back to the app.</span>';
+    var old = $('ea-blank-bar'); if (old) old.remove();
+    document.body.insertBefore(b, document.body.firstChild);
+    setTimeout(function () { try { window.print(); } catch (e) {} }, 700);
+  }
+  E.printForm = function () {
+    if (!E.opts.form) return;
+    closeSheet();
+    if (iosApp() && !/[?&]print=1(&|$)/.test(location.search)) { printOutside(); return; }
+    buildPaper();
+    try { window.print(); } catch (e) { toast('This browser cannot print here. Use its Share or menu button, then Print.'); }
+  };
+  function blankBar() {
+    if (!isBlank() || !E.opts.form || $('ea-blank-bar')) return;
+    var b = document.createElement('div'); b.id = 'ea-blank-bar'; b.className = 'ea-blank-bar';
+    b.innerHTML = '<b>Blank ' + esc(FORM_NAME[E.opts.form]) + ' for paper.</b> Print a few of each form before an event and keep them with a pen in your go-bag.'
+      + '<button type="button" class="ea-big" onclick="EMCOMM.printForm()">&#128424; Print this blank form</button>'
+      + '<a href="' + esc(location.pathname) + '">Fill one in on the phone instead</a>';
+    document.body.insertBefore(b, document.body.firstChild);
+  }
+
+  // ── Outbox sheet ──────────────────────────────────────────────────────────
+  E.openOutbox = function () {
+    var w = obWaiting(), sent = obAll().filter(function (r) { return r.status === 'sent'; });
+    var h = '<h3>Outbox</h3>';
+    if (!w.length) h += '<p class="ea-muted">Nothing waiting. Saved reports wait here until an EOC confirms it has them.</p>';
+    else {
+      h += '<p class="ea-muted">' + w.length + ' waiting on this phone.</p><div>';
+      w.forEach(function (r) {
+        h += '<div class="ea-item"><div class="t"><b>' + esc(FORM_NAME[r.form] || 'Report') + '</b><span class="ea-muted">' + esc(r.title) + ' · saved ' + esc(when(r.savedAt)) + '</span></div>'
+          + (E.opts.form === r.form && E.opts.formEl
+              ? '<button type="button" onclick="EMCOMM.openReport(\'' + esc(r.id) + '\')">Open</button>'
+              : '<button type="button" onclick="location.href=\'' + esc(formUrl(r.form, r.id)) + '\'">Open</button>')
+          + '<button type="button" onclick="EMCOMM.deleteReport(\'' + esc(r.id) + '\')" aria-label="Delete">&#10005;</button></div>';
+      });
+      h += '</div>';
+      h += E.ctx === 'eoc'
+        ? '<button type="button" class="ea-big green" onclick="EMCOMM.sendNow(true)">&#128228; Send them to ' + esc((E.eoc && E.eoc.eocName) || 'the EOC') + '</button>'
+        : '<button type="button" class="ea-big" onclick="EMCOMM.sendToEoc()">&#128228; Send to EOC</button>';
+    }
+    if (sent.length) {
+      h += '<details style="margin-top:10px"><summary class="ea-muted" style="cursor:pointer">Sent (' + sent.length + ')</summary>';
+      sent.forEach(function (r) { h += '<div class="ea-item"><div class="t"><b>' + esc(FORM_NAME[r.form] || 'Report') + '</b><span class="ea-muted">' + esc(r.title) + ' · sent ' + esc(when(r.sentAt)) + (r.sentTo ? ' to ' + esc(r.sentTo) : '') + '</span></div></div>'; });
+      h += '<button type="button" class="ea-sec" onclick="EMCOMM.clearSent()">Clear the sent list</button></details>';
+    }
+    h += '<p class="ea-muted" style="margin-top:12px">Church of Jesus Christ EMCOMM app version ' + APP_VERSION + '. It updates itself whenever this phone has internet.</p>'
+      + '<button type="button" class="ea-sec" onclick="EMCOMM.closeSheet()">Close</button>';
+    sheet(h);
+  };
+  // Open a saved report in the form already on screen: no page load, so nothing waits on the network
+  E.openReport = function (id) {
+    var rep = obAll().filter(function (r) { return r.id === id; })[0];
+    if (!rep) { toast('That report is no longer in the Outbox'); E.openOutbox(); return; }
+    if (E.currentId !== id && hasContent(formData())) E.saveToOutbox(true);   // never lose the form that was open
+    closeSheet();
+    if (E.opts.formEl) E.opts.formEl.reset();
+    populate(rep.data); E.currentId = rep.id;
+    try { history.replaceState(null, '', location.pathname + '?outbox=' + encodeURIComponent(id)); } catch (e) {}
+    renderActions(); window.scrollTo(0, 0);
+    toast('Editing a saved report. Save again to keep your changes.');
+  };
+  E.deleteReport = function (id) {
+    if (!confirm('Delete this report from the phone? It has NOT been sent.')) return;
+    obDelete(id); if (E.currentId === id) E.currentId = null; renderActions(); E.openOutbox();
+  };
+  E.clearSent = function () { obPut(obWaiting()); renderActions(); E.openOutbox(); };
+
+  // ── Send directly (form served by an EOC server) ──────────────────────────
+  E.sendNow = function (outboxOnly) {
+    var reps = [];
+    if (!outboxOnly && E.opts.form) {
+      var cur = currentReport();
+      if (!hasContent(cur.data) && !confirm('This form looks empty. Send it anyway?')) return;
+      reps.push(cur);
+    }
+    obWaiting().forEach(function (r) { if (!reps.some(function (x) { return x.id === r.id; })) reps.push(r); });
+    if (!reps.length) { toast('Nothing to send'); return; }
+    fetch('/api/peers', {cache: 'no-store'}).then(function (r) { return r.json(); }).catch(function () { return []; }).then(function (peers) {
+      peers = Array.isArray(peers) ? peers : [];
+      if (peers.length > 1) pickPeer(peers, reps); else postReports(reps, null, (E.eoc && E.eoc.eocName) || 'the EOC');
+    });
+  };
+  function pickPeer(peers, reps) {
+    var LV = {satellite: 'Satellite EOC', stake: 'Stake EOC', area: 'Council / Area EOC'};
+    var h = '<h3>Send to which EOC?</h3><p class="ea-muted">More than one EOC is on this Wi-Fi. The one you opened this form from is first.</p>';
+    peers.forEach(function (p, i) {
+      h += '<button type="button" class="ea-sec" style="text-align:left;padding:10px 12px" data-i="' + i + '"><b>' + esc(p.name || p.url) + '</b>' + (p.level && LV[p.level] ? ' · ' + LV[p.level] : '') + (p.self ? ' (this one)' : '')
+        + '<br><span class="ea-muted">' + esc(p.event ? 'Event: ' + p.event : 'No event named') + '</span></button>';
+    });
+    h += '<button type="button" class="ea-sec" onclick="EMCOMM.closeSheet()">Cancel</button>';
+    var s = sheet(h);
+    s.querySelectorAll('button[data-i]').forEach(function (b) {
+      b.onclick = function () { var p = peers[+b.getAttribute('data-i')]; postReports(reps, p.self ? null : p.url, p.name || p.url); };
+    });
+  }
+  function postReports(reps, to, toName) {
+    var body = {reports: reps.map(function (r) { return {id: r.id, form: r.form, filename: r.filename, data: r.data}; }), app: APP_VERSION};
+    if (to) body.to = to;
+    sheet('<h3>Sending…</h3><p class="ea-muted">' + reps.length + ' report' + (reps.length === 1 ? '' : 's') + ' to ' + esc(toName) + '</p>');
+    fetch('/api/upload', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)})
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        var ok = (res.results || []).filter(function (x) { return x.status !== 'error'; }).map(function (x) { return x.id; });
+        var bad = (res.results || []).filter(function (x) { return x.status === 'error'; });
+        // keep every report on the phone, then mark the ones the EOC filed (with where they went)
+        reps.forEach(function (r) { r.status = 'waiting'; obUpsert(r); });
+        E.dirty = false;   // the form on screen is in the Outbox now
+        obMarkSent(ok, (res.eoc && res.eoc.name) || toName);
+        renderActions();
+        var h = '';
+        if (ok.length) h += '<div class="ea-ok"><div class="h">&#10003; ' + ok.length + ' report' + (ok.length === 1 ? '' : 's') + ' received</div>by <b>' + esc((res.eoc && res.eoc.name) || toName) + '</b> at ' + hm(res.receivedAt || Date.now()) + (res.dup ? '<div class="ea-muted">' + res.dup + ' already on file from before. That is fine.</div>' : '') + '</div>';
+        if (bad.length || !res.results) h += '<div class="ea-err"><b>Not filed:</b> ' + esc(res.error || bad.map(function (x) { return x.error; }).join('; ')) + '<br>Kept in this phone\'s Outbox. Try again, or show an EOC operator.</div>';
+        if (ok.length && E.opts.form) { E.currentId = null; h += '<button type="button" class="ea-big green" onclick="EMCOMM.newReport()">Start a new ' + esc(FORM_NAME[E.opts.form]) + '</button>'; }
+        h += '<a class="ea-sec" style="display:flex;align-items:center;justify-content:center;text-decoration:none" href="/m">EOC phone page</a>';
+        sheet(h);
+      })
+      .catch(function (e) {
+        reps.forEach(function (r) { r.status = 'waiting'; obUpsert(r); });
+        renderActions();
+        sheet('<div class="ea-err"><b>Could not reach the EOC.</b><br>' + esc(e.message) + '</div><p>Your report is saved in this phone\'s Outbox. Check you are on the EOC Wi-Fi and tap Send again.</p><button type="button" class="ea-sec" onclick="EMCOMM.closeSheet()">OK</button>');
+      });
+  }
+
+  // ── Send to EOC from the app (hand-off to the EOC's /receive page) ────────
+  E.sendToEoc = function (preset) {
+    if (E.opts.form) { var cur = currentReport(); if (hasContent(cur.data)) { obUpsert(cur); E.currentId = cur.id; } }
+    renderActions();
+    var w = obWaiting();
+    if (!w.length) { toast('Nothing waiting in the Outbox'); return; }
+    var known = lsGet(EOCS_KEY, []), p = params();
+    if (preset || p.eoc) known = [{url: preset || p.eoc, name: 'The EOC you came from'}].concat(known.filter(function (k) { return k.url !== (preset || p.eoc); }));
+    var canScan = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) && (window.isSecureContext || location.protocol === 'file:') && ('BarcodeDetector' in window || root() !== null);
+    var h = '<h3>Send ' + w.length + ' report' + (w.length === 1 ? '' : 's') + ' to an EOC</h3>'
+      + '<p class="ea-muted">First join the EOC Wi-Fi. Then scan the EOC QR code on the wall, or type the address shown under it.</p>';
+    if (canScan) h += '<button type="button" class="ea-big" onclick="EMCOMM.scan()">&#128247; Scan the EOC QR code</button>';
+    known.slice(0, 4).forEach(function (k, i) { h += '<button type="button" class="ea-sec" data-k="' + i + '">Send to ' + esc(k.name || k.url) + '<br><span class="ea-muted">' + esc(k.url.replace(/^https?:\/\//, '')) + '</span></button>'; });
+    h += '<p class="ea-muted" style="margin-top:10px">Or type the EOC address:</p><input class="ea-in" id="ea-addr" inputmode="url" autocapitalize="off" autocorrect="off" placeholder="192.168.1.20:8080">'
+      + '<button type="button" class="ea-big green" onclick="EMCOMM.handOff(document.getElementById(\'ea-addr\').value)">Send</button>'
+      + '<button type="button" class="ea-sec" onclick="EMCOMM.closeSheet()">Cancel</button>';
+    var s = sheet(h);
+    s.querySelectorAll('button[data-k]').forEach(function (b) { b.onclick = function () { E.handOff(known[+b.getAttribute('data-k')].url); }; });
+  };
+  function normalizeEoc(u) {
+    u = String(u || '').trim(); if (!u) return '';
+    if (!/^https?:\/\//i.test(u)) u = 'http://' + u;
+    try { var x = new URL(u); if (!x.port && x.protocol === 'http:' && !/\.(org|com|net|io)$/i.test(x.hostname)) x.port = '8080'; return x.origin; } catch (e) { return ''; }
+  }
+  function b64url(u8) { var s = ''; for (var i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+  function pack(obj) {
+    var bytes = new TextEncoder().encode(JSON.stringify(obj));
+    if (typeof CompressionStream !== 'undefined') {
+      try {
+        var cs = new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate-raw'));
+        return new Response(cs).arrayBuffer().then(function (b) { return 'z' + b64url(new Uint8Array(b)); }).catch(function () { return 'j' + b64url(bytes); });
+      } catch (e) {}
+    }
+    return Promise.resolve('j' + b64url(bytes));
+  }
+  E.handOff = function (addr) {
+    var url = normalizeEoc(addr);
+    if (!url) { toast('Type the EOC address shown on the wall, like 192.168.1.20:8080'); return; }
+    var w = obWaiting();
+    if (!w.length) { toast('Nothing waiting in the Outbox'); return; }
+    var known = lsGet(EOCS_KEY, []).filter(function (k) { return k.url !== url; });
+    known.unshift({url: url, name: '', last: Date.now()}); lsSet(EOCS_KEY, known.slice(0, 6));
+    // Fit as many reports as the link allows; the rest go on the next send.
+    var batch = w.slice();
+    (function tryPack() {
+      var payload = {v: 1, kind: 'church_outbox', app: APP_VERSION, reports: batch.map(function (r) { return {id: r.id, form: r.form, filename: r.filename, title: r.title, savedAt: r.savedAt, data: r.data}; })};
+      pack(payload).then(function (d) {
+        if (d.length > MAX_LINK && batch.length > 1) { batch = batch.slice(0, Math.max(1, Math.floor(batch.length / 2))); tryPack(); return; }
+        lsSet(PENDING_KEY, {ids: batch.map(function (r) { return r.id; }), eoc: url, ts: Date.now()});
+        var back = location.href.split('#')[0];
+        closeSheet();
+        location.href = url + '/receive#d=' + d + '&r=' + encodeURIComponent(back);
+      });
+    })();
+  };
+
+  // ── Coming back from the EOC: #ack=<ids> (Android / same browser) or ask (iPhone) ──
+  function checkAck() {
+    var hp = hashParams();
+    if (hp.ack !== undefined) {
+      var ids = (hp.ack || '').split(',').filter(Boolean), n = obMarkSent(ids, hp.to || '');
+      lsSet(PENDING_KEY, null);
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+      renderActions();
+      if (n) toast('✓ ' + n + ' report' + (n === 1 ? '' : 's') + ' marked as sent' + (hp.to ? ' to ' + hp.to : ''));
+      return;
+    }
+    showPending();
+  }
+  function showPending() {
+    var p = lsGet(PENDING_KEY, null), old = $('ea-banner');
+    if (old) old.remove();
+    if (!p || !p.ids || !p.ids.length) return;
+    if (Date.now() - (p.ts || 0) > 48 * 3600000) { lsSet(PENDING_KEY, null); return; }
+    var waitingIds = obWaiting().map(function (r) { return r.id; });
+    var ids = p.ids.filter(function (x) { return waitingIds.indexOf(x) >= 0; });
+    if (!ids.length) { lsSet(PENDING_KEY, null); return; }
+    var b = document.createElement('div'); b.id = 'ea-banner'; b.className = 'ea-banner';
+    b.innerHTML = '<b>Did the EOC show a green "received" screen</b> for ' + ids.length + ' report' + (ids.length === 1 ? '' : 's') + '?'
+      + '<div class="b"><button type="button" style="background:#1a6b3c;color:#fff" id="ea-yes">Yes, mark sent</button><button type="button" style="background:#e3e7ec" id="ea-no">No, keep them</button></div>';
+    document.body.insertBefore(b, document.body.firstChild);
+    $('ea-yes').onclick = function () { var n = obMarkSent(ids, p.eoc.replace(/^https?:\/\//, '')); lsSet(PENDING_KEY, null); b.remove(); renderActions(); toast('✓ ' + n + ' marked as sent'); };
+    $('ea-no').onclick = function () { lsSet(PENDING_KEY, null); b.remove(); toast('Kept in the Outbox. Send again when ready.'); };
+  }
+
+  // ── Scan the EOC QR code (BarcodeDetector on Android; bundled jsQR on iPhone) ──
+  var scanStream = null, scanTimer = null;
+  function stopScan() { if (scanTimer) clearInterval(scanTimer); scanTimer = null; if (scanStream) scanStream.getTracks().forEach(function (t) { t.stop(); }); scanStream = null; }
+  function loadJsQR() {
+    if (window.jsQR) return Promise.resolve(true);
+    var r = root(); if (r === null) return Promise.resolve(false);
+    return new Promise(function (res) { var s = document.createElement('script'); s.src = r + 'forms/vendor/jsQR.js'; s.onload = function () { res(!!window.jsQR); }; s.onerror = function () { res(false); }; document.head.appendChild(s); });
+  }
+  E.scan = function () {
+    var s = sheet('<h3>Scan the EOC QR code</h3><p class="ea-muted">Point the camera at the code on the EOC wall display.</p><video class="ea-video" id="ea-video" playsinline muted autoplay></video><p id="ea-scan-msg" class="ea-muted"></p><button type="button" class="ea-sec" onclick="EMCOMM.sendToEoc()">Type the address instead</button>');
+    var video = $('ea-video'), msg = $('ea-scan-msg'), det = null, canvas = document.createElement('canvas'), ctx2 = canvas.getContext('2d', {willReadFrequently: true});
+    var ready = ('BarcodeDetector' in window) ? Promise.resolve().then(function () { det = new BarcodeDetector({formats: ['qr_code']}); return true; }).catch(loadJsQR) : loadJsQR();
+    navigator.mediaDevices.getUserMedia({video: {facingMode: {ideal: 'environment'}}, audio: false}).then(function (st) {
+      scanStream = st; video.srcObject = st; return video.play();
+    }).then(function () { return ready; }).then(function (ok) {
+      if (!ok && !det) { msg.textContent = 'This phone cannot read QR codes here. Type the address instead.'; return; }
+      scanTimer = setInterval(function () {
+        if (!video.videoWidth) return;
+        if (det) { det.detect(video).then(function (codes) { if (codes && codes[0]) found(codes[0].rawValue); }).catch(function () {}); return; }
+        var w = Math.min(640, video.videoWidth), hgt = Math.round(video.videoHeight * w / video.videoWidth);
+        canvas.width = w; canvas.height = hgt; ctx2.drawImage(video, 0, 0, w, hgt);
+        var img = ctx2.getImageData(0, 0, w, hgt), code = window.jsQR(img.data, w, hgt, {inversionAttempts: 'attemptBoth'});
+        if (code && code.data) found(code.data);
+      }, 250);
+    }).catch(function (e) { msg.textContent = 'The camera is not available (' + (e && e.name || 'blocked') + '). Allow camera access, or type the address instead.'; });
+    function found(text) {
+      var url = '';
+      try { var x = new URL(text); if (/^https?:$/.test(x.protocol)) url = x.origin; } catch (e) {}
+      if (!url) { msg.textContent = 'That code is not an EOC address. Scan the EOC code on the wall display.'; return; }
+      stopScan(); if (navigator.vibrate) navigator.vibrate(60);
+      E.handOff(url);
+    }
+  };
+
+  // ── Form served by an EOC server: fill the EOC location when the phone cannot share GPS ──
+  function fillEocLocation() {
+    var la = $('stn_lat_d'), lo = $('stn_lon_d'), s = E.eoc || {};
+    if (!la || !lo || la.value || !s.eocLat || !s.eocLon) return;
+    if (window.isSecureContext) return;   // a secure page gets real GPS from the form itself
+    la.value = s.eocLat; lo.value = s.eocLon;
+    if (typeof gpsSetOff === 'function') gpsSetOff(false);
+    if (typeof updateGrid === 'function') updateGrid();
+    if (typeof setGpsStatus === 'function') setGpsStatus('EOC location filled in: phones cannot share GPS with the EOC Wi-Fi. Change it if you are reporting from somewhere else.', 'ok');
+  }
+
+  // ── Offline app: manifest, icons, service worker (portal on https only) ───
+  function setupApp() {
+    var r = root(); if (r === null || !window.isSecureContext) return;
+    var head = document.head;
+    function add(tag, attrs) { var el = document.createElement(tag); for (var k in attrs) el.setAttribute(k, attrs[k]); head.appendChild(el); }
+    if (!document.querySelector('link[rel=manifest]')) add('link', {rel: 'manifest', href: r + 'forms/manifest.webmanifest'});
+    if (!document.querySelector('link[rel=apple-touch-icon]')) add('link', {rel: 'apple-touch-icon', href: r + 'forms/icons/icon-180.png'});
+    if (!document.querySelector('meta[name=apple-mobile-web-app-capable]')) { add('meta', {name: 'apple-mobile-web-app-capable', content: 'yes'}); add('meta', {name: 'mobile-web-app-capable', content: 'yes'}); add('meta', {name: 'apple-mobile-web-app-title', content: 'Church of Jesus Christ EMCOMM'}); }
+    if (!document.querySelector('meta[name=theme-color]')) add('meta', {name: 'theme-color', content: '#1a3a5c'});
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register(r + 'sw.js', {scope: r}).catch(function () {});
+    if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () {});
+  }
+
+  // ── Start ─────────────────────────────────────────────────────────────────
+  function detectCtx() {
+    if (location.protocol === 'file:') return Promise.resolve('file');
+    if (/\.github\.io$/i.test(location.hostname)) return Promise.resolve('portal');
+    // an EOC server answers at once on its own Wi-Fi; never let a hanging network hold the page
+    return within(fetch('/api/status', {cache: 'no-store'}).then(function (r) { return r.ok ? r.json() : null; }), 2500, null)
+      .then(function (s) { if (s && s.lanUrl) { E.eoc = s; return 'eoc'; } return 'portal'; })
+      .catch(function () { return 'portal'; });
+  }
+  E.init = function (opts) {
+    E.opts = opts || {};
+    addStyle();
+    Promise.all([detectCtx(), restoreOutbox()]).then(function (got) {
+      var ctx = got[0];
+      E.ctx = ctx;
+      if (got[1]) toast(got[1] + ' saved report' + (got[1] === 1 ? '' : 's') + ' brought back into the Outbox');
+      if (ctx === 'portal') setupApp();
+      var q = params();
+      if (q.outbox && E.opts.form) {
+        var rep = obAll().filter(function (r) { return r.id === q.outbox; })[0];
+        if (rep) { populate(rep.data); E.currentId = rep.id; toast('Editing a saved report. Save again to keep your changes.'); }
+      }
+      renderActions();
+      blankBar();
+      homeBar();
+      printView();
+      // a PDF opened inside the home-screen app has no way back: documents open in the phone's browser sheet
+      document.querySelectorAll('a[href$=".pdf"]').forEach(function (a) { if (!a.target) { a.target = '_blank'; a.rel = 'noopener'; } });
+      if (E.opts.form) {   // keep the paper copy current, also for Print from the browser's own menu
+        buildPaper();
+        document.addEventListener('input', paperSoon); document.addEventListener('change', paperSoon);
+        document.addEventListener('input', function () { E.dirty = true; });
+        document.addEventListener('change', function (e) { if (e.target && e.target.id !== 'loadInput') E.dirty = true; });
+      }
+      checkAck();
+      if (ctx === 'eoc') { setTimeout(fillEocLocation, 1200); setTimeout(fillEocLocation, 4000); }
+      if (!E.opts.form && location.hash === '#outbox') { if (q.eoc && obWaiting().length) E.sendToEoc(q.eoc); else E.openOutbox(); }
+      if (E.opts.onReady) E.opts.onReady(ctx);
+    });
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { renderActions(); showPending(); } });
+    window.addEventListener('pageshow', function () { renderActions(); showPending(); });
+  };
+  E.isStandalone = isStandalone;
+})();
+</script>
+<!-- EMCOMM-APP:END -->
+</body>
+</html>
