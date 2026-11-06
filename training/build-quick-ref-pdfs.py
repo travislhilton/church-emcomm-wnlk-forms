@@ -150,14 +150,16 @@ def main():
         title = f'Quick Reference Card {no} — {name.replace("_", " ")}'
         html_path = OUT / f'Quick_Reference_Card_{no}_{name}.html'
         pdf_path = OUT / f'Quick_Reference_Card_{no}_{name}.pdf'
-        html_path.write_text(page(head, body, title) + script + '</body>\n</html>\n', encoding='utf-8')
+        with open(html_path, 'w', encoding='utf-8', newline='\n') as fh:
+            fh.write(page(head, body, title) + script + '</body>\n</html>\n')
         if pdf_path.exists():
             pdf_path.unlink()
         print_pdf(html_path, pdf_path)
         results.append((pdf_path.name, pdf_path.stat().st_size, page_count(pdf_path)))
     all_html = OUT / 'Quick_Reference_Cards_All.html'
     all_pdf = OUT / 'Quick_Reference_Cards_All.pdf'
-    all_html.write_text(page(head, '\n'.join(all_rows), 'Quick Reference Cards — all roles') + script + '</body>\n</html>\n', encoding='utf-8')
+    with open(all_html, 'w', encoding='utf-8', newline='\n') as fh:
+        fh.write(page(head, '\n'.join(all_rows), 'Quick Reference Cards — all roles') + script + '</body>\n</html>\n')
     if all_pdf.exists():
         all_pdf.unlink()
     print_pdf(all_html, all_pdf)

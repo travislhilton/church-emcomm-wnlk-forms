@@ -517,11 +517,11 @@ html, body { background: #fff; padding: 0; margin: 0; }
         <div class="steps">
           <div class="step">
             <div class="step-num" style="background:var(--green)">1</div>
-            <div class="step-text"><b>Double-click the EOC Server icon</b> on the Desktop<small>Window shows: <span style="font-family:'Courier New',monospace;color:#1A6B4A">http://10.x.x.x:8080</span> — note this IP (Internet Protocol) address</small></div>
+            <div class="step-text"><b>Double-click the EOC Server icon</b> on the Windows host laptop<small>Window shows: <span style="font-family:'Courier New',monospace;color:#1A6B4A">http://10.x.x.x:8080</span> — note this IP (Internet Protocol) address</small></div>
           </div>
           <div class="step">
             <div class="step-num" style="background:var(--green)">2</div>
-            <div class="step-text"><b>Share the URL (web address)</b> with the EOC operators on the Wi-Fi. A green banner = networked.</div>
+            <div class="step-text"><b>Share the URL (web address)</b> with the EOC operators on the Wi-Fi: any device, any browser. A green banner = networked.</div>
           </div>
         </div>
         <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin:6px 0 6px">RECEIVING MESSAGES</p>
@@ -695,7 +695,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
         </div>
         <div class="step">
           <div class="step-num" style="background:var(--green)">2</div>
-          <div class="step-text">Start the simulator on the EOC laptop<small>Double-click <b>Church of Jesus Christ EMCOMM Simulator</b> on the Desktop (installer role 3), then open <code style="font-size:13.5px">http://&lt;this laptop&gt;:8090</code>. The organization pack and map data stay on this laptop.</small></div>
+          <div class="step-text">Start the simulator on the Windows EOC laptop<small>Double-click <b>Church of Jesus Christ EMCOMM Simulator</b> on the Desktop (installer role 3), then open <code style="font-size:13.5px">http://&lt;this laptop&gt;:8090</code>. The organization pack and map data stay on this laptop.</small></div>
         </div>
         <div class="step">
           <div class="step-num" style="background:var(--green)">3</div>
@@ -720,7 +720,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
         </div>
         <div class="step">
           <div class="step-num" style="background:var(--navy)">7</div>
-          <div class="step-text">Watch the scoreboard; at the end open the after-action report<small>Run tab: needs met, overdue, score. Needs tab: <b>Waive</b> what the room is not playing. Hot wash tab (the after-drill review): mark each line, then <b>After-action report</b>. Results on any phone: <code style="font-size:13.5px">http://&lt;laptop&gt;:8090/results</code>.</small></div>
+          <div class="step-text">Watch the scoreboard; at the end open the after-action report<small>Run tab: needs met, overdue, score. Needs tab: <b>Waive</b> what the room is not playing. Hot wash tab (the after-drill review): mark each line, then <b>After-action report</b>. Results on any device: <code style="font-size:13.5px">http://&lt;laptop&gt;:8090/results</code>.</small></div>
         </div>
         <div class="step">
           <div class="step-num" style="background:var(--navy)">8</div>
@@ -795,7 +795,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
         </div>
         <div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">ROLL-UP: HOW THE FILE TRAVELS</p><div style="display:flex;flex-direction:column;gap:5px"><div>Setup tab &#8594; <b>Export Roll-up JSON</b> (&#8220;only new since last roll-up&#8221; ticked) &#8594; send it with every SITREP.</div><div><b>P / A</b> (cellular, any internet): attach it to an email to the parent EOC&#8217;s drop email. <b>C</b> (radio): attach it to a Winlink message to the parent&#8217;s Winlink address. First Winlink peer-to-peer (P2P) over VARA FM straight to a nearby parent station, then VARA FM through a gateway, then VARA HF (VARA: the sound-card radio modem Winlink uses). <b>E</b> (runner): on a USB drive with the printed SITREP.</div><div>At the parent nothing is clicked: the Drop Folder and Winlink watchers merge it within 10 seconds and log &#8220;Roll-up received from &#8230;&#8221;. From USB: drop it in the Drop Folder. Nothing is counted twice.</div></div></div>
         <div class="note-box" style="font-size:14px">
-          <b>Phones in the room:</b> scan the wall QR code (or open <code style="font-size:13.5px">http://&lt;server-ip&gt;:8080/m</code>): new reports, <b>Send to EOC</b>, the <b>Work items</b> list (tap an item: <b>Take it</b>, In work, Up, Done; your name goes in its log). <b>Paper by runner (Emergency):</b> type it in at <code style="font-size:13.5px">/forms/dr</code>, <code style="font-size:13.5px">/forms/so</code> or <code style="font-size:13.5px">/forms/wcl</code> and tap <b>Send</b>; keep blank paper forms on hand (add <code style="font-size:13.5px">?blank=1</code>, <b>Print</b>).
+          <b>Any device in the room:</b> scan the wall QR code (or open <code style="font-size:13.5px">http://&lt;server-ip&gt;:8080/m</code>): new reports, <b>Send to EOC</b>, the <b>Work items</b> list (tap an item: <b>Take it</b>, In work, Up, Done; your name goes in its log). <b>Paper by runner (Emergency):</b> type it in at <code style="font-size:13.5px">/forms/dr</code>, <code style="font-size:13.5px">/forms/so</code> or <code style="font-size:13.5px">/forms/wcl</code> and tap <b>Send</b>; keep blank paper forms on hand (add <code style="font-size:13.5px">?blank=1</code>, <b>Print</b>).
         </div>
         <div class="note-box tip" style="font-size:14px">
           <b>In a drill:</b> one simulator per EOC. The purple <b>drill bar</b> on every screen says what this EOC plays, the clock or the start time, and who is ready: press <b>I am ready</b>. Every simulated report says SIMULATED; real reports still go through. New to drills? Read <b>card 9</b>.
@@ -833,7 +833,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
         </div>
         <div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">ROLL-UP: HOW THE FILE TRAVELS</p><div style="display:flex;flex-direction:column;gap:5px"><div>Setup tab &#8594; <b>Export Roll-up JSON</b> (&#8220;only new since last roll-up&#8221; ticked) &#8594; send it with every SITREP.</div><div><b>P / A</b> (cellular, any internet): attach it to an email to the parent EOC&#8217;s drop email. <b>C</b> (radio): attach it to a Winlink message to the parent&#8217;s Winlink address. First Winlink peer-to-peer (P2P) over VARA FM straight to a nearby parent station, then VARA FM through a gateway, then VARA HF (VARA: the sound-card radio modem Winlink uses). <b>E</b> (runner): on a USB drive with the printed SITREP.</div><div>At the parent nothing is clicked: the Drop Folder and Winlink watchers merge it within 10 seconds and log &#8220;Roll-up received from &#8230;&#8221;. From USB: drop it in the Drop Folder. Nothing is counted twice.</div></div></div>
         <div class="note-box" style="font-size:14px">
-          <b>Phones in the room:</b> scan the wall QR (Quick Response) code (or open <code style="font-size:13.5px">http://&lt;server-ip&gt;:8080/m</code>): new reports, <b>Send to EOC</b>, the <b>Work items</b> list (tap an item: <b>Take it</b>, In work, Up, Done; your name goes in its log). <b>Paper by runner (Emergency):</b> type it in at <code style="font-size:13.5px">/forms/dr</code>, <code style="font-size:13.5px">/forms/so</code> or <code style="font-size:13.5px">/forms/wcl</code> and tap <b>Send</b>; keep blank paper forms on hand (add <code style="font-size:13.5px">?blank=1</code>, <b>Print</b>).
+          <b>Any device in the room:</b> scan the wall QR (Quick Response) code (or open <code style="font-size:13.5px">http://&lt;server-ip&gt;:8080/m</code>): new reports, <b>Send to EOC</b>, the <b>Work items</b> list (tap an item: <b>Take it</b>, In work, Up, Done; your name goes in its log). <b>Paper by runner (Emergency):</b> type it in at <code style="font-size:13.5px">/forms/dr</code>, <code style="font-size:13.5px">/forms/so</code> or <code style="font-size:13.5px">/forms/wcl</code> and tap <b>Send</b>; keep blank paper forms on hand (add <code style="font-size:13.5px">?blank=1</code>, <b>Print</b>).
         </div>
         <div class="note-box tip" style="font-size:14px">
           <b>In a drill:</b> one simulator per EOC. The purple <b>drill bar</b> on every screen says what this EOC plays, the clock or the start time, and who is ready: press <b>I am ready</b>. Every simulated report says SIMULATED; real reports still go through. New to drills? Read <b>card 9</b>.
@@ -871,7 +871,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
         </div>
         <div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">ROLL-UP: HOW THE FILE TRAVELS</p><div style="display:flex;flex-direction:column;gap:5px"><div>Setup tab &#8594; <b>Export Roll-up JSON</b> (&#8220;only new since last roll-up&#8221; ticked) &#8594; send it with every SITREP.</div><div><b>P / A</b> (cellular, any internet): attach it to an email to the parent EOC&#8217;s drop email. <b>C</b> (radio): attach it to a Winlink message to the parent&#8217;s Winlink address. First Winlink peer-to-peer (P2P) over VARA FM straight to a nearby parent station, then VARA FM through a gateway, then VARA HF (VARA: the sound-card radio modem Winlink uses). <b>E</b> (runner): on a USB drive with the printed SITREP.</div><div>At the parent nothing is clicked: the Drop Folder and Winlink watchers merge it within 10 seconds and log &#8220;Roll-up received from &#8230;&#8221;. From USB: drop it in the Drop Folder. Nothing is counted twice.</div></div></div>
         <div class="note-box" style="font-size:14px">
-          <b>Phones in the room:</b> scan the wall QR (Quick Response) code (or open <code style="font-size:13.5px">http://&lt;server-ip&gt;:8080/m</code>): new reports, <b>Send to EOC</b>, the <b>Work items</b> list (tap an item: <b>Take it</b>, In work, Up, Done; your name goes in its log). <b>Paper by runner (Emergency):</b> type it in at <code style="font-size:13.5px">/forms/dr</code>, <code style="font-size:13.5px">/forms/so</code> or <code style="font-size:13.5px">/forms/wcl</code> and tap <b>Send</b>; keep blank paper forms on hand (add <code style="font-size:13.5px">?blank=1</code>, <b>Print</b>).
+          <b>Any device in the room:</b> scan the wall QR (Quick Response) code (or open <code style="font-size:13.5px">http://&lt;server-ip&gt;:8080/m</code>): new reports, <b>Send to EOC</b>, the <b>Work items</b> list (tap an item: <b>Take it</b>, In work, Up, Done; your name goes in its log). <b>Paper by runner (Emergency):</b> type it in at <code style="font-size:13.5px">/forms/dr</code>, <code style="font-size:13.5px">/forms/so</code> or <code style="font-size:13.5px">/forms/wcl</code> and tap <b>Send</b>; keep blank paper forms on hand (add <code style="font-size:13.5px">?blank=1</code>, <b>Print</b>).
         </div>
         <div class="note-box tip" style="font-size:14px">
           <b>In a drill:</b> one simulator per EOC. The purple <b>drill bar</b> on every screen says what this EOC plays, the clock or the start time, and who is ready: press <b>I am ready</b>. Every simulated report says SIMULATED; real reports still go through. New to drills? Read <b>card 9</b>.
@@ -911,7 +911,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
       </table>
       <p style="font-size:14px;margin-top:6px">Other reports reach the EOC screens by themselves: from phones, by Winlink radio email, or as files.</p>
     </div>
-    <div class="note-box"><b>What to bring:</b> your phone, charged, with the app installed (card 1); a pen; the card for your role (side 2).</div>
+    <div class="note-box"><b>What to bring:</b> a phone, tablet or laptop, charged; a pen; the card for your role (side 2).</div>
     <div class="note-box tip">
       <b>Not sure what to do?</b> Ask the controller. Write down what you did and the time. Do your best: mistakes are how a drill teaches.
     </div>
@@ -947,7 +947,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
       </div>
     </div>
     <div class="phrase-box">
-      <b>After the drill: the debrief.</b> What went well. One thing to do better. The date of the next drill. <b>Results on your phone:</b> the controller gives the address.
+      <b>After the drill: the debrief.</b> What went well. One thing to do better. The date of the next drill. <b>Results on your device:</b> the controller gives the address.
     </div>
     <p style="font-size:14px">Feedback? Tell your Team Leader or the stake Welfare and Self-Reliance Specialist (emergency communications).</p>
     <p class="card-disclaimer">Church of Jesus Christ EMCOMM is an independent volunteer project created by Travis Hilton (W9TLH), not an official product of The Church of Jesus Christ of Latter-day Saints.</p>

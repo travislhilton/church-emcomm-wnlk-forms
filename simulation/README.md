@@ -75,7 +75,7 @@ with the EOC identity).
 
 Installed (installer role 3): double-click **Church of Jesus Christ EMCOMM Simulator** on the
 Desktop, which runs `EOC Message Center\simulation\start_simulator.bat` (the same Python the EOC
-Server uses; on a Mac `start_simulator.command`, installed by `installer/install.sh`). From the repository,
+Server uses). Only a Windows laptop hosts the simulator; everyone else opens its pages in any browser. From the repository,
 with the invented example community:
 
 ```

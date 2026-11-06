@@ -74,16 +74,16 @@ FORMS = {
 }
 CORE = [f'templates/{d}/{n}' for d, names in FORMS.items() for n in names] + [
     'eoc/EOC_Message_Center.html', 'eoc/EOC_Wall_Display.html', 'eoc/EOC_Phone.html', 'eoc/eoc_server.py',
-    'eoc/start_eoc_server.bat', 'eoc/start_eoc_server.command',
+    'eoc/start_eoc_server.bat',
     'simulation/sim_server.py', 'simulation/engine.py', 'simulation/orgpack.py', 'simulation/privacy.py',
     'simulation/drillconfig.py', 'simulation/community.py', 'simulation/scenario_check.py', 'simulation/index.html',
-    'simulation/README.md', 'simulation/start_simulator.bat', 'simulation/start_simulator.command',
+    'simulation/README.md', 'simulation/start_simulator.bat',
     'simulation/scenarios/catalog.json', 'training/quick-ref-cards.html',
 ] + [f'training/pdf/Quick_Reference_Card_{n}.pdf' for n in (
     '1_Helping_Hands_Volunteer', '2_EMCOMM_HAM_Operator', '3_EOC_Operator', '4_Leaders_Overview', '5_Drill_Controller',
     '6_Satellite_EOC', '7_Stake_Center_EOC', '8_Council_Area_EOC', '9_Your_First_Drill', '10_Team_Leader_Crew_Chief')] + [
     'sw.js', 'README.md', 'docs/PACE_PLAN.md', 'LICENSE']
-ZIP_ONLY = ['installer/install.bat', 'installer/install.ps1', 'installer/install.sh', 'training/pdf/Quick_Reference_Cards_All.pdf']
+ZIP_ONLY = ['installer/install.bat', 'installer/install.ps1', 'training/pdf/Quick_Reference_Cards_All.pdf']
 
 
 def tracked(prefix: str) -> list:
@@ -180,7 +180,7 @@ def build_zip():
         for name in sorted(entries):
             info = zipfile.ZipInfo(name, ZIP_DATE)
             info.compress_type = zipfile.ZIP_DEFLATED
-            info.external_attr = 0o755 << 16 if name.endswith(('.sh', '.command')) else 0o644 << 16
+            info.external_attr = 0o644 << 16
             z.writestr(info, entries[name])
     print(f'  {ZIP.relative_to(ROOT).as_posix()}: {len(entries)} files, {ZIP.stat().st_size // 1024} KB')
 

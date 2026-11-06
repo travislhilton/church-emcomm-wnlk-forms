@@ -12,12 +12,31 @@ The chain is **field → Satellite EOC → Stake EOC → the council line (Area 
 
 | You are | Start here |
 |---|---|
-| A Helping Hands volunteer, Team Leader or Crew Chief with a phone | [For Field Volunteers](#for-field-volunteers--no-install-needed) — nothing to install |
+| A Helping Hands volunteer, Team Leader or Crew Chief with any phone, tablet or computer | [For Field Volunteers](#for-field-volunteers--no-install-needed) — nothing to install |
 | A licensed HAM operator at a field station or the EOC | [[2] HAM Field Operator](#2-ham-field-operator-licensed-amateur-radio) |
 | Running a Satellite or Stake Center EOC | [[3] EOC Operator](#3-eoc-operator--satellite-stake-center-or-council--area-eoc-full-install) |
 | The Area Seventy's council, the welfare line (WSRM, AWSRM), the Area Welfare and Self-Reliance Specialist, or a Council / Area EOC operator | [[4] Council and Area](#4-council-and-area--the-two-lines-above-the-stake) |
 | A Stake President, Bishop or Emergency Response Director (ERD) | [For Stake and Ward Leaders](#for-stake-presidents-bishops-and-emergency-response-directors) |
+| Joining an EOC or a drill from your own device | [Which device can I use?](#which-device-can-i-use) |
 | Planning the stake's communications | [Communications PACE (Primary, Alternate, Contingency, Emergency) Plan](#communications-pace-plan) and [docs/PACE_PLAN.md](docs/PACE_PLAN.md) |
+
+## Which device can I use?
+
+Bring any device. Only two jobs need a Windows computer.
+
+| What you are doing | What you need |
+|---|---|
+| Filling in forms: Helping Hands volunteer, Team Leader, Crew Chief | Any phone, tablet or computer with a browser |
+| Leading or observing: Stake President, Bishop, Emergency Response Director (ERD) | Any device with a browser |
+| Working as an EOC operator on the EOC Wi-Fi | Any device with a browser: open the address the EOC host shows |
+| Showing the wall display | Any screen with a browser |
+| Taking part in a drill: results and the debrief | Any device with a browser |
+| **Hosting** the EOC server or the simulator (one laptop per EOC) | **A Windows laptop** |
+| **Sending by Winlink** as a HAM operator | **A Windows computer** with Winlink Express |
+
+**Any device** means iPhone, Android, iPad, Mac, Linux or Chromebook, in Chrome, Edge, Firefox or Safari.
+
+**Why Windows for those two:** Winlink Express runs only on Windows, and a computer that cannot run Winlink cannot host. A phone, tablet, Mac, Linux computer or Chromebook joins the host by browser.
 
 ## The Three Forms
 
@@ -147,7 +166,7 @@ Share the portal URL (web address) or QR poster image by text or email to pre-re
 |---|---|---|
 | **Overview deck** | Stake EMCOMM planning and training | [Download ZIP](https://travislhilton.github.io/church-emcomm-wnlk-forms/dist/ChurchEMCOMM_Deck_v1.0.zip) |
 | **Single-file installer** | Most users — one file, double-click it; fits in an email or on a USB (Universal Serial Bus) stick | [Download](https://travislhilton.github.io/church-emcomm-wnlk-forms/dist/ChurchEMCOMM_Installer_v1.0.bat) |
-| **ZIP package** | The same installer plus every file laid out as folders — for macOS / Linux, or to look inside | [Download](https://travislhilton.github.io/church-emcomm-wnlk-forms/dist/ChurchEMCOMM_Forms_v1.0.zip) |
+| **ZIP package** | The same installer plus every file laid out as folders, to look inside | [Download](https://travislhilton.github.io/church-emcomm-wnlk-forms/dist/ChurchEMCOMM_Forms_v1.0.zip) |
 
 These links serve the files from the project's GitHub Pages site. The same files are on the [v1.0 release page](https://github.com/travislhilton/church-emcomm-wnlk-forms/releases/tag/v1.0).
 
@@ -169,12 +188,10 @@ These links serve the files from the project's GitHub Pages site. The same files
 
 **No internet required. No admin rights required.**
 
-### macOS (and Linux)
-Everything but Winlink Express is Python 3 (standard library) and HTML (web pages), so the EOC server, the Message Center, the wall display, the phone page and the drill simulator run on a Mac as they are.
-1. **Download** and extract `ChurchEMCOMM_Forms_v1.0.zip`
-2. Open **Terminal** in the extracted folder and run `bash installer/install.sh` (the same three roles; it installs under `~/Documents/Church of Jesus Christ EMCOMM` and puts shortcuts on the Desktop)
-3. Start the server with **Church of Jesus Christ EMCOMM EOC Server.command** on the Desktop (the first time, macOS may ask you to allow it under System Settings → Privacy & Security); the simulator is **Church of Jesus Christ EMCOMM Simulator.command**
-4. **Winlink Express runs only on Windows.** A Mac HAM station needs a Windows machine or VM (virtual machine) for Winlink; the installer saves the templates in `Winlink Templates` for that machine. Pat (the open-source Winlink client) is untested with these templates.
+### Mac, Linux, Chromebook, Android and iPhone
+There is nothing to install. Open the [portal](https://travislhilton.github.io/church-emcomm-wnlk-forms/forms/) in any browser, or, on the EOC Wi-Fi, the address the EOC host shows.
+
+These devices cannot host the EOC server or the simulator, and they cannot run Winlink Express: both need a Windows computer. See [Which device can I use?](#which-device-can-i-use)
 
 ---
 
@@ -190,7 +207,7 @@ The installer asks who you are. Choose your role and follow the steps below.
 
 **Install now (Windows, no admin rights):**
 - **[Download the single-file installer](https://travislhilton.github.io/church-emcomm-wnlk-forms/dist/ChurchEMCOMM_Installer_v1.0.bat)** → double-click it → choose **[1]** · or **[download the ZIP package](https://travislhilton.github.io/church-emcomm-wnlk-forms/dist/ChurchEMCOMM_Forms_v1.0.zip)** → right-click → Properties → **Unblock** → extract → run `installer\install.bat` ([details](#install))
-- Needs only a browser: Chrome or Edge (the installer offers Chrome if neither is found)
+- Needs only a browser (the installer offers Chrome if it finds none)
 - On a phone or tablet nothing installs — use the [portal](https://travislhilton.github.io/church-emcomm-wnlk-forms/forms/) instead
 
 **To fill a form:**
@@ -337,7 +354,7 @@ With the Church directory export on the EOC laptop (the same folder the simulato
 A read-only **big board** for a TV, projector or spare monitor so everyone in the EOC sees the same picture without crowding an operator's screen: the event and the **PACE level in force**, reports received (and how many are still NEW), which wards (or stakes, at a Council / Area EOC) have reported and which are overdue, homes damaged / destroyed, injured / deaths, volunteers and hours, open Supply Orders and the top items, the next SITREP due, the last 12 arrivals, a red alert strip (missionaries not accounted for, injuries, Church HQ (headquarters) support requested, overdue units) and the comms status (Winlink watcher, Drop Folder, last arrival, last roll-up). It refreshes every 10 seconds from the EOC server. Nothing on it can be clicked.
 
 1. **Plug the TV in** as a second screen on any PC on the EOC Wi-Fi (an HDMI, High-Definition Multimedia Interface, cable), or use a laptop, Chromecast or smart-TV browser
-2. Open **`http://<server-ip>:8080/wall`** in Chrome or Edge on that screen (the server window prints the exact URL; the Message Center header has a **📺 Wall display** link and the Setup tab a *Wall Display* card with **Copy wall URL**), then press **F**, or click **Full screen (F)** in the bottom-right corner, for full screen (the same button or F leaves it)
+2. Open **`http://<server-ip>:8080/wall`** in any browser on that screen (the server window prints the exact URL; the Message Center header has a **📺 Wall display** link and the Setup tab a *Wall Display* card with **Copy wall URL**), then press **F**, or click **Full screen (F)** in the bottom-right corner, for full screen (the same button or F leaves it)
 3. **Operators join from the wall:** the bottom-left corner shows a **QR code** and the server's address on the EOC Wi-Fi (`http://<server-ip>:8080`). Anyone in the room scans it with a phone or laptop camera, or types the address, and lands on the EOC Message Center. The QR code is drawn by the wall page itself, so no internet is needed
 4. Keep the **Roster** complete, with expected report windows, and keep the **PACE level** and event details current on the Setup tab — the wall is only as good as what the operators enter. Until the roster is filled in, the board lists the units named on the Setup tab as *Waiting*
 5. Options on the URL: `?refresh=5` (seconds), `?sitrep=N` (overrides the event's interval on this screen only), `?latest=16` (rows of arrivals). If the server stops, the wall says so and keeps the last picture
@@ -476,11 +493,11 @@ The deck's *Training Path by Role*, *Church of Jesus Christ EMCOMM Simulator*, *
 
 | Requirement | Notes |
 |---|---|
-| **Google Chrome or Microsoft Edge** | **All roles** — required to open the forms and EOC · [Download Chrome](https://www.google.com/chrome) · [Download Edge](https://www.microsoft.com/edge) |
+| **A web browser** | **All roles** — Chrome, Edge, Firefox or Safari, on any device |
 | **Winlink Express** | **[2] HAM Field Operator, [3] EOC and [4] Council / Area EOC** — required to send and receive Winlink messages · [Download at winlink.org](https://winlink.org) |
 | **VARA FM / VARA HF** | **Contingency only** — software modems for Winlink by VHF/UHF or HF radio; free at reduced speed, a one-time license unlocks full speed · [Download at downloads.winlink.org](https://downloads.winlink.org/) · needs a radio-to-PC audio interface and a Technician (VHF/UHF) or General (HF) license |
 | **Python 3.8 or later** | **[3] EOC and [4] Council / Area EOC only** — required for multi-operator networked server mode and the simulator (standalone EOC works without it) · [Download at python.org](https://www.python.org/downloads/) · install it before the event; the Microsoft Store placeholder that only opens the Store does not count |
-| **Windows 10 or 11** | **All roles** — installer is PowerShell 5.1, built into Windows. **macOS / Linux**: `installer/install.sh` and the `.command` launchers do the same for roles [1] and [3] (Winlink Express itself is Windows-only, see [macOS](#macos-and-linux)) |
+| **Windows 10 or 11** | **The EOC host laptop and every HAM station only** — the installer, EOC server, simulator and Winlink Express run here. Everyone else joins by browser from any device: see [Which device can I use?](#which-device-can-i-use) |
 
 ---
 

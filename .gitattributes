@@ -12,9 +12,8 @@
 *.cmd text eol=crlf
 *.ps1 text eol=crlf
 
-# macOS / Linux launchers and the installer run under bash: keep LF (a CRLF shebang breaks them)
+# Scripts that run under bash: keep LF (a CRLF shebang breaks them)
 *.sh text eol=lf
-*.command text eol=lf
 
 # git hooks run under sh: keep LF
 .githooks/* text eol=lf

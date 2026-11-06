@@ -269,7 +269,7 @@ if ($browser) {
     Write-OK "Browser found: $(Split-Path $browser -Leaf) at $browser"
 } else {
     Write-Warn "No modern browser found (Chrome or Edge)."
-    Write-Warn "The forms and EOC require Chrome or Edge to work."
+    Write-Warn "The forms and EOC need a modern browser."
     Write-Info "  Download Chrome: https://www.google.com/chrome"
     Write-Info "  Download Edge:   https://www.microsoft.com/edge"
     Write-Host ""
@@ -466,15 +466,18 @@ if ($installEOC) {
         Copy-Item $serverBat (Join-Path $eocDest 'start_eoc_server.bat')  -Force
         Write-OK "Copied: start_eoc_server.bat"
     }
-    $serverCmd = Join-Path $RepoRoot 'eoc\start_eoc_server.command'   # macOS launcher, carried along for a Mac EOC laptop
-    if (Test-Path $serverCmd) { Copy-Item $serverCmd (Join-Path $eocDest 'start_eoc_server.command') -Force }
+
+    # Only Windows hosts: retire the macOS launchers an earlier release left here
+    foreach ($old in @((Join-Path $eocDest 'start_eoc_server.command'), (Join-Path $eocDest 'simulation\start_simulator.command'))) {
+        if (Test-Path -LiteralPath $old) { Remove-Item -LiteralPath $old -Force; Write-OK "Retired: $(Split-Path $old -Leaf)" }
+    }
 
     # EMCOMM simulator (drills): installed beside the server so it can read eoc_server.py
     $simSrc = Join-Path $RepoRoot 'simulation'
     if (Test-Path (Join-Path $simSrc 'sim_server.py')) {
         $simDest = Join-Path $eocDest 'simulation'
         if (-not (Test-Path (Join-Path $simDest 'scenarios'))) { New-Item -ItemType Directory -Force (Join-Path $simDest 'scenarios') | Out-Null }
-        foreach ($n in @('sim_server.py', 'engine.py', 'orgpack.py', 'privacy.py', 'drillconfig.py', 'community.py', 'scenario_check.py', 'index.html', 'README.md', 'start_simulator.bat', 'start_simulator.command')) {
+        foreach ($n in @('sim_server.py', 'engine.py', 'orgpack.py', 'privacy.py', 'drillconfig.py', 'community.py', 'scenario_check.py', 'index.html', 'README.md', 'start_simulator.bat')) {
             $p = Join-Path $simSrc $n
             if (Test-Path $p) { Copy-Item $p (Join-Path $simDest $n) -Force }
         }
@@ -813,7 +816,7 @@ if ($installWorker -and $installWinlink) {
 if ($browser) {
     Write-Host "  Browser: $(Split-Path $browser -Leaf)" -ForegroundColor Gray
 } else {
-    Write-Warn "No browser detected. Install Chrome or Edge before using the forms."
+    Write-Warn "No browser detected. Install one before using the forms."
 }
 Write-Host ""
 

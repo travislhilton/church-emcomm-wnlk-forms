@@ -89,7 +89,7 @@ def main(argv):
         import playwright  # noqa: F401
         say('PASS', 'Playwright found (WebKit tests)')
     except ImportError:
-        say('NOTE', 'no Playwright: test_offline_webkit.py will not run here')
+        say('NOTE', 'no Playwright: test_offline_webkit.py and test_browsers.py will not run here')
 
     if platform.system() != 'Windows':
         vm = next((h for h in ('w9tlh-3',) if h in _ssh_hosts()), None)
@@ -113,7 +113,7 @@ def run_tests():
     print()
     env = dict(__import__('os').environ, PYTHONIOENCODING='utf-8')
     suites = [['test_acronyms.py'], ['test_public_files.py'], ['test_example.py'], ['test_sim.py'], ['test_training_samples.py'],
-              ['test_phone_api.py', '--ports=8180,8181'], ['test_offline_webkit.py']]
+              ['test_phone_api.py', '--ports=8180,8181'], ['test_offline_webkit.py'], ['test_browsers.py']]
     for s in suites:
         r = subprocess.run([sys.executable, str(ROOT / 'testing' / s[0]), *s[1:]], cwd=ROOT, env=env, capture_output=True, text=True, encoding='utf-8', errors='replace')
         last = next((ln for ln in reversed((r.stdout + '\n' + r.stderr).splitlines()) if ln.strip()), '(no output)')

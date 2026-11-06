@@ -73,7 +73,7 @@ One naming exception: the Work Crew Log's Winlink Initial template is `templates
 | Portal and phone forms as GitHub Pages serves them | from the repo root: `python -m http.server 9877 --bind 0.0.0.0` → `http://<LAN IP>:9877/forms/` (the offline app and GPS, Global Positioning System, location need https or `localhost`) |
 | Deck | `http://<LAN IP>:9877/deck/index.html` |
 | EMCOMM simulator (drills) | `python simulation/sim_server.py --data simulation/example/juniper-plains` (the invented example) → `http://<LAN IP>:8090/`; needs an EOC server with a drill event open. Installed by role 3 under `EOC Message Center\simulation\` (`start_simulator.bat`). A real community's organization pack and map dataset come from `secure data/` at run time (see `simulation/README.md`) |
-| On a Mac | the same commands; `eoc/start_eoc_server.command`, `simulation/start_simulator.command` and `installer/install.sh` are the launchers (kept with LF, line feed, line endings by `.gitattributes`; `bash -n` them after editing). Winlink Express needs a Windows VM (virtual machine). |
+| On a Mac | development only, the same commands. A Mac cannot host the system or install it: only Windows hosts, because Winlink Express needs Windows |
 | Cards → PDFs | `python training/build-quick-ref-pdfs.py` |
 | After editing the app module | `python installer/sync-app-module.py` |
 | After editing an Initial template | `python installer/make-viewers.py` |

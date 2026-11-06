@@ -246,10 +246,12 @@ BR = importlib.util.module_from_spec(brl); brl.loader.exec_module(BR)
 shipped = BR.shared_files()
 check('the release ships git\'s file list: no .DS_Store, no __pycache__, no drill runs, every listed file present',
       len(shipped) > 100 and not [n for n in shipped if '.DS_Store' in n or '__pycache__' in n or '/runs/' in n] and all((REPO / n).is_file() for n in shipped + BR.ZIP_ONLY))
+check('only Windows hosts: no installer or launcher for a platform that cannot run Winlink ships or stays in the repository',
+      not [n for n in subprocess.run(['git', 'ls-files', '--cached', '--others', '--exclude-standard'], cwd=REPO, capture_output=True, text=True).stdout.splitlines() + shipped + BR.ZIP_ONLY if n.endswith(('.command', 'install.sh')) and (REPO / n).exists()])
 check('every simulator program file is in the release',
       {n for n in subprocess.run(['git', 'ls-files', 'simulation/*.py'], cwd=REPO, capture_output=True, text=True).stdout.split() if n.count('/') == 1} <= set(shipped))
 check('a Windows script ships with CRLF even from an LF checkout, and nothing else is rewritten',
-      b'\r\n' in BR.read_for_release('installer/install.bat') and b'\r\n' not in BR.read_for_release('installer/install.sh'))
+      b'\r\n' in BR.read_for_release('installer/install.bat') and b'\r\n' not in BR.read_for_release('eoc/eoc_server.py'))
 
 # The README promises Python 3.8, and Python 3.12 relaxed f-strings: a newer Python runs code an older one refuses to
 # start. An older Python finds this by compiling; a newer one needs its tokenizer to look inside the f-strings.
@@ -321,7 +323,7 @@ cl_bad, cl_ids = checklist_problems((REPO / 'testing' / 'TEST_CHECKLIST.md').rea
 check('every checklist row links a reference card and a README section, and every link resolves', len(cl_ids) > 200 and not cl_bad, cl_bad[:6])
 check('no two checklist rows share an ID', len(cl_ids) == len(set(cl_ids)), sorted({i for i in cl_ids if cl_ids.count(i) > 1}))
 
-# The installers retire old practice forms. The real function from each installer runs on scratch folders, never Winlink's.
+# The installer retires old practice forms. Its real function runs on scratch folders, never Winlink's.
 def practice_cases(root):
     src, pub, priv = root / 'src', root / 'pub', root / 'priv'
     for d in (src, pub, priv):
@@ -346,20 +348,8 @@ def practice_fn(rel):
     return m.group(1).replace('\r\n', '\n') if m else ''
 
 
-git_exe = shutil.which('git')
-# Git for Windows: git.exe is in cmd\ or mingw64\bin\, bash.exe in bin\ at its root (a bare `bash` may be the Windows Subsystem for Linux)
-bash = shutil.which('bash')
-if os.name == 'nt' and git_exe:
-    bash = next((str(d / 'bin' / 'bash.exe') for d in Path(git_exe).resolve().parents if (d / 'bin' / 'bash.exe').is_file()), None)
 ps = shutil.which('powershell') or shutil.which('pwsh')
 ran = 0
-if bash and Path(bash).is_file():
-    root = tmp / 'practice-sh'; practice_cases(root); ran += 1
-    with open(root / 'run.sh', 'w', encoding='utf-8', newline='\n') as fh:
-        fh.write('set -u\n' + practice_fn('installer/install.sh') + 'sync_practice src pub\nsync_practice src priv\nexit 0\n')
-    r = subprocess.run([bash, 'run.sh'], cwd=str(root), capture_output=True, text=True, encoding='utf-8', errors='replace')
-    good, seen = practice_ok(root)
-    check('install.sh retires old practice forms, keeps other files, leaves a private set alone', r.returncode == 0 and good, (r.stdout + r.stderr, seen))
 if ps:
     root = tmp / 'practice-ps'; practice_cases(root); ran += 1
     with open(root / 'run.ps1', 'w', encoding='utf-8', newline='\r\n') as fh:
@@ -368,7 +358,7 @@ if ps:
     r = subprocess.run([ps, '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', 'run.ps1'], cwd=str(root), capture_output=True, text=True, encoding='utf-8', errors='replace')
     good, seen = practice_ok(root)
     check('install.ps1 retires old practice forms, keeps other files, leaves a private set alone', r.returncode == 0 and good, (r.returncode, r.stdout + r.stderr, seen))
-check('the practice-form retirement ran under at least one installer here', ran >= 1, ran)
+check('the practice-form retirement ran here', ran >= 1, ran)
 shutil.rmtree(tmp, ignore_errors=True)
 
 print(f'\n{sum(res)}/{len(res)} passed')

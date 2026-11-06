@@ -205,7 +205,8 @@ def main(argv, check=None):
     results = []
     for name, page in pages:
         hp, pp = out / f'{name}.html', out / f'{name}.pdf'
-        hp.write_text(page, encoding='utf-8')
+        with open(hp, 'w', encoding='utf-8', newline='\n') as fh:
+            fh.write(page)
         if pp.exists():
             pp.unlink()
         qrc.print_pdf(hp, pp)

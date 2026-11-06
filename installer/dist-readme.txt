@@ -36,7 +36,7 @@ WHAT GETS INSTALLED
     the message text carries the same report for anyone reading it as email.
 
 [3] EOC Operator (Satellite, Stake or Council / Area EOC) -- everything in [2] plus:
-  - EOC (Emergency Operations Center) Message Center (opens in Chrome or Edge)
+  - EOC (Emergency Operations Center) Message Center (opens in any browser)
     Same software at a Satellite EOC (ward building), the Stake Center EOC and
     a Council / Area EOC; each one rolls its records up to the EOC above it
   - EOC network server for multi-operator mode (needs Python 3)
@@ -66,10 +66,8 @@ DEPENDENCIES
 
 TROUBLESHOOTING
 ---------------
-macOS / Linux: open Terminal in the extracted folder and run  bash installer/install.sh
-    (same three roles; Python 3 from python.org for the EOC server and simulator).
-    Winlink Express itself runs only on Windows: the templates are saved for your
-    Windows Winlink machine or VM.
+Mac, Linux, Chromebook, Android, iPhone: nothing to install. Use the portal in any browser.
+    Only a Windows computer can host the EOC server or the simulator, or run Winlink Express.
 
 If Windows blocks install.bat after downloading from the internet:
   Right-click this ZIP file -> Properties -> Unblock -> OK
