@@ -65,14 +65,14 @@ must carry that disclaimer.
 
 1. Make the change. Regenerate what is generated (viewers, app module, card PDFs, deck ZIP).
 2. Test it for real (see CONTRIBUTING.md → Testing): `python testing/test_acronyms.py` for any text change, `python testing/test_phone_api.py`, the browser checks for the parts you touched, deck slides and card sides measured when edited.
-3. Update `testing/TEST_CHECKLIST.md` (the test rows and a Run Log line) and `CONTINUE.md` (what changed, what is open) **in the same commit**.
+3. Update `testing/TEST_CHECKLIST.md` (the test rows, each with its Reference links to a card and a README section, the current status, and a Run Log line) and `CONTINUE.md` (what changed, what is open) **in the same commit**.
 4. Rebuild: `python installer/build-release.py`, `python installer/build-deck-zip.py` when `deck/` changed. Run the installer role you touched and compare installed files with the repo.
 5. Commit with a message file (`git commit -F msg.txt`; PowerShell 5.1 mangles quotes). Work on a branch and open a pull request unless you are the maintainer.
 6. **Maintainer only**: `gh release upload v1.0 … --clobber` (list the assets afterwards: an HTTP 500 can delete the old asset without uploading the new one), move the `v1.0` tag, push.
 
 ## Development machines
 
-Claude sessions run on the Windows 11 VM (maintainer, 2026-11-04); either Mac also works. Run `python dev/check-dev-setup.py` first on a new machine, and `--tests` on a Mac before each release: a Mac's older Python finds what the VM's newer one hides. Rules and steps: CONTRIBUTING.md section 2.
+Claude sessions run on the Windows 11 VM (maintainer, 2026-11-04). **Testing is on Windows only** (maintainer, 2026-11-06): the system depends on Winlink Express, which runs only on Windows, so a Mac run is not part of a release. Phones stay in scope. Run `python dev/check-dev-setup.py` first on a new machine. The VM's newer Python hides what an older one refuses: see the older-Python gotcha below. Rules and steps: CONTRIBUTING.md section 2.
 
 - **Only one session at a time in one folder.** The MacBook Pro's Windows VM sees the Mac's own folder as `X:`, so both use the same files and the same `.git`. Another machine has its own clone and syncs through git; `secure data/` never goes through git.
 - **Still needs Windows:** Winlink Express checks, the installer roles, and card PDFs and deck measurements (their layout is set for Windows fonts). A Mac reaches the VM by Secure Shell (`ssh w9tlh-3`).

@@ -302,6 +302,25 @@ op = [f'{n}:{ln}' for n in subprocess.run(['git', 'ls-files', '*.py'], cwd=REPO,
       for ln in older_python_problems((REPO / n).read_text(encoding='utf-8-sig'))]
 check('every Python file runs on the promised Python 3.8: no write_text(newline=), every script path resolved', not op, op[:5])
 
+# Every checklist row links its card and its README section; every link resolves; no two rows share an ID.
+def checklist_problems(text, readme):
+    rows = re.findall(r'^\| ([A-Z]\d+[a-z]?) \|(.*)$', text, re.M)
+    defs = dict(re.findall(r'^\[([a-z0-9-]+)\]: (\S+)$', text, re.M))
+    heads = set()
+    for h in re.findall(r'^#{1,4} (.+)$', readme, re.M):
+        heads.add(re.sub(r'[^\w\- ]', '', h.replace('*', '').strip().lower()).replace(' ', '-'))
+    bad = [i for i, r in rows if not re.search(r'\[Card \d+\]\[c\d+\]', r) or not re.search(r'\]\[r-[a-z0-9]+\]', r)]
+    used = {u for _, r in rows for u in re.findall(r'\]\[([a-z0-9-]+)\]', r)}
+    bad += [u for u in used if u not in defs]
+    bad += [u for u, url in defs.items() if u.startswith('r-') and url.split('#')[-1] not in heads]
+    bad += [u for u, url in defs.items() if u.startswith('c') and not (REPO / url.split('/blob/main/')[-1]).is_file()]
+    return bad, [i for i, _ in rows]
+
+
+cl_bad, cl_ids = checklist_problems((REPO / 'testing' / 'TEST_CHECKLIST.md').read_text(encoding='utf-8'), (REPO / 'README.md').read_text(encoding='utf-8'))
+check('every checklist row links a reference card and a README section, and every link resolves', len(cl_ids) > 200 and not cl_bad, cl_bad[:6])
+check('no two checklist rows share an ID', len(cl_ids) == len(set(cl_ids)), sorted({i for i in cl_ids if cl_ids.count(i) > 1}))
+
 # The installers retire old practice forms. The real function from each installer runs on scratch folders, never Winlink's.
 def practice_cases(root):
     src, pub, priv = root / 'src', root / 'pub', root / 'priv'
@@ -328,7 +347,10 @@ def practice_fn(rel):
 
 
 git_exe = shutil.which('git')
-bash = str(Path(git_exe).resolve().parent.parent / 'bin' / 'bash.exe') if os.name == 'nt' and git_exe else shutil.which('bash')
+# Git for Windows: git.exe is in cmd\ or mingw64\bin\, bash.exe in bin\ at its root (a bare `bash` may be the Windows Subsystem for Linux)
+bash = shutil.which('bash')
+if os.name == 'nt' and git_exe:
+    bash = next((str(d / 'bin' / 'bash.exe') for d in Path(git_exe).resolve().parents if (d / 'bin' / 'bash.exe').is_file()), None)
 ps = shutil.which('powershell') or shutil.which('pwsh')
 ran = 0
 if bash and Path(bash).is_file():
