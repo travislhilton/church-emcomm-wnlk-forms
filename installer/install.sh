@@ -55,6 +55,28 @@ for n in "$OLD Forms" "$OLD Quick Reference Cards" "$OLD Simulator.command" \
 done
 mkdir -p "$BASE"
 
+# PRACTICE-SYNC:BEGIN
+# Install the practice forms into one folder and retire the ones an earlier release left there. Only the generator's
+# own numbered files go; anything else a person put here stays. A private set (its README says so) is left untouched.
+sync_practice() {  # sync_practice <source folder> <dest folder>
+  local src=$1 dest=$2 old name
+  mkdir -p "$dest"
+  if [ -f "$dest/README.txt" ] && grep -qF 'keep this folder private' "$dest/README.txt"; then
+    echo "  !!  A private practice set is in $dest : left as it is"
+    return 1
+  fi
+  for old in "$dest"/Practice*; do
+    [ -f "$old" ] || continue
+    name=$(basename "$old")
+    case "$name" in
+      "Practice "[0-9]*" - "*|Practice_[0-9]*_*)
+        if [ ! -e "$src/$name" ]; then rm -f "$old" && echo "  OK  Retired old practice file: $name"; fi ;;
+    esac
+  done
+  cp -f "$src"/* "$dest/"
+}
+# PRACTICE-SYNC:END
+
 copy() {  # copy <src relative to package> <dest>
   if [ -f "$HERE/$1" ]; then mkdir -p "$(dirname "$2")"; cp -f "$HERE/$1" "$2"; echo "  OK  $(basename "$2")"; else echo "  !!  missing in this package: $1"; fi
 }
@@ -88,11 +110,9 @@ if [ "$WINLINK" = "1" ]; then
     copy "$f" "$T/$(basename "$f")"
   done
   if [ -d "$HERE/training/practice-forms" ]; then
-    mkdir -p "$BASE/Winlink Templates/Church of Jesus Christ EMCOMM Practice"
-    cp -f "$HERE"/training/practice-forms/* "$BASE/Winlink Templates/Church of Jesus Christ EMCOMM Practice/" && echo "  OK  Practice forms (pre-filled, THIS IS AN EXERCISE)"
+    sync_practice "$HERE/training/practice-forms" "$BASE/Winlink Templates/Church of Jesus Christ EMCOMM Practice" && echo "  OK  Practice forms (pre-filled, THIS IS AN EXERCISE)"
     # training copy beside the other EMCOMM folders, so trainers find the forms and their README
-    mkdir -p "$BASE/Training/Winlink Practice Forms"
-    cp -f "$HERE"/training/practice-forms/* "$BASE/Training/Winlink Practice Forms/" && echo "  OK  Training/Winlink Practice Forms (same forms + README)"
+    sync_practice "$HERE/training/practice-forms" "$BASE/Training/Winlink Practice Forms" && echo "  OK  Training/Winlink Practice Forms (same forms + README)"
   fi
   if [ -d "$HERE/training/scenario-samples" ]; then
     # retire the public sets an earlier release installed and this one no longer ships (same rule as install.ps1);

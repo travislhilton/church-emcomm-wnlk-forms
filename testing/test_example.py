@@ -302,5 +302,52 @@ op = [f'{n}:{ln}' for n in subprocess.run(['git', 'ls-files', '*.py'], cwd=REPO,
       for ln in older_python_problems((REPO / n).read_text(encoding='utf-8-sig'))]
 check('every Python file runs on the promised Python 3.8: no write_text(newline=), every script path resolved', not op, op[:5])
 
+# The installers retire old practice forms. The real function from each installer runs on scratch folders, never Winlink's.
+def practice_cases(root):
+    src, pub, priv = root / 'src', root / 'pub', root / 'priv'
+    for d in (src, pub, priv):
+        d.mkdir(parents=True)
+    for n in ('Practice 1 - Report - New Ward.txt', 'Practice_1_Report_New_Ward.html', 'README.txt', 'Viewer.html'):
+        (src / n).write_text('new', encoding='utf-8')
+    for n in ('Practice 1 - Report - New Ward.txt', 'Practice 7 - Report - Old Ward.txt', 'Practice_7_Report_Old_Ward.html', 'My notes.txt', 'Practice plan.txt'):
+        (pub / n).write_text('old', encoding='utf-8')
+    (priv / 'README.txt').write_text('built over YOUR directory export (pseudonymized contacts) - keep this folder private', encoding='utf-8')
+    (priv / 'Practice 3 - Report - Real Ward.txt').write_text('private', encoding='utf-8')
+
+
+def practice_ok(root):
+    pub = {p.name: p.read_text(encoding='utf-8') for p in (root / 'pub').iterdir()}
+    priv = {p.name: p.read_text(encoding='utf-8') for p in (root / 'priv').iterdir()}
+    want = {'Practice 1 - Report - New Ward.txt': 'new', 'Practice_1_Report_New_Ward.html': 'new', 'README.txt': 'new', 'Viewer.html': 'new', 'My notes.txt': 'old', 'Practice plan.txt': 'old'}
+    return pub == want and len(priv) == 2 and priv['Practice 3 - Report - Real Ward.txt'] == 'private' and 'private' in priv['README.txt'], (pub, priv)
+
+
+def practice_fn(rel):
+    m = re.search(r'# PRACTICE-SYNC:BEGIN(.*?)# PRACTICE-SYNC:END', (REPO / rel).read_bytes().decode('utf-8'), re.S)
+    return m.group(1).replace('\r\n', '\n') if m else ''
+
+
+git_exe = shutil.which('git')
+bash = str(Path(git_exe).resolve().parent.parent / 'bin' / 'bash.exe') if os.name == 'nt' and git_exe else shutil.which('bash')
+ps = shutil.which('powershell') or shutil.which('pwsh')
+ran = 0
+if bash and Path(bash).is_file():
+    root = tmp / 'practice-sh'; practice_cases(root); ran += 1
+    with open(root / 'run.sh', 'w', encoding='utf-8', newline='\n') as fh:
+        fh.write('set -u\n' + practice_fn('installer/install.sh') + 'sync_practice src pub\nsync_practice src priv\nexit 0\n')
+    r = subprocess.run([bash, 'run.sh'], cwd=str(root), capture_output=True, text=True, encoding='utf-8', errors='replace')
+    good, seen = practice_ok(root)
+    check('install.sh retires old practice forms, keeps other files, leaves a private set alone', r.returncode == 0 and good, (r.stdout + r.stderr, seen))
+if ps:
+    root = tmp / 'practice-ps'; practice_cases(root); ran += 1
+    with open(root / 'run.ps1', 'w', encoding='utf-8', newline='\r\n') as fh:
+        fh.write("function Write-OK { param($m) }\nfunction Write-Warn { param($m) }\n" + practice_fn('installer/install.ps1')
+                 + "$a = Sync-PracticeForms (Join-Path $PWD 'src') (Join-Path $PWD 'pub')\n$b = Sync-PracticeForms (Join-Path $PWD 'src') (Join-Path $PWD 'priv')\nif ($a -ne 4 -or $b -ne -1) { exit 3 }\n")
+    r = subprocess.run([ps, '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', 'run.ps1'], cwd=str(root), capture_output=True, text=True, encoding='utf-8', errors='replace')
+    good, seen = practice_ok(root)
+    check('install.ps1 retires old practice forms, keeps other files, leaves a private set alone', r.returncode == 0 and good, (r.returncode, r.stdout + r.stderr, seen))
+check('the practice-form retirement ran under at least one installer here', ran >= 1, ran)
+shutil.rmtree(tmp, ignore_errors=True)
+
 print(f'\n{sum(res)}/{len(res)} passed')
 sys.exit(0 if all(res) else 1)

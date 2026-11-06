@@ -54,6 +54,31 @@ function Write-Warn { param([string]$msg) Write-Host "  !!  $msg" -ForegroundCol
 function Write-Err  { param([string]$msg) Write-Host "  XX  $msg" -ForegroundColor Red }
 function Write-Info { param([string]$msg) Write-Host "    $msg"   -ForegroundColor Gray }
 
+# PRACTICE-SYNC:BEGIN
+# Install the practice forms into one folder and retire the ones an earlier release left there. Only the generator's
+# own numbered files go; anything else a person put here stays. A private set (its README says so) is left untouched.
+function Sync-PracticeForms {
+    param([string]$Source, [string]$Dest)
+    New-Item -ItemType Directory -Force $Dest | Out-Null
+    $readme = Join-Path $Dest 'README.txt'
+    if ((Test-Path $readme) -and (Select-String -Path $readme -Pattern 'keep this folder private' -SimpleMatch -Quiet)) {
+        Write-Warn "A private practice set is in $Dest : left as it is"
+        return -1
+    }
+    $retired = 0
+    foreach ($old in Get-ChildItem $Dest -File) {
+        if ($old.Name -match '^Practice( \d+ - |_\d+_)' -and -not (Test-Path -LiteralPath (Join-Path $Source $old.Name))) {
+            try { Remove-Item -LiteralPath $old.FullName -Force -ErrorAction Stop; $retired++ }
+            catch { Write-Warn "Could not remove an old practice form (is it open?): $($old.Name)" }
+        }
+    }
+    if ($retired) { Write-OK "Retired $retired old practice files from $Dest" }
+    $n = 0
+    foreach ($pf in Get-ChildItem $Source -File) { Copy-Item -LiteralPath $pf.FullName (Join-Path $Dest $pf.Name) -Force; $n++ }
+    return $n
+}
+# PRACTICE-SYNC:END
+
 function Create-Shortcut {
     param([string]$ShortcutPath, [string]$TargetPath, [string]$Arguments = '', [string]$Description = '',
           [string]$IconLocation = '', [int]$WindowStyle = 0, [string]$WorkingDirectory = '')
@@ -606,17 +631,14 @@ if ($installWinlink) {
     $practiceSrc = Join-Path $RepoRoot 'training\practice-forms'
     if (Test-Path $practiceSrc) {
         $practiceDest = Join-Path $templateDest 'Church of Jesus Christ EMCOMM Practice'
-        New-Item -ItemType Directory -Force $practiceDest | Out-Null
-        $n = 0
-        foreach ($pf in Get-ChildItem $practiceSrc -File) { Copy-Item $pf.FullName (Join-Path $practiceDest $pf.Name) -Force; $n++ }
-        Write-OK "Practice forms: $n files (pre-filled, THIS IS AN EXERCISE) -> Church of Jesus Christ EMCOMM Practice\"
+        $n = Sync-PracticeForms $practiceSrc $practiceDest
+        if ($n -ge 0) { Write-OK "Practice forms: $n files (pre-filled, THIS IS AN EXERCISE) -> Church of Jesus Christ EMCOMM Practice\" }
 
         # A training copy in the EMCOMM folder, so trainers find the practice forms (and their
         # README) without digging into Winlink's folders, and can copy them to another station.
         $trainingDest = Join-Path $installBase 'Training\Winlink Practice Forms'
-        New-Item -ItemType Directory -Force $trainingDest | Out-Null
-        foreach ($pf in Get-ChildItem $practiceSrc -File) { Copy-Item $pf.FullName (Join-Path $trainingDest $pf.Name) -Force }
-        Write-OK "Practice forms: training copy -> $trainingDest"
+        $n = Sync-PracticeForms $practiceSrc $trainingDest
+        if ($n -ge 0) { Write-OK "Practice forms: training copy -> $trainingDest" }
         $trainingLnkDir = Join-Path ([Environment]::GetFolderPath('Desktop')) 'Church of Jesus Christ EMCOMM Forms'
         if (Test-Path $trainingLnkDir) {
             Create-Shortcut -ShortcutPath (Join-Path $trainingLnkDir 'Training - Winlink Practice Forms.lnk') `
