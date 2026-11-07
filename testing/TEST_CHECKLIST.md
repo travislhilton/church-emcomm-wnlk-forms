@@ -391,6 +391,7 @@ Automated: `python testing/test_phone_api.py` (two scratch EOC servers, 17 check
 
 | Date | Who | Sections | Notes |
 |---|---|---|---|
+| 2026-11-06 (release 2026-11-06.3) | Claude | H2, H3 | Contingency steps, voice to the Area, EMCOMM EOC icon and Browse released: tag `v1.0`, 14 assets |
 | 2026-11-06 (EOC icon, Browse) | Claude, Travis | P43–P46 | Travis on a real iPhone: the phone page told people with no app to open the app. New home-screen icon for the EOC Wi-Fi, chosen over certificates on volunteers' phones, and the full offline app offered when there is internet. Simulator Setup has Browse. WebKit on this scaled display lays a tablet out at 656 px, which found a real overflow in the simulator's no-data box, fixed |
 | 2026-11-06 (voice to the Area) | Claude | P42 | Travis: voice from the stake to the Council / Area EOC at Contingency is VHF/UHF first, HF only if that fails; reach differs by area, so each stake records its path on the PACE sheet |
 | 2026-11-06 (Contingency steps) | Claude | P42, B11 | Travis set the order: RMS Gateway, held at the gateway, local VARA FM RMS Post Office, VARA FM P2P. Terms and session names taken from Winlink Express 1.8.6.0 and its FAQ. VARA HF stays last. Not yet tested over the air |

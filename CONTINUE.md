@@ -10,9 +10,11 @@
 - **Read [CLAUDE.md](CLAUDE.md) first** (standing rules, map, change routine, gotchas) and [CONTRIBUTING.md](CONTRIBUTING.md) for how to run and test. Every test and its last result is in [testing/TEST_CHECKLIST.md](testing/TEST_CHECKLIST.md).
 - **This file is public.** Nothing about the maintainer's own community goes here. Private notes and the full history of earlier sessions are in `secure data/handoff/` on the maintainer's computers.
 - **The repository is public** and started fresh on 2026-11-05. A clone from before that date must be deleted and cloned again.
-- **Live release:** version 2026-11-06.1, tag `v1.0`, released 2026-11-06; `main` is ahead with 2026-11-06.3, committed locally and not released: the Contingency Winlink steps, VHF/UHF first for voice to the Area, the EMCOMM EOC home-screen icon, and Browse in the simulator. A release is the commit the tag names. The installer and Forms ZIP in `dist/`, the deck ZIP and the card PDFs are all release assets. If a Pages build sticks at `building`, ask for a rebuild: `gh api -X POST repos/travislhilton/church-emcomm-wnlk-forms/pages/builds`.
+- **Live release:** version 2026-11-06.3, tag `v1.0`, released 2026-11-06. A release is the commit the tag names. The installer and Forms ZIP in `dist/`, the deck ZIP and the card PDFs are all release assets. If a Pages build sticks at `building`, ask for a rebuild: `gh api -X POST repos/travislhilton/church-emcomm-wnlk-forms/pages/builds`.
 - **Three levels** (Travis, 2026-11-06): any browser on any device; one Windows host laptop per EOC for the server and the simulator; the Windows Winlink station. "If the platform can't run Winlink (Windows only) then it can't host." A Mac is a development machine only; no Mac installer or launcher ships.
 - **The Mac Studio's clone:** replace it, because it holds the old history. The steps are in Travis's Google Drive, *Mac Studio - replace EMCOMM clone commands.txt*.
+
+- **Decisions for Travis:** does VARA HF stay last in the Contingency steps, after P2P, given that HF can reach the CMS and steps 3 and 4 cannot; and should Winlink's Vara FM Radio-only session join the steps (it needs a Message Pickup Station registered before an outage)?
 
 ## Open work, in the order it is worth doing
 
