@@ -112,7 +112,7 @@ The run is saved beside the pack every 30 seconds; **Resume** on the Session tab
 
 ### The Setup tab
 
-1. **Organization pack**: the export root or an `orgpack.json`; privacy mode (pseudonymized by
+1. **Organization pack**: the export root or an `orgpack.json`. Press **Browse…** to find the folder on this laptop: folders that hold a pack are marked, and a participant package must be unzipped first. Browse works only on the laptop that runs the simulator, never on a phone on the Wi-Fi; privacy mode (pseudonymized by
    default). **Real contacts** open a consent form: who consented (normally the Stake President),
    the date, who records it, and the promise that nothing from the run leaves the room. The
    server refuses real mode without it; the consent is shown on the red badge, stamped into the

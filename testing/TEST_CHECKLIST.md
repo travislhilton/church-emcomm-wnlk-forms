@@ -11,16 +11,16 @@ This file is the single source of truth for what has and has not been verified.
 
 **Three levels** (maintainer, 2026-11-06): any browser on any device, one Windows host laptop per EOC, and the Windows Winlink station. A platform that cannot run Winlink Express cannot host. Hosting and Winlink are tested on Windows; every browser client is in scope.
 
-## Current status (2026-11-06, version 2026-11-06.1)
+## Current status (2026-11-06, version 2026-11-06.3)
 
 | State | Rows |
 |---|---|
-| Passed | 183 |
+| Passed | 187 |
 | Passed by Claude, a real device or a person still to confirm | 21 |
-| Not run yet, or failed and waiting for a real device | 27 |
+| Not run yet, or failed and waiting for a real device | 29 |
 | Skipped by decision | 1 |
 
-Latest automated run on the Windows VM, Python 3.8 and 3.14, both READY: acronyms 41/41, public files 5/5, example 45/45, simulator 187/187, phone API 70/70. Training samples 50/50, WebKit 37/37 and browsers 174/174 ran on 3.14 (Python 3.8 here has no Playwright). These suites cover the rows that name them; the Last run column of such a row is the last time it was checked by hand or changed.
+Latest automated run on the Windows VM, Python 3.8 and 3.14, both READY: acronyms 41/41, public files 5/5, example 45/45, simulator 190/190, phone API 74/74. Training samples 50/50, WebKit 37/37 and browsers 186/186 ran on 3.14 (Python 3.8 here has no Playwright). These suites cover the rows that name them; the Last run column of such a row is the last time it was checked by hand or changed.
 
 **Reference column:** each row links the [quick reference card][c-all] and the README section that describe what it tests. A new row needs both; `test_example.py` checks it.
 
@@ -69,6 +69,7 @@ Latest automated run on the Windows VM, Python 3.8 and 3.14, both READY: acronym
 | B8 | Received message opens as the form | on the receiving station open a received Church message (or your own sent copy) | Winlink opens `…_Viewer.html` filled in — not a text editor; green "Received via Winlink from <call>" banner; Print / Copy plain text / Save .txt buttons; "Plain text as sent" expands | — | ⏳ 🔒 Travis | [Card 2][c2] · [HAM Field Operator][r-role2] |
 | B9 | Loaded-form values reach the message | Load Data phone-saved file (e.g. ward *the city 15th*, type *Earthquake*) → Submit | message text and subject contain the loaded values; Source line says *Field worker device GPS (from loaded form)* when the file had GPS | 2026-10-27 ❌ → fixed 2026-10-28 (D9) | ⏳ 🔒 Travis — re-run | [Card 2][c2] · [HAM Field Operator][r-role2] |
 | B10 | Form server stops on a stray request | Open a template, reload an old `localhost:8001` tab (or any GET to that port), then Submit | Chrome shows *localhost refused to connect*; Winlink's `RMS Express <date>.log` has *Listening for web browser connection on localhost:8001* → *Standard Forms submission rejected: The form server accepts only POST submissions* → *Listen for web response was aborted*. Not a form defect (the templates make no request of their own); README [2] B tells the operator how to recover (close the message and the old tabs, open the template again) | 2026-10-30 | ✅ Travis (seen live, log read) | [Card 2][c2] · [HAM Field Operator][r-role2] |
+| B11 | Each Contingency Winlink step, over the air | Step 1 Vara FM Winlink to a gateway; step 2 ask the sysop to test hold mode, or note "No CMS available"; step 3 Vara FM RMS Post Office, Send as Post Office, and the other EOC collects; step 4 Vara FM P2P, Send as Peer-to-Peer; a mismatched Send as stays in the Outbox | each message arrives and the EOC watcher files it, including Post Office and Peer-to-Peer mail | — | ⏳ 🔒 Travis | [Card 2][c2] · [Card 3][c3] · [PACE plan][r-pace] · [HAM Field Operator][r-role2] |
 
 ## C. Worker forms (browser / phone)
 
@@ -351,6 +352,11 @@ Automated: `python testing/test_phone_api.py` (two scratch EOC servers, 17 check
 | P39 | Only Windows hosts | `test_example.py`; role 3 install | no `.command` launcher or `install.sh` in the repository or the release; the installer retires old copies; the docs give the three levels | 2026-11-06 | ✅ Claude | [Card 3][c3] · [Card 5][c5] · [Which device][r-which] |
 | P40 | A real Android phone or tablet | Chrome on Android: portal, install the app, fill a form, Save to Outbox, Send to EOC, the phone page, `/results`; L9 and L12 cover the link and the camera | every step works with no sign-in | — | ⏳ 🔒 Travis | [Card 1][c1] · [Card 9][c9] · [Which device][r-which] |
 | P41 | A Mac, Linux computer or Chromebook joins by browser | On the EOC Wi-Fi: open the Message Center, the wall, a form, the simulator's `/results` and `/debrief` from each | every page works; nothing asks to install | — | ⏳ 🔒 Travis | [Card 3][c3] · [Card 9][c9] · [Other devices][r-other] |
+| P42 | The Contingency Winlink steps match Winlink's own terms | Session names read from Winlink Express 1.8.6.0, behaviour from its Help and FAQ; PACE plan §5, README, card 2, deck, Message Center, Comms Sheet, scenario | five steps in one order everywhere; each with its session and Send as; Post Office and P2P described as not forwarded | 2026-11-06 | ✅ Claude | [Card 2][c2] · [PACE plan][r-pace] · [HAM Field Operator][r-role2] |
+| P43 | No app at the EOC: the EMCOMM EOC home-screen icon | `test_phone_api.py` (manifest, icon, only listed icons served); `test_browsers.py` in three engines (steps shown, the Wi-Fi-only warning, the full offline app or the no-internet advice, steps dropped when opened from the icon) | anyone can report with no app; the icon's limit is stated; a phone with internet is offered the full offline app | 2026-11-06 | ✅ Claude | [Card 1][c1] · [Card 9][c9] · [Phones on the EOC Wi-Fi][r-phones] |
+| P44 | A real iPhone adds the EMCOMM EOC icon | iPhone on the EOC Wi-Fi: scan the wall QR code in Safari → Share → Add to Home Screen → open it → New Disaster Report → Send to EOC; turn Wi-Fi off and confirm the icon does not open; with internet, follow Install the full offline app | the icon opens the phone page without Safari's bar; the report is filed; away from the Wi-Fi the icon fails as the page says | — | ⏳ 🔒 Travis | [Card 1][c1] · [Phones on the EOC Wi-Fi][r-phones] |
+| P45 | Browse finds the organization pack | `test_browsers.py` in three engines; `test_sim.py` | folders listed, a pack marked, Use this folder fills the path; a missing path opens its nearest real parent; a device on the Wi-Fi is refused | 2026-11-06 | ✅ Claude | [Card 5][c5] · [Simulator][r-sim] |
+| P46 | EOC discovery between two real computers | The Send to EOC chooser on W9TLH-3 listed the EOC running on W9TLH-7 | a second EOC on the Wi-Fi is offered by name and address | 2026-11-06 | ✅ Claude (seen during `test_browsers.py`) | [Card 3][c3] · [More than one EOC][r-multi] |
 
 ## Still open (summary of every ⏳ / 🔒 above)
 
@@ -365,6 +371,7 @@ Automated: `python testing/test_phone_api.py` (two scratch EOC servers, 17 check
 - [ ] B6 — end-to-end RF send/receive
 - [ ] B8 — received Church message opens as the form (viewer), not a text file
 - [ ] B9 — loaded-form values appear in the sent message
+- [ ] B11 — each Contingency step over the air, and the EOC files what arrives
 - [ ] C7 — real iPhone GPS auto-capture from https portal
 - [ ] C8 — iPhone Share → Mail delivers `.txt`
 - [ ] C10 — iPhone Save to My Phone asks where (share sheet → Save to Files)
@@ -374,6 +381,7 @@ Automated: `python testing/test_phone_api.py` (two scratch EOC servers, 17 check
 - [ ] I1–I7 — PACE drill at every level, step-up confirmation, stake PACE sheet filled in (now incl. §6d EOC assignments)
 - [ ] J4 — live Satellite → Stake → Area roll-up drill by email and Winlink attachment
 - [ ] Rows passed by Claude, a real device or a person still to confirm: A12, B1, B2, F22, F26, F27, L3, L8, L9, L15, L16, L17, L18, L19, N32, N34, N38, P4, P19, P23, P24
+- [ ] P44 — a real iPhone adds the EMCOMM EOC icon
 - [ ] P40, P41 — a real Android device; a Mac, Linux computer or Chromebook joining by browser
 - [ ] L3, L8, L9, L11, L12 — real iPhone and Android: phone page Send to EOC, the installed Church of Jesus Christ EMCOMM app offline (forms, GPS, Outbox), camera scan of the wall QR, the iPhone "did you see the green screen?" step
 
@@ -383,6 +391,9 @@ Automated: `python testing/test_phone_api.py` (two scratch EOC servers, 17 check
 
 | Date | Who | Sections | Notes |
 |---|---|---|---|
+| 2026-11-06 (EOC icon, Browse) | Claude, Travis | P43–P46 | Travis on a real iPhone: the phone page told people with no app to open the app. New home-screen icon for the EOC Wi-Fi, chosen over certificates on volunteers' phones, and the full offline app offered when there is internet. Simulator Setup has Browse. WebKit on this scaled display lays a tablet out at 656 px, which found a real overflow in the simulator's no-data box, fixed |
+| 2026-11-06 (voice to the Area) | Claude | P42 | Travis: voice from the stake to the Council / Area EOC at Contingency is VHF/UHF first, HF only if that fails; reach differs by area, so each stake records its path on the PACE sheet |
+| 2026-11-06 (Contingency steps) | Claude | P42, B11 | Travis set the order: RMS Gateway, held at the gateway, local VARA FM RMS Post Office, VARA FM P2P. Terms and session names taken from Winlink Express 1.8.6.0 and its FAQ. VARA HF stays last. Not yet tested over the air |
 | 2026-11-06 (release 2026-11-06.1) | Claude | H2, H3 | Host rule, device table, cards and deck released: tag `v1.0`, 14 assets |
 | 2026-11-06 (host rule) | Claude | P38–P41, N25, A1, A2, A6 | Travis: "If the platform can't run Winlink (Windows only) then it can't host." Mac installer and launchers removed, and the Windows installer retires old copies. README has a device table; Requirements no longer say Chrome or Edge or Windows for every role; cards 3, 5, 6, 7, 8 and 9 and the deck say any device; `test_browsers.py` new, 174/174, with Send to EOC and Save to Outbox pressed in Chromium, Firefox and WebKit. Card PDFs rebuilt, 2 pages each and 20 in all, tallest side 951.5 px; install slide viewed; the card generators now write LF on Windows. Role 3 reinstalled on the VM: old launchers retired, 17/17 install checks, the 35 protected files unchanged |
 | 2026-11-06 (checklist) | Claude | P36, P37, A6, H2, H3, P10, N25 | Reference column on every row (card and README section); five duplicate IDs renumbered (A13, F29, F30, F31, L19); Mac runs dropped, testing is Windows only; open list rebuilt from the rows. The saved report in the installed Sample Winlink Forms folder removed at Travis's request, the folder kept |

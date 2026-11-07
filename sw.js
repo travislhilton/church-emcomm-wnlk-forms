@@ -6,7 +6,7 @@
    cached copy. Bump CACHE on every change to this file or the list below.
    Every file in FILES must exist in the repository (testing/test_offline_webkit.py checks it): an update
    that cannot get a file, and has no older copy of it, does not install and the old version stays. */
-var CACHE = 'emcomm-app-2026-11-06.1';
+var CACHE = 'emcomm-app-2026-11-06.3';
 var FILES = [
   'forms/index.html',
   'forms/comms.html',

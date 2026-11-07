@@ -111,6 +111,9 @@ try:
         engines = {'Chromium': lambda: p.chromium.launch(channel='chrome'), 'Firefox': lambda: p.firefox.launch(), 'WebKit': lambda: p.webkit.launch()}
         for name, launch in engines.items():
             b = launch()
+            ctx, pg, _ = open_page(b, 'tablet', f'{WEB}/forms/index.html')
+            print(f'{name}: a {SIZES["tablet"][0]} px tablet lays out at {pg.evaluate("window.innerWidth")} px here (a scaled Windows display narrows WebKit)', flush=True)
+            ctx.close()
             for page, (url, fits) in PAGES.items():
                 for size in SIZES:
                     ctx, pg, errs = open_page(b, size, url)
@@ -129,6 +132,10 @@ try:
             pg.fill('#inc_type', 'Flood')
             pg.fill('#inc_location', mark)
             pg.click('.emcomm-actions .ea-big.green')
+            try:                                       # another EOC on this Wi-Fi: the page asks which one
+                pg.click('text=(this one)', timeout=1500)
+            except Exception:
+                pass
             filed = False
             for _ in range(40):
                 msgs = call(f'{EOC}/api/messages')
@@ -137,6 +144,34 @@ try:
                     break
                 time.sleep(0.25)
             check(f'{name}: Send to EOC on the real form files the report', filed and not errs, errs[:2])
+            ctx.close()
+            # no app at the EOC: the phone page offers the home-screen icon, says what it cannot do, and hides the steps once opened from it
+            ctx, pg, errs = open_page(b, 'phone', f'{EOC}/m')
+            txt = pg.inner_text('#install-card')
+            check(f'{name}: the phone page offers the home-screen icon and says it works only on this Wi-Fi', 'Add to Home Screen' in txt and "works only on this EOC's Wi-Fi" in txt and not errs, txt[:120])
+            pg.wait_for_function("!document.getElementById('full-app').textContent.includes('Checking')", timeout=8000)
+            check(f'{name}: the phone page settles on the full offline app or on what to do with no internet', 'Going out with no signal' in pg.inner_text('#full-app'))
+            ctx.close()
+            ctx = b.new_context(viewport={'width': 390, 'height': 844})
+            ctx.add_init_script("Object.defineProperty(navigator, 'standalone', {get: function () { return true; }})")
+            pg = ctx.new_page()
+            pg.goto(f'{EOC}/m', wait_until='load')
+            pg.wait_for_timeout(500)
+            txt = pg.inner_text('#install-card')
+            check(f'{name}: opened from the icon, the page drops the install steps and keeps the Wi-Fi warning', 'Add to Home Screen' not in txt and 'only on this' in txt, txt[:120])
+            ctx.close()
+            # the person at the simulator laptop finds the pack with Browse, and the example folder is marked as a pack
+            ctx, pg, errs = open_page(b, 'laptop', f'{SIM}/')
+            pg.click('button:has-text("Setup")')
+            pg.fill('#packpath', str(work / 'simulation' / 'example'))
+            pg.click('#b-browse')
+            pg.wait_for_selector('#browse-list button:has-text("juniper-plains")', timeout=6000)
+            marked = 'organization pack' in pg.inner_text('#browse-list')
+            pg.click('#browse-list button:has-text("juniper-plains")')
+            pg.wait_for_function("!document.getElementById('b-browse-use').disabled", timeout=6000)
+            pg.click('#b-browse-use')
+            chosen = pg.input_value('#packpath')
+            check(f'{name}: Browse finds the organization pack and fills the path', marked and chosen.endswith('juniper-plains') and not errs, (marked, chosen, errs[:2]))
             ctx.close()
             # no signal: the report saved from the portal's form is still in the Outbox after the portal reloads
             ctx, pg, errs = open_page(b, 'phone', f'{WEB}/templates/disaster-report/Church_of_Jesus_Christ_Disaster_Report_Worker.html')

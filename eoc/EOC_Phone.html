@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1a3a5c">
+<link rel="manifest" href="/app.webmanifest">
+<link rel="apple-touch-icon" href="/icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="EMCOMM EOC">
 <title>Church of Jesus Christ EMCOMM — EOC on this Wi-Fi</title>
 <!--
   Church of Jesus Christ EMCOMM — EOC phone page. Served by eoc_server.py at /m (the wall QR code points
@@ -140,13 +145,14 @@ function workAct(id, act){
 function landing(){
   var h = '';
   h += '<div id="drill-card"></div>';
-  h += '<div class="card"><h2>Fill in a new report</h2><p class="muted" style="margin:0 0 4px">The form opens on this phone. When you are done, tap <b>Send to EOC</b> at the bottom. No saving or files needed.</p>';
+  h += '<div class="card"><h2>Fill in a new report</h2><p class="muted" style="margin:0 0 4px">No app needed. The form opens on this phone. When you are done, tap <b>Send to EOC</b> at the bottom. No saving or files needed.</p>';
   ['dr','so','wcl'].forEach(function(k, i){
     h += '<a class="big" href="/forms/' + k + '"><span class="i">' + ['&#128203;','&#128230;','&#128296;'][i] + '</span>New ' + FORM_NAME[k] + '</a>';
   });
   h += '</div>';
+  h += installCard();
   h += '<div class="card"><h2>Reports saved in the Church of Jesus Christ EMCOMM app</h2>'
-     + '<p class="muted" style="margin:0 0 6px">Filled in forms out in the field with no signal? Send them now, while you are on this Wi-Fi.</p>'
+     + '<p class="muted" style="margin:0 0 6px">Only if you installed the app before today and filled in forms out in the field. No app? Use <b>New</b> report above.</p>'
      + '<ol><li>Open the <b>EMCOMM</b> app on your home screen.</li><li>Tap <b>Outbox</b>, then <b>Send to EOC</b>.</li><li>Tap <b>Scan the EOC QR code</b> and point the camera at the code on the wall. Or type this address:</li></ol>'
      + '<div class="addr">' + esc(location.host) + '</div>'
      + '<p class="muted" style="margin:6px 0 0">Android: this button also opens your saved reports.</p>'
@@ -156,10 +162,32 @@ function landing(){
   h += '<div class="card" id="comms-card" style="display:none"><h2>Comms sheet</h2><div id="comms"></div></div>';
   h += '<a class="sec" href="/">Full EOC Message Center (for EOC operators)</a>';
   document.getElementById('main').innerHTML = h;
-  drawDrill(); loadWork();
+  drawDrill(); loadWork(); checkInternet();
   getJSON('/api/comms').then(renderComms).catch(function(){});
   setInterval(loadWork, 10000);
   setInterval(function(){ getJSON('/api/status').then(function(s){ srv = s; header(); drawDrill(); }).catch(function(){}); }, 15000);
+}
+// ── A home-screen icon for this EOC, and the full offline app when there is internet ──
+function isApp(){ return !!(navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches)); }
+function installCard(){
+  var full = '<div id="full-app"><p class="muted" style="margin:8px 0 0"><b>Going out with no signal?</b> You need the full offline app. Checking for internet…</p></div>';
+  if (isApp()) return '<div class="card" id="install-card"><h2>You opened the EMCOMM EOC icon</h2><p class="muted" style="margin:0">It works only on this EOC\'s Wi-Fi.</p>' + full + '</div>';
+  return '<div class="card" id="install-card"><h2>Put EMCOMM on your home screen</h2>'
+    + '<p class="muted" style="margin:0 0 6px">An icon brings you back to this page. You can use the forms without it.</p>'
+    + '<p style="margin:6px 0 0"><b>iPhone or iPad</b></p><ol><li>Open this page in Safari.</li><li>Tap <b>Share</b>, then <b>Add to Home Screen</b>, then <b>Add</b>.</li></ol>'
+    + '<p style="margin:6px 0 0"><b>Android</b></p><ol><li>Tap the browser menu.</li><li>Tap <b>Add to Home screen</b>.</li></ol>'
+    + '<p style="margin:8px 0 0"><b>This icon works only on this EOC\'s Wi-Fi.</b> It will not open out in the field.</p>' + full + '</div>';
+}
+function showFullApp(online){
+  var el = document.getElementById('full-app'); if (!el) return;
+  el.innerHTML = online
+    ? '<p class="muted" style="margin:8px 0 4px"><b>Going out with no signal?</b> This phone has internet now, so install the full offline app. It keeps working with no signal.</p><a class="sec" id="full-app-link" target="_blank" rel="noopener" href="' + esc(PORTAL) + '">Install the full offline app</a>'
+    : '<p class="muted" style="margin:8px 0 0"><b>Going out with no signal?</b> The full offline app needs internet once to install, and there is none here. Ask the EOC for paper forms, and install the app when you reach any internet.</p>';
+}
+function checkInternet(){
+  var done = false, finish = function(ok){ if (!done) { done = true; showFullApp(ok); } };
+  setTimeout(function(){ finish(false); }, 5000);
+  fetch(PORTAL, {mode:'no-cors', cache:'no-store'}).then(function(){ finish(true); }).catch(function(){ finish(false); });
 }
 function renderComms(c){
   var s = (c && c.sheet) || {}, h = '';

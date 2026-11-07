@@ -80,7 +80,7 @@
   #tip { position:absolute; pointer-events:none; background:#fff; border:1px solid var(--line); border-radius:6px; padding:5px 8px; font-size:12px; box-shadow:0 2px 8px rgba(0,0,0,.15); display:none; max-width:280px; }
   #log, .mono { font-family:ui-monospace, Consolas, monospace; font-size:12px; white-space:pre-wrap; background:#f6f8fa; border:1px solid var(--line); border-radius:6px; padding:6px; max-height:160px; overflow:auto; margin-top:6px; }
   #nodata { position:absolute; inset:0; display:none; align-items:center; justify-content:center; padding:30px; text-align:center; background:var(--bg); }
-  #nodata div { max-width:520px; background:#fff; border:1px solid var(--line); border-radius:10px; padding:18px 22px; }
+  #nodata div { max-width:min(520px, 100%); min-width:0; overflow-wrap:anywhere; background:#fff; border:1px solid var(--line); border-radius:10px; padding:18px 22px; }
   code { background:#eef1f4; padding:1px 4px; border-radius:3px; font-size:12px; }
   /* run console */
   #clock { font-size:30px; font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:.02em; }
@@ -198,7 +198,14 @@
     <input type="text" id="packpath" placeholder="Your directory export folder (with csv and simulator in it), or EOC Message Center\simulation\example\juniper-plains">
     <div class="btns">
       <select id="privsel" style="width:auto"><option value="pseudonymized">Pseudonymized (default)</option><option value="real">Real contacts</option></select>
-      <button class="b" id="b-pack">Load pack</button><span id="packinfo" class="small muted"></span>
+      <button class="b s" id="b-browse">Browse&#8230;</button><button class="b" id="b-pack">Load pack</button><span id="packinfo" class="small muted"></span>
+    </div>
+    <div id="browse-box" class="box small" style="display:none">
+      <div id="browse-now" style="font-weight:600;overflow-wrap:anywhere"></div>
+      <div id="browse-drives" class="btns" style="margin:4px 0"></div>
+      <div id="browse-list" style="max-height:240px;overflow:auto;border:1px solid var(--line);border-radius:6px;background:#fff"></div>
+      <div id="browse-note" class="small muted" style="margin:4px 0"></div>
+      <div class="btns"><button class="b" id="b-browse-use" disabled>Use this folder</button><button class="b s" id="b-browse-close">Close</button></div>
     </div>
     <div id="consent-box" class="box small" style="display:none;border-color:#e0a39b;background:#fdf3f1">
       <b>Real contacts: record the consent first.</b> The directory's names, phones and emails will show on every card, inject and report of this drill.
@@ -735,6 +742,25 @@ $('b-consent-load').onclick = async () => {
   if (miss) { $('consent-err').textContent = 'Missing: ' + miss; return; }
   if (await loadPackAs('real', consent)) showConsent(false);
 };
+// ── Browse: find the organization pack folder on this laptop ──
+let browsing = '';
+async function browseTo(path) {
+  const box = $('browse-box'); box.style.display = '';
+  const r = await fetch('/api/browse?path=' + encodeURIComponent(path || ''));
+  const d = await r.json();
+  if (!r.ok) { $('browse-now').textContent = ''; $('browse-list').innerHTML = ''; $('browse-drives').innerHTML = ''; $('browse-note').textContent = d.error || 'Browse is not available.'; $('b-browse-use').disabled = true; return; }
+  browsing = d.path;
+  $('browse-now').textContent = d.path;
+  const row = (label, p, mark) => `<button type="button" class="browse-row" data-p="${esc(p)}" style="display:block;width:100%;text-align:left;padding:6px 8px;border:none;border-bottom:1px solid var(--line);background:transparent;cursor:pointer;overflow-wrap:anywhere;font:inherit">${esc(label)}${mark ? ' <b style="color:#1a6b3c">&#10003; organization pack</b>' : ''}</button>`;
+  $('browse-drives').innerHTML = d.drives.map(x => `<button type="button" class="b s browse-row" data-p="${esc(x)}">${esc(x)}</button>`).join('');
+  $('browse-list').innerHTML = (d.parent ? row('\u2191 Up one folder', d.parent, false) : '') + d.folders.map(f => row('\uD83D\uDCC1 ' + f.name, f.path, f.pack)).join('') || '<div style="padding:6px 8px" class="muted">No folders here.</div>';
+  $('browse-note').textContent = d.error || (d.pack ? 'This folder is an organization pack.' : 'An organization pack is the folder that holds csv and simulator. In a participant package, unzip it first, then open 2 Organization pack.');
+  $('b-browse-use').disabled = !d.pack;
+  document.querySelectorAll('.browse-row').forEach(b => { b.onclick = () => browseTo(b.dataset.p); });
+}
+$('b-browse').onclick = () => browseTo($('packpath').value.trim());
+$('b-browse-close').onclick = () => { $('browse-box').style.display = 'none'; };
+$('b-browse-use').onclick = () => { $('packpath').value = browsing; $('browse-box').style.display = 'none'; log('Folder chosen. Press Load pack.'); };
 $('b-pack').onclick = async () => {
   const mode = $('privsel').value;
   // Real contacts: the recorded consent of this session is reused (same pack); otherwise the form opens.

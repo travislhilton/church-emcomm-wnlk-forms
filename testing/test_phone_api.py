@@ -26,6 +26,7 @@ def layout(name):
     for f in ('eoc_server.py', 'EOC_Message_Center.html', 'EOC_Wall_Display.html', 'EOC_Phone.html'):
         shutil.copy2(REPO / 'eoc' / f, d / 'eoc' / f)
     shutil.copytree(REPO / 'templates', d / 'templates')
+    shutil.copytree(REPO / 'forms' / 'icons', d / 'forms' / 'icons')
     return d / 'eoc'
 def call(port, method, path, body=None, raw=False):
     data = json.dumps(body).encode() if body is not None else None
@@ -59,6 +60,12 @@ try:
           str(SP).lower() in str(dq.get('watch_path', '')).lower(), dq.get('watch_path'))
     s, b = call(PA, 'GET', '/m', raw=True); check('/m serves the phone page', s == 200 and b'EOC on this Wi-Fi' in b)
     s, b = call(PA, 'GET', '/receive', raw=True); check('/receive serves the phone page', s == 200 and b'decodePayload' in b)
+    man = call(PA, 'GET', '/app.webmanifest')
+    check('the EOC home-screen app: a manifest that opens the phone page, named apart from the full app', man.get('start_url') == '/m' and man.get('name') == 'EMCOMM EOC' and man.get('display') == 'standalone')
+    s, b = call(PA, 'GET', '/icons/icon-180.png', raw=True); check('the home-screen icon is served as a PNG image', s == 200 and b[:4] == b'\x89PNG')
+    try: call(PA, 'GET', '/icons/../eoc_server.py', raw=True); check('/icons/ serves only the listed icons', False)
+    except urllib.error.HTTPError as e: check('/icons/ serves only the listed icons', e.code == 404)
+    s, b = call(PA, 'GET', '/m', raw=True); check('the phone page names the manifest and the home-screen icon', b'/app.webmanifest' in b and b'apple-touch-icon' in b and b'Add to Home Screen' in b)
     for k, marker in (('dr', b'Disaster Report'), ('so', b'Supply Order'), ('wcl', b'Work Crew Log')):
         s, b = call(PA, 'GET', '/forms/' + k, raw=True); check(f'/forms/{k} serves the Worker form with the app module', s == 200 and marker in b and b'EMCOMM-APP:BEGIN' in b and b'EMCOMM.init' in b)
     try: call(PA, 'GET', '/forms/zz', raw=True); check('/forms/zz is 404', False)

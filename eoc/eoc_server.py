@@ -12,7 +12,7 @@ PORT = int(os.environ.get('EOC_PORT') or (sys.argv[1] if len(sys.argv) > 1 and s
 VERSION = '1.0'
 # The Worker forms / Church of Jesus Christ EMCOMM app version this server ships (APP_VERSION in templates/_shared/emcomm-app.js).
 # Phones whose app is older still send fine; the receive page just tells them to update when they have internet.
-FORMS_VERSION = '2026-11-06.1'
+FORMS_VERSION = '2026-11-06.3'
 BASE = pathlib.Path(__file__).resolve().parent   # resolve: before Python 3.9 __file__ is relative when started from this folder
 DB_FILE   = BASE / 'eoc_data.db'
 HTML_FILE = BASE / 'EOC_Message_Center.html'
@@ -26,6 +26,24 @@ WORKER_FORMS = {
     'so':  ('supply-order',    'Church_of_Jesus_Christ_Supply_Order_Worker.html'),
     'wcl': ('work-crew-log',   'Church_of_Jesus_Christ_Work_Crew_Log_Worker.html'),
 }
+# The EOC home-screen app: an icon that opens this EOC's phone page. Plain http cannot hold an offline app, so it works
+# only on this EOC's Wi-Fi; the phone page says so and offers the full offline app (the https portal) when there is internet.
+APP_ICONS = ('icon-180.png', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png')
+APP_MANIFEST = {
+    'name': 'EMCOMM EOC', 'short_name': 'EMCOMM EOC', 'description': "This EOC's phone page. Works on the EOC Wi-Fi only.",
+    'id': '/m', 'start_url': '/m', 'scope': '/', 'display': 'standalone', 'orientation': 'portrait',
+    'background_color': '#f0f2f5', 'theme_color': '#1a3a5c',
+    'icons': [{'src': '/icons/icon-192.png', 'sizes': '192x192', 'type': 'image/png'}, {'src': '/icons/icon-512.png', 'sizes': '512x512', 'type': 'image/png'},
+              {'src': '/icons/icon-maskable-512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'maskable'}],
+}
+def _icon_path(name: str):
+    if name not in APP_ICONS:      # names on this list only: nothing else on the laptop is reachable through this route
+        return None
+    for d in (BASE.parent / 'Web App (portal copy)' / 'forms' / 'icons', BASE.parent / 'forms' / 'icons'):
+        if (d / name).is_file():
+            return d / name
+    return None
+
 def _worker_form_path(key: str):
     d, name = WORKER_FORMS[key]
     for p in (BASE.parent / 'Field Worker Forms' / name, BASE.parent / 'templates' / d / name, BASE / name):
@@ -1969,6 +1987,13 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def send_bytes(self, body, content_type):
+        self.send_response(200)
+        self.send_header('Content-Type', content_type)
+        self.send_header('Content-Length', str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
     def send_html(self, file=None):
         file = file or HTML_FILE
         try:
@@ -2040,6 +2065,15 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
             # Phone page (the wall QR points here) and the receive page for reports
             # handed over from the Church of Jesus Christ EMCOMM app (the reports ride in the URL fragment).
             self.send_html(PHONE_FILE); return
+        if path == '/app.webmanifest':
+            self.send_bytes(json.dumps(APP_MANIFEST).encode('utf-8'), 'application/manifest+json'); return
+        if path.startswith('/icons/'):
+            fp = _icon_path(path[len('/icons/'):])
+            if fp:
+                self.send_bytes(fp.read_bytes(), 'image/png')
+            else:
+                self.send_json({'error': 'No such icon here'}, 404)
+            return
         if path.startswith('/forms/'):
             key = path[len('/forms/'):].strip('/').lower().replace('.html', '')
             fp = _worker_form_path(key) if key in WORKER_FORMS else None

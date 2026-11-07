@@ -5299,7 +5299,7 @@
     },
     {
      "t": 81,
-     "text": "Contingency: forms by Winlink VARA FM to the EOC address; VARA HF if no gateway answers. Short messages; the form tag carries the data."
+     "text": "Contingency: forms by Winlink VARA FM to the EOC address through the gateway; then the agreed VARA FM RMS Post Office, VARA FM P2P, and VARA HF if none of those work. Short messages; the form tag carries the data."
     },
     {
      "t": 130,

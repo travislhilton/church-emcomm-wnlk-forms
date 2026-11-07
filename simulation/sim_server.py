@@ -87,6 +87,28 @@ def own_addresses() -> set:
     return _OWN['ips']
 
 
+def browse_folder(start: str) -> dict:
+    """One folder of this laptop for the Setup tab's Browse button: its subfolders, and which are organization packs."""
+    drives = [f'{c}:\\' for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' if os.path.exists(f'{c}:\\')] if os.name == 'nt' else ['/']
+    here = Path(start).expanduser() if start else Path.home() / 'Documents'
+    while not here.is_dir() and here.parent != here:     # a typed path that does not exist: its nearest real parent
+        here = here.parent
+    if not here.is_dir():
+        here = Path.home()
+    is_pack = lambda d: (d / 'csv' / 'organizations.csv').is_file()
+    folders, error = [], ''
+    try:
+        for d in sorted(here.iterdir(), key=lambda x: x.name.lower()):
+            try:
+                if d.is_dir() and not d.name.startswith(('.', '$')) and d.name != 'System Volume Information':
+                    folders.append({'name': d.name, 'path': str(d), 'pack': is_pack(d)})
+            except OSError:
+                continue
+    except OSError as e:
+        error = f'This folder cannot be read: {e.strerror or e}'
+    return {'path': str(here), 'parent': str(here.parent) if here.parent != here else '', 'pack': is_pack(here), 'folders': folders, 'drives': drives, 'error': error}
+
+
 def is_controller(ip: str) -> bool:
     """True for a request from the controller laptop (loopback or one of its own addresses)."""
     ip = (ip or '').split('%')[0]
@@ -585,6 +607,10 @@ class Handler(SimpleHTTPRequestHandler):
                 return self.send_file(HERE / 'index.html', 'no-cache')
             if path == '/api/info':
                 return self.send_json(STATE.info())
+            if path == '/api/browse':            # the laptop's folders: for the person at the laptop, never for a phone on the Wi-Fi
+                if not is_controller(self.client_address[0]):
+                    return self.send_json({'error': 'Browse works only on the laptop that runs the simulator.'}, HTTPStatus.FORBIDDEN)
+                return self.send_json(browse_folder((q.get('path') or [''])[0]))
             if path == '/api/pack':
                 with STATE.lock:
                     if not STATE.pack:

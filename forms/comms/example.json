@@ -21,14 +21,16 @@
    {"level": "Council / Area EOC", "name": "Only if the council or welfare region opens one (Area Specialist station)", "winlink": "N7AWS", "email": "awsrm@example.org", "phone": "801-555-0100"}
   ],
   "gateways": [
-   {"call": "W7EXA-10", "freq": "145.070", "mode": "VARA FM", "loc": "Example Peak", "notes": "24 h, wide VARA FM"},
+   {"call": "W7EXA-10", "freq": "145.070", "mode": "VARA FM", "loc": "Example Peak", "notes": "24 h, wide VARA FM; holds mail if its internet drops"},
    {"call": "K7EXC-10", "freq": "145.630", "mode": "VARA FM", "loc": "City hall", "notes": "narrow VARA FM"},
+   {"call": "W7EXA-10", "freq": "145.070", "mode": "VARA FM RMS Post Office", "loc": "Example Peak", "notes": "agreed Post Office: every EOC collects here"},
    {"call": "W7EXH", "freq": "7.102 / 3.588", "mode": "VARA HF", "loc": "Regional", "notes": "HF when no VHF gateway answers"}
   ],
   "nets": [
    {"name": "Stake amateur net (repeater)", "freq": "146.720", "offset": "-0.600", "tone": "100.0", "mode": "repeater", "when": "Top of every hour during activation; practice net Tue 19:00"},
    {"name": "Stake simplex fallback", "freq": "146.520", "offset": "", "tone": "", "mode": "simplex", "when": "If the repeater is down"},
-   {"name": "HF voice (Area)", "freq": "3.925 LSB", "offset": "", "tone": "", "mode": "HF", "when": "Even hours + 15"},
+   {"name": "VHF/UHF voice (Area)", "freq": "146.760", "offset": "-0.600", "tone": "100.0", "mode": "FM", "when": "Open when the Area EOC opens"},
+   {"name": "HF voice (Area, only if VHF/UHF fails)", "freq": "3.925 LSB", "offset": "", "tone": "", "mode": "HF", "when": "Even hours + 15"},
    {"name": "Example 1st Ward FRS/GMRS", "freq": "Ch 3 (462.6125)", "offset": "", "tone": "", "mode": "FRS-GMRS", "when": "Block captains to Team Leader"}
   ],
   "schedule": "Activation: stake net at the top of every hour, SITREP to the AWSRM on the interval EOC leadership sets (Setup tab).\nPractice: monthly net first Tuesday 19:00, annual PACE drill in October.",

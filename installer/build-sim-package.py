@@ -241,7 +241,8 @@ EOC laptop (Message Center running):
 
 Simulator laptop (the drill controller):
   Desktop -> Church of Jesus Christ EMCOMM Simulator.
-  1. Setup -> 1. Organization pack -> the full path of "2 Organization pack" (pseudonymized).
+  1. Setup -> 1. Organization pack -> Browse -> choose "2 Organization pack" -> Use this folder -> Load pack
+     (pseudonymized).
   2. Setup -> Drill configuration -> the same drill-config.json.
   The scenario "{scenario}" appears in the list (it travels in the pack's simulation\\scenarios\\).
 

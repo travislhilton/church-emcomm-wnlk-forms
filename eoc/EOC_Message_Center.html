@@ -877,7 +877,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
         <ul>
           <li><span class="pace-badge P">P</span> Save emailed or texted files to the EOC Drop Folder. Send the SITREP by email.</li>
           <li><span class="pace-badge A">A</span> The same, over whatever internet you have. Keep an eye on the green Drop Folder bar.</li>
-          <li><span class="pace-badge C">C</span> Reports arrive by Winlink auto-ingest. Keep Winlink Express connecting to the radio gateway, and watch the blue bar. For a voice report from the net:
+          <li><span class="pace-badge C">C</span> Reports arrive by Winlink auto-ingest. Keep Winlink Express connecting to the radio gateway, and watch the blue bar. When the gateway is down, collect mail with a Vara FM RMS Post Office session and keep a Vara FM P2P (peer-to-peer) session open. For a voice report from the net:
             <ul>
               <li>Mark the unit with &#9742; on the Roster.</li>
               <li>Add a Note.</li>
@@ -950,7 +950,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
         <h2>4. Receiving reports</h2>
         <ul>
           <li><b>Winlink:</b> with the server running, Church forms received by the <b>chosen callsign</b> appear within 10 seconds. Choose it once: click the blue watcher bar and type the callsign (it lists the ones on this computer); it is saved for every start. The EOC reads Winlink's messages where they are (<code>C:\RMS Express\&lt;callsign&gt;\Messages\</code>; RMS Express, for Radio Message Server, is Winlink Express's old name), only those that arrived after the event began, and never moves them. In standalone mode, drag the message's <code>.mime</code> file from that folder onto this page.</li>
-          <li><b>Phones on the EOC Wi-Fi:</b> anyone in the EOC scans the QR code on the wall (or opens the phone page address on Setup). They tap <b>New Disaster Report / Supply Order / Work Crew Log</b>, fill it in and tap <b>Send to EOC</b>. It is filed within seconds, marked <i>Phone / browser</i>. No files and no app needed. The form fills in the EOC location, because phones cannot share their GPS (Global Positioning System) location over the EOC Wi-Fi.</li>
+          <li><b>Phones on the EOC Wi-Fi:</b> anyone in the EOC, with or without the app, scans the QR code on the wall (or opens the phone page address on Setup). They tap <b>New Disaster Report / Supply Order / Work Crew Log</b>, fill it in and tap <b>Send to EOC</b>. It is filed within seconds, marked <i>Phone / browser</i>. No files and no app needed. The form fills in the EOC location, because phones cannot share their GPS (Global Positioning System) location over the EOC Wi-Fi.</li>
           <li><b>Reports saved in the Church of Jesus Christ EMCOMM app:</b> a field worker who filled in forms with no signal joins the EOC Wi-Fi, opens the app, taps <b>Outbox</b>, then <b>Send to EOC</b>, and scans the wall QR code (or types the address under it). Their phone shows a green "received" screen; their GPS from the field comes with the report.</li>
           <li><b>More than one EOC on the same network</b> (a drill): the phone lists every EOC with its name and event, and the report goes to the one picked.</li>
           <li><b>Text, email, AirDrop or USB:</b> save the volunteer's <code>.txt</code> file into the <b>EOC Drop Folder</b> (desktop shortcut), or drag it onto this page. It is filed within 10 seconds; Drop Folder files move to <code>Ingested</code>.</li>
@@ -1028,6 +1028,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
         <ul>
           <li>The wall display needs the server. Open it with the &#128250; link in the header, or from Setup, Wall Display. Put it on a TV or projector and press <b>F</b> for full screen.</li>
           <li>It shows the event, the PACE level, units reported and waiting, totals, open supply orders, latest arrivals, comms and notes. It refreshes every 10 seconds, and nothing on it can be clicked.</li>
+          <li>A phone with no app can add an <b>EMCOMM EOC</b> home-screen icon from the phone page. It works only on this Wi-Fi.</li>
           <li>Its main QR code opens this EOC's <b>phone page</b>: new reports with Send to EOC, and the address the Church of Jesus Christ EMCOMM app scans to send its Outbox. If the EOC Wi-Fi name and password are on Setup, a second QR code joins the phone to the Wi-Fi (the password is shown on the wall; leave it blank on Setup to keep it off).</li>
         </ul>
       </section>
@@ -1270,8 +1271,8 @@ var COMMS_KIND = 'church_comms_sheet';
 var COMMS_TABLES = [
   {key:'contacts', title:'Points of contact', hint:'Who to reach, in the order the chain works: Stake President, stake Welfare and Self-Reliance Specialist (emergency communications), Emergency Response Directors, bishops, then the two lines above the stake: the Area Seventy\'s coordinating council, and the welfare line (local Welfare and Self-Reliance Manager (WSRM), then the Area Welfare and Self-Reliance Manager (AWSRM)).', cols:[['role','Role'],['name','Name'],['phone','Phone'],['email','Email'],['winlink','Winlink address']]},
   {key:'eocs', title:'EOCs — where reports go', hint:'Every EOC in the chain with its Winlink address and drop email (what volunteers text or email forms to, and what HAMs address Winlink messages to).', cols:[['level','Level (Satellite / Stake / Council-Area)'],['name','EOC name / location'],['winlink','Winlink address'],['email','Drop email'],['phone','Phone']]},
-  {key:'gateways', title:'Winlink gateways (RMS) — try in this order', hint:'Contingency: VHF/UHF VARA FM gateways first, then VARA HF. Frequency in MHz; mode VARA FM / VARA HF / Telnet.', cols:[['call','Callsign'],['freq','Frequency (MHz)'],['mode','Mode'],['loc','Location'],['notes','Notes (hours, power, tone)']]},
-  {key:'nets', title:'Voice nets', hint:'Stake amateur net (repeater, then simplex), HF voice, and the ward FRS/GMRS channels. Offset and tone for repeaters; "when" = schedule or check-in times.', cols:[['name','Net / use'],['freq','Frequency / channel'],['offset','Offset'],['tone','Tone'],['mode','Mode (repeater / simplex / HF / FRS-GMRS)'],['when','When']]}
+  {key:'gateways', title:'Winlink gateways (RMS) — try in this order', hint:'Contingency, in order: VARA FM gateways, the agreed VARA FM RMS Post Office, then VARA HF. In Notes, say if a gateway holds mail when its internet is down. Frequency in MHz; mode VARA FM / VARA FM RMS Post Office / VARA HF / Telnet.', cols:[['call','Callsign'],['freq','Frequency (MHz)'],['mode','Mode'],['loc','Location'],['notes','Notes (hours, power, tone)']]},
+  {key:'nets', title:'Voice nets', hint:'Stake amateur net (repeater, then simplex), the VHF/UHF voice path to the Area, HF voice as its backup, and the ward FRS/GMRS channels. Offset and tone for repeaters; "when" = schedule or check-in times.', cols:[['name','Net / use'],['freq','Frequency / channel'],['offset','Offset'],['tone','Tone'],['mode','Mode (repeater / simplex / HF / FRS-GMRS)'],['when','When']]}
 ];
 function commsEventLines() { var t=(incident&&incident.commsEvent)||''; return String(t).split('\n').map(function(s){return s.trim();}).filter(Boolean); }
 function loadCommsFromServer() {

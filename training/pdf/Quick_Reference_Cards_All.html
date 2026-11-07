@@ -370,7 +370,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
       <h2 class="card-title">Before the Emergency &#8212; Do These Now</h2>
     </div>
     <ul class="checklist">
-      <li>Install the app now, with internet: iPhone Safari &#8594; Share &#8594; Add to Home Screen; Android Chrome &#8594; Install app. Open each form once.</li>
+      <li>Install the app now, with internet: iPhone Safari &#8594; Share &#8594; Add to Home Screen; Android Chrome &#8594; Install app. Open each form once. Forgot? At the EOC, scan the wall QR code: the forms work there with no app.</li>
       <li>Load your stake&#8217;s Comms Sheet (portal &#8594; Comms sheet &#8594; Load sheet file). It holds the numbers and addresses to send to. It works with no signal.</li>
       <li>Fill in one practice form with your home address. Tick THIS IS AN EXERCISE. Tap Save to Outbox and check it is there.</li>
       <li>Print 3 blank copies of each form (portal &#8594; Paper forms). Keep them with a pen in your go-bag.</li>
@@ -478,29 +478,29 @@ html, body { background: #fff; padding: 0; margin: 0; }
       <tr>
         <td><b style="color:var(--blue)">A</b></td>
         <td>Cell down, any internet anywhere</td>
-        <td>Home, a shelter, a business, Starlink: any connection that still reaches the internet. Files arrive by email or USB drive. Open Session &#8594; <b>Telnet</b></td>
+        <td>Any connection that still reaches the internet. Files arrive by email or USB drive. Open Session &#8594; <b>Telnet</b></td>
       </tr>
       <tr>
         <td><b style="color:var(--amber)">C</b></td>
         <td>No internet; a gateway answers</td>
-        <td><b>Data:</b> Open Session &#8594; <b>VARA FM Winlink</b> &#8594; [pre-programmed VHF/UHF gateway freq] (very/ultra high frequency); no local gateway: <b>VARA HF</b> (high frequency) &#8594; 40m or 80m freq<br><b>Voice:</b> stake VHF/UHF net (repeater, then simplex); volunteers on FRS/GMRS (Family Radio Service / General Mobile Radio Service) to Team Leaders. Type voice reports into the template.</td>
+        <td><b>Data:</b> Open Session &#8594; <b>Vara FM Winlink</b> &#8594; [pre-programmed VHF/UHF gateway freq] (very/ultra high frequency). Send as <b>Winlink Message</b>. A gateway with no internet may hold it for the CMS (Common Message Servers).<br><b>Voice:</b> stake VHF/UHF net (repeater, then simplex); volunteers on FRS/GMRS (Family Radio Service / General Mobile Radio Service) to Team Leaders.</td>
       </tr>
       <tr>
         <td><b style="color:var(--amber)">C</b></td>
-        <td>No gateway works</td>
-        <td><b>Winlink peer-to-peer (P2P)</b> over VARA FM straight to a nearby EOC&#8217;s station. <b>iPhone reports:</b> a USB-C/Lightning thumb drive in the go-kit, or the EOC Wi-Fi <b>Send to EOC</b>.</td>
+        <td>&#8220;No CMS available&#8221; or no gateway</td>
+        <td>Wrong Send as stays in the Outbox. <b>1. Vara FM RMS Post Office</b>: Send as Post Office. <b>2. Vara FM P2P</b> (peer-to-peer): Send as Peer-to-Peer. Not forwarded: the recipient must connect. <b>3. Vara HF Winlink</b> (high frequency), 40m or 80m. <b>iPhone reports:</b> a USB-C/Lightning thumb drive in the go-kit, or the EOC Wi-Fi <b>Send to EOC</b>.</td>
       </tr>
       <tr>
         <td><b style="color:var(--red)">E</b></td>
         <td>Nothing connects, no one answers the net</td>
-        <td><b>Runner:</b> the volunteer's printed form (<b>Print</b> under the form) or a blank paper form filled by hand, carried to the EOC; operator types it in. Hold saved files and send when any path returns.</td>
+        <td><b>Runner:</b> the printed form, or a blank form filled by hand, to the EOC; the operator types it in. Hold saved files; send when any path returns.</td>
       </tr>
     </table>
     <div class="note-box">
-      <b>Addresses, gateways, nets:</b> from the stake <b>Comms Sheet</b> &#8212; printed copy in the go-bag, or load the sheet file on your phone at <code style="font-size:13.5px">…/forms/comms.html</code> (works without service). The EOC sends a new one when anything changes.
+      <b>Addresses, gateways, Post Office, nets:</b> from the stake <b>Comms Sheet</b> &#8212; printed copy in the go-bag, or load the sheet file on your phone at <code style="font-size:13.5px">…/forms/comms.html</code>.
     </div>
     <div class="note-box">
-      <b>PACE rule:</b> step down a level after two failed attempts in 15 minutes, or when the Stake President decides it. Do not go back to a path that failed until a test message gets through. The stake Welfare and Self-Reliance Specialist (emergency communications) recommends the level, the Stake President decides, and the Emergency Response Director (ERD) or the specialist announces the level in force on the net. The county may call ARES (Amateur Radio Emergency Service) operators to county duty at its Emergency level; agree beforehand who stays with the stake.
+      <b>PACE rule:</b> step down a level after two failed attempts in 15 minutes, or when the Stake President decides it. Do not go back to a path that failed until a test message gets through. The stake Welfare and Self-Reliance Specialist (emergency communications) recommends the level, the Stake President decides, and the Emergency Response Director (ERD) or specialist announces it. The county may call ARES (Amateur Radio Emergency Service) operators to county duty at its Emergency level; agree beforehand who stays with the stake.
     </div>
     <p class="card-disclaimer">Church of Jesus Christ EMCOMM is an independent volunteer project created by Travis Hilton (W9TLH), not an official product of The Church of Jesus Christ of Latter-day Saints.</p>
   <p class="pdf-foot pdf-url">travislhilton.github.io/church-emcomm-wnlk-forms/forms/</p></div>
@@ -795,7 +795,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
         </div>
         <div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">ROLL-UP: HOW THE FILE TRAVELS</p><div style="display:flex;flex-direction:column;gap:5px"><div>Setup tab &#8594; <b>Export Roll-up JSON</b> (&#8220;only new since last roll-up&#8221; ticked) &#8594; send it with every SITREP.</div><div><b>P / A</b> (cellular, any internet): attach it to an email to the parent EOC&#8217;s drop email. <b>C</b> (radio): attach it to a Winlink message to the parent&#8217;s Winlink address. First Winlink peer-to-peer (P2P) over VARA FM straight to a nearby parent station, then VARA FM through a gateway, then VARA HF (VARA: the sound-card radio modem Winlink uses). <b>E</b> (runner): on a USB drive with the printed SITREP.</div><div>At the parent nothing is clicked: the Drop Folder and Winlink watchers merge it within 10 seconds and log &#8220;Roll-up received from &#8230;&#8221;. From USB: drop it in the Drop Folder. Nothing is counted twice.</div></div></div>
         <div class="note-box" style="font-size:14px">
-          <b>Any device in the room:</b> scan the wall QR code (or open <code style="font-size:13.5px">http://&lt;server-ip&gt;:8080/m</code>): new reports, <b>Send to EOC</b>, the <b>Work items</b> list (tap an item: <b>Take it</b>, In work, Up, Done; your name goes in its log). <b>Paper by runner (Emergency):</b> type it in at <code style="font-size:13.5px">/forms/dr</code>, <code style="font-size:13.5px">/forms/so</code> or <code style="font-size:13.5px">/forms/wcl</code> and tap <b>Send</b>; keep blank paper forms on hand (add <code style="font-size:13.5px">?blank=1</code>, <b>Print</b>).
+          <b>Any device in the room, no app needed:</b> scan the wall QR code (or open <code style="font-size:13.5px">http://&lt;server-ip&gt;:8080/m</code>): new reports, <b>Send to EOC</b>, the <b>Work items</b> list (tap an item: <b>Take it</b>, In work, Up, Done; your name goes in its log). <b>Paper by runner (Emergency):</b> type it in at <code style="font-size:13.5px">/forms/dr</code>, <code style="font-size:13.5px">/forms/so</code> or <code style="font-size:13.5px">/forms/wcl</code> and tap <b>Send</b>; keep blank paper forms on hand (add <code style="font-size:13.5px">?blank=1</code>, <b>Print</b>).
         </div>
         <div class="note-box tip" style="font-size:14px">
           <b>In a drill:</b> one simulator per EOC. The purple <b>drill bar</b> on every screen says what this EOC plays, the clock or the start time, and who is ready: press <b>I am ready</b>. Every simulated report says SIMULATED; real reports still go through. New to drills? Read <b>card 9</b>.
@@ -833,7 +833,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
         </div>
         <div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">ROLL-UP: HOW THE FILE TRAVELS</p><div style="display:flex;flex-direction:column;gap:5px"><div>Setup tab &#8594; <b>Export Roll-up JSON</b> (&#8220;only new since last roll-up&#8221; ticked) &#8594; send it with every SITREP.</div><div><b>P / A</b> (cellular, any internet): attach it to an email to the parent EOC&#8217;s drop email. <b>C</b> (radio): attach it to a Winlink message to the parent&#8217;s Winlink address. First Winlink peer-to-peer (P2P) over VARA FM straight to a nearby parent station, then VARA FM through a gateway, then VARA HF (VARA: the sound-card radio modem Winlink uses). <b>E</b> (runner): on a USB drive with the printed SITREP.</div><div>At the parent nothing is clicked: the Drop Folder and Winlink watchers merge it within 10 seconds and log &#8220;Roll-up received from &#8230;&#8221;. From USB: drop it in the Drop Folder. Nothing is counted twice.</div></div></div>
         <div class="note-box" style="font-size:14px">
-          <b>Any device in the room:</b> scan the wall QR (Quick Response) code (or open <code style="font-size:13.5px">http://&lt;server-ip&gt;:8080/m</code>): new reports, <b>Send to EOC</b>, the <b>Work items</b> list (tap an item: <b>Take it</b>, In work, Up, Done; your name goes in its log). <b>Paper by runner (Emergency):</b> type it in at <code style="font-size:13.5px">/forms/dr</code>, <code style="font-size:13.5px">/forms/so</code> or <code style="font-size:13.5px">/forms/wcl</code> and tap <b>Send</b>; keep blank paper forms on hand (add <code style="font-size:13.5px">?blank=1</code>, <b>Print</b>).
+          <b>Any device in the room, no app needed:</b> scan the wall QR (Quick Response) code (or open <code style="font-size:13.5px">http://&lt;server-ip&gt;:8080/m</code>): new reports, <b>Send to EOC</b>, the <b>Work items</b> list (tap an item: <b>Take it</b>, In work, Up, Done; your name goes in its log). <b>Paper by runner (Emergency):</b> type it in at <code style="font-size:13.5px">/forms/dr</code>, <code style="font-size:13.5px">/forms/so</code> or <code style="font-size:13.5px">/forms/wcl</code> and tap <b>Send</b>; keep blank paper forms on hand (add <code style="font-size:13.5px">?blank=1</code>, <b>Print</b>).
         </div>
         <div class="note-box tip" style="font-size:14px">
           <b>In a drill:</b> one simulator per EOC. The purple <b>drill bar</b> on every screen says what this EOC plays, the clock or the start time, and who is ready: press <b>I am ready</b>. Every simulated report says SIMULATED; real reports still go through. New to drills? Read <b>card 9</b>.
@@ -871,7 +871,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
         </div>
         <div><p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">ROLL-UP: HOW THE FILE TRAVELS</p><div style="display:flex;flex-direction:column;gap:5px"><div>Setup tab &#8594; <b>Export Roll-up JSON</b> (&#8220;only new since last roll-up&#8221; ticked) &#8594; send it with every SITREP.</div><div><b>P / A</b> (cellular, any internet): attach it to an email to the parent EOC&#8217;s drop email. <b>C</b> (radio): attach it to a Winlink message to the parent&#8217;s Winlink address. First Winlink peer-to-peer (P2P) over VARA FM straight to a nearby parent station, then VARA FM through a gateway, then VARA HF (VARA: the sound-card radio modem Winlink uses). <b>E</b> (runner): on a USB drive with the printed SITREP.</div><div>At the parent nothing is clicked: the Drop Folder and Winlink watchers merge it within 10 seconds and log &#8220;Roll-up received from &#8230;&#8221;. From USB: drop it in the Drop Folder. Nothing is counted twice.</div></div></div>
         <div class="note-box" style="font-size:14px">
-          <b>Any device in the room:</b> scan the wall QR (Quick Response) code (or open <code style="font-size:13.5px">http://&lt;server-ip&gt;:8080/m</code>): new reports, <b>Send to EOC</b>, the <b>Work items</b> list (tap an item: <b>Take it</b>, In work, Up, Done; your name goes in its log). <b>Paper by runner (Emergency):</b> type it in at <code style="font-size:13.5px">/forms/dr</code>, <code style="font-size:13.5px">/forms/so</code> or <code style="font-size:13.5px">/forms/wcl</code> and tap <b>Send</b>; keep blank paper forms on hand (add <code style="font-size:13.5px">?blank=1</code>, <b>Print</b>).
+          <b>Any device in the room, no app needed:</b> scan the wall QR (Quick Response) code (or open <code style="font-size:13.5px">http://&lt;server-ip&gt;:8080/m</code>): new reports, <b>Send to EOC</b>, the <b>Work items</b> list (tap an item: <b>Take it</b>, In work, Up, Done; your name goes in its log). <b>Paper by runner (Emergency):</b> type it in at <code style="font-size:13.5px">/forms/dr</code>, <code style="font-size:13.5px">/forms/so</code> or <code style="font-size:13.5px">/forms/wcl</code> and tap <b>Send</b>; keep blank paper forms on hand (add <code style="font-size:13.5px">?blank=1</code>, <b>Print</b>).
         </div>
         <div class="note-box tip" style="font-size:14px">
           <b>In a drill:</b> one simulator per EOC. The purple <b>drill bar</b> on every screen says what this EOC plays, the clock or the start time, and who is ready: press <b>I am ready</b>. Every simulated report says SIMULATED; real reports still go through. New to drills? Read <b>card 9</b>.
@@ -911,7 +911,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
       </table>
       <p style="font-size:14px;margin-top:6px">Other reports reach the EOC screens by themselves: from phones, by Winlink radio email, or as files.</p>
     </div>
-    <div class="note-box"><b>What to bring:</b> a phone, tablet or laptop, charged; a pen; the card for your role (side 2).</div>
+    <div class="note-box"><b>What to bring:</b> a phone, tablet or laptop, charged (no app? scan the code on the EOC wall); a pen; the card for your role (side 2).</div>
     <div class="note-box tip">
       <b>Not sure what to do?</b> Ask the controller. Write down what you did and the time. Do your best: mistakes are how a drill teaches.
     </div>

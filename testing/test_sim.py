@@ -22,6 +22,7 @@ import os
 import pathlib
 import shutil
 import subprocess
+import urllib.parse
 import sys
 import tempfile
 import time
@@ -410,6 +411,12 @@ try:
     slog = open(SP / 'sim.log', 'w', encoding='utf-8')
     procs.append(subprocess.Popen([sys.executable, '-u', str(REPO / 'simulation' / 'sim_server.py'), str(SIM_PORT), '--data', str(FIX)], stdout=slog, stderr=subprocess.STDOUT, env=env))
     check('simulator server up on 8095', wait_port(SIM_PORT))
+    br = call(SIM_PORT, 'GET', '/api/browse?path=' + urllib.parse.quote(str(REPO / 'simulation' / 'example')))
+    check('simulator: Browse lists this laptop\'s folders and marks the organization pack', br.get('drives') and any(f['name'] == 'juniper-plains' and f['pack'] for f in br.get('folders', [])), br)
+    missing = call(SIM_PORT, 'GET', '/api/browse?path=' + urllib.parse.quote(str(REPO / 'no' / 'such' / 'folder')))
+    check('simulator: Browse on a path that does not exist opens its nearest real parent', pathlib.Path(missing.get('path', '')) == REPO, missing.get('path'))
+    remote = subprocess.run([sys.executable, '-c', "import sim_server; print(sim_server.is_controller('203.0.113.5'), sim_server.is_controller('127.0.0.1'))"], cwd=str(REPO / 'simulation'), capture_output=True, text=True, encoding='utf-8', errors='replace')
+    check('simulator: Browse is refused to a device on the Wi-Fi, allowed at the laptop', remote.stdout.split() == ['False', 'True'], remote.stdout + remote.stderr[-200:])
     info = call(SIM_PORT, 'GET', '/api/info')
     check('simulator: fixture pack loaded, pseudonymized by default, dataset absent but harmless', info['pack'] and info['pack']['units'] == 6 and info['privacy'] == 'pseudonymized' and not info['ok'], {k: info.get(k) for k in ('privacy', 'packError', 'error')})
     check('simulator: /api/pack serves the pseudonymized pack (no fixture phone)', '000-000-0105' not in json.dumps(call(SIM_PORT, 'GET', '/api/pack')))
