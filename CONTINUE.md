@@ -14,7 +14,8 @@
 - **Three levels** (Travis, 2026-11-06): any browser on any device; one Windows host laptop per EOC for the server and the simulator; the Windows Winlink station. "If the platform can't run Winlink (Windows only) then it can't host." A Mac is a development machine only; no Mac installer or launcher ships.
 - **The Mac Studio's clone:** replace it, because it holds the old history. The steps are in Travis's Google Drive, *Mac Studio - replace EMCOMM clone commands.txt*.
 
-- **Decisions for Travis:** does VARA HF stay last in the Contingency steps, after P2P, given that HF can reach the CMS and steps 3 and 4 cannot; and should Winlink's Vara FM Radio-only session join the steps (it needs a Message Pickup Station registered before an outage)?
+- **Decided 2026-11-07:** VARA HF stays last: once VARA FM has failed in every mode, the HAM sends a Winlink Message over VARA HF.
+- **Decision for Travis:** should Winlink's Vara FM Radio-only session join the steps? It needs a Message Pickup Station registered before an outage.
 
 ## Open work, in the order it is worth doing
 
