@@ -391,6 +391,7 @@ Automated: `python testing/test_phone_api.py` (two scratch EOC servers, 17 check
 
 | Date | Who | Sections | Notes |
 |---|---|---|---|
+| 2026-11-07 (VARA HF by hand; no Radio-only) | Claude, Travis | P42 | Travis: VARA HF is a special manual step by a HAM operator with limited traffic, the local RMS Gateway is not set up for HF, and Radio-only sessions are not used. PACE plan, README, card 2 and CLAUDE.md updated |
 | 2026-11-07 (VARA HF last) | Claude, Travis | P42 | Travis: when VARA FM fails in any of its modes, the HAM sends Winlink messages over VARA HF. The PACE plan's step 5, the README and CLAUDE.md say so; card 2 already lists HF last |
 | 2026-11-06 (release 2026-11-06.3) | Claude | H2, H3 | Contingency steps, voice to the Area, EMCOMM EOC icon and Browse released: tag `v1.0`, 14 assets |
 | 2026-11-06 (EOC icon, Browse) | Claude, Travis | P43–P46 | Travis on a real iPhone: the phone page told people with no app to open the app. New home-screen icon for the EOC Wi-Fi, chosen over certificates on volunteers' phones, and the full offline app offered when there is internet. Simulator Setup has Browse. WebKit on this scaled display lays a tablet out at 656 px, which found a real overflow in the simulator's no-data box, fixed |

@@ -15,7 +15,7 @@
 - **The Mac Studio's clone:** replace it, because it holds the old history. The steps are in Travis's Google Drive, *Mac Studio - replace EMCOMM clone commands.txt*.
 
 - **Decided 2026-11-07:** VARA HF stays last: once VARA FM has failed in every mode, the HAM sends a Winlink Message over VARA HF.
-- **Decision for Travis:** should Winlink's Vara FM Radio-only session join the steps? It needs a Message Pickup Station registered before an outage.
+- **Decided 2026-11-07:** no Winlink Radio-only sessions. VARA HF is a special manual step by a HAM operator, with only what must go; the local RMS Gateway is not set up for HF.
 
 ## Open work, in the order it is worth doing
 
