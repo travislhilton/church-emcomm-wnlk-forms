@@ -241,9 +241,9 @@ EOC laptop (Message Center running):
 
 Simulator laptop (the drill controller):
   Desktop -> Church of Jesus Christ EMCOMM Simulator.
-  1. Setup -> 1. Organization pack -> Browse -> choose "2 Organization pack" -> Use this folder -> Load pack
+  1. Setup -> Browse for the pack -> open the folders -> press Use "2 Organization pack" (the pack loads)
      (pseudonymized).
-  2. Setup -> Drill configuration -> the same drill-config.json.
+  2. Press "Set up from them" under step 1, choose which EOC this laptop is, press Set up this simulator.
   The scenario "{scenario}" appears in the list (it travels in the pack's simulation\\scenarios\\).
 
 HAM operators (Winlink Express):

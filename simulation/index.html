@@ -20,10 +20,10 @@
   * { box-sizing:border-box; }
   html, body { height:100%; margin:0; }
   body { font:14px/1.4 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color:var(--ink); background:var(--bg); display:flex; flex-direction:column; }
-  header { display:flex; align-items:center; gap:12px; padding:7px 14px; background:var(--panel); border-bottom:1px solid var(--line); flex:0 0 auto; }
+  header { display:flex; flex-wrap:wrap; align-items:center; gap:4px 12px; padding:7px 14px; background:var(--panel); border-bottom:1px solid var(--line); flex:0 0 auto; }
   header h1 { font-size:17px; margin:0; font-weight:600; white-space:nowrap; }
   header .disc { color:var(--mute); font-size:12px; }
-  header .st { margin-left:auto; font-size:12px; color:var(--mute); white-space:nowrap; display:flex; gap:10px; align-items:center; }
+  header .st { margin-left:auto; font-size:12px; color:var(--mute); display:flex; flex-wrap:wrap; gap:4px 10px; align-items:center; min-width:0; }
   header .st b { color:var(--ink); }
   .badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:700; letter-spacing:.03em; }
   .badge.real { background:#f8d7d3; color:#8a1f12; border:1px solid #e0a39b; }
@@ -53,6 +53,16 @@
   .btns { display:flex; gap:6px; flex-wrap:wrap; margin:6px 0; align-items:center; }
   .muted { color:var(--mute); } .small { font-size:12px; } .ok { color:var(--ok); } .err { color:var(--err); } .warn { color:var(--warn); }
   .box { border:1px solid var(--line); border-radius:6px; padding:6px 8px; margin:4px 0; background:#fafbfc; }
+  #bx-bg { display:none; position:fixed; inset:0; background:rgba(15,23,42,.5); z-index:50; align-items:center; justify-content:center; }
+  #bx { background:#fff; border-radius:10px; width:min(720px,94vw); max-height:92vh; display:flex; flex-direction:column; gap:8px; padding:14px 16px; box-shadow:0 10px 40px rgba(0,0,0,.35); }
+  #bx-list { height:min(340px,42vh); overflow:auto; border:1px solid var(--line); border-radius:6px; }
+  #bx-list.busy { opacity:.55; pointer-events:none; }
+  #bx-list .row { display:flex; gap:8px; align-items:center; width:100%; text-align:left; padding:8px 10px; border:none; border-bottom:1px solid var(--line); background:transparent; font:inherit; cursor:pointer; overflow-wrap:anywhere; }
+  #bx-list .row:hover { background:#eef4fb; }
+  #bx-list .row.zip { cursor:default; color:#5d6b7a; }
+  #bx-list .tag { font-size:12px; font-weight:700; border-radius:4px; padding:0 6px; white-space:nowrap; }
+  #bx-list .tag.pack { background:#dcfce7; color:#14532d; } #bx-list .tag.holds { background:#e0f2fe; color:#0c4a6e; }
+  #bx-status { min-height:40px; font-size:13px; }
   .list { max-height:180px; overflow:auto; border:1px solid var(--line); border-radius:6px; padding:4px 6px; }
   #orglist { list-style:none; margin:0; padding:0; }
   #orglist li { padding:5px 6px; border-radius:5px; cursor:pointer; display:flex; justify-content:space-between; gap:8px; }
@@ -139,6 +149,17 @@
 </style>
 </head>
 <body>
+<div id="bx-bg" role="dialog" aria-modal="true" aria-labelledby="bx-title">
+  <div id="bx">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b id="bx-title" style="font-size:16px">Choose the organization pack folder</b><button class="b s" id="bx-cancel">Cancel</button></div>
+    <div class="small muted">Open folders by clicking them. The folder marked <span style="background:#dcfce7;color:#14532d;font-weight:700;border-radius:4px;padding:0 6px">&#10003; organization pack</span> is the one to choose. In a participant package it is <b>2 Organization pack</b>.</div>
+    <div style="display:flex;gap:6px"><input type="text" id="bx-path" style="flex:1;min-width:0" aria-label="Folder"><button class="b s" id="bx-go">Go</button></div>
+    <div id="bx-places" class="btns small" style="margin:0"></div>
+    <div id="bx-list"></div>
+    <div id="bx-status"></div>
+    <div style="display:flex;justify-content:flex-end"><button class="b" id="bx-use" disabled>Use this folder</button></div>
+  </div>
+</div>
 <header>
   <h1>Church of Jesus Christ EMCOMM Simulator</h1>
   <span class="disc">Emergency communications drill console · independent volunteer project, not an official Church product</span>
@@ -195,18 +216,21 @@
       <div id="dc-msg" class="small" style="margin-top:4px"></div>
     </details>
     <h3 id="setup-1">1. Organization pack</h3>
-    <input type="text" id="packpath" placeholder="Your directory export folder (with csv and simulator in it), or EOC Message Center\simulation\example\juniper-plains">
-    <div class="btns">
-      <select id="privsel" style="width:auto"><option value="pseudonymized">Pseudonymized (default)</option><option value="real">Real contacts</option></select>
-      <button class="b s" id="b-browse">Browse&#8230;</button><button class="b" id="b-pack">Load pack</button><span id="packinfo" class="small muted"></span>
-    </div>
-    <div id="browse-box" class="box small" style="display:none">
-      <div id="browse-now" style="font-weight:600;overflow-wrap:anywhere"></div>
-      <div id="browse-drives" class="btns" style="margin:4px 0"></div>
-      <div id="browse-list" style="max-height:240px;overflow:auto;border:1px solid var(--line);border-radius:6px;background:#fff"></div>
-      <div id="browse-note" class="small muted" style="margin:4px 0"></div>
-      <div class="btns"><button class="b" id="b-browse-use" disabled>Use this folder</button><button class="b s" id="b-browse-close">Close</button></div>
-    </div>
+    <p class="small" style="margin:2px 0 6px">The folder with your community's wards, leaders and maps. From a participant package: unzip it, then choose its <b>2 Organization pack</b> folder.</p>
+    <div class="btns"><button class="b" id="b-browse">Browse for the pack&#8230;</button><span id="packinfo" class="small muted"></span></div>
+    <div id="dc-offer" class="box small" style="display:none;border-color:#86c79a;background:#f1faf3"></div>
+    <details class="small" style="margin:4px 0"><summary>What a pack folder looks like, and other ways to load one</summary>
+      <pre style="margin:4px 0;font-size:12px;line-height:1.35;white-space:pre-wrap">BRF-1 participant package\        (unzipped)
+  1 Reference cards\
+  2 Organization pack\              &#8592; choose this folder
+    csv\                            organizations.csv, contacts.csv, ...
+    simulator\                      the maps
+    simulation\drill-config.json   the drill's settings
+  3 Winlink training set\</pre>
+      <p class="muted" style="margin:2px 0">To try the system, use the invented example: <code>EOC Message Center\simulation\example\juniper-plains</code>. You can also type or paste a folder path here:</p>
+      <div class="btns"><input type="text" id="packpath" style="flex:1;min-width:0" placeholder="D:\Drills\BRF-1 participant package\2 Organization pack"><button class="b s" id="b-pack">Load pack</button></div>
+      <label class="small">Contacts <select id="privsel" style="width:auto"><option value="pseudonymized">Pseudonymized (default)</option><option value="real">Real contacts</option></select></label>
+    </details>
     <div id="consent-box" class="box small" style="display:none;border-color:#e0a39b;background:#fdf3f1">
       <b>Real contacts: record the consent first.</b> The directory's names, phones and emails will show on every card, inject and report of this drill.
       <div class="btns small" style="margin:6px 0 0;flex-wrap:wrap;gap:6px">
@@ -250,7 +274,8 @@
       <p class="small muted" style="margin:4px 0 0">Red rows stop the drill from naming the people the cards and injects refer to. Directory roles come from the Church directory export; add the others under step 1. The people in the room (drill controller, EOC operator, HAM operator) are the scenario's role cards on the Run tab.</p>
     </div>
     <h3 id="setup-3">3. The EOC this simulator feeds</h3>
-    <input type="url" id="eocurl" placeholder="http://10.0.0.5:8080">
+    <p class="small muted" style="margin:2px 0 4px">The EOC server's address. On the laptop that runs it: <code>http://127.0.0.1:8080</code>. On another laptop: the address under the QR (Quick Response) code on the EOC wall, like <code>http://192.168.1.20:8080</code>. Then press <b>Check EOC</b>.</p>
+    <input type="url" id="eocurl" placeholder="http://192.168.1.20:8080">
     <div class="btns"><button class="b" id="b-check">Check EOC</button><span id="eocinfo" class="small muted"></span></div>
     <div id="eocdetail" class="small muted"></div>
     <div class="btns small">
@@ -428,6 +453,7 @@ async function loadInfo() {
   showDrillNow();
   if (!$('eocurl').value) $('eocurl').value = S.info.eocUrl || '';
   showPackInfo();
+  offerPackDrillConfig();
   if (S.info.pack) await loadPack();
   if (S.info.ok && !S.dataset) await loadDataset();
   else if (!S.info.ok) { $('nodata-msg').textContent = S.info.error || ''; $('nodata').style.display = S.pack ? 'none' : 'flex'; }
@@ -437,7 +463,8 @@ async function loadInfo() {
 }
 function showPackInfo() {
   const p = S.info && S.info.pack;
-  $('packinfo').innerHTML = p ? `<span class="ok">✓</span> ${p.stakes} stakes · ${p.units} units (${p.wards} wards, ${p.branches} branches) · ${p.buildings} buildings · ${p.contacts} contacts${S.info.localRoles ? ` (${S.info.localRoles} added here)` : ''}` : `<span class="err">${esc(S.info && S.info.packError || 'no pack')}</span>`;
+  if (!p) { $('packinfo').innerHTML = S.info && S.info.packError ? `<span class="err">${esc(S.info.packError)}</span>` : '<span class="muted">No pack yet.</span>'; }
+  else $('packinfo').innerHTML = p ? `<span class="ok">✓</span> ${p.stakes} stakes · ${p.units} units (${p.wards} wards, ${p.branches} branches) · ${p.buildings} buildings · ${p.contacts} contacts${S.info.localRoles ? ` (${S.info.localRoles} added here)` : ''}` : `<span class="err">${esc(S.info && S.info.packError || 'no pack')}</span>`;
   $('privsel').value = (S.info && S.info.privacy) || 'pseudonymized';
   const c = S.info && S.info.consent;
   if (p && c) $('packinfo').innerHTML += ` · <span class="err">real contacts</span>, consent ${esc(c.by)} (${esc(c.role || 'Stake President')}, ${esc(c.date)}), recorded by ${esc(c.recordedBy || '')}`;
@@ -481,7 +508,7 @@ function renderLocalRoles() {
 $('lr-add').onclick = () => { LR.roles.push({ org: (LR.orgs[0] || {}).id || '', role: 'Emergency Response Director', first: '', last: '', mobile: '', email: '' }); renderLocalRoles(); };
 $('lr-save').onclick = async () => {
   $('lr-msg').textContent = 'saving…';
-  try { const r = await post('/api/local-roles', { roles: LR.roles }); if (!r.ok) throw new Error(r.error); S.info = r.info; showPackInfo(); await loadPack(); await loadLocalRoles(); $('lr-msg').innerHTML = `<span class="ok">saved ${r.count} role(s); pack reloaded</span>`; }
+  try { const r = await post('/api/local-roles', { roles: LR.roles }); if (!r.ok) throw new Error(r.error); S.info = r.info; showPackInfo(); offerPackDrillConfig(); await loadPack(); await loadLocalRoles(); $('lr-msg').innerHTML = `<span class="ok">saved ${r.count} role(s); pack reloaded</span>`; }
   catch (e) { $('lr-msg').innerHTML = `<span class="err">${esc(e.message)}</span>`; }
 };
 async function loadPack() {
@@ -730,7 +757,7 @@ window.addEventListener('resize', resize);
 // ---------- Setup: pack, EOC, scope, scenario ----------
 async function loadPackAs(mode, consent) {
   $('packinfo').textContent = 'loading…';
-  try { const r = await post('/api/pack', { path: $('packpath').value.trim(), privacy: mode, confirm: mode === 'real', consent: consent || undefined }); S.info = r.info; showPackInfo(); await loadPack(); if (S.info.ok && !S.dataset) await loadDataset(); await loadScenarios(); updateHeader(); log(`Pack loaded (${mode}): ${S.info.pack.units} units` + (consent ? ` · consent ${consent.by}, ${consent.date}` : '')); return true; }
+  try { const r = await post('/api/pack', { path: $('packpath').value.trim(), privacy: mode, confirm: mode === 'real', consent: consent || undefined }); S.info = r.info; showPackInfo(); offerPackDrillConfig(); await loadPack(); if (S.info.ok && !S.dataset) await loadDataset(); await loadScenarios(); updateHeader(); log(`Pack loaded (${mode}): ${S.info.pack.units} units` + (consent ? ` · consent ${consent.by}, ${consent.date}` : '')); return true; }
   catch (e) { $('packinfo').innerHTML = `<span class="err">${esc(e.message)}</span>`; log('Pack: ' + e.message, 'err'); return false; }
 }
 function showConsent(on) { $('consent-box').style.display = on ? '' : 'none'; if (on) { if (!$('cs-date').value) $('cs-date').value = new Date().toISOString().slice(0, 10); $('consent-err').textContent = ''; $('cs-by').focus(); } }
@@ -742,25 +769,64 @@ $('b-consent-load').onclick = async () => {
   if (miss) { $('consent-err').textContent = 'Missing: ' + miss; return; }
   if (await loadPackAs('real', consent)) showConsent(false);
 };
-// ── Browse: find the organization pack folder on this laptop ──
-let browsing = '';
-async function browseTo(path) {
-  const box = $('browse-box'); box.style.display = '';
-  const r = await fetch('/api/browse?path=' + encodeURIComponent(path || ''));
-  const d = await r.json();
-  if (!r.ok) { $('browse-now').textContent = ''; $('browse-list').innerHTML = ''; $('browse-drives').innerHTML = ''; $('browse-note').textContent = d.error || 'Browse is not available.'; $('b-browse-use').disabled = true; return; }
-  browsing = d.path;
-  $('browse-now').textContent = d.path;
-  const row = (label, p, mark) => `<button type="button" class="browse-row" data-p="${esc(p)}" style="display:block;width:100%;text-align:left;padding:6px 8px;border:none;border-bottom:1px solid var(--line);background:transparent;cursor:pointer;overflow-wrap:anywhere;font:inherit">${esc(label)}${mark ? ' <b style="color:#1a6b3c">&#10003; organization pack</b>' : ''}</button>`;
-  $('browse-drives').innerHTML = d.drives.map(x => `<button type="button" class="b s browse-row" data-p="${esc(x)}">${esc(x)}</button>`).join('');
-  $('browse-list').innerHTML = (d.parent ? row('\u2191 Up one folder', d.parent, false) : '') + d.folders.map(f => row('\uD83D\uDCC1 ' + f.name, f.path, f.pack)).join('') || '<div style="padding:6px 8px" class="muted">No folders here.</div>';
-  $('browse-note').textContent = d.error || (d.pack ? 'This folder is an organization pack.' : 'An organization pack is the folder that holds csv and simulator. In a participant package, unzip it first, then open 2 Organization pack.');
-  $('b-browse-use').disabled = !d.pack;
-  document.querySelectorAll('.browse-row').forEach(b => { b.onclick = () => browseTo(b.dataset.p); });
+// ── Browse: find the organization pack folder on this laptop (a window, safe against double-clicks) ──
+const BX = { d: null, busy: false, quietUntil: 0, seq: 0 };
+function bxOpen() { BX.quietUntil = 0; $('bx-bg').style.display = 'flex'; bxGo($('packpath').value.trim()); }
+function bxClose() { $('bx-bg').style.display = 'none'; }
+async function bxGo(path, fromList) {
+  if (fromList && (BX.busy || Date.now() < BX.quietUntil)) return;          // the second click of a double-click: ignored, never lands on the next list
+  const my = ++BX.seq;                                                       // Go or a place always wins; an older listing that arrives late is dropped
+  BX.busy = true; $('bx-list').classList.add('busy');
+  try {
+    const r = await fetch('/api/browse?path=' + encodeURIComponent(path || ''));
+    const d = await r.json();
+    if (my !== BX.seq) return;
+    if (!r.ok) { BX.d = null; $('bx-list').innerHTML = ''; $('bx-places').innerHTML = ''; $('bx-status').innerHTML = `<span class="err">${esc(d.error || 'Browse is not available.')}</span> Type the full path of the pack folder on step 1.`; $('bx-use').disabled = true; return; }
+    BX.d = d; bxRender(d);
+  } catch (e) { $('bx-status').innerHTML = `<span class="err">The simulator did not answer: ${esc(e.message)}</span>`; }
+  finally { if (my === BX.seq) { BX.busy = false; if (fromList) BX.quietUntil = Date.now() + 450; $('bx-list').classList.remove('busy'); } }
 }
-$('b-browse').onclick = () => browseTo($('packpath').value.trim());
-$('b-browse-close').onclick = () => { $('browse-box').style.display = 'none'; };
-$('b-browse-use').onclick = () => { $('packpath').value = browsing; $('browse-box').style.display = 'none'; log('Folder chosen. Press Load pack.'); };
+function bxRender(d) {
+  $('bx-path').value = d.path;
+  $('bx-places').innerHTML = d.places.concat(d.drives.map(x => ({ name: x, path: x }))).map(p => `<button type="button" class="b s" data-p="${esc(p.path)}">${esc(p.name)}</button>`).join('');
+  const row = (label, p, tag) => `<button type="button" class="row" data-p="${esc(p)}">${esc(label)}${tag || ''}</button>`;
+  $('bx-list').innerHTML = (d.parent ? row('\u2191  Up one folder', d.parent) : '')
+    + d.folders.map(f => row('\uD83D\uDCC1  ' + f.name, f.path, f.pack ? ' <span class="tag pack">\u2713 organization pack</span>' : f.holds_pack ? ' <span class="tag holds">holds a pack</span>' : '')).join('')
+    + d.zips.map(z => `<div class="row zip">\uD83D\uDCE6  ${esc(z)} <span class="small">\u2014 a zip file: unzip it first (right-click it in File Explorer, Extract All), then open the folder it makes</span></div>`).join('')
+    || '<div class="row zip">No folders here.</div>';
+  document.querySelectorAll('#bx-list button[data-p]').forEach(b => { b.onclick = e => { if (e.detail > 1) return; bxGo(b.dataset.p, true); }; });
+  document.querySelectorAll('#bx-places [data-p]').forEach(b => { b.onclick = () => { BX.quietUntil = 0; bxGo(b.dataset.p); }; });
+  const inside = d.packs_inside || [];
+  if (d.error) $('bx-status').innerHTML = `<span class="err">${esc(d.error)}</span>`;
+  else if (d.pack) $('bx-status').innerHTML = '<b class="ok">\u2713 This folder is an organization pack.</b> Press <b>Use this folder</b>.';
+  else if (inside.length) $('bx-status').innerHTML = 'This folder holds an organization pack: ' + inside.map(p => `<button type="button" class="b" data-use="${esc(p)}">Use \u201c${esc(p.split(/[\\/]/).pop())}\u201d</button>`).join(' ');
+  else $('bx-status').innerHTML = '<span class="muted">Not a pack folder. Keep opening folders until one is marked \u2713 organization pack.</span>';
+  document.querySelectorAll('#bx-status [data-use]').forEach(b => { b.onclick = () => bxUse(b.dataset.use); });
+  $('bx-use').disabled = !d.pack;
+}
+function bxUse(path) {
+  $('packpath').value = path; bxClose();
+  if ($('privsel').value === 'real') { showConsent(true); log('Folder chosen. Record the consent, then load with real contacts.'); return; }
+  log('Folder chosen: ' + path); loadPackAs('pseudonymized');
+}
+$('b-browse').onclick = bxOpen;
+$('bx-cancel').onclick = bxClose;
+$('bx-go').onclick = () => { BX.quietUntil = 0; bxGo($('bx-path').value.trim()); };
+$('bx-path').onkeydown = e => { if (e.key === 'Enter') bxGo($('bx-path').value.trim()); };
+$('bx-use').onclick = () => { if (BX.d && BX.d.pack) bxUse(BX.d.path); };
+$('bx-bg').onclick = e => { if (e.target === $('bx-bg')) bxClose(); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('bx-bg').style.display === 'flex') bxClose(); });
+// the drill configuration a participant package carries: offered once its pack is loaded
+async function offerPackDrillConfig() {
+  const box = $('dc-offer');
+  if (!(S.info && S.info.pack && S.info.packDrillConfig) || (S.info.drill && S.info.drill.eoc)) { box.style.display = 'none'; return; }
+  box.style.display = '';
+  box.innerHTML = '<b>This pack includes the drill\'s settings</b> (drill-config.json). <button type="button" class="b" id="dc-from-pack">Set up from them</button> <span class="muted">You then choose which EOC this laptop is.</span>';
+  $('dc-from-pack').onclick = async () => {
+    try { dcUse(await getJSON('/api/pack/drill-config')); $('dc-box').open = true; $('dc-box').scrollIntoView({ block: 'start' }); }
+    catch (e) { box.innerHTML += `<div class="err">${esc(e.message)}</div>`; }
+  };
+}
 $('b-pack').onclick = async () => {
   const mode = $('privsel').value;
   // Real contacts: the recorded consent of this session is reused (same pack); otherwise the form opens.
@@ -850,9 +916,11 @@ let DC = null;
 $('dc-file').onchange = () => {
   const f = $('dc-file').files[0]; if (!f) return;
   const r = new FileReader();
-  r.onload = () => {
+  r.onload = () => { try { dcUse(JSON.parse(r.result)); } catch (e) { $('dc-msg').textContent = 'Could not read it: ' + e.message; } };
+  r.readAsText(f);
+};
+function dcUse(c) {
     try {
-      const c = JSON.parse(r.result);
       if (!c || c.kind !== 'church_emcomm_drill_config' || !Array.isArray(c.eocs)) throw new Error('this is not a drill configuration file');
       DC = c;
       const had = (S.info && S.info.drill) || {};
@@ -861,11 +929,9 @@ $('dc-file').onchange = () => {
       $('dc-opt').innerHTML = c.eocs.filter(e => e.manned === 'optional').map(e =>
         `<label class="row small"><input type="checkbox" data-opt="${esc(e.id)}"${(had.manned || []).includes(e.id) ? ' checked' : ''}> People staff <b>${esc(e.name)}</b> in this drill</label>`).join('');
       $('dc-pick').style.display = '';
-      $('dc-msg').textContent = `${c.name} · ${c.eocs.length} EOCs · scenario ${c.scenario} · contacts ${c.privacy}`;
+      $('dc-msg').textContent = `${c.name} · ${c.eocs.length} EOCs · scenario ${c.scenario} · contacts ${c.privacy}. Choose which EOC this laptop is, then press Set up this simulator.`;
     } catch (e) { $('dc-msg').textContent = 'Could not read it: ' + e.message; }
-  };
-  r.readAsText(f);
-};
+}
 $('dc-apply').onclick = async () => {
   if (!DC) return;
   const manned = [...document.querySelectorAll('#dc-opt input[data-opt]:checked')].map(i => i.dataset.opt);

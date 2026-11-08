@@ -6,11 +6,11 @@ geographic dataset that lives OUTSIDE the repository; loads the organization pac
 run time; plans and plays runs against a running EOC (Emergency Operations Center)
 server (eoc/eoc_server.py, port 8080).
 
-    python simulation/sim_server.py                       # port 8090, pack from the last settings or the default export
+    python simulation/sim_server.py                       # port 8090, the pack chosen last time (Setup, step 1)
     python simulation/sim_server.py 8091                  # another port
-    python simulation/sim_server.py --data "D:\\cdol-2026-10-30"   # export root (dataset + pack source)
+    python simulation/sim_server.py --data "D:\\Drills\\2 Organization pack"   # export root (dataset + pack source)
     python simulation/sim_server.py --privacy real        # real contacts (default: pseudonymized)
-    set EMCOMM_SIM_DATA=D:\\cdol-2026-10-30                 # same as --data
+    set EMCOMM_SIM_DATA=D:\\Drills\\2 Organization pack   # same as --data
 
 Under /data/ only files below ``<export root>/simulator/`` are served (GeoJSON layers,
 overlay images, scale tables). The contact workbook, CSV files and PDFs in the export
@@ -87,26 +87,60 @@ def own_addresses() -> set:
     return _OWN['ips']
 
 
+def default_pack() -> str:
+    """The maintainer's own export when this copy sits beside it; otherwise no default (never a path that is not there)."""
+    return str(DEFAULT_EXPORT) if DEFAULT_EXPORT.is_dir() else ''
+
+
+def is_pack_folder(d: Path) -> bool:
+    return (d / 'csv' / 'organizations.csv').is_file()
+
+
 def browse_folder(start: str) -> dict:
-    """One folder of this laptop for the Setup tab's Browse button: its subfolders, and which are organization packs."""
+    """One folder of this laptop for the Setup tab's Browse window: subfolders, which are organization packs, which
+    hold one (a participant package), the .zip files that must be unzipped first, and the usual places to start."""
     drives = [f'{c}:\\' for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' if os.path.exists(f'{c}:\\')] if os.name == 'nt' else ['/']
-    here = Path(start).expanduser() if start else Path.home() / 'Documents'
+    home = Path.home()
+    places = [{'name': n, 'path': str(home / n)} for n in ('Desktop', 'Documents', 'Downloads') if (home / n).is_dir()]
+    here = Path(start).expanduser() if start else home / 'Documents'
     while not here.is_dir() and here.parent != here:     # a typed path that does not exist: its nearest real parent
         here = here.parent
     if not here.is_dir():
-        here = Path.home()
-    is_pack = lambda d: (d / 'csv' / 'organizations.csv').is_file()
-    folders, error = [], ''
+        here = home
+
+    def holds_pack(d: Path) -> list:
+        found = []
+        try:
+            for i, c in enumerate(d.iterdir()):
+                if i > 200:
+                    break
+                if c.is_dir() and is_pack_folder(c):
+                    found.append(str(c))
+        except OSError:
+            pass
+        return found
+    folders, zips, error = [], [], ''
     try:
         for d in sorted(here.iterdir(), key=lambda x: x.name.lower()):
             try:
                 if d.is_dir() and not d.name.startswith(('.', '$')) and d.name != 'System Volume Information':
-                    folders.append({'name': d.name, 'path': str(d), 'pack': is_pack(d)})
+                    pk = is_pack_folder(d)
+                    folders.append({'name': d.name, 'path': str(d), 'pack': pk, 'holds_pack': (not pk) and bool(holds_pack(d))})
+                elif d.is_file() and d.suffix.lower() == '.zip':
+                    zips.append(d.name)
             except OSError:
                 continue
     except OSError as e:
         error = f'This folder cannot be read: {e.strerror or e}'
-    return {'path': str(here), 'parent': str(here.parent) if here.parent != here else '', 'pack': is_pack(here), 'folders': folders, 'drives': drives, 'error': error}
+    return {'path': str(here), 'parent': str(here.parent) if here.parent != here else '', 'pack': is_pack_folder(here),
+            'packs_inside': holds_pack(here), 'folders': folders, 'zips': zips, 'drives': drives, 'places': places, 'error': error}
+
+
+def pack_drill_config() -> Path:
+    """drill-config.json inside the loaded pack (a participant package carries one), or None."""
+    p = STATE.settings.get('packPath') or ''
+    f = Path(p) / 'simulation' / 'drill-config.json' if p else None
+    return f if f and f.is_file() else None
 
 
 def is_controller(ip: str) -> bool:
@@ -262,6 +296,7 @@ class State:
             d['consent'] = self.consent if self.privacy == 'real' else None
             d['run'] = {'id': self.runner.run['id'], 'status': self.runner.run['clock']['status'], 'scenario': self.runner.run['scenario']['name']} if self.runner else None
             d['runsDir'] = str(self.runs_dir())
+            d['packDrillConfig'] = bool(self.pack) and pack_drill_config() is not None   # a participant package carries the drill's settings
             return d
 
 
@@ -611,6 +646,13 @@ class Handler(SimpleHTTPRequestHandler):
                 if not is_controller(self.client_address[0]):
                     return self.send_json({'error': 'Browse works only on the laptop that runs the simulator.'}, HTTPStatus.FORBIDDEN)
                 return self.send_json(browse_folder((q.get('path') or [''])[0]))
+            if path == '/api/pack/drill-config':   # the drill configuration a participant package carries in its pack
+                if not is_controller(self.client_address[0]):
+                    return self.send_json({'error': 'Only on the laptop that runs the simulator.'}, HTTPStatus.FORBIDDEN)
+                f = pack_drill_config()
+                if not f:
+                    return self.send_json({'error': 'This pack has no simulation\\drill-config.json.'}, HTTPStatus.NOT_FOUND)
+                return self.send_json(json.loads(f.read_text(encoding='utf-8-sig')))
             if path == '/api/pack':
                 with STATE.lock:
                     if not STATE.pack:
@@ -740,7 +782,10 @@ class Handler(SimpleHTTPRequestHandler):
                         return self.send_json({'ok': False, 'error': "Real-contact mode needs the consent recorded on the page: who consented, the date, who records it, and the in-the-room promise."}, HTTPStatus.BAD_REQUEST)
                     consent = {'by': by, 'role': str(c.get('role') or 'Stake President').strip() or 'Stake President', 'date': date, 'recordedBy': rec,
                                'scope': str(c.get('scope') or '').strip(), 'recordedAt': datetime.datetime.now().isoformat(timespec='seconds')}
-                STATE.load_pack(body.get('path') or STATE.settings.get('packPath') or str(DEFAULT_EXPORT), mode, consent)
+                where = body.get('path') or STATE.settings.get('packPath') or default_pack()
+                if not where:
+                    return self.send_json({'ok': False, 'error': 'Choose the organization pack folder first: press Browse.'}, HTTPStatus.BAD_REQUEST)
+                STATE.load_pack(where, mode, consent)
                 return self.send_json({'ok': True, 'info': STATE.info()})
             if path == '/api/local-roles':
                 with STATE.lock:
@@ -778,7 +823,7 @@ class Handler(SimpleHTTPRequestHandler):
                 pack_path = cfg.get('pack') or ''
                 if not pack_path or not Path(pack_path).exists():
                     # built on another computer (a participant package): use the pack loaded on step 1 here
-                    pack_path = STATE.settings.get('packPath') or str(DEFAULT_EXPORT)
+                    pack_path = STATE.settings.get('packPath') or default_pack()
                 STATE.load_pack(pack_path, mode, None)
                 if STATE.pack_error:
                     return self.send_json({'ok': False, 'error': STATE.pack_error}, HTTPStatus.BAD_REQUEST)
@@ -888,7 +933,7 @@ def export_text(run: dict) -> str:
 def main():
     port, export, priv = parse_args(sys.argv[1:])
     s = STATE.settings
-    pack_path = export or s.get('packPath') or str(DEFAULT_EXPORT)
+    pack_path = export or s.get('packPath') or default_pack()
     mode = priv or s.get('privacy') or 'pseudonymized'
     consent = s.get('consent') if isinstance(s.get('consent'), dict) else None
     if mode == 'real' and not (priv and consent and consent.get('by') and consent.get('packPath') == str(Path(pack_path).expanduser().resolve())):
@@ -897,11 +942,16 @@ def main():
         if priv == 'real':
             print('  NOTE: --privacy real ignored: no recorded consent for this pack. Record it on the Setup tab.')
         mode, consent = 'pseudonymized', None
-    try:
-        STATE.load_pack(pack_path, mode, consent)
-    except Exception as e:
-        STATE.pack_error = f'{type(e).__name__}: {e}'
-        STATE.export = Path(pack_path) if Path(pack_path).is_dir() else None
+    if not pack_path:
+        STATE.pack_error = ''                    # a new laptop: nothing chosen yet, and that is not an error
+    elif not Path(pack_path).expanduser().exists():
+        STATE.pack_error = f'The pack used last time is not at {pack_path} any more. Choose it again: press Browse.'
+    else:
+        try:
+            STATE.load_pack(pack_path, mode, consent)
+        except Exception as e:
+            STATE.pack_error = f'{type(e).__name__}: {e}'
+            STATE.export = Path(pack_path) if Path(pack_path).is_dir() else None
     STATE.port = port
     srv = ThreadingHTTPServer(('0.0.0.0', port), Handler)
     print('EMCOMM simulator server')

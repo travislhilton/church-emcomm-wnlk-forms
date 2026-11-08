@@ -83,6 +83,10 @@ shutil.copytree(REPO / 'simulation', work / 'simulation', ignore=shutil.ignore_p
 log1, log2 = open(tmp / 'eoc.log', 'w', encoding='utf-8'), open(tmp / 'sim.log', 'w', encoding='utf-8')
 procs = [subprocess.Popen([sys.executable, '-u', 'eoc_server.py', str(PE)], cwd=str(work / 'eoc'), stdout=log1, stderr=subprocess.STDOUT, env=env),
          subprocess.Popen([sys.executable, '-u', 'sim_server.py', str(PS)], cwd=str(work / 'simulation'), stdout=log2, stderr=subprocess.STDOUT, env=env)]
+drills = tmp / 'Copied here' / 'Drills'
+shutil.copytree(REPO / 'simulation' / 'example' / 'juniper-plains', drills / 'BRF-1 participant package' / '2 Organization pack', ignore=shutil.ignore_patterns('runs', 'local-roles.json'))
+(drills / 'BRF-1 participant package' / '1 Reference cards').mkdir()
+(drills / 'BRF-1 participant package 2026-11-04.zip').write_bytes(b'PK')
 web = QuietServer(('127.0.0.1', PW), functools.partial(Quiet, directory=str(REPO)))
 threading.Thread(target=web.serve_forever, daemon=True).start()
 
@@ -160,18 +164,100 @@ try:
             txt = pg.inner_text('#install-card')
             check(f'{name}: opened from the icon, the page drops the install steps and keeps the Wi-Fi warning', 'Add to Home Screen' not in txt and 'only on this' in txt, txt[:120])
             ctx.close()
-            # the person at the simulator laptop finds the pack with Browse, and the example folder is marked as a pack
+            # setting up the simulator as a person does: a participant package copied a few folders deep beside its zip,
+            # Browse, real double-clicks (two clicks 150 ms apart at the same spot), the package offers its pack, the
+            # drill's settings are offered once the pack loads
+            def human_dblclick(page, selector):
+                bb = page.locator(selector).first.bounding_box()
+                x, y = bb['x'] + 40, bb['y'] + bb['height'] / 2
+                page.mouse.click(x, y)
+                page.wait_for_timeout(150)
+                page.mouse.click(x, y)
+                page.wait_for_timeout(700)
             ctx, pg, errs = open_page(b, 'laptop', f'{SIM}/')
             pg.click('button:has-text("Setup")')
-            pg.fill('#packpath', str(work / 'simulation' / 'example'))
+            fresh = pg.inner_text('#packinfo')
+            check(f'{name}: a new simulator shows no error before a pack is chosen', 'Error' not in fresh and 'not an export' not in fresh, fresh)
             pg.click('#b-browse')
-            pg.wait_for_selector('#browse-list button:has-text("juniper-plains")', timeout=6000)
-            marked = 'organization pack' in pg.inner_text('#browse-list')
-            pg.click('#browse-list button:has-text("juniper-plains")')
-            pg.wait_for_function("!document.getElementById('b-browse-use').disabled", timeout=6000)
-            pg.click('#b-browse-use')
-            chosen = pg.input_value('#packpath')
-            check(f'{name}: Browse finds the organization pack and fills the path', marked and chosen.endswith('juniper-plains') and not errs, (marked, chosen, errs[:2]))
+            pg.wait_for_selector('#bx-bg', state='visible', timeout=5000)
+            pg.fill('#bx-path', str(drills.parent))
+            pg.click('#bx-go')
+            pg.wait_for_selector('#bx-list button:has-text("Drills")', timeout=6000)
+            human_dblclick(pg, '#bx-list button:has-text("Drills")')
+            at = pg.input_value('#bx-path')
+            check(f'{name}: a double-click opens exactly one folder and the Browse window stays open', pg.is_visible('#bx-bg') and at.endswith('Drills'), at)
+            zip_note = pg.inner_text('#bx-list')
+            check(f'{name}: a zip file is shown with how to unzip it', 'participant package 2026-11-04.zip' in zip_note and 'unzip it first' in zip_note, zip_note[-200:])
+            holds = 'holds a pack' in zip_note
+            human_dblclick(pg, '#bx-list button:has-text("BRF-1 participant package")')
+            offer = pg.locator('#bx-status [data-use]')
+            check(f'{name}: the participant package is marked and offers its 2 Organization pack', holds and offer.count() == 1 and '2 Organization pack' in offer.first.inner_text(), (holds, pg.inner_text('#bx-status')))
+            offer.first.click()
+            pg.wait_for_function("document.getElementById('packinfo').textContent.includes('stakes')", timeout=15000)
+            check(f'{name}: choosing it closes Browse and loads the pack', not pg.is_visible('#bx-bg') and pg.input_value('#packpath').endswith('2 Organization pack'), pg.inner_text('#packinfo')[:120])
+            pg.wait_for_selector('#dc-from-pack', timeout=8000)
+            pg.click('#dc-from-pack')
+            pg.wait_for_function("document.getElementById('dc-eoc').options.length > 0", timeout=8000)
+            check(f'{name}: the drill settings in the pack are offered and open with the EOC choices', pg.evaluate("document.getElementById('dc-box').open") and pg.locator('#dc-eoc option').count() > 1 and not errs, (pg.inner_text('#dc-msg')[:120], errs[:2]))
+            ctx.close()
+            # the Message Center: every folder it asks for opens the folder browser, never a typed-path prompt
+            ctx = b.new_context(viewport={'width': SIZES['laptop'][0], 'height': SIZES['laptop'][1]})
+            pg = ctx.new_page()
+            errs = []
+            pg.on('pageerror', lambda e: errs.append(str(e)))
+            pg.on('dialog', lambda d: d.accept('') if d.type == 'prompt' else d.dismiss())   # the call-sign question: answered blank, as a person may
+            pg.goto(f'{EOC}/', wait_until='load')
+            pg.wait_for_timeout(700)
+            pg.evaluate("browseMapFolder()")
+            pg.wait_for_selector('#fb-bg', state='visible', timeout=5000)
+            pg.fill('#fb-path', str(work / 'simulation' / 'example'))
+            pg.click('#fb-box button:has-text("Go")')
+            pg.wait_for_selector('#fb-list button:has-text("juniper-plains")', timeout=6000)
+            marked = 'map data' in pg.inner_text('#fb-list')
+            pg.click('#fb-list button:has-text("juniper-plains")')
+            pg.wait_for_function("document.getElementById('fb-note').textContent.includes('looks right')", timeout=6000)
+            pg.click('#fb-use')
+            chosen = pg.input_value('#eoc-map-path')
+            pg.evaluate("browseMapFolder()")
+            pg.wait_for_selector('#fb-bg', state='visible', timeout=5000)
+            pg.fill('#fb-path', str(drills.parent))
+            pg.click('#fb-box button:has-text("Go")')
+            pg.wait_for_selector('#fb-list button:has-text("Drills")', timeout=6000)
+            human_dblclick(pg, '#fb-list button:has-text("Drills")')
+            fb_at = pg.input_value('#fb-path')
+            check(f'{name}: in the Message Center a double-click opens exactly one folder and the window stays open', pg.is_visible('#fb-bg') and fb_at.endswith('Drills'), fb_at)
+            pg.evaluate("fbClose()")
+            check(f'{name}: the Map data folder Browse finds the export and fills the box', marked and chosen.endswith('juniper-plains') and not errs, (marked, chosen, errs[:2]))
+            drop = tmp / f'drop-{name}'
+            drop.mkdir()
+            pg.evaluate("configureDrop()")
+            pg.wait_for_selector('#fb-bg', state='visible', timeout=5000)
+            pg.fill('#fb-path', str(drop))
+            pg.click('#fb-box button:has-text("Go")')
+            pg.wait_for_function(f"document.getElementById('fb-path').value.endsWith('drop-{name}')", timeout=6000)
+            pg.click('#fb-use')
+            ok = False
+            for _ in range(20):
+                if pathlib.Path(call(f'{EOC}/api/drop/status').get('watch_path', '')) == drop:
+                    ok = True
+                    break
+                time.sleep(0.25)
+            check(f'{name}: the Drop Folder is chosen with the folder browser and saved', ok and not errs, (call(f'{EOC}/api/drop/status').get('watch_path'), errs[:2]))
+            wl = tmp / f'winlink-{name}'
+            wl.mkdir()
+            pg.evaluate("configureWatcher()")
+            pg.wait_for_selector('#fb-bg', state='visible', timeout=5000)
+            pg.fill('#fb-path', str(wl))
+            pg.click('#fb-box button:has-text("Go")')
+            pg.wait_for_function(f"document.getElementById('fb-path').value.endsWith('winlink-{name}')", timeout=6000)
+            pg.click('#fb-use')
+            ok = False
+            for _ in range(20):
+                if pathlib.Path(call(f'{EOC}/api/watcher/status').get('watch_path', '')) == wl:
+                    ok = True
+                    break
+                time.sleep(0.25)
+            check(f'{name}: the Winlink Express folder is chosen with the folder browser and saved', ok and not errs, (call(f'{EOC}/api/watcher/status').get('watch_path'), errs[:2]))
             ctx.close()
             # no signal: the report saved from the portal's form is still in the Outbox after the portal reloads
             ctx, pg, errs = open_page(b, 'phone', f'{WEB}/templates/disaster-report/Church_of_Jesus_Christ_Disaster_Report_Worker.html')

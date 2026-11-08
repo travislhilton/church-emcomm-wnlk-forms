@@ -66,6 +66,13 @@ try:
     try: call(PA, 'GET', '/icons/../eoc_server.py', raw=True); check('/icons/ serves only the listed icons', False)
     except urllib.error.HTTPError as e: check('/icons/ serves only the listed icons', e.code == 404)
     s, b = call(PA, 'GET', '/m', raw=True); check('the phone page names the manifest and the home-screen icon', b'/app.webmanifest' in b and b'apple-touch-icon' in b and b'Add to Home Screen' in b)
+    import urllib.parse as _up
+    br = call(PA, 'GET', '/api/browse?kind=map&path=' + _up.quote(str(REPO / 'simulation' / 'example')))
+    check('folder browser: lists this laptop\'s folders and marks the map data folder', br.get('drives') and any(f['name'] == 'juniper-plains' and f['mark'] for f in br.get('folders', [])) and br.get('label') == 'map data', br.get('folders'))
+    br = call(PA, 'GET', '/api/browse?kind=any&path=' + _up.quote(str(REPO / 'no' / 'such' / 'folder')))
+    check('folder browser: a path that does not exist opens its nearest real parent; any folder can be chosen', pathlib.Path(br.get('path', '')) == REPO and not br.get('mark'), br.get('path'))
+    own = subprocess.run([sys.executable, '-c', "import eoc_server as e; a = e._own_addresses(); print('203.0.113.5' in a, '127.0.0.1' in a)"], cwd=str(SP / 'srvA' / 'eoc'), capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60)
+    check('folder browser: refused to another device on the Wi-Fi, allowed at this laptop', own.stdout.split()[-2:] == ['False', 'True'], own.stdout[-200:] + own.stderr[-200:])
     for k, marker in (('dr', b'Disaster Report'), ('so', b'Supply Order'), ('wcl', b'Work Crew Log')):
         s, b = call(PA, 'GET', '/forms/' + k, raw=True); check(f'/forms/{k} serves the Worker form with the app module', s == 200 and marker in b and b'EMCOMM-APP:BEGIN' in b and b'EMCOMM.init' in b)
     try: call(PA, 'GET', '/forms/zz', raw=True); check('/forms/zz is 404', False)

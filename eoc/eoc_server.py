@@ -12,7 +12,7 @@ PORT = int(os.environ.get('EOC_PORT') or (sys.argv[1] if len(sys.argv) > 1 and s
 VERSION = '1.0'
 # The Worker forms / Church of Jesus Christ EMCOMM app version this server ships (APP_VERSION in templates/_shared/emcomm-app.js).
 # Phones whose app is older still send fine; the receive page just tells them to update when they have internet.
-FORMS_VERSION = '2026-11-06.3'
+FORMS_VERSION = '2026-11-07.1'
 BASE = pathlib.Path(__file__).resolve().parent   # resolve: before Python 3.9 __file__ is relative when started from this folder
 DB_FILE   = BASE / 'eoc_data.db'
 HTML_FILE = BASE / 'EOC_Message_Center.html'
@@ -2039,6 +2039,10 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
             return False
         return bool(host) and o.scheme in ('http', 'https') and o.netloc.lower() == host
 
+    def _is_this_laptop(self) -> bool:
+        """The person is at the laptop that runs this server (by localhost or by its own network address)."""
+        return self.client_address[0].split('%')[0] in _own_addresses()
+
     def _is_local(self) -> bool:
         return self.client_address[0] in ('127.0.0.1', '::1', '::ffff:127.0.0.1')
 
@@ -2082,6 +2086,10 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
             else:
                 self.send_json({'error': 'No such form here. Try /forms/dr, /forms/so or /forms/wcl'}, 404)
             return
+        if path == '/api/browse':        # this laptop's folders: for the person at this laptop, never for a phone or another laptop
+            if not self._is_this_laptop():
+                self.send_json({'error': 'Folders can be browsed only on the laptop that runs the EOC server. Type the full folder path instead.'}, 403); return
+            self.send_json(_browse_folder((params.get('path') or [''])[0], (params.get('kind') or ['any'])[0])); return
         if path == '/api/peers':
             self.send_json(_peer_list()); return
         if path == '/api/map/status':
@@ -2553,6 +2561,58 @@ def _host_ipv4s() -> list:
     except Exception:
         pass
     return sorted(found, key=lambda ip: (not _is_private_v4(ip), ip))
+
+
+# ── Folder browser for the Message Center: only for the person at this laptop ──
+_OWN_IPS = None
+def _own_addresses() -> set:
+    """This computer's own addresses: a request from one of them comes from someone at this laptop."""
+    global _OWN_IPS
+    if _OWN_IPS is None:
+        ips = {'127.0.0.1', '::1', '::ffff:127.0.0.1'}
+        try:
+            ips.add(get_local_ip())
+        except Exception:
+            pass
+        for fn in (lambda: socket.gethostbyname_ex(socket.gethostname())[2], lambda: [a[4][0] for a in socket.getaddrinfo(socket.gethostname(), None)]):
+            try:
+                ips |= set(fn())
+            except Exception:
+                pass
+        _OWN_IPS = {i.split('%')[0] for i in ips}
+    return _OWN_IPS
+
+
+FOLDER_MARKS = {   # what each kind of folder looks like, so the right one can be marked in the list
+    'map': ('map data', lambda d: (d / 'csv' / 'organizations.csv').is_file() or (d / 'simulator' / 'organization_boundaries.geojson').is_file()
+            or (d / 'organization_boundaries.geojson').is_file()),
+    'winlink': ('Winlink Express', lambda d: (d / 'RMS Express.exe').is_file()),
+    'any': ('', lambda d: False),
+}
+
+
+def _browse_folder(start: str, kind: str = 'any') -> dict:
+    """One folder of this laptop: its subfolders, and which look like the kind of folder asked for."""
+    label, looks = FOLDER_MARKS.get(kind, FOLDER_MARKS['any'])
+    drives = [f'{c}:\\' for c in string.ascii_uppercase if os.path.exists(f'{c}:\\')] if os.name == 'nt' else ['/']
+    here = pathlib.Path(start).expanduser() if start else pathlib.Path.home() / 'Documents'
+    while not here.is_dir() and here.parent != here:          # a typed path that does not exist: its nearest real parent
+        here = here.parent
+    if not here.is_dir():
+        here = pathlib.Path.home()
+    mark = lambda d: bool(label) and looks(d)
+    folders, error = [], ''
+    try:
+        for d in sorted(here.iterdir(), key=lambda x: x.name.lower()):
+            try:
+                if d.is_dir() and not d.name.startswith(('.', '$')) and d.name != 'System Volume Information':
+                    folders.append({'name': d.name, 'path': str(d), 'mark': mark(d)})
+            except OSError:
+                continue
+    except OSError as e:
+        error = f'This folder cannot be read: {e.strerror or e}'
+    return {'path': str(here), 'parent': str(here.parent) if here.parent != here else '', 'mark': mark(here), 'label': label,
+            'folders': folders, 'drives': drives, 'error': error}
 
 
 def get_local_ip():

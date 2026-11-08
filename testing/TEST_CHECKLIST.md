@@ -11,16 +11,16 @@ This file is the single source of truth for what has and has not been verified.
 
 **Three levels** (maintainer, 2026-11-06): any browser on any device, one Windows host laptop per EOC, and the Windows Winlink station. A platform that cannot run Winlink Express cannot host. Hosting and Winlink are tested on Windows; every browser client is in scope.
 
-## Current status (2026-11-06, version 2026-11-06.3)
+## Current status (2026-11-06, version 2026-11-07.1)
 
 | State | Rows |
 |---|---|
-| Passed | 187 |
+| Passed | 189 |
 | Passed by Claude, a real device or a person still to confirm | 21 |
 | Not run yet, or failed and waiting for a real device | 29 |
 | Skipped by decision | 1 |
 
-Latest automated run on the Windows VM, Python 3.8 and 3.14, both READY: acronyms 41/41, public files 5/5, example 45/45, simulator 190/190, phone API 74/74. Training samples 50/50, WebKit 37/37 and browsers 186/186 ran on 3.14 (Python 3.8 here has no Playwright). These suites cover the rows that name them; the Last run column of such a row is the last time it was checked by hand or changed.
+Latest automated run on the Windows VM, Python 3.8 and 3.14, both READY: acronyms 41/41, public files 5/5, example 45/45, simulator 190/190, phone API 77/77. Training samples 50/50, WebKit 37/37 and browsers 213/213 ran on 3.14 (Python 3.8 here has no Playwright). These suites cover the rows that name them; the Last run column of such a row is the last time it was checked by hand or changed.
 
 **Reference column:** each row links the [quick reference card][c-all] and the README section that describe what it tests. A new row needs both; `test_example.py` checks it.
 
@@ -357,6 +357,8 @@ Automated: `python testing/test_phone_api.py` (two scratch EOC servers, 17 check
 | P44 | A real iPhone adds the EMCOMM EOC icon | iPhone on the EOC Wi-Fi: scan the wall QR code in Safari → Share → Add to Home Screen → open it → New Disaster Report → Send to EOC; turn Wi-Fi off and confirm the icon does not open; with internet, follow Install the full offline app | the icon opens the phone page without Safari's bar; the report is filed; away from the Wi-Fi the icon fails as the page says | — | ⏳ 🔒 Travis | [Card 1][c1] · [Phones on the EOC Wi-Fi][r-phones] |
 | P45 | Browse finds the organization pack | `test_browsers.py` in three engines; `test_sim.py` | folders listed, a pack marked, Use this folder fills the path; a missing path opens its nearest real parent; a device on the Wi-Fi is refused | 2026-11-06 | ✅ Claude | [Card 5][c5] · [Simulator][r-sim] |
 | P46 | EOC discovery between two real computers | The Send to EOC chooser on W9TLH-3 listed the EOC running on W9TLH-7 | a second EOC on the Wi-Fi is offered by name and address | 2026-11-06 | ✅ Claude (seen during `test_browsers.py`) | [Card 3][c3] · [More than one EOC][r-multi] |
+| P47 | Every folder the pages ask for has a lookup | `test_phone_api.py` (`/api/browse`: lists folders, marks map data, nearest real parent, refused to another device); `test_browsers.py` in three engines (Map data folder, Drop Folder, Winlink Express folder chosen by clicking and saved) | no typed-path prompt is left; the drill configuration buttons use the file picker; the simulator's pack has Browse (P45) | 2026-11-07 | ✅ Claude | [Card 3][c3] · [EOC Operator][r-role3] · [Map tab][r-map] |
+| P48 | Simulator Setup as a new person does it | `test_browsers.py` in three engines: a new simulator shows no error; a participant package copied folders deep beside its zip; real double-clicks open one folder each and Browse stays open; the zip is explained; the package offers its 2 Organization pack; choosing it loads the pack; the drill settings in the pack are offered; the Message Center browser under the same double-click | Browse is a window with places and drives, the pack marked, Cancel apart from Use; no default path on a laptop without one; EOC address examples on step 3 | 2026-11-07 | ✅ Claude | [Card 5][c5] · [Simulator][r-sim] |
 
 ## Still open (summary of every ⏳ / 🔒 above)
 
@@ -391,6 +393,9 @@ Automated: `python testing/test_phone_api.py` (two scratch EOC servers, 17 check
 
 | Date | Who | Sections | Notes |
 |---|---|---|---|
+| 2026-11-07 (install checks) | Claude | A6 | Correction: the role 3 install checks (Claude's scratch script) did not run for the 2026-11-06.3 release or the folder-lookup change, because a byte in the script was corrupted; only the protected-files comparison ran, and the earlier reports overstated it. Repaired and run on the current install (2026-11-07.1, which contains 2026-11-06.3): 19/19. Browser test run twice in a row: 213/213 both times; a Go pressed while Browse was still loading was ignored, fixed in both apps |
+| 2026-11-07 (simulator Setup) | Claude, Travis | P48, P45, P47 | Travis on W9TLH-7: Browse closed after one folder. Reproduced: a person's double-click opened two levels, or hit Close when the list got short. Fixed in both apps; Browse is now a window that marks packs, explains zips and offers a participant package's pack; the drill settings in the pack are offered once it loads; the maintainer-only default path is used only where it exists. Browsers 213/213. One earlier run timed out once and passed on rerun; the phone test's WinError 10053 also came back once: timing in the test machinery, still to find |
+| 2026-11-07 (folder lookups) | Claude, Travis | P47 | Travis setting up W9TLH-7: the Map data folder needed a lookup, and every folder path should. Audit: three typed paths in the Message Center (Map data folder, Drop Folder, Winlink Express folder); all now use a folder browser. Phone API 77/77, browsers 213/213 |
 | 2026-11-07 (release) | Claude | H2, H3 | VARA HF wording and card 2 released: tag `v1.0`, 14 assets |
 | 2026-11-07 (VARA HF by hand; no Radio-only) | Claude, Travis | P42 | Travis: VARA HF is a special manual step by a HAM operator with limited traffic, the local RMS Gateway is not set up for HF, and Radio-only sessions are not used. PACE plan, README, card 2 and CLAUDE.md updated |
 | 2026-11-07 (VARA HF last) | Claude, Travis | P42 | Travis: when VARA FM fails in any of its modes, the HAM sends Winlink messages over VARA HF. The PACE plan's step 5, the README and CLAUDE.md say so; card 2 already lists HF last |
