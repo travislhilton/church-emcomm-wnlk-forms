@@ -21,7 +21,11 @@ fails = []
 
 
 def say(level, text):
-    print(f'{level:5}{text}')
+    try:
+        print(f'{level:5}{text}')
+    except UnicodeEncodeError:   # a console or file in a code page without these characters (cp1252)
+        enc = sys.stdout.encoding or 'ascii'
+        print(f'{level:5}{text}'.encode(enc, 'replace').decode(enc))
     if level == 'FAIL':
         fails.append(text)
 
@@ -121,7 +125,7 @@ def run_tests():
             detail = [ln for ln in r.stdout.splitlines() if ln.startswith('FAIL')][:5] or r.stderr.splitlines()[-3:]
             say('FAIL', f'{s[0]}: {last}')
             for d in detail:
-                print(f'       {d[:200]}')
+                say('', f'  {d[:200]}')
         else:
             say('NOTE' if 'SKIP' in last else 'PASS', f'{s[0]}: {last}')
 

@@ -219,7 +219,10 @@ try:
         print('SKIP JavaScript parity: playwright is not installed (python -m pip install playwright; python -m playwright install chromium)')
     if sync_playwright:
         with sync_playwright() as p:
-            b = p.chromium.launch()
+            try:
+                b = p.chromium.launch()
+            except Exception:   # no Playwright Chromium downloaded (the Windows VM): the installed Chrome
+                b = p.chromium.launch(channel='chrome')
             pg = b.new_page(viewport={'width': 1366, 'height': 900})
             errs = []
             pg.on('pageerror', lambda e: errs.append(str(e)))
