@@ -509,6 +509,12 @@ if ($installEOC) {
         Copy-Item $serverPy  (Join-Path $eocDest 'eoc_server.py')         -Force
         Write-OK "Copied: eoc_server.py"
     }
+    # The incident read-out for a voice net (GET /api/readout); the server runs without it, minus the read-out
+    $readoutPy = Join-Path $RepoRoot 'eoc\readout.py'
+    if (Test-Path $readoutPy) {
+        Copy-Item $readoutPy (Join-Path $eocDest 'readout.py') -Force
+        Write-OK "Copied: readout.py  (incident read-out, http://<server-ip>:8080/api/readout)"
+    }
     if (Test-Path $serverBat) {
         Copy-Item $serverBat (Join-Path $eocDest 'start_eoc_server.bat')  -Force
         Write-OK "Copied: start_eoc_server.bat"

@@ -12,6 +12,7 @@ testing/_out/
 eoc/eoc_data.db*
 eoc/__pycache__/
 eoc/backups/
+eoc/readout-latest.json*
 
 # Simulator runtime files (runs, pseudonym salt written beside a pack or the test fixture)
 simulation/__pycache__/

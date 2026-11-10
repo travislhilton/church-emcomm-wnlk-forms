@@ -73,7 +73,7 @@ FORMS = {
                       'Church_of_Jesus_Christ_Work_Crew_Log_Worker.html', 'Church of Jesus Christ Work Crew Log.txt'],
 }
 CORE = [f'templates/{d}/{n}' for d, names in FORMS.items() for n in names] + [
-    'eoc/EOC_Message_Center.html', 'eoc/EOC_Wall_Display.html', 'eoc/EOC_Phone.html', 'eoc/eoc_server.py',
+    'eoc/EOC_Message_Center.html', 'eoc/EOC_Wall_Display.html', 'eoc/EOC_Phone.html', 'eoc/eoc_server.py', 'eoc/readout.py',
     'eoc/start_eoc_server.bat',
     'simulation/sim_server.py', 'simulation/engine.py', 'simulation/orgpack.py', 'simulation/privacy.py',
     'simulation/drillconfig.py', 'simulation/community.py', 'simulation/scenario_check.py', 'simulation/index.html',
