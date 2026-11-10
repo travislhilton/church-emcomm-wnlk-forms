@@ -10,12 +10,22 @@
 - **Read [CLAUDE.md](CLAUDE.md) first** (standing rules, map, change routine, gotchas) and [CONTRIBUTING.md](CONTRIBUTING.md) for how to run and test. Every test and its last result is in [testing/TEST_CHECKLIST.md](testing/TEST_CHECKLIST.md).
 - **This file is public.** Nothing about the maintainer's own community goes here. Private notes and the full history of earlier sessions are in `secure data/handoff/` on the maintainer's computers.
 - **The repository is public** and started fresh on 2026-11-05. A clone from before that date must be deleted and cloned again.
-- **Live release:** version 2026-11-06.3, tag `v1.0`, released 2026-11-07 (wording on 2026-11-07: VARA HF by hand, no Radio-only). A release is the commit the tag names. The installer and Forms ZIP in `dist/`, the deck ZIP and the card PDFs are all release assets. If a Pages build sticks at `building`, ask for a rebuild: `gh api -X POST repos/travislhilton/church-emcomm-wnlk-forms/pages/builds`. `main` may be ahead with 2026-11-07.1 (folder lookups in the Message Center), committed locally until released.
-- **Three levels** (Travis, 2026-11-06): any browser on any device; one Windows host laptop per EOC for the server and the simulator; the Windows Winlink station. "If the platform can't run Winlink (Windows only) then it can't host." A Mac is a development machine only; no Mac installer or launcher ships.
-- **The Mac Studio's clone:** replace it, because it holds the old history. The steps are in Travis's Google Drive, *Mac Studio - replace EMCOMM clone commands.txt*.
+- **Live release:** version 2026-11-06.3, tag `v1.0` at `1f62d2c`, released 2026-11-07. A release is the commit the tag names. The installer and Forms ZIP in `dist/`, the deck ZIP and the card PDFs are all release assets. If a Pages build sticks at `building`, ask for a rebuild: `gh api -X POST repos/travislhilton/church-emcomm-wnlk-forms/pages/builds`.
+- **Not released yet:** `main` is ahead of the tag with version **2026-11-07.1**, committed locally and not pushed: the simulator's Setup a new person can follow (a Browse window that marks packs, explains zip files, offers a participant package's `2 Organization pack`, and offers the drill settings in the pack; a person's double-click opens one folder and never closes it; Go always works; no default path on a laptop without one) and a folder browser for every folder the Message Center asks for (Map data folder, Drop Folder, Winlink Express folder). Release only with Travis's OK.
+- **Three levels** (Travis, 2026-11-06): any browser on any device; one Windows host laptop per EOC for the server and the simulator; the Windows Winlink station. "If the platform can't run Winlink (Windows only) then it can't host." A Mac is a development machine only.
+- **Contingency Winlink steps** (`docs/PACE_PLAN.md` §5): RMS Gateway; held at the gateway (RMS Relay *Hold for Internet access*, set by its sysop); the local VARA FM RMS Post Office; VARA FM P2P; then, once VARA FM has failed in every mode, a Winlink Message over VARA HF, by hand, only what must go. No Winlink Radio-only sessions. Voice to the Council / Area EOC is VHF/UHF first, HF only if that fails.
 
-- **Decided 2026-11-07:** VARA HF stays last: once VARA FM has failed in every mode, the HAM sends a Winlink Message over VARA HF.
-- **Decided 2026-11-07:** no Winlink Radio-only sessions. VARA HF is a special manual step by a HAM operator, with only what must go; the local RMS Gateway is not set up for HF.
+## Do this first
+
+1. **Ask Travis whether to release 2026-11-07.1.** W9TLH-7 needs it: it runs 2026-11-06.3, whose Browse box closes on a double-click. Release with the routine in CLAUDE.md (push `main`, upload all 14 assets, move the tag, check Pages and the downloads by checksum).
+2. **Then install it on W9TLH-7**, which can now be done from this VM over SSH (the details are in `secure data/handoff/machines.md`): run the released installer as role 3, restart the EOC server and the simulator there, and check the installed version.
+3. **Help Travis finish setting up W9TLH-7's simulator**: Setup → Browse for the pack → the copied participant package → `2 Organization pack` → Set up from them.
+
+## Decisions waiting for Travis
+
+- **Comms Sheet structured fields:** a *Use* column on the gateways table (RMS Gateway, VARA FM RMS Post Office, VARA FM P2P, VARA HF), a *Holds mail when internet is down* column, and the P2P frequency on the sheet and the wall. Asked on 2026-11-07, not answered.
+- **The EOC database inside a synced folder** on W9TLH-7 (its Documents are redirected into OneDrive): a synced folder can conflict with a SQLite file in use. Options: leave it, keep the database outside OneDrive, or warn at install.
+- **Release 2026-11-07.1** (above).
 
 ## Open work, in the order it is worth doing
 
@@ -23,17 +33,19 @@ The checklist's *Still open* section lists every row that still needs a person o
 
 1. **A session with people (N8).** Use the simulator's Session tab: Reset before the meeting, GO when the instructions are given, then the debrief for the room (`/debrief`, P19). Open drills use Copper Creek Dam. Tune the scenario's `needs.defaults` from what the room can actually do. Hand out cards 9 and 10 (P23).
 2. **Winlink over the air** (two stations): B2–B9 with THIS IS AN EXERCISE ticked and a practice form, then every Contingency step in `docs/PACE_PLAN.md` §5 (B11). Ask the sysops of the local gateways which RMS Relay mode they run, and agree the local VARA FM RMS Post Office. First close every old `localhost:8001` tab (B10). Then F7, the CCD-1 messages (N34) and a live ICS 213RR from a partner agency's station (N32).
-3. **PACE and roll-up drills:** I1–I7 at every level, then the live Satellite → Stake → Area roll-up (J4).
+3. **PACE and roll-up drills:** I1–I7 at every level, then the live Satellite → Stake → Area roll-up (J4). EOC discovery between two real computers already works (P46: W9TLH-3 saw W9TLH-7).
 4. **Phone and other device checks:** the EMCOMM EOC icon on a real iPhone (P44); a real Android device (P40); a Mac, Linux computer or Chromebook joining by browser (P41); iPhone GPS and Share (C7, C8, C10); Send to EOC, the offline app and the camera scan (L3, L8, L9, L11, L12); print from the app (L15, L18); Home and no-dead-ends taps (L16, L17). L11 failed on 2026-10-31 and was fixed in the WebKit test (L14), so the iPhone repeat is still owed.
 5. **Other real-device checks:** a synced folder drop (E5), the USB backup (G2), a laptop hotspot with no internet (P4), a duplex print of the cards (P24), the wall on a TV (F27).
-6. **Test timing:** `test_phone_api.py` has stopped twice on WinError 10053 and `test_browsers.py` timed out once; each passed on rerun. Find the request before trusting a single failing run.
-7. **SSH to W9TLH-7:** this VM has a key (`~/.ssh/id_ed25519`, alias `w9tlh-7`); the script that adds it on W9TLH-7 is in Travis's Google Drive, `Y:\Projects\emcomm\Allow-SSH-from-W9TLH-3.ps1`.
+6. **An install test in the repository.** The role 3 install checks (installed files equal the repository; the installed EOC server and simulator start, serve every page, file an uploaded report, load the example pack) have so far been a scratch script outside the repository, and a corrupted character once stopped it from running without anyone noticing (corrected in the checklist, 2026-11-07). Make it `testing/test_install.py`, with a check that it ran.
+7. **Test timing:** `test_phone_api.py` has stopped three times on WinError 10053 and `test_browsers.py` timed out once; each passed on rerun. Find the request before trusting a single failing run.
 8. **Held:** the remaining outline scenarios (catalog in `docs/SIMULATOR_SCENARIOS.md`; write them with `docs/SCENARIO_AUTHORING.md` and check them with `simulation/scenario_check.py`).
 
 ## Machine notes
 
+- **SSH to W9TLH-7 works** (2026-11-09): `ssh w9tlh-7` from this VM, passwordless. The account name, paths and the scripts that set it up are in `secure data/handoff/machines.md`, which stays private. Its login shell is PowerShell: send PowerShell, never `&`.
+- **The Mac Studio's clone:** replace it, because it holds the old history. The steps are in Travis's Google Drive, *Mac Studio - replace EMCOMM clone commands.txt*.
 - Scratch servers for any EOC or simulator check: copy `eoc/` + `templates/` and `simulation/example/juniper-plains/` to a scratch folder. Set `LOCALAPPDATA`, `USERPROFILE` and `EMCOMM_DOCUMENTS` to scratch folders, or the scratch EOC watches the real Drop Folder. Start `eoc_server.py <port>` there and `sim_server.py <port> --data <scratch pack>`, send logs to files, and stop every scratch server by PID when done.
-- Playwright: `chromium.launch(channel='chrome')`. Chrome via the Claude extension needs the LAN address `http://<LAN IP>:<port>`.
+- Playwright: `chromium.launch(channel='chrome')`, plus Firefox and WebKit for `test_browsers.py`. On this VM WebKit lays a tablet out at 656 px (a scaled display), which is stricter, not wrong. A test that clicks must click like a person: two clicks 150 ms apart for a double-click.
 - Test suites, all at once: `python dev/check-dev-setup.py --tests`. Counts: acronyms 41, public files 5, example 45, sim 190, phone 77, training samples 50, WebKit 37, browsers 213.
 - New scenarios: `python simulation/scenario_check.py <file> --pack <export>`. Drill specs: `python simulation/drillconfig.py --check`.
-- Patch files with scripts written by the editor, not a Bash heredoc, and keep CRLF where a file has it.
+- Patch files with scripts written by the editor, not a Bash heredoc, and keep CRLF where a file has it. In Python, write Windows paths as raw strings (`r'C:\Users'`): `\U` is an escape.
