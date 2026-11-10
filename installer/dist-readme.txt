@@ -14,6 +14,7 @@ QUICK INSTALL
 
 No internet required. No admin rights required.
 Installs to: Documents\Church of Jesus Christ EMCOMM\  (with README.md and PACE_PLAN.md)
+  (C:\Church of Jesus Christ EMCOMM\ when Documents syncs to OneDrive)
 
 WHAT GETS INSTALLED
 -------------------

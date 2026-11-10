@@ -12,7 +12,7 @@ PORT = int(os.environ.get('EOC_PORT') or (sys.argv[1] if len(sys.argv) > 1 and s
 VERSION = '1.0'
 # The Worker forms / Church of Jesus Christ EMCOMM app version this server ships (APP_VERSION in templates/_shared/emcomm-app.js).
 # Phones whose app is older still send fine; the receive page just tells them to update when they have internet.
-FORMS_VERSION = '2026-11-07.1'
+FORMS_VERSION = '2026-11-09.1'
 BASE = pathlib.Path(__file__).resolve().parent   # resolve: before Python 3.9 __file__ is relative when started from this folder
 DB_FILE   = BASE / 'eoc_data.db'
 HTML_FILE = BASE / 'EOC_Message_Center.html'
@@ -182,7 +182,14 @@ def _get_documents_dir() -> pathlib.Path:
         pass
     return pathlib.Path(os.environ.get('USERPROFILE', str(pathlib.Path.home()))) / 'Documents'
 
-DROP_FOLDER_DEFAULT  = _get_documents_dir() / 'Church of Jesus Christ EMCOMM' / 'EOC Drop Folder'
+def _install_dir() -> pathlib.Path:
+    """The install folder that holds the Drop Folder: the one this server was installed into (Documents, or
+    C:\\Church of Jesus Christ EMCOMM when Documents syncs to the cloud), else Documents. EMCOMM_DOCUMENTS wins."""
+    if not os.environ.get('EMCOMM_DOCUMENTS', '').strip() and BASE.parent.name == 'Church of Jesus Christ EMCOMM':
+        return BASE.parent
+    return _get_documents_dir() / 'Church of Jesus Christ EMCOMM'
+
+DROP_FOLDER_DEFAULT  = _install_dir() / 'EOC Drop Folder'
 DROP_INTERVAL_SEC    = 10
 DROP_INGESTED_SUBDIR = 'Ingested'
 

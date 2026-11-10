@@ -10,22 +10,19 @@
 - **Read [CLAUDE.md](CLAUDE.md) first** (standing rules, map, change routine, gotchas) and [CONTRIBUTING.md](CONTRIBUTING.md) for how to run and test. Every test and its last result is in [testing/TEST_CHECKLIST.md](testing/TEST_CHECKLIST.md).
 - **This file is public.** Nothing about the maintainer's own community goes here. Private notes and the full history of earlier sessions are in `secure data/handoff/` on the maintainer's computers.
 - **The repository is public** and started fresh on 2026-11-05. A clone from before that date must be deleted and cloned again.
-- **Live release:** version 2026-11-06.3, tag `v1.0` at `1f62d2c`, released 2026-11-07. A release is the commit the tag names. The installer and Forms ZIP in `dist/`, the deck ZIP and the card PDFs are all release assets. If a Pages build sticks at `building`, ask for a rebuild: `gh api -X POST repos/travislhilton/church-emcomm-wnlk-forms/pages/builds`.
-- **Not released yet:** `main` is ahead of the tag with version **2026-11-07.1**, committed locally and not pushed: the simulator's Setup a new person can follow (a Browse window that marks packs, explains zip files, offers a participant package's `2 Organization pack`, and offers the drill settings in the pack; a person's double-click opens one folder and never closes it; Go always works; no default path on a laptop without one) and a folder browser for every folder the Message Center asks for (Map data folder, Drop Folder, Winlink Express folder). Release only with Travis's OK.
+- **Live release:** version 2026-11-09.1, tag `v1.0`, released 2026-11-09 with Travis's OK. A release is the commit the tag names. The installer and Forms ZIP in `dist/`, the deck ZIP and the card PDFs are all release assets. If a Pages build sticks at `building`, ask for a rebuild: `gh api -X POST repos/travislhilton/church-emcomm-wnlk-forms/pages/builds`.
+- **In 2026-11-09.1:** everything of 2026-11-07.1 (the simulator's Setup a new person can follow; a folder browser for every folder the Message Center asks for) and, at Travis's request, **no EMCOMM files in OneDrive**: when Documents syncs to the cloud, the installer uses `C:\Church of Jesus Christ EMCOMM`, moves an earlier install there (skipping SQLite's `*.db-shm`, deleting the old folder only when every file arrived), and the server's Drop Folder follows the install folder (checklist A14). An unsynced Documents still gets the install.
 - **Three levels** (Travis, 2026-11-06): any browser on any device; one Windows host laptop per EOC for the server and the simulator; the Windows Winlink station. "If the platform can't run Winlink (Windows only) then it can't host." A Mac is a development machine only.
 - **Contingency Winlink steps** (`docs/PACE_PLAN.md` §5): RMS Gateway; held at the gateway (RMS Relay *Hold for Internet access*, set by its sysop); the local VARA FM RMS Post Office; VARA FM P2P; then, once VARA FM has failed in every mode, a Winlink Message over VARA HF, by hand, only what must go. No Winlink Radio-only sessions. Voice to the Council / Area EOC is VHF/UHF first, HF only if that fails.
 
 ## Do this first
 
-1. **Ask Travis whether to release 2026-11-07.1.** W9TLH-7 needs it: it runs 2026-11-06.3, whose Browse box closes on a double-click. Release with the routine in CLAUDE.md (push `main`, upload all 14 assets, move the tag, check Pages and the downloads by checksum).
-2. **Then install it on W9TLH-7**, which can now be done from this VM over SSH (the details are in `secure data/handoff/machines.md`): run the released installer as role 3, restart the EOC server and the simulator there, and check the installed version.
-3. **Help Travis finish setting up W9TLH-7's simulator**: Setup → Browse for the pack → the copied participant package → `2 Organization pack` → Set up from them.
+1. **W9TLH-7 runs 2026-11-09.1** from `C:\Church of Jesus Christ EMCOMM` (installed over SSH on 2026-11-09; details in `secure data/handoff/machines.md`). The EOC server and the simulator were not running there; Travis starts them from the Desktop shortcuts. A locked, stale `eoc_data.db-shm` stayed in the old OneDrive folder: delete that folder once Windows lets go of it.
+2. **Help Travis finish setting up W9TLH-7's simulator**: Setup → Browse for the pack → the copied participant package → `2 Organization pack` → Set up from them.
 
 ## Decisions waiting for Travis
 
 - **Comms Sheet structured fields:** a *Use* column on the gateways table (RMS Gateway, VARA FM RMS Post Office, VARA FM P2P, VARA HF), a *Holds mail when internet is down* column, and the P2P frequency on the sheet and the wall. Asked on 2026-11-07, not answered.
-- **The EOC database inside a synced folder** on W9TLH-7 (its Documents are redirected into OneDrive): a synced folder can conflict with a SQLite file in use. Options: leave it, keep the database outside OneDrive, or warn at install.
-- **Release 2026-11-07.1** (above).
 
 ## Open work, in the order it is worth doing
 

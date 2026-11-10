@@ -221,10 +221,57 @@ $installWinlink = $choice -in @('2','3')
 $installEOC     = $choice -eq '3'
 
 # -- Install destination ------------------------------------------------------
-$installBase = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'Church of Jesus Christ EMCOMM'
+# Documents, unless OneDrive (or another sync service) holds it: a synced folder can upload, lock or conflict
+# with the EOC database while the server writes it. Then the install goes to a plain folder on the system drive.
+$docsDir     = [Environment]::GetFolderPath('MyDocuments')
+$docsInstall = Join-Path $docsDir 'Church of Jesus Christ EMCOMM'
+function Test-SyncedFolder([string]$path) {
+    if ($path -match '\\(OneDrive|Dropbox|Google Drive|iCloudDrive)( - [^\\]+)?(\\|$)') { return $true }
+    foreach ($root in @($env:OneDrive, $env:OneDriveConsumer, $env:OneDriveCommercial)) {
+        if ($root -and $path.StartsWith($root.TrimEnd('\') + '\', [StringComparison]::OrdinalIgnoreCase)) { return $true }
+    }
+    return $false
+}
+$docsSynced = Test-SyncedFolder $docsDir
+if ($docsSynced) {
+    $installBase = Join-Path ($env:SystemDrive + '\') 'Church of Jesus Christ EMCOMM'
+} else {
+    $installBase = $docsInstall
+}
 Write-Host ""
 Write-Host "  Install location: $installBase" -ForegroundColor White
+if ($docsSynced) {
+    Write-Info "  Your Documents folder syncs to the cloud ($docsDir),"
+    Write-Info "  so the EOC files and database go to a plain folder on this computer instead."
+}
 Write-Host ""
+
+# Move an earlier install out of the synced Documents folder: copy everything (this also downloads cloud-only
+# files), then remove the old copy only when every old file is in the new folder and none is newer there.
+# SQLite's *.db-shm index is skipped: SQLite rebuilds it, and a stale one can stay locked by the sync service.
+if ($docsSynced -and (Test-Path -LiteralPath $docsInstall)) {
+    Write-Step "Moving the earlier install out of the synced Documents folder..."
+    $null = robocopy $docsInstall $installBase /E /XC /XN /XO /XF *.db-shm /R:1 /W:1 /NFL /NDL /NJH /NJS /NP
+    $notMoved = @(Get-ChildItem -LiteralPath $docsInstall -Recurse -File -Force -ErrorAction SilentlyContinue | Where-Object {
+        if ($_.Name -like '*.db-shm') { return $false }
+        $copy = Join-Path $installBase $_.FullName.Substring($docsInstall.Length).TrimStart('\')
+        -not (Test-Path -LiteralPath $copy) -or ((Get-Item -LiteralPath $copy -Force).LastWriteTimeUtc -lt $_.LastWriteTimeUtc)
+    })
+    if ($notMoved.Count) {
+        Write-Warn "$($notMoved.Count) file(s) could not be copied from $docsInstall, for example:"
+        $notMoved | Select-Object -First 3 | ForEach-Object { Write-Info "  $($_.FullName)" }
+        Write-Warn "The old folder was kept. Close the EOC Server and run the installer again."
+    } else {
+        Remove-Item -LiteralPath $docsInstall -Recurse -Force -ErrorAction SilentlyContinue
+        if (Test-Path -LiteralPath $docsInstall) {
+            Write-Warn "Copied to $installBase, but some old files are still open in $docsInstall."
+            Write-Warn "Close the EOC Server, then delete that old folder."
+        } else {
+            Write-OK "Moved: $docsInstall -> $installBase"
+        }
+    }
+    Write-Host ""
+}
 
 # -- Rename from the short-lived name "Church EMCOMM" (installer of 2026-10-31.5) and the old EOC shortcut names --
 # Moves Documents and app-data folders (EOC database, backups, Drop Folder, simulator settings and runs),
@@ -284,7 +331,7 @@ if ($installWinlink) {
         Write-OK "Winlink Express found at: $winlinkDir"
     } else {
         Write-Warn "Winlink Express not found."
-        Write-Warn "Winlink templates will be installed to your Documents folder for now."
+        Write-Warn "Winlink templates will be installed to $installBase for now."
         Write-Warn "After installing Winlink, copy them to:"
         Write-Info "  C:\RMS Express\Global Folders\Templates\Church of Jesus Christ EMCOMM Forms\"
         Write-Info "  Download Winlink Express: https://winlink.org"

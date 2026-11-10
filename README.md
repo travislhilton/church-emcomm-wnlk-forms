@@ -188,6 +188,8 @@ These links serve the files from the project's GitHub Pages site. The same files
 
 **No internet required. No admin rights required.**
 
+The installer puts everything in `Documents\Church of Jesus Christ EMCOMM\`. When Documents syncs to OneDrive (or another cloud service), it uses `C:\Church of Jesus Christ EMCOMM\` instead, so the EOC database never sits in a synced folder, and moves an earlier install there. The paths below say Documents; read them as that folder.
+
 ### Mac, Linux, Chromebook, Android and iPhone
 There is nothing to install. Open the [portal](https://travislhilton.github.io/church-emcomm-wnlk-forms/forms/) in any browser, or, on the EOC Wi-Fi, the address the EOC host shows.
 
