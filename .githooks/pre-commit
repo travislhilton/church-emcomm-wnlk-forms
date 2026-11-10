@@ -6,7 +6,7 @@
 # acronym check (every acronym spelled out at its first use).
 
 staged=$(git diff --cached --name-only --diff-filter=ACMR -z | tr '\0' '\n' |
-  grep -i -E '^(secure data/|forms-source/|\.claude/|eoc/eoc_data\.db|session-screenshots/)')
+  grep -i -E '^(secure data/|forms-source/|\.claude/|eoc/eoc_data\.db|eoc/readout-latest\.json|session-screenshots/)')
 if [ -n "$staged" ]; then
   echo "pre-commit: refusing to commit these files (private data, Church originals, the EOC database or screenshots):" >&2
   echo "$staged" | sed 's/^/  /' >&2

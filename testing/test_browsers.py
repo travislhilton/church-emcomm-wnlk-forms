@@ -76,7 +76,7 @@ tmp = pathlib.Path(tempfile.mkdtemp(prefix='emcomm_browsers_'))
 env = dict(os.environ, PYTHONIOENCODING='utf-8', LOCALAPPDATA=str(tmp / 'appdata'), USERPROFILE=str(tmp / 'home'), EMCOMM_DOCUMENTS=str(tmp / 'documents'))
 work = tmp / 'site'
 (work / 'eoc').mkdir(parents=True)
-for f in ('eoc_server.py', 'EOC_Message_Center.html', 'EOC_Wall_Display.html', 'EOC_Phone.html'):
+for f in ('eoc_server.py', 'EOC_Message_Center.html', 'EOC_Wall_Display.html', 'EOC_Phone.html', 'readout.py'):
     shutil.copy2(REPO / 'eoc' / f, work / 'eoc' / f)
 shutil.copytree(REPO / 'templates', work / 'templates')
 shutil.copytree(REPO / 'simulation', work / 'simulation', ignore=shutil.ignore_patterns('__pycache__', 'runs'))

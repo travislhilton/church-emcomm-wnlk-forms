@@ -391,7 +391,7 @@ try:
     if d.exists():
         shutil.rmtree(d)
     (d / 'eoc').mkdir(parents=True)
-    for f in ('eoc_server.py', 'EOC_Message_Center.html', 'EOC_Wall_Display.html', 'EOC_Phone.html'):
+    for f in ('eoc_server.py', 'EOC_Message_Center.html', 'EOC_Wall_Display.html', 'EOC_Phone.html', 'readout.py'):
         shutil.copy2(REPO / 'eoc' / f, d / 'eoc' / f)
     shutil.copytree(REPO / 'templates', d / 'templates')
     received = SP / 'winlink' / 'Received'
@@ -577,7 +577,7 @@ try:
         if dd.exists():
             shutil.rmtree(dd)
         (dd / 'eoc').mkdir(parents=True)
-        for f in ('eoc_server.py', 'EOC_Message_Center.html', 'EOC_Wall_Display.html', 'EOC_Phone.html'):
+        for f in ('eoc_server.py', 'EOC_Message_Center.html', 'EOC_Wall_Display.html', 'EOC_Phone.html', 'readout.py'):
             shutil.copy2(REPO / 'eoc' / f, dd / 'eoc' / f)
         shutil.copytree(REPO / 'templates', dd / 'templates')
         lg = open(SP / f'eoc_{tag}.log', 'w', encoding='utf-8')

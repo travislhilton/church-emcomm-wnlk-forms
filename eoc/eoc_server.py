@@ -12,12 +12,26 @@ PORT = int(os.environ.get('EOC_PORT') or (sys.argv[1] if len(sys.argv) > 1 and s
 VERSION = '1.0'
 # The Worker forms / Church of Jesus Christ EMCOMM app version this server ships (APP_VERSION in templates/_shared/emcomm-app.js).
 # Phones whose app is older still send fine; the receive page just tells them to update when they have internet.
-FORMS_VERSION = '2026-11-09.1'
+FORMS_VERSION = '2026-11-10.1'
 BASE = pathlib.Path(__file__).resolve().parent   # resolve: before Python 3.9 __file__ is relative when started from this folder
 DB_FILE   = BASE / 'eoc_data.db'
 HTML_FILE = BASE / 'EOC_Message_Center.html'
 WALL_FILE = BASE / 'EOC_Wall_Display.html'   # served at /wall
 PHONE_FILE = BASE / 'EOC_Phone.html'          # served at /m (phone page) and /receive (hand-off from the Church of Jesus Christ EMCOMM app)
+# The incident read-out for a voice net (docs/contracts/emcomm-readout/): readout.py beside this file builds it,
+# GET /api/readout returns it, and READOUT_FILE keeps the latest copy (written on that call and on every SITREP).
+READOUT_FILE = BASE / 'readout-latest.json'
+def _load_readout_module():
+    try:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('emcomm_readout', str(BASE / 'readout.py'))
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+    except Exception as e:   # an install without readout.py still runs; only the read-out is missing
+        print(f'  [READOUT] readout.py not loaded: {type(e).__name__}: {e}')
+        return None
+_readout = _load_readout_module()
 
 # Worker forms served to phones on the EOC Wi-Fi at /forms/dr, /forms/so, /forms/wcl.
 # Installed: <base>\Field Worker Forms\ next to <base>\EOC Message Center\; repo: templates\<dir>\.
@@ -521,6 +535,25 @@ def _save_incident_view(conn, body):
     if not eid or not conn.execute('SELECT id FROM events WHERE id=?', (eid,)).fetchone():
         eid = _ensure_active_event(conn)
     _update_event(conn, eid, {k: body[k] for k in EVENT_FIELDS if k in body})
+
+
+def _readout_now(conn) -> dict:
+    """The active event's read-out (emcomm-readout/1), also written to READOUT_FILE (temp file, then rename, so a
+    reader never sees half a file). Called with _db_lock held and conn open: it only reads the database and takes
+    no lock of its own (_drill_view takes _drill_lock, a different lock)."""
+    if _readout is None:
+        raise RuntimeError('readout.py is missing beside eoc_server.py')
+    d = _drill_view()
+    doc = _readout.build(conn, _ensure_active_event(conn), forms_version=FORMS_VERSION,
+                         drill_active=bool(d and not d.get('stale')))
+    tmp = READOUT_FILE.with_name(READOUT_FILE.name + '.tmp')
+    try:
+        with open(tmp, 'w', encoding='utf-8', newline='\n') as f:
+            json.dump(doc, f, ensure_ascii=False, indent=1)
+        os.replace(str(tmp), str(READOUT_FILE))
+    except OSError as e:   # a reader holding the file open on Windows: the next call writes it
+        print(f'  [READOUT] Could not write {READOUT_FILE.name}: {e}')
+    return doc
 
 
 def _event_name(conn) -> str:
@@ -2153,6 +2186,14 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
                                     'map': bool(_map_dir(inc.get('mapPath') or '')),
                                     'drill': _drill_view()})
 
+                elif path == '/api/readout':
+                    # The incident read-out for a voice net (read-only; also refreshes readout-latest.json)
+                    try:
+                        self.send_json(_readout_now(conn))
+                    except Exception as e:
+                        print(f'  [READOUT] {type(e).__name__}: {e}')
+                        self.send_json({'error': f'read-out not available: {e}'}, 503)
+
                 elif path == '/api/events':
                     self.send_json(_list_events(conn))
 
@@ -2383,8 +2424,15 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
                     self.send_json({'ok': True})
 
                 elif path == '/api/incident':
+                    before = _active_event(conn).get('lastSitrepTs')
                     _save_incident_view(conn, body)
                     conn.commit()
+                    # A SITREP was just generated (the page saves a new lastSitrepTs): refresh readout-latest.json
+                    if isinstance(body, dict) and body.get('lastSitrepTs') and body.get('lastSitrepTs') != before:
+                        try:
+                            _readout_now(conn)
+                        except Exception as e:
+                            print(f'  [READOUT] {type(e).__name__}: {e}')
                     self.send_json({'ok': True})
 
                 elif path == '/api/comms':
@@ -2785,6 +2833,8 @@ if __name__ == '__main__':
     print(row(f'Auto-backup: every {BACKUP_INTERVAL_SEC // 60} min -> {BACKUP_DIR.name}/'))
     print(row('USB backup:  insert any USB drive to back up immediately.'))
     print(row('Manual:      GET /api/backup  or  Export button in the EOC UI.'))
+    print(row('Read-out:    GET /api/readout (for a voice net) and the file'))
+    print(row(f'             {READOUT_FILE.name} here, refreshed on every SITREP.'))
     print(f'  |{" " * width}|')
     _wv = _watcher_view()
     if _wv.get('enabled') and _wv.get('mode') == 'winlink':

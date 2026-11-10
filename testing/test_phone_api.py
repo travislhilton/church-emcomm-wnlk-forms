@@ -23,7 +23,7 @@ def layout(name):
     d = SP / name
     if d.exists(): shutil.rmtree(d)
     (d / 'eoc').mkdir(parents=True)
-    for f in ('eoc_server.py', 'EOC_Message_Center.html', 'EOC_Wall_Display.html', 'EOC_Phone.html'):
+    for f in ('eoc_server.py', 'EOC_Message_Center.html', 'EOC_Wall_Display.html', 'EOC_Phone.html', 'readout.py'):
         shutil.copy2(REPO / 'eoc' / f, d / 'eoc' / f)
     shutil.copytree(REPO / 'templates', d / 'templates')
     shutil.copytree(REPO / 'forms' / 'icons', d / 'forms' / 'icons')
