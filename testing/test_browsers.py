@@ -74,6 +74,9 @@ class QuietServer(http.server.ThreadingHTTPServer):
 
 tmp = pathlib.Path(tempfile.mkdtemp(prefix='emcomm_browsers_'))
 env = dict(os.environ, PYTHONIOENCODING='utf-8', LOCALAPPDATA=str(tmp / 'appdata'), USERPROFILE=str(tmp / 'home'), EMCOMM_DOCUMENTS=str(tmp / 'documents'))
+if os.name != 'nt':      # macOS and Linux take the home folder from HOME, not USERPROFILE: keep the servers off the real one
+    (tmp / 'home').mkdir()
+    env['HOME'] = str(tmp / 'home')
 work = tmp / 'site'
 (work / 'eoc').mkdir(parents=True)
 for f in ('eoc_server.py', 'EOC_Message_Center.html', 'EOC_Wall_Display.html', 'EOC_Phone.html', 'readout.py'):
@@ -178,9 +181,13 @@ try:
             pg.click('button:has-text("Setup")')
             fresh = pg.inner_text('#packinfo')
             check(f'{name}: a new simulator shows no error before a pack is chosen', 'Error' not in fresh and 'not an export' not in fresh, fresh)
+            # the first folder listing arrives late (a slow disk): a path typed meanwhile must stay in the box
+            pg.evaluate("() => { const f = window.fetch; let n = 0; window.fetch = (u, o) => (String(u).includes('/api/browse') && n++ === 0) ? new Promise(r => setTimeout(r, 800)).then(() => f(u, o)) : f(u, o); }")
             pg.click('#b-browse')
             pg.wait_for_selector('#bx-bg', state='visible', timeout=5000)
             pg.fill('#bx-path', str(drills.parent))
+            pg.wait_for_timeout(1200)
+            check(f'{name}: a path typed while the first listing loads stays in the box', pg.input_value('#bx-path') == str(drills.parent), pg.input_value('#bx-path'))
             pg.click('#bx-go')
             pg.wait_for_selector('#bx-list button:has-text("Drills")', timeout=6000)
             human_dblclick(pg, '#bx-list button:has-text("Drills")')
@@ -208,9 +215,13 @@ try:
             pg.on('dialog', lambda d: d.accept('') if d.type == 'prompt' else d.dismiss())   # the call-sign question: answered blank, as a person may
             pg.goto(f'{EOC}/', wait_until='load')
             pg.wait_for_timeout(700)
+            # the first folder listing arrives late (a slow disk): a path typed meanwhile must stay in the box
+            pg.evaluate("() => { const f = window.fetch; let n = 0; window.fetch = (u, o) => (String(u).includes('/api/browse') && n++ === 0) ? new Promise(r => setTimeout(r, 800)).then(() => f(u, o)) : f(u, o); }")
             pg.evaluate("browseMapFolder()")
             pg.wait_for_selector('#fb-bg', state='visible', timeout=5000)
             pg.fill('#fb-path', str(work / 'simulation' / 'example'))
+            pg.wait_for_timeout(1200)
+            check(f'{name}: in the Message Center a path typed while the first listing loads stays in the box', pg.input_value('#fb-path') == str(work / 'simulation' / 'example'), pg.input_value('#fb-path'))
             pg.click('#fb-box button:has-text("Go")')
             pg.wait_for_selector('#fb-list button:has-text("juniper-plains")', timeout=6000)
             marked = 'map data' in pg.inner_text('#fb-list')

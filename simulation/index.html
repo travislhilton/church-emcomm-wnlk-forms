@@ -777,17 +777,19 @@ async function bxGo(path, fromList) {
   if (fromList && (BX.busy || Date.now() < BX.quietUntil)) return;          // the second click of a double-click: ignored, never lands on the next list
   const my = ++BX.seq;                                                       // Go or a place always wins; an older listing that arrives late is dropped
   BX.busy = true; $('bx-list').classList.add('busy');
+  const typed = $('bx-path').value;                                          // a path typed while this listing loads stays in the box
   try {
     const r = await fetch('/api/browse?path=' + encodeURIComponent(path || ''));
     const d = await r.json();
     if (my !== BX.seq) return;
+    d.keepTyped = $('bx-path').value !== typed;
     if (!r.ok) { BX.d = null; $('bx-list').innerHTML = ''; $('bx-places').innerHTML = ''; $('bx-status').innerHTML = `<span class="err">${esc(d.error || 'Browse is not available.')}</span> Type the full path of the pack folder on step 1.`; $('bx-use').disabled = true; return; }
     BX.d = d; bxRender(d);
   } catch (e) { $('bx-status').innerHTML = `<span class="err">The simulator did not answer: ${esc(e.message)}</span>`; }
   finally { if (my === BX.seq) { BX.busy = false; if (fromList) BX.quietUntil = Date.now() + 450; $('bx-list').classList.remove('busy'); } }
 }
 function bxRender(d) {
-  $('bx-path').value = d.path;
+  if (!d.keepTyped) $('bx-path').value = d.path;
   $('bx-places').innerHTML = d.places.concat(d.drives.map(x => ({ name: x, path: x }))).map(p => `<button type="button" class="b s" data-p="${esc(p.path)}">${esc(p.name)}</button>`).join('');
   const row = (label, p, tag) => `<button type="button" class="row" data-p="${esc(p)}">${esc(label)}${tag || ''}</button>`;
   $('bx-list').innerHTML = (d.parent ? row('\u2191  Up one folder', d.parent) : '')

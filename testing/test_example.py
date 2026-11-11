@@ -358,7 +358,10 @@ if ps:
     r = subprocess.run([ps, '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', 'run.ps1'], cwd=str(root), capture_output=True, text=True, encoding='utf-8', errors='replace')
     good, seen = practice_ok(root)
     check('install.ps1 retires old practice forms, keeps other files, leaves a private set alone', r.returncode == 0 and good, (r.returncode, r.stdout + r.stderr, seen))
-check('the practice-form retirement ran here', ran >= 1, ran)
+if ran or os.name == 'nt':        # Windows always has PowerShell: there it must run
+    check('the practice-form retirement ran here', ran >= 1, ran)
+else:
+    print('SKIP the practice-form retirement: no PowerShell (pwsh) on this computer; the Windows check runs it')
 shutil.rmtree(tmp, ignore_errors=True)
 
 print(f'\n{sum(res)}/{len(res)} passed')

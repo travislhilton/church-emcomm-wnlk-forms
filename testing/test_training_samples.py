@@ -82,8 +82,11 @@ work = tmp / 'eoc'; (work / 'eoc').mkdir(parents=True)
 for f in ('eoc_server.py', 'EOC_Message_Center.html', 'EOC_Wall_Display.html', 'EOC_Phone.html', 'readout.py'):
     shutil.copy2(REPO / 'eoc' / f, work / 'eoc' / f)
 shutil.copytree(REPO / 'templates', work / 'templates')
+# a scratch Winlink folder (one callsign, no messages): the scratch EOC gets its Simulated Winlink inbox on any
+# machine, a Mac too, and never reads this computer's real Winlink messages
+wl = tmp / 'winlink'; (wl / 'W9AAA' / 'Messages').mkdir(parents=True)
 log = open(tmp / 'eoc.log', 'w')
-proc = subprocess.Popen([sys.executable, '-u', 'eoc_server.py', str(PORT)], cwd=str(work / 'eoc'), stdout=log, stderr=subprocess.STDOUT,
+proc = subprocess.Popen([sys.executable, '-u', 'eoc_server.py', str(PORT), f'--winlink-folder={wl}'], cwd=str(work / 'eoc'), stdout=log, stderr=subprocess.STDOUT,
                         env=dict(os.environ, PYTHONIOENCODING='utf-8', LOCALAPPDATA=str(tmp / 'appdata'), USERPROFILE=str(tmp / 'home'), EMCOMM_DOCUMENTS=str(tmp / 'documents')))
 try:
     for _ in range(40):
@@ -94,8 +97,11 @@ try:
     AG = next(((json.loads(f.read_text(encoding='utf-8')).get('agency') or {}).get('name') for f in (REPO / 'training' / 'scenario-samples-src').glob('*.json')), None) or 'City EOC'
     inc = call('/api/incident'); inc.update({'name': 'Training test', 'agencies': [{'name': AG, 'call': 'N0CITY'}]})
     call('/api/incident', inc, 'PUT')
-    ddir = pathlib.Path(call('/api/watcher/status').get('drillDir') or '')
-    check('scratch EOC with a Simulated Winlink inbox', ddir.is_dir(), ddir)
+    dd = call('/api/watcher/status').get('drillDir') or ''
+    ddir = pathlib.Path(dd) if dd else None   # never '' (the working directory)
+    check('scratch EOC with a Simulated Winlink inbox', bool(ddir) and ddir.is_dir(), dd)
+    if not ddir:
+        raise SystemExit('no Simulated Winlink inbox: stopping before any message is written')
 
     with sync_playwright() as p:
         try:

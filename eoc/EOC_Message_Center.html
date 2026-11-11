@@ -3627,15 +3627,18 @@ function fbList(d, note) {
 var _fbBusy = false, _fbQuiet = 0, _fbSeq = 0;
 function fbGo(p, fromList) {
   if (fromList && (_fbBusy || Date.now() < _fbQuiet)) return;
-  var my = ++_fbSeq;      // Go always wins; an older listing that arrives late is dropped      // the second click of a double-click: ignored, never lands on the next list
+  // the second click of a double-click is ignored above, never landing on the next list
+  var my = ++_fbSeq;      // Go always wins; an older listing that arrives late is dropped
   var box = document.getElementById('fb-path');
+  var typed = box.value;  // a path typed while this listing loads stays in the box (the listing must not overwrite it)
+  var setBox = function(v){ if (box.value === typed) box.value = v; };
   if (!networkMode) { box.value = p; fbList(null, 'Browsing needs the EOC server running on this laptop. Type the full folder path above.'); return; }
   _fbBusy = true; document.getElementById('fb-list').classList.add('busy');
   var done = function(){ if (my !== _fbSeq) return; _fbBusy = false; if (fromList) _fbQuiet = Date.now() + 450; document.getElementById('fb-list').classList.remove('busy'); };
   fetch('/api/browse?kind=' + encodeURIComponent((_fb && _fb.kind) || 'any') + '&path=' + encodeURIComponent(p || ''), {cache: 'no-store'})
     .then(function(r){ return r.json().then(function(d){ return {ok: r.ok, d: d}; }); })
-    .then(function(x){ if (my !== _fbSeq) return; if (!x.ok) { box.value = p; fbList(null, x.d.error || 'Browsing is not available.'); return; } box.value = x.d.path; fbList(x.d, x.d.error); })
-    .catch(function(){ box.value = p; fbList(null, 'Cannot reach the EOC server. Type the full folder path above.'); })
+    .then(function(x){ if (my !== _fbSeq) return; if (!x.ok) { setBox(p); fbList(null, x.d.error || 'Browsing is not available.'); return; } setBox(x.d.path); fbList(x.d, x.d.error); })
+    .catch(function(){ setBox(p); fbList(null, 'Cannot reach the EOC server. Type the full folder path above.'); })
     .then(done, done);
 }
 function fbUse() {
