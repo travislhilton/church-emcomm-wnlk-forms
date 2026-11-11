@@ -72,10 +72,10 @@ must carry that disclaimer.
 
 ## Development machines
 
-Claude sessions run on the Windows 11 VM (maintainer, 2026-11-04). **Hosting and Winlink are tested on Windows; every browser client is in scope** (maintainer, 2026-11-06): `testing/test_browsers.py` runs Chromium, Firefox and WebKit at phone, tablet and laptop sizes, and the real phones, Android and non-Windows browsers are checklist rows. A Mac is a development machine only. Run `python dev/check-dev-setup.py` first on a new machine. The VM's newer Python hides what an older one refuses: see the older-Python gotcha below. Rules and steps: CONTRIBUTING.md section 2.
+Claude sessions run on the **Mac Studio** (`~/Projects/church-emcomm-wnlk-forms`, from 2026-11-11; before that the Windows 11 VM W9TLH-3). The Windows checks run over SSH on **W9TLH-7**, the Windows host laptop (`ssh w9tlh-7`, a test clone in `C:\dev\church-emcomm-wnlk-forms`; its installed EOC in `C:\Church of Jesus Christ EMCOMM` is live, never test there). **Hosting and Winlink are tested on Windows; every browser client is in scope** (maintainer, 2026-11-06): `testing/test_browsers.py` runs Chromium, Firefox and WebKit at phone, tablet and laptop sizes, and the real phones, Android and non-Windows browsers are checklist rows. A Mac is a development machine only. Run `python dev/check-dev-setup.py` first on a new machine. The VM's newer Python hides what an older one refuses: see the older-Python gotcha below. Rules and steps: CONTRIBUTING.md section 2.
 
 - **Only one session at a time in one folder.** The MacBook Pro's Windows VM sees the Mac's own folder as `X:`, so both use the same files and the same `.git`. Another machine has its own clone and syncs through git; `secure data/` never goes through git.
-- **Still needs Windows:** Winlink Express checks, the installer roles, and card PDFs and deck measurements (their layout is set for Windows fonts). A Mac reaches the VM by Secure Shell (`ssh w9tlh-3`).
+- **Still needs Windows:** Winlink Express checks, the installer roles, the PowerShell syntax check after an `install.ps1` change, and card PDFs and deck measurements (their layout is set for Windows fonts). From the Mac: push, then `ssh w9tlh-7` and in PowerShell `Set-Location C:\dev\church-emcomm-wnlk-forms; git pull; & 'C:\Program Files\Python312\python.exe' dev/check-dev-setup.py --tests`. The VM (`ssh w9tlh-3`) is the second Windows computer. Release assets are built and checked by `build-release.py` on either system; the release itself needs `gh` logged in.
 
 ## Gotchas learned the hard way
 

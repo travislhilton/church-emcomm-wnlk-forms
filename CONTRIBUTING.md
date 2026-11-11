@@ -44,15 +44,17 @@ python dev/check-dev-setup.py --fix
 | Part of the job | Windows 11 | macOS |
 |---|---|---|
 | Edit, generators, every test suite, `installer/build-release.py`, commit, `gh` | yes | yes |
-| Card PDFs, deck slide measurements | yes | on the Windows virtual machine (VM), because the layout is set for Windows fonts |
-| Winlink Express checks, `install.bat` roles | yes | on the Windows VM |
+| Card PDFs, deck slide measurements | yes | on a Windows computer (a virtual machine, VM, or a Windows laptop), because the layout is set for Windows fonts |
+| Winlink Express checks, `install.bat` roles | yes | on a Windows computer |
 | PowerShell syntax check of the installer | yes | skipped without `pwsh`: after a change to `install.ps1`, build once on Windows |
 
 **The same folder from two systems.** A Parallels VM sees the Mac's `Projects` folder as `X:`. Windows and macOS then share the files and the `.git` folder, so use one session at a time.
 
-**Another machine** has its own clone. Move work with `git push` and `git pull` on a branch. Copy `secure data/` by hand, on an encrypted drive; it never goes through GitHub, and neither GitHub nor a chat is a place for it.
+**Another machine** has its own clone. Move work with `git push` and `git pull` on a branch. Copy `secure data/` by hand, on an encrypted drive or over Secure Shell (SSH) between your own computers; it never goes through GitHub, and neither GitHub nor a chat is a place for it.
 
-**A Mac reaching the Windows VM.** Run `dev/setup-windows-vm-ssh.ps1` on the VM as administrator (its header has the steps), then add the VM to `~/.ssh/config` on the Mac. Secure Shell (SSH) is open to the VM's local network only. A Mac on another network needs Tailscale on the VM and the script's `-Tailscale` switch.
+**A Mac reaching a Windows computer.** Run `dev/setup-windows-vm-ssh.ps1` on the Windows computer as administrator (its header has the steps), then add it to `~/.ssh/config` on the Mac. SSH is open to the local network only. A Mac on another network needs Tailscale on the Windows computer and the script's `-Tailscale` switch. `check-dev-setup.py` on a Mac checks the `w9tlh-7` and `w9tlh-3` entries.
+
+**Windows checks from a Mac.** Keep a clone on the Windows computer outside any synced folder (for example `C:\dev\church-emcomm-wnlk-forms`), push your branch, then over SSH: `git pull` there and `python dev/check-dev-setup.py --tests`. Its login shell is PowerShell, so send PowerShell commands. Never run tests in the folder the installed EOC server uses.
 
 **Line endings** are set by `.gitattributes`, so every machine sees the same bytes: line feed (LF), except carriage return + line feed (CRLF) for `.txt` (Winlink reads a template definition with LF as one line), `.bat`, `.cmd` and `.ps1`. If dozens of files show as changed, do not commit: run the check above.
 

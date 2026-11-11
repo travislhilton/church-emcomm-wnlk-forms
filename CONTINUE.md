@@ -46,8 +46,9 @@ The checklist's *Still open* section lists every row that still needs a person o
 
 ## Machine notes
 
-- **SSH to W9TLH-7 works** (2026-11-09): `ssh w9tlh-7` from this VM, passwordless. The account name, paths and the scripts that set it up are in `secure data/handoff/machines.md`, which stays private. Its login shell is PowerShell: send PowerShell, never `&`.
-- **The Mac Studio's clone:** replace it, because it holds the old history. The steps are in Travis's Google Drive, *Mac Studio - replace EMCOMM clone commands.txt*.
+- **Development moves to the Mac Studio** (2026-11-11): `~/Projects/church-emcomm-wnlk-forms`, on the new history, with `secure data/` and `forms-source/` copied over SSH, the commit hook on, Playwright with Chromium, Firefox and WebKit. `gh` there needs `gh auth login` again before a release.
+- **Windows checks from the Mac:** `ssh w9tlh-7` (over Tailscale, passwordless), then in PowerShell `Set-Location C:\dev\church-emcomm-wnlk-forms; git pull` and `python dev/check-dev-setup.py --tests` (CLAUDE.md has the full command). That clone is for tests only; the installed EOC on W9TLH-7 is live. The VM W9TLH-3 is the second Windows computer. Account names, paths and set-up scripts are in `secure data/handoff/machines.md`, which stays private. The login shell is PowerShell: send PowerShell, never `&`.
+- **W9TLH-8**, a second Windows laptop, will be an Area EOC computer: SSH set-up started 2026-11-11 (see `machines.md`).
 - Scratch servers for any EOC or simulator check: copy `eoc/` + `templates/` and `simulation/example/juniper-plains/` to a scratch folder. Set `LOCALAPPDATA`, `USERPROFILE` and `EMCOMM_DOCUMENTS` to scratch folders, or the scratch EOC watches the real Drop Folder. Start `eoc_server.py <port>` there and `sim_server.py <port> --data <scratch pack>`, send logs to files, and stop every scratch server by PID when done.
 - Playwright: `chromium.launch(channel='chrome')`, plus Firefox and WebKit for `test_browsers.py`. On this VM WebKit lays a tablet out at 656 px (a scaled display), which is stricter, not wrong. A test that clicks must click like a person: two clicks 150 ms apart for a double-click.
 - Test suites, all at once: `python dev/check-dev-setup.py --tests`. Counts: acronyms 41, public files 5, example 45, sim 190, phone 77, read-out 51, training samples 50, WebKit 37, browsers 213.

@@ -96,12 +96,13 @@ def main(argv):
         say('NOTE', 'no Playwright: test_offline_webkit.py and test_browsers.py will not run here')
 
     if platform.system() != 'Windows':
-        vm = next((h for h in ('w9tlh-3',) if h in _ssh_hosts()), None)
-        if not vm:
-            say('NOTE', 'no w9tlh-3 entry in ~/.ssh/config: this machine cannot reach the Windows VM yet')
-        else:
-            r = subprocess.run(['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=6', vm, 'hostname'], capture_output=True, text=True)
-            say('PASS' if r.returncode == 0 else 'NOTE', f'Windows VM over SSH: {r.stdout.strip()}' if r.returncode == 0 else 'the Windows VM did not answer over SSH')
+        # The Windows machines a Mac runs the Windows checks on: the host laptop W9TLH-7, the VM W9TLH-3.
+        wins = [h for h in ('w9tlh-7', 'w9tlh-3') if h in _ssh_hosts()]
+        if not wins:
+            say('NOTE', 'no w9tlh-7 or w9tlh-3 entry in ~/.ssh/config: this machine cannot reach a Windows computer yet')
+        for h in wins:
+            r = subprocess.run(['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=6', h, 'hostname'], capture_output=True, text=True)
+            say('PASS' if r.returncode == 0 else 'NOTE', f'Windows computer over SSH: {h} ({r.stdout.strip()})' if r.returncode == 0 else f'{h} did not answer over SSH')
 
     if tests:
         run_tests()
@@ -110,7 +111,10 @@ def main(argv):
 
 def _ssh_hosts():
     cfg = Path.home() / '.ssh' / 'config'
-    return re.findall(r'(?im)^\s*Host\s+(\S+)', cfg.read_text(encoding='utf-8', errors='replace')) if cfg.is_file() else []
+    if not cfg.is_file():
+        return []
+    lines = re.findall(r'(?im)^\s*Host\s+(.+)$', cfg.read_text(encoding='utf-8', errors='replace'))
+    return [n.lower() for ln in lines for n in ln.split()]
 
 
 def run_tests():
