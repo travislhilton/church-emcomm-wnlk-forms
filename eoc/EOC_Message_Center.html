@@ -550,6 +550,9 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
     <div class="toolbar" style="flex-wrap:wrap;gap:8px">
       <span style="font-size:11px;color:var(--muted);align-self:center" id="map-stamp">Map data folder not set — Setup tab → This EOC → Map data folder</span>
       <span class="spacer"></span>
+      <label for="map-basemap" style="align-self:center">Map background</label>
+      <select id="map-basemap" style="width:auto" onchange="setMapBasemap(this.value)"><option value="streets">Streets (online)</option><option value="topo">Topo (offline)</option><option value="imagery">Imagery (offline)</option><option value="none">None</option></select>
+      <span id="map-basemap-note" style="font-size:11px;color:var(--muted);align-self:center"></span>
       <button class="btn secondary sm" onclick="if(MAP){MAP.fit();}">&#8982; Fit</button>
       <button class="btn secondary sm" onclick="if(MAP){MAP.zoom(1.5);}">+</button>
       <button class="btn secondary sm" onclick="if(MAP){MAP.zoom(1/1.5);}">&minus;</button>
@@ -624,6 +627,14 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
       </div>
       <div class="form-row">
         <div class="form-group"><label>Map data folder (the Church directory export on this laptop, or its <code>simulator</code> folder; blank = no Map tab)</label><div style="display:flex;gap:6px"><input type="text" id="eoc-map-path" style="flex:1;min-width:0" placeholder="e.g., D:\cdol-export  —  stays on this laptop, never in the repository"><button class="btn secondary" type="button" onclick="browseMapFolder()">Browse&#8230;</button></div><span id="eoc-map-info" style="font-size:11px;color:var(--muted)"></span></div>
+      </div>
+      <div id="basemap-box" style="border:1px solid var(--border);border-radius:8px;padding:10px;margin:0 0 10px">
+        <b style="font-size:13px">Basemap for offline use</b>
+        <p style="font-size:12px;margin:4px 0">Save roads, terrain and aerial photos of your area on this laptop, so the Map tab and the wall show them with no internet. The maps come from the USGS (United States Geological Survey) The National Map.</p>
+        <p id="basemap-area" style="font-size:12px;margin:4px 0"></p>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><button class="btn secondary" type="button" id="basemap-fetch" onclick="basemapFetch()">Download basemap now (needs internet)</button><button class="btn secondary sm" type="button" id="basemap-stop" style="display:none" onclick="basemapStop()">Stop</button><span id="basemap-progress" style="font-size:12px"></span></div>
+        <p id="basemap-saved" style="font-size:12px;margin:6px 0 0"></p>
+        <p style="font-size:11px;color:var(--muted);margin:4px 0 0">Do it once, before an emergency, while this laptop has internet. Downloading tells USGS which area you asked for, and nothing else. Only the laptop that runs the EOC server can download. When a browser has internet, the Map tab can also show the online street map from OpenStreetMap.</p>
       </div>
       <p style="font-size:11px;color:var(--muted);margin:0 0 10px">Phones on the EOC Wi-Fi open forms from this server, and a plain-http page cannot read a phone's GPS, so those forms are filled in with the <b>EOC location</b> (the worker can change it). The <b>Wi-Fi name and password</b> put a "join the EOC Wi-Fi" QR code on the wall display, next to the "send reports" code; leave them blank to keep the password off the wall.</p>
       <button class="btn" onclick="saveEocIdentity()">Save EOC Identity</button>
@@ -1876,9 +1887,47 @@ function mapMarkers() {
   msgs.forEach(function(m){ var s = m[m.type]; if (s && s.lat && s.lon && !isNaN(parseFloat(s.lat))) out.push({lon:+s.lon, lat:+s.lat, kind:'report'}); });
   return out;
 }
+// -- Basemap (the map's background): online street map, or the USGS maps saved on this laptop (Setup tab) --
+function setMapBasemap(v) { if (MAP) MAP.setBasemap(v); }
+function showMapBasemap(st) {
+  var sel = document.getElementById('map-basemap'); if (sel && st) sel.value = st.choice;
+  var note = document.getElementById('map-basemap-note'); if (note) note.textContent = st ? [st.attribution, st.note].filter(Boolean).join(' \u00b7 ') : '';
+}
+function _mb(n) { return n >= 1048576 ? (Math.round(n / 104857.6) / 10) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
+var _basemapPoll = 0;
+function basemapStatusLine() {
+  if (!document.getElementById('basemap-box')) return;
+  if (!networkMode || typeof EMCOMM_MAP === 'undefined') { document.getElementById('basemap-area').textContent = 'The basemap needs the EOC server (networked mode).'; return; }
+  EMCOMM_MAP.basemapStatus(true).then(function(d){
+    if (!d) return;
+    var a = d.area || {}, area = document.getElementById('basemap-area');
+    area.textContent = a.bounds ? ('Area: around the ' + (a.source === 'map data' ? 'units in the map data' : 'EOC location (15 km each way)') + ', zoom ' + a.zmin + ' to ' + a.zmax + '. About ' + Number(a.tiles).toLocaleString() + ' tiles, about ' + _mb(a.bytes) + '.')
+                                : 'Set the map data folder or the EOC latitude and longitude above, press Save EOC Identity, and the area appears here.';
+    var L = d.layers || {}, parts = [];
+    [['topo', 'Topo'], ['imagery', 'Imagery']].forEach(function(k){ var l = L[k[0]]; if (l && l.tiles) parts.push(k[1] + ': ' + l.tiles.toLocaleString() + ' tiles, ' + _mb(l.bytes) + ', zoom ' + l.zooms[0] + ' to ' + l.zooms[1]); });
+    document.getElementById('basemap-saved').textContent = parts.length ? 'Saved on this laptop: ' + parts.join(' \u00b7 ') + '.' : 'Nothing saved yet.';
+    var j = d.job || {}, pr = document.getElementById('basemap-progress');
+    document.getElementById('basemap-fetch').disabled = !!j.running || !a.bounds;
+    document.getElementById('basemap-stop').style.display = j.running ? '' : 'none';
+    if (j.running) pr.textContent = 'Downloading: ' + (j.saved + j.skipped + j.failed).toLocaleString() + ' of ' + Number(j.total).toLocaleString() + ' tiles' + (j.failed ? ' (' + j.failed + ' failed)' : '') + '\u2026';
+    else if (j.total) pr.textContent = (j.message || 'Done.') + ' ' + j.saved.toLocaleString() + ' new tiles saved' + (j.skipped ? ', ' + j.skipped.toLocaleString() + ' already saved' : '') + (j.failed ? ', ' + j.failed + ' failed' : '') + '.';
+    clearTimeout(_basemapPoll);
+    if (j.running) _basemapPoll = setTimeout(basemapStatusLine, 1500);
+    else if (MAP) MAP.draw();
+  });
+}
+function basemapFetch() {
+  fetch('/api/basemap/fetch', {method:'POST', headers:{'Content-Type':'application/json'}, body:'{}'}).then(function(r){ return r.json(); }).then(function(d){
+    if (!d.ok) { toast(d.error || 'The download did not start'); document.getElementById('basemap-progress').textContent = d.error || ''; return; }
+    toast('Basemap download started: about ' + Number(d.tiles).toLocaleString() + ' tiles'); basemapStatusLine();
+  }).catch(function(e){ toast('The download did not start: ' + (e.message || e)); });
+}
+function basemapStop() {
+  fetch('/api/basemap/fetch', {method:'POST', headers:{'Content-Type':'application/json'}, body:'{"stop":true}'}).then(function(){ setTimeout(basemapStatusLine, 800); });
+}
 function renderMap() {
   var cv = document.getElementById('map-canvas'); if (!cv || !networkMode || typeof EMCOMM_MAP === 'undefined') return;
-  if (!MAP) MAP = EMCOMM_MAP.create(cv, {interactive:true, labels:true, minLabelPx:11, onSelect:function(o){ MAP_SEL = o; renderMapSide(); }});
+  if (!MAP) MAP = EMCOMM_MAP.create(cv, {interactive:true, labels:true, minLabelPx:11, onSelect:function(o){ MAP_SEL = o; renderMapSide(); }, onBasemap:showMapBasemap});
   MAP.setLevel(eocLevel()); MAP.setStatus(unitStatusFor); MAP.setMarkers(mapMarkers());
   MAP.setFocus(roster.map(function(r){ return r.name; }).concat(String((incident&&incident.eocUnits)||'').split(/[,;\n]+/)).map(function(s){ return String(s||'').trim(); }).filter(Boolean));
   if (!MAP_LOADED) {
@@ -2570,7 +2619,7 @@ function updateSetupForm() {
     sv('eoc-council', incident.councilName||''); sv('eoc-council-email', incident.councilEmail||''); sv('eoc-council-winlink', incident.councilWinlink||'');
     sv('eoc-welfare', incident.welfareName||''); sv('eoc-welfare-email', incident.welfareEmail||''); sv('eoc-welfare-winlink', incident.welfareWinlink||'');
     sv('eoc-lat', incident.eocLat||''); sv('eoc-lon', incident.eocLon||''); sv('eoc-wifi-name', incident.wifiName||''); sv('eoc-wifi-pass', incident.wifiPass||'');
-    sv('eoc-map-path', incident.mapPath||''); mapStatusLine();
+    sv('eoc-map-path', incident.mapPath||''); mapStatusLine(); basemapStatusLine();
     sv('inc-sitrep-hrs', sitrepHrs() ? String(sitrepHrs()) : ''); sv('inc-sitrep-by', incident.sitrepBy||'');
   }
   syncUpwardLines(); renderMustRoles();
@@ -3868,9 +3917,31 @@ if (location.hash.length > 1 && document.getElementById('tab-' + location.hash.s
    map.setMarkers([{lon, lat, kind: 'eoc'|'report'|'parent', label: '...'}]);
    map.setFocus(['Alpha 1st Ward', ...]);               // fit() frames these units when any are on the map
    map.fit(); map.draw(); map.units() -> [{name, type, stake}], map.select(name)
+
+   Basemap under the overlays (maintainer, 2026-11-12), chosen per browser (localStorage 'emcomm_basemap'):
+     'streets'  OpenStreetMap, drawn live by this page when it has internet (never saved on the laptop);
+                when its tiles fail it falls back to the saved Topo map, with the note "Street map needs internet"
+     'topo', 'imagery'  USGS (United States Geological Survey) The National Map, saved on the EOC laptop
+                (Setup tab) and served only by this EOC server from /basemap/<layer>/<z>/<y>/<x>
+     'none'     the plain background.  Nothing chosen = Streets when it loads, otherwise Topo if saved.
+   map.setBasemap('streets' | 'topo' | 'imagery' | 'none'); map.basemap() -> {choice, shown, note, attribution, drawn}
+   map.refreshBasemap()   // after a download: read /api/basemap/status again
+   opts.basemap: false turns it off; opts.onBasemap(state) hears when the shown layer or note changes.
 */
 (function () {
-  var R = 6378137, D2R = Math.PI / 180;
+  var R = 6378137, D2R = Math.PI / 180, WORLD = 2 * Math.PI * R;
+  var BM_KEY = 'emcomm_basemap', BM_ATTR = {streets: '© OpenStreetMap contributors', topo: 'Basemap: USGS The National Map', imagery: 'Basemap: USGS The National Map'};
+  var BM_WASH = {streets: 0.18, topo: 0.12, imagery: 0.32};   // a white wash keeps the overlays readable on top
+  var bmStatus = null, bmStatusTs = 0, bmStatusP = null, bmListeners = [];
+  function bmLoadStatus(force) {   // one status read per page, shared by every map on it
+    if (bmStatusP && !force) return bmStatusP;
+    bmStatusP = fetch('/api/basemap/status').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+      .then(function (s) { bmStatus = s; bmStatusTs = Date.now(); bmListeners.forEach(function (fn) { try { fn(); } catch (e) {} }); return s; });
+    return bmStatusP;
+  }
+  function bmSaved(layer) { var l = bmStatus && bmStatus.layers && bmStatus.layers[layer]; return !!(l && l.tiles > 0 && l.zooms); }
+  function bmGetChoice() { try { return localStorage.getItem(BM_KEY) || ''; } catch (e) { return ''; } }
+  function bmSetChoice(v) { try { if (v) localStorage.setItem(BM_KEY, v); else localStorage.removeItem(BM_KEY); } catch (e) {} }
   function merc(lon, lat) { return [R * lon * D2R, R * Math.log(Math.tan(Math.PI / 4 + Math.max(-85, Math.min(85, lat)) * D2R / 2))]; }
   var COLORS = {
     none:    {fill: 'rgba(148,163,184,.28)', line: '#64748b'},
@@ -3973,10 +4044,105 @@ if (location.hash.length > 1 && document.getElementById('tab-' + location.hash.s
     }
     function onScreen(b) { if (!b) return false; var a = toScr(b[0], b[3]), c = toScr(b[2], b[1]); return !(a[0] > W || c[0] < 0 || a[1] > H || c[1] < 0); }
 
+    // ── basemap tiles (XYZ, Web Mercator): drawn first, everything else on top ──
+    var bm = {on: opts.basemap !== false, choice: bmGetChoice(), tiles: {}, n: 0, streetsDown: false, retryAt: 0, backoff: 30000,
+              failsInRow: 0, shown: '', note: '', lastKey: '', drawn: 0, queued: false};
+    function bmRedraw() { if (bm.queued) return; bm.queued = true; setTimeout(function () { bm.queued = false; draw(); }, 60); }
+    if (bm.on) { bmListeners.push(bmRedraw); bmLoadStatus(); }
+    function bmLayer() {   // which layer to draw now, and the note to show
+      if (!bm.on || !bmStatus) return {layer: '', note: ''};
+      var c = bm.choice || 'streets';
+      if (c === 'none') return {layer: '', note: ''};
+      var saved = bmSaved('topo') ? 'topo' : bmSaved('imagery') ? 'imagery' : '';
+      if (c === 'streets') {
+        if (!bmStatus.streetsUrl) return {layer: saved, note: ''};
+        if (bm.streetsDown && Date.now() >= bm.retryAt) {   // try the street map again, once, after the pause
+          bm.streetsDown = false; bm.failsInRow = 0;
+          Object.keys(bm.tiles).forEach(function (k) { if (k.indexOf('streets|') === 0 && bm.tiles[k].fail) { delete bm.tiles[k]; bm.n--; } });
+        }
+        if (!bm.streetsDown) return {layer: 'streets', note: ''};
+        return {layer: saved, note: 'Street map needs internet' + (saved ? '. Showing the saved ' + (saved === 'topo' ? 'Topo' : 'Imagery') + ' map.' : '.')};
+      }
+      if (bmSaved(c)) return {layer: c, note: ''};
+      return {layer: '', note: (c === 'topo' ? 'Topo' : 'Imagery') + ' map not saved on this laptop yet (Setup tab).'};
+    }
+    function bmUrl(layer, z, x, y) {
+      if (layer === 'streets') return String(bmStatus.streetsUrl).replace('{z}', z).replace('{x}', x).replace('{y}', y);
+      return '/basemap/' + layer + '/' + z + '/' + y + '/' + x;
+    }
+    function bmTile(layer, z, x, y, request) {
+      var k = layer + '|' + z + '|' + x + '|' + y, t = bm.tiles[k];
+      if (t || !request) return t;
+      if (bm.n > 900) { var ks = Object.keys(bm.tiles); for (var i = 0; i < 300; i++) { delete bm.tiles[ks[i]]; } bm.n -= 300; }
+      t = bm.tiles[k] = {img: new Image(), ok: false, fail: false}; bm.n++;
+      if (layer === 'streets') t.img.crossOrigin = 'anonymous';
+      t.img.onload = function () { t.ok = true; if (layer === 'streets') { bm.failsInRow = 0; bm.backoff = 30000; } bmRedraw(); };
+      t.img.onerror = function () {
+        t.fail = true;
+        if (layer !== 'streets') return;
+        bm.failsInRow++;
+        var anyOk = Object.keys(bm.tiles).some(function (q) { return q.indexOf('streets|') === 0 && bm.tiles[q].ok; });
+        if (!bm.streetsDown && (bm.failsInRow >= 3 || !anyOk)) {   // no internet: stop asking, back off, fall back
+          bm.streetsDown = true; bm.retryAt = Date.now() + bm.backoff; bm.backoff = Math.min(bm.backoff * 2, 300000);
+          bmRedraw();
+        }
+      };
+      t.img.src = bmUrl(layer, z, x, y);
+      return t;
+    }
+    function drawBasemap() {
+      if (bm.on && bmStatus && Date.now() - bmStatusTs > 120000) bmLoadStatus(true);   // a download finished meanwhile
+      var pick = bmLayer(), layer = pick.layer; bm.drawn = 0;
+      if (layer) {
+        var dz = Math.log(WORLD / 256 / view.res) / Math.LN2 + ((window.devicePixelRatio || 1) > 1 ? 0.3 : 0);
+        var z = Math.round(dz), ranges = null;
+        if (layer === 'streets') z = Math.max(0, Math.min(19, z));
+        else {
+          var info = bmStatus.layers[layer]; z = Math.max(info.zooms[0], Math.min(info.zooms[1], z));
+          ranges = info.ranges && info.ranges[String(z)];
+        }
+        var ts = WORLD / Math.pow(2, z), n = Math.pow(2, z);
+        var tl = fromScr(0, 0), br = fromScr(W, H);
+        var x0 = Math.max(0, Math.floor((tl[0] + WORLD / 2) / ts)), x1 = Math.min(n - 1, Math.floor((br[0] + WORLD / 2) / ts));
+        var y0 = Math.max(0, Math.floor((WORLD / 2 - tl[1]) / ts)), y1 = Math.min(n - 1, Math.floor((WORLD / 2 - br[1]) / ts));
+        if (ranges) { x0 = Math.max(x0, ranges[0]); y0 = Math.max(y0, ranges[1]); x1 = Math.min(x1, ranges[2]); y1 = Math.min(y1, ranges[3]); }
+        if (x1 >= x0 && y1 >= y0 && (x1 - x0 + 1) * (y1 - y0 + 1) <= 400) {
+          for (var y = y0; y <= y1; y++) for (var x = x0; x <= x1; x++) {
+            var a = toScr(-WORLD / 2 + x * ts, WORLD / 2 - y * ts), c = toScr(-WORLD / 2 + (x + 1) * ts, WORLD / 2 - (y + 1) * ts);
+            var dx = Math.floor(a[0]), dy = Math.floor(a[1]), dw = Math.ceil(c[0]) - dx, dh = Math.ceil(c[1]) - dy;
+            var t = bmTile(layer, z, x, y, true);
+            if (t.ok) { ctx.drawImage(t.img, dx, dy, dw, dh); bm.drawn++; continue; }
+            for (var up = 1; up <= 4 && z - up >= 0; up++) {   // a coarser tile already here stands in while this one loads
+              var p = bmTile(layer, z - up, x >> up, y >> up, false);
+              if (p && p.ok) { var s = 256 / (1 << up); ctx.drawImage(p.img, (x - ((x >> up) << up)) * s, (y - ((y >> up) << up)) * s, s, s, dx, dy, dw, dh); break; }
+            }
+          }
+          ctx.fillStyle = 'rgba(255,255,255,' + BM_WASH[layer] + ')'; ctx.fillRect(0, 0, W, H);
+        }
+      }
+      var key = layer + '|' + pick.note;
+      bm.shown = layer; bm.note = pick.note;
+      if (key !== bm.lastKey) { bm.lastKey = key; if (opts.onBasemap) { try { opts.onBasemap(bmState()); } catch (e) {} } }
+    }
+    function drawBasemapText() {   // attribution whenever a basemap shows; the note when the chosen one cannot
+      ctx.font = '11px system-ui, sans-serif'; ctx.textBaseline = 'middle';
+      var lines = [];
+      if (bm.shown) lines.push(BM_ATTR[bm.shown]);
+      if (bm.note) lines.push(bm.note);
+      lines.forEach(function (txt, i) {
+        var w = ctx.measureText(txt).width + 10, yy = H - 14 - i * 18;
+        ctx.fillStyle = 'rgba(255,255,255,.88)'; ctx.fillRect(W - w - 4, yy - 8, w, 16);
+        ctx.fillStyle = '#1f2937'; ctx.textAlign = 'right'; ctx.fillText(txt, W - 9, yy);
+      });
+    }
+    function bmState() { return {choice: bm.choice || 'streets', shown: bm.shown, note: bm.note, attribution: bm.shown ? BM_ATTR[bm.shown] : '', drawn: bm.drawn,
+                                 saved: {topo: bmSaved('topo'), imagery: bmSaved('imagery')}, streets: !!(bmStatus && bmStatus.streetsUrl)}; }
+
     var images = [];   // [{img, b: [w, s, e, n] Web Mercator metres, opacity}]: the directory's own map artwork
     function draw() {
       if (!W) resize();
       ctx.fillStyle = opts.background || '#eef2f6'; ctx.fillRect(0, 0, W, H);
+      if (loaded) drawBasemap();
       images.forEach(function (im) {
         if (!im.img.complete || !im.img.naturalWidth || !onScreen(im.b)) return;
         var a = toScr(im.b[0], im.b[3]), c = toScr(im.b[2], im.b[1]);
@@ -4037,6 +4203,7 @@ if (location.hash.length > 1 && document.getElementById('tab-' + location.hash.s
       ctx.fillStyle = 'rgba(255,255,255,.8)'; ctx.fillRect(8, H - 26, px + 16, 20);
       ctx.strokeStyle = '#111827'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(16, H - 12); ctx.lineTo(16 + px, H - 12); ctx.stroke();
       ctx.fillStyle = '#111827'; ctx.font = '11px system-ui, sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'bottom'; ctx.fillText(label, 16, H - 14);
+      drawBasemapText();
     }
 
     function unitAt(sx, sy) {
@@ -4082,10 +4249,16 @@ if (location.hash.length > 1 && document.getElementById('tab-' + location.hash.s
       select: function (name) { selected = name ? norm(name) : null; draw(); },
       units: function () { return orgs.filter(isUnit).map(function (o) { return {name: o.name, type: o.type, stake: o.stake}; }); },
       loaded: function () { return loaded; },
+      setBasemap: function (c) {
+        bm.choice = {streets: 1, topo: 1, imagery: 1, none: 1}[c] ? c : '';
+        bmSetChoice(bm.choice); bm.streetsDown = false; bm.failsInRow = 0; bm.backoff = 30000; draw();
+      },
+      basemap: bmState,
+      refreshBasemap: function () { return bmLoadStatus(true); },
       norm: norm
     };
   }
-  window.EMCOMM_MAP = {create: create, merc: merc};
+  window.EMCOMM_MAP = {create: create, merc: merc, basemapStatus: function (force) { return bmLoadStatus(force); }};
 })();
 </script>
 <!-- EMCOMM-MAP:END -->

@@ -443,6 +443,367 @@ def _map_path_setting() -> str:
             conn.close()
 
 
+# ── Basemap: USGS (United States Geological Survey) The National Map tiles, saved on this laptop for offline use ──
+# Decision (maintainer, 2026-11-12): the basemap under the Map tab and the wall is USGS The National Map, downloaded
+# ahead of time while the laptop has internet and then served only by this server (/basemap/...). USGS tiles are
+# public domain. Downloading tells USGS the bounding box of the area. Tiles are Web Mercator (EPSG:3857) XYZ, the
+# same projection as the map views. Layout on disk: <settings>/basemap/<layer>/<z>/<y>/<x>.<png|jpg>.
+# EMCOMM_BASEMAP_URL overrides the source (tests use a local fake tile server, never the internet): a template with
+# {layer} {z} {y} {x}, or a JSON object {"topo": "...{z}/{y}/{x}", "imagery": "..."}.
+# The online street map (OpenStreetMap) is never downloaded or saved here: the page draws it live when it has
+# internet (tile usage policy). EMCOMM_STREETS_URL overrides its template ({z} {x} {y}); "off" turns it off.
+BASEMAP_DIR = SETTINGS_DIR / 'basemap'
+BASEMAP_LAYERS = {
+    'topo': 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}',
+    'imagery': 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}',
+}
+BASEMAP_EST_BYTES = {'topo': 20000, 'imagery': 30000}   # a typical tile, for the estimate before anything is saved
+BASEMAP_MAX_TILES = 25000                                # one download, all layers together
+BASEMAP_MAX_BYTES = 1500 * 1024 * 1024                   # one download, and the estimate, at most this much
+BASEMAP_ZOOMS = (8, 15)                                  # a stake: the whole area down to street level
+BASEMAP_AGENT = 'EMCOMM-EOC-offline-basemap/1.0'         # generic: no name, call sign or place
+STREETS_URL_DEFAULT = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+_basemap_lock = threading.Lock()
+_basemap_job = {'running': False}
+_basemap_index = {}      # layer -> {'tiles', 'bytes', 'z': {z: [count, x0, y0, x1, y1]}}: built once, kept by the downloader
+_basemap_stop = threading.Event()
+
+
+def _basemap_sources() -> dict:
+    raw = os.environ.get('EMCOMM_BASEMAP_URL', '').strip()
+    if not raw:
+        return dict(BASEMAP_LAYERS)
+    if raw.startswith('{'):
+        try:
+            m = json.loads(raw)
+            return {k: str(m[k]) for k in BASEMAP_LAYERS if k in m}
+        except Exception:
+            return dict(BASEMAP_LAYERS)
+    return {k: raw.replace('{layer}', k) for k in BASEMAP_LAYERS}
+
+
+def _streets_url() -> str:
+    raw = os.environ.get('EMCOMM_STREETS_URL', '').strip()
+    if raw.lower() == 'off':
+        return ''
+    return raw or STREETS_URL_DEFAULT
+
+
+def _tile_xy(lon: float, lat: float, z: int) -> tuple:
+    import math
+    n = 2 ** z
+    lat = max(-85.0511, min(85.0511, lat))
+    x = int((lon + 180.0) / 360.0 * n)
+    y = int((1.0 - math.asinh(math.tan(math.radians(lat))) / math.pi) / 2.0 * n)
+    return min(max(x, 0), n - 1), min(max(y, 0), n - 1)
+
+
+def _tile_lonlat(x: int, y: int, z: int) -> tuple:
+    """The north-west corner of a tile, as (lon, lat)."""
+    import math
+    n = 2 ** z
+    return x / n * 360.0 - 180.0, math.degrees(math.atan(math.sinh(math.pi * (1 - 2 * y / n))))
+
+
+def _tile_ranges(bounds, zmin: int, zmax: int) -> dict:
+    w, s, e, n = bounds
+    out = {}
+    for z in range(zmin, zmax + 1):
+        x0, y0 = _tile_xy(w, n, z)
+        x1, y1 = _tile_xy(e, s, z)
+        out[z] = (x0, y0, x1, y1)
+    return out
+
+
+def _tile_count(ranges: dict) -> int:
+    return sum((r[2] - r[0] + 1) * (r[3] - r[1] + 1) for r in ranges.values())
+
+
+def _basemap_tile_file(layer: str, z: int, y: int, x: int):
+    d = BASEMAP_DIR / layer / str(z) / str(y)
+    for ext in ('png', 'jpg'):
+        f = d / f'{x}.{ext}'
+        if f.is_file():
+            return f
+    return None
+
+
+def _basemap_index_add(idx: dict, z: int, x: int, y: int, size: int):
+    idx['tiles'] += 1
+    idx['bytes'] += size
+    r = idx['z'].get(z)
+    if r is None:
+        idx['z'][z] = [1, x, y, x, y]
+    else:
+        r[0] += 1
+        r[1], r[2], r[3], r[4] = min(r[1], x), min(r[2], y), max(r[3], x), max(r[4], y)
+
+
+def _basemap_layer_index(layer: str) -> dict:
+    """What is saved for one layer (walks the folder once; the downloader keeps it current). Call under _basemap_lock."""
+    if layer in _basemap_index:
+        return _basemap_index[layer]
+    idx = {'tiles': 0, 'bytes': 0, 'z': {}}
+    root = BASEMAP_DIR / layer
+    if root.is_dir():
+        for zd in root.iterdir():
+            if not zd.name.isdigit() or not zd.is_dir():
+                continue
+            for yd in zd.iterdir():
+                if not yd.name.isdigit() or not yd.is_dir():
+                    continue
+                for f in yd.iterdir():
+                    stem, _, ext = f.name.partition('.')
+                    if stem.isdigit() and ext in ('png', 'jpg'):
+                        try:
+                            _basemap_index_add(idx, int(zd.name), int(stem), int(yd.name), f.stat().st_size)
+                        except OSError:
+                            pass
+    _basemap_index[layer] = idx
+    return idx
+
+
+_map_bbox_cache = {}
+def _map_data_bounds(path_str: str):
+    """[west, south, east, north] of the map data's organization boundaries, or None."""
+    d = _map_dir(path_str)
+    if not d:
+        return None
+    f = d / 'organization_boundaries.geojson'
+    try:
+        st = f.stat()
+        sig = (str(f), st.st_mtime, st.st_size)
+        if _map_bbox_cache.get('sig') != sig:
+            b = [180.0, 90.0, -180.0, -90.0]
+            def walk(c):
+                if c and isinstance(c[0], (int, float)):
+                    b[0], b[1], b[2], b[3] = min(b[0], c[0]), min(b[1], c[1]), max(b[2], c[0]), max(b[3], c[1])
+                else:
+                    for p in c or []:
+                        walk(p)
+            for feat in json.loads(f.read_text(encoding='utf-8')).get('features', []):
+                walk((feat.get('geometry') or {}).get('coordinates') or [])
+            _map_bbox_cache.update(sig=sig, bounds=b if b[0] < b[2] and b[1] < b[3] else None)
+        return _map_bbox_cache.get('bounds')
+    except Exception:
+        return None
+
+
+def _identity_setting() -> dict:
+    """This EOC's identity (Setup tab). Takes _db_lock: call outside it."""
+    with _db_lock:
+        conn = get_db()
+        try:
+            r = conn.execute('SELECT data_json FROM incident WHERE singleton=1').fetchone()
+            return json.loads(r['data_json']) if r else {}
+        finally:
+            conn.close()
+
+
+def _basemap_default_area() -> dict:
+    """The area a download covers when none is given: the map data, else the EOC location ± 15 km."""
+    import math
+    inc = _identity_setting()
+    b = _map_data_bounds(inc.get('mapPath') or '')
+    if b:
+        pw, ph = (b[2] - b[0]) * 0.05, (b[3] - b[1]) * 0.05     # a small margin round the units
+        return {'bounds': [round(b[0] - pw, 5), round(b[1] - ph, 5), round(b[2] + pw, 5), round(b[3] + ph, 5)], 'source': 'map data'}
+    try:
+        lat, lon = float(inc.get('eocLat')), float(inc.get('eocLon'))
+        if -85 < lat < 85 and -180 <= lon <= 180:
+            dlat, dlon = 15 / 111.32, 15 / (111.32 * max(math.cos(math.radians(lat)), 0.1))
+            return {'bounds': [round(lon - dlon, 5), round(lat - dlat, 5), round(lon + dlon, 5), round(lat + dlat, 5)], 'source': 'EOC location'}
+    except (TypeError, ValueError):
+        pass
+    return {'bounds': None, 'source': ''}
+
+
+def _basemap_plan(layers, bounds, zmin, zmax) -> dict:
+    ranges = _tile_ranges(bounds, zmin, zmax)
+    per = _tile_count(ranges)
+    with _basemap_lock:
+        avg = {}
+        for k in layers:
+            idx = _basemap_layer_index(k)
+            avg[k] = int(idx['bytes'] / idx['tiles']) if idx['tiles'] >= 50 else BASEMAP_EST_BYTES[k]
+    return {'tiles': per * len(layers), 'bytes': sum(per * avg[k] for k in layers), 'ranges': ranges}
+
+
+def _basemap_status() -> dict:
+    area = _basemap_default_area()
+    with _basemap_lock:
+        layers = {}
+        for k in BASEMAP_LAYERS:
+            idx = _basemap_layer_index(k)
+            zs = sorted(idx['z'])
+            gb = None
+            if zs:
+                r = idx['z'][zs[-1]]
+                w, n = _tile_lonlat(r[1], r[2], zs[-1])
+                e, s = _tile_lonlat(r[3] + 1, r[4] + 1, zs[-1])
+                gb = [round(w, 5), round(s, 5), round(e, 5), round(n, 5)]
+            layers[k] = {'tiles': idx['tiles'], 'bytes': idx['bytes'], 'zooms': [zs[0], zs[-1]] if zs else None, 'bounds': gb,
+                         'ranges': {str(z): idx['z'][z][1:] for z in zs}}
+        job = dict(_basemap_job)
+    if area['bounds']:
+        plan = _basemap_plan(list(BASEMAP_LAYERS), area['bounds'], *BASEMAP_ZOOMS)
+        area.update(zmin=BASEMAP_ZOOMS[0], zmax=BASEMAP_ZOOMS[1], tiles=plan['tiles'], bytes=plan['bytes'])
+    return {'ok': True, 'layers': layers, 'job': job, 'area': area, 'streetsUrl': _streets_url(),
+            'maxTiles': BASEMAP_MAX_TILES, 'maxBytes': BASEMAP_MAX_BYTES}
+
+
+def _basemap_get(url: str):
+    req = urllib.request.Request(url, headers={'User-Agent': BASEMAP_AGENT, 'Accept': 'image/png,image/jpeg,image/*'})
+    with urllib.request.urlopen(req, timeout=20) as r:
+        return r.read(2 * 1024 * 1024)
+
+
+def _basemap_worker(q, sources):
+    """Fetch tiles off the queue, a few workers at a time, politely. A failed tile is counted and skipped."""
+    import queue as _queue
+    while not _basemap_stop.is_set():
+        try:
+            layer, z, x, y = q.get_nowait()
+        except _queue.Empty:
+            return
+        with _basemap_lock:
+            over = _basemap_job.get('bytes', 0) >= BASEMAP_MAX_BYTES
+        if over:
+            _basemap_stop.set()
+            with _basemap_lock:
+                _basemap_job['message'] = 'Stopped at the size limit.'
+            return
+        if _basemap_tile_file(layer, z, y, x):
+            with _basemap_lock:
+                _basemap_job['skipped'] += 1
+            continue
+        url = sources[layer].replace('{z}', str(z)).replace('{y}', str(y)).replace('{x}', str(x))
+        body, err = None, ''
+        for attempt in range(3):
+            try:
+                body = _basemap_get(url)
+                break
+            except urllib.error.HTTPError as e:
+                err = f'HTTP {e.code}'
+                if e.code in (400, 403, 404, 410):    # not there (sea, outside the coverage): no retry
+                    break
+            except Exception as e:
+                err = type(e).__name__
+            time.sleep(0.5 * (attempt + 1))
+        ext = 'png' if body and body[:4] == b'\x89PNG' else 'jpg' if body and body[:2] == b'\xff\xd8' else ''
+        if not ext:
+            with _basemap_lock:
+                _basemap_job['failed'] += 1
+                _basemap_job['failedInRow'] = _basemap_job.get('failedInRow', 0) + 1
+                errs = _basemap_job.setdefault('errors', [])
+                if len(errs) < 10:
+                    errs.append(f'{layer} {z}/{y}/{x}: {err or "not an image"}')
+                if _basemap_job['failedInRow'] >= 25 and not _basemap_job['saved']:
+                    _basemap_job['message'] = 'No tiles came back. Check that this laptop has internet, then try again.'
+                    _basemap_stop.set()
+            continue
+        d = BASEMAP_DIR / layer / str(z) / str(y)
+        try:
+            d.mkdir(parents=True, exist_ok=True)
+            tmp = d / f'{x}.{ext}.part'
+            with open(tmp, 'wb') as fh:
+                fh.write(body)
+            os.replace(str(tmp), str(d / f'{x}.{ext}'))
+        except OSError as e:
+            with _basemap_lock:
+                _basemap_job['failed'] += 1
+                _basemap_job.setdefault('errors', []).append(f'could not save a tile: {e}')
+            continue
+        with _basemap_lock:
+            _basemap_job['saved'] += 1
+            _basemap_job['bytes'] += len(body)
+            _basemap_job['failedInRow'] = 0
+            _basemap_index_add(_basemap_layer_index(layer), z, x, y, len(body))
+        time.sleep(0.05)     # polite: a few requests at a time, with a pause
+
+
+def _basemap_run(tiles: list):
+    import queue as _queue
+    q = _queue.Queue()
+    for t in tiles:
+        q.put(t)
+    sources = _basemap_sources()
+    workers = [threading.Thread(target=_basemap_worker, args=(q, sources), daemon=True, name=f'basemap-{i}') for i in range(3)]
+    for w in workers:
+        w.start()
+    for w in workers:
+        w.join()
+    with _basemap_lock:
+        j = _basemap_job
+        j['running'] = False
+        j['finished'] = int(time.time() * 1000)
+        if not j.get('message'):
+            j['message'] = 'Stopped.' if _basemap_stop.is_set() else 'Done.'
+        print(f"  [BASEMAP] {j['message']} {j['saved']} saved, {j['skipped']} already saved, {j['failed']} failed")
+
+
+def _basemap_fetch_request(body: dict, at_this_laptop: bool):
+    """POST /api/basemap/fetch -> (http code, answer). Only the person at this laptop starts or stops a download."""
+    if not at_this_laptop:
+        return 403, {'ok': False, 'error': 'Download the basemap on the laptop that runs the EOC server.'}
+    body = body if isinstance(body, dict) else {}
+    if body.get('stop'):
+        _basemap_stop.set()
+        return 200, {'ok': True, 'stopping': bool(_basemap_job.get('running'))}
+    with _basemap_lock:
+        if _basemap_job.get('running'):
+            return 409, {'ok': False, 'error': 'A basemap download is already running.'}
+    layers = body.get('layers') or list(BASEMAP_LAYERS)
+    if isinstance(layers, str):
+        layers = [layers]
+    if not isinstance(layers, list) or not layers or any(k not in BASEMAP_LAYERS for k in layers):
+        return 400, {'ok': False, 'error': 'layers must be topo and/or imagery'}
+    layers = [k for k in BASEMAP_LAYERS if k in layers]
+    try:
+        zmin = int(body.get('zmin', BASEMAP_ZOOMS[0]))
+        zmax = int(body.get('zmax', BASEMAP_ZOOMS[1]))
+    except (TypeError, ValueError):
+        return 400, {'ok': False, 'error': 'zmin and zmax must be whole numbers'}
+    if not (0 <= zmin <= zmax <= 18):
+        return 400, {'ok': False, 'error': 'zoom levels must be 0 to 18, zmin no more than zmax'}
+    b = body.get('bounds')
+    source = 'given'
+    if b is None:
+        area = _basemap_default_area()
+        b, source = area['bounds'], area['source']
+        if not b:
+            return 400, {'ok': False, 'error': 'Set the map data folder or the EOC latitude and longitude first, then try again.'}
+    try:
+        b = [float(v) for v in b]
+        ok = len(b) == 4 and -180 <= b[0] < b[2] <= 180 and -85.06 <= b[1] < b[3] <= 85.06
+    except (TypeError, ValueError):
+        ok = False
+    if not ok:
+        return 400, {'ok': False, 'error': 'bounds must be [west, south, east, north] in degrees'}
+    plan = _basemap_plan(layers, b, zmin, zmax)
+    if plan['tiles'] > BASEMAP_MAX_TILES or plan['bytes'] > BASEMAP_MAX_BYTES:
+        return 400, {'ok': False, 'tiles': plan['tiles'], 'bytes': plan['bytes'],
+                     'error': f"That area is too big: about {plan['tiles']:,} tiles ({plan['bytes'] // 1048576:,} MB). "
+                              f"The limit is {BASEMAP_MAX_TILES:,} tiles. Choose a smaller area or fewer zoom levels."}
+    tiles = [(k, z, x, y) for k in layers for z, r in sorted(plan['ranges'].items())
+             for y in range(r[1], r[3] + 1) for x in range(r[0], r[2] + 1)]
+    with _basemap_lock:
+        if _basemap_job.get('running'):
+            return 409, {'ok': False, 'error': 'A basemap download is already running.'}
+        _basemap_stop.clear()
+        _basemap_job.clear()
+        _basemap_job.update(running=True, layers=layers, bounds=b, source=source, zmin=zmin, zmax=zmax, total=len(tiles),
+                            saved=0, skipped=0, failed=0, failedInRow=0, bytes=0, errors=[], message='',
+                            started=int(time.time() * 1000), finished=0)
+        job = dict(_basemap_job)
+    print(f'  [BASEMAP] Download started: {", ".join(layers)}, zoom {zmin}-{zmax}, {len(tiles)} tiles ({source})')
+    threading.Thread(target=_basemap_run, args=(tiles,), daemon=True, name='basemap').start()
+    return 200, {'ok': True, 'job': job, 'tiles': len(tiles), 'bytes': plan['bytes']}
+
+
+_BASEMAP_TILE_RE = re.compile(r'^/basemap/(topo|imagery)/(\d{1,2})/(\d{1,7})/(\d{1,7})(?:\.(?:png|jpg))?$')
+
+
 def _incident_view(conn) -> dict:
     """What the page calls `incident`: this EOC's identity plus the active event's fields."""
     row = conn.execute('SELECT data_json FROM incident WHERE singleton=1').fetchone()
@@ -2211,6 +2572,22 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
             return
+        if path == '/api/basemap/status':    # takes _db_lock itself (the default area): before the lock below
+            self.send_json(_basemap_status()); return
+        if path.startswith('/basemap/'):
+            # A saved basemap tile, only from the basemap folder; strict path (known layer, numbers only), else 404.
+            m = _BASEMAP_TILE_RE.match(path)
+            f = _basemap_tile_file(m.group(1), int(m.group(2)), int(m.group(3)), int(m.group(4))) if m else None
+            if not f:
+                self.send_json({'error': 'no such basemap tile'}, 404); return
+            body = f.read_bytes()
+            self.send_response(200)
+            self.send_header('Content-Type', 'image/png' if f.suffix == '.png' else 'image/jpeg')
+            self.send_header('Content-Length', str(len(body)))
+            self.send_header('Cache-Control', 'max-age=2592000')
+            self.end_headers()
+            self.wfile.write(body)
+            return
         if path == '/api/drill':
             self.send_json(_drill_view() or {'active': False}); return
         if path == '/api/backup':
@@ -2320,6 +2697,10 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
             except Exception as ex:
                 self.send_json({'error': str(ex)}, 400)
             return
+
+        if path == '/api/basemap/fetch':   # takes _db_lock itself (the default area): before the lock below
+            code, ans = _basemap_fetch_request(body, self._is_this_laptop())
+            self.send_json(ans, code); return
 
         if path == '/api/drill/ready':
             b = body if isinstance(body, dict) else {}

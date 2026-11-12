@@ -72,7 +72,7 @@ JS = r"""() => {
 
 PAGES = [('Message Center overview', E + '/', 'laptop', None), ('MC work items', E + '/', 'laptop', "switchTab('actions')"),
          ('MC disaster reports', E + '/', 'laptop', "switchTab('dr')"), ('MC messages', E + '/', 'laptop', "switchTab('msgs')"),
-         ('MC roster', E + '/', 'laptop', "switchTab('roster')"), ('MC setup', E + '/', 'laptop', "switchTab('setup')"),
+         ('MC roster', E + '/', 'laptop', "switchTab('roster')"), ('MC setup', E + '/', 'laptop', "switchTab('setup')"), ('MC map', E + '/', 'laptop', "switchTab('map')"),
          ('MC comms', E + '/', 'laptop', "switchTab('comms')"), ('MC help', E + '/', 'laptop', 'openHelp()'),
          ('Wall display', E + '/wall', 'wall', None), ('Phone page /m', E + '/m', 'phone', None), ('EOC form /forms/dr', E + '/forms/dr', 'phone', None),
          ('Portal', W + '/forms/', 'phone', None), ('Comms sheet page', W + '/forms/comms.html', 'phone', None),
@@ -96,7 +96,7 @@ def main():
     tmp = pathlib.Path(tempfile.mkdtemp(prefix='emcomm_contrast_'))
     (tmp / 'home').mkdir()
     env = dict(os.environ, LOCALAPPDATA=str(tmp / 'appdata'), HOME=str(tmp / 'home'), USERPROFILE=str(tmp / 'home'),
-               EMCOMM_DOCUMENTS=str(tmp / 'docs'))
+               EMCOMM_DOCUMENTS=str(tmp / 'docs'), EMCOMM_STREETS_URL='http://127.0.0.1:9/{z}/{x}/{y}.png')   # never the internet
     site = tmp / 'site'
     (site / 'eoc').mkdir(parents=True)
     for f in ('eoc_server.py', 'EOC_Message_Center.html', 'EOC_Wall_Display.html', 'EOC_Phone.html', 'readout.py'):
