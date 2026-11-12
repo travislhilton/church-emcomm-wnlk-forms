@@ -16,6 +16,19 @@ No internet required. No admin rights required.
 Installs to: Documents\Church of Jesus Christ EMCOMM\  (with README.md and PACE_PLAN.md)
   (C:\Church of Jesus Christ EMCOMM\ when Documents syncs to OneDrive)
 
+AFTER INSTALLING: EOC LAPTOP ([3])
+----------------------------------
+1. Double-click "Church of Jesus Christ EMCOMM EOC Server" on the Desktop.
+   A black window opens. Keep it open: closing it stops the EOC.
+2. The first time, Windows asks whether Python may use the network.
+   Tick "Private networks" and press Allow. If it was refused, the server
+   window says so and shows the three steps that fix it.
+3. Double-click "Church of Jesus Christ EMCOMM EOC Message Center".
+   On its Setup tab, type this EOC's name and choose its level.
+4. Other operators, phones and the TV open the addresses the server window shows.
+5. Read Card 3 (EOC Operator). For a drill: the Simulator shortcut and Card 9.
+Run the installer again at any time to update: reports and settings are kept.
+
 WHAT GETS INSTALLED
 -------------------
 [1] Field Volunteer:

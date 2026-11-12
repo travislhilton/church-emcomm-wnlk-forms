@@ -21,10 +21,12 @@
    {"level": "Council / Area EOC", "name": "Only if the council or welfare region opens one (Area Specialist station)", "winlink": "N7AWS", "email": "awsrm@example.org", "phone": "801-555-0100"}
   ],
   "gateways": [
-   {"call": "W7EXA-10", "freq": "145.070", "mode": "VARA FM", "loc": "Example Peak", "notes": "24 h, wide VARA FM; holds mail if its internet drops"},
-   {"call": "K7EXC-10", "freq": "145.630", "mode": "VARA FM", "loc": "City hall", "notes": "narrow VARA FM"},
-   {"call": "W7EXA-10", "freq": "145.070", "mode": "VARA FM RMS Post Office", "loc": "Example Peak", "notes": "agreed Post Office: every EOC collects here"},
-   {"call": "W7EXH", "freq": "7.102 / 3.588", "mode": "VARA HF", "loc": "Regional", "notes": "HF when no VHF gateway answers"}
+   {"use": "RMS Gateway", "call": "W7EXA-10", "freq": "145.070", "mode": "VARA FM", "holds": "Yes", "loc": "Example Peak", "notes": "24 h, wide VARA FM"},
+   {"use": "RMS Gateway", "call": "K7EXC-10", "freq": "145.630", "mode": "VARA FM", "holds": "No", "loc": "City hall", "notes": "narrow VARA FM"},
+   {"use": "VARA FM RMS Post Office", "call": "W7EXA-10", "freq": "145.070", "mode": "VARA FM RMS Post Office", "holds": "", "loc": "Example Peak", "notes": "agreed Post Office: every EOC collects here"},
+   {"use": "VARA FM P2P", "call": "K7EXA-3", "freq": "145.050", "mode": "VARA FM P2P", "holds": "", "loc": "Stake EOC", "notes": "stake P2P frequency: the EOC keeps a P2P session open on it"},
+   {"use": "VARA FM P2P", "call": "K7EXB-3", "freq": "145.050", "mode": "VARA FM P2P", "holds": "", "loc": "North Satellite EOC", "notes": "same frequency"},
+   {"use": "VARA HF", "call": "W7EXH", "freq": "7.102 / 3.588", "mode": "VARA HF", "holds": "", "loc": "Regional", "notes": "HF only once VARA FM has failed in every mode"}
   ],
   "nets": [
    {"name": "Stake amateur net (repeater)", "freq": "146.720", "offset": "-0.600", "tone": "100.0", "mode": "repeater", "when": "Top of every hour during activation; practice net Tue 19:00"},

@@ -668,8 +668,9 @@ if ($installWinlink) {
         $templateDest = Join-Path $fallbackBase 'Winlink Templates'
         Write-Warn "Winlink path not found -- templates saved to:"
         Write-Info "  $templateDest"
-        Write-Warn "After installing Winlink, copy that folder to:"
+        Write-Warn "After installing Winlink, copy the folders inside it to:"
         Write-Info "  C:\RMS Express\Global Folders\Templates\"
+        Write-Info "  (or run this installer again: it finds Winlink and puts them there)"
     }
 
     $churchTemplateDest = Join-Path $templateDest 'Church of Jesus Christ EMCOMM Forms'
@@ -812,8 +813,8 @@ if ($installWinlink) {
         Write-Info "  Practice:  $winlinkDir\Global Folders\Templates\Church of Jesus Christ EMCOMM Practice\  (pre-filled exercise forms)"
         Write-Info "  Training:  $(Join-Path $installBase 'Training\Winlink Practice Forms')  (same practice forms + README)"
     } else {
-        Write-Info "  Templates: $(Join-Path $installBase 'Winlink Templates\Church of Jesus Christ EMCOMM Forms')"
-        Write-Info "  (Move to C:\RMS Express\Global Folders\Templates\ after installing Winlink)"
+        Write-Info "  Templates: $templateDest"
+        Write-Info "  (Winlink Express was not found: install it, then run this installer again)"
         Write-Info "  Training:  $(Join-Path $installBase 'Training\Winlink Practice Forms')  (practice forms + README)"
     }
     Write-Host ""
@@ -831,7 +832,7 @@ if ($installEOC) {
     Write-Info "  Server:    $(Join-Path $installBase 'EOC Message Center\start_eoc_server.bat')"
     Write-Info "  Shortcut:  Desktop\Church of Jesus Christ EMCOMM EOC Server.lnk"
     Write-Host ""
-    Write-Host "  Church of Jesus Christ EMCOMM Simulator (drills; one per EOC laptop, needs the EOC Server running with a DRILL event):" -ForegroundColor Cyan
+    Write-Host "  Church of Jesus Christ EMCOMM Simulator (drills; one per EOC laptop, needs the EOC Server running):" -ForegroundColor Cyan
     Write-Info "  Start:     $(Join-Path $installBase 'EOC Message Center\simulation\start_simulator.bat')  ->  http://<this-laptop>:8090"
     Write-Info "  Shortcut:  Desktop\Church of Jesus Christ EMCOMM Simulator.lnk"
     Write-Info "  Load the organization pack (Church directory export) on its Setup tab; it stays on this laptop."
@@ -848,19 +849,9 @@ if ($installEOC) {
         Write-Info "  Install it from https://www.python.org/downloads/ now and keep the Python installer on the USB kit"
     }
     Write-Host ""
-    Write-Host "  Quick start for EOC operators:" -ForegroundColor White
-    Write-Info "  Single operator (standalone, no EOC Server running):"
-    Write-Info "    Double-click the EOC Message Center shortcut, drag .mime files in"
-    Write-Info "  Multiple operators on same WiFi (networked mode, recommended):"
-    Write-Info "    1. One laptop runs the EOC Server shortcut"
-    Write-Info "    2. All operators open http://<server-ip>:8080 in any browser"
-    Write-Info "    3. Church form messages from Winlink auto-ingest within 10 seconds"
-    Write-Info "    4. Everyone sees new messages in real time"
-    Write-Host ""
-    Write-Host "  Receiving internet-submitted reports (email, text, AirDrop, USB):" -ForegroundColor White
-    Write-Info "    Volunteer fills form -> saves .txt file -> texts/emails/AirDrops it to you"
-    Write-Info "    You save the .txt file to the EOC Drop Folder shortcut on your Desktop"
-    Write-Info "    EOC server picks it up automatically within 10 seconds"
+    Write-Host "  Receiving reports by email, text, AirDrop or USB:" -ForegroundColor White
+    Write-Info "    Save the report file (.txt) into the EOC Drop Folder (Desktop shortcut)."
+    Write-Info "    The EOC Server files it within 10 seconds."
     Write-Host ""
 }
 
@@ -875,9 +866,10 @@ if ($installWorker -and $installWinlink) {
 } elseif ($installWorker) {
     Write-Host "  Quick start for field volunteers:" -ForegroundColor White
     Write-Info "  1. Double-click a form shortcut on your Desktop"
-    Write-Info "  2. Fill out the form and tap Save to My Phone"
-    Write-Info "  3. Have internet? Email the saved .txt file to your leader or the Stake EOC"
+    Write-Info "  2. Fill out the form and press Save to My Phone"
+    Write-Info "  3. Have internet? Email the saved .txt file to your EOC (its address is on the stake Comms Sheet)"
     Write-Info "     No service? Get it to a HAM operator (USB drive, AirDrop, Nearby Share)"
+    Write-Info "  4. Read Card 1 (Helping Hands Volunteer): Desktop\Church of Jesus Christ EMCOMM Quick Reference Cards"
     Write-Host ""
 }
 
@@ -887,6 +879,28 @@ if ($browser) {
     Write-Warn "No browser detected. Install one before using the forms."
 }
 Write-Host ""
+
+if ($installEOC) {
+    Write-Host ("  " + ("-" * 50)) -ForegroundColor DarkGray
+    Write-Host "  WHAT TO DO NOW (EOC laptop)" -ForegroundColor White
+    Write-Host ""
+    if (-not $pythonVer) {
+        Write-Warn "  First install Python 3 (see above): the EOC Server needs it. Then:"
+    }
+    Write-Info "  1. Double-click 'Church of Jesus Christ EMCOMM EOC Server' on the Desktop."
+    Write-Info "     A black window opens. Keep it open: closing it stops the EOC."
+    Write-Info "  2. The first time, Windows asks whether Python may use the network."
+    Write-Info "     Tick 'Private networks' and press Allow. If you press Cancel, phones and"
+    Write-Info "     other laptops cannot reach this EOC (the server window then shows the fix)."
+    Write-Info "  3. Double-click 'Church of Jesus Christ EMCOMM EOC Message Center'."
+    Write-Info "     On its Setup tab, type this EOC's name and choose its level."
+    Write-Info "  4. Other operators, phones and the TV open the addresses the server window shows."
+    Write-Info "  5. Read Card 3 (EOC Operator) in 'Church of Jesus Christ EMCOMM Quick Reference Cards'."
+    Write-Info "     For a drill: the Simulator shortcut, and Card 9 (Your First Drill)."
+    Write-Host ""
+    Write-Info "  Run this installer again at any time to update: your reports and settings are kept."
+    Write-Host ""
+}
 
 # Keep window open when run directly (not from install.bat which has its own pause)
 if (-not $env:CHURCH_EMCOMM_BAT) {

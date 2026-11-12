@@ -1287,10 +1287,18 @@ function setEventStatus(id, status) {
 var comms = {sheet:{}, updatedMs:0};
 var _commsPollMs = 0, _commsEditorStamp = -1;
 var COMMS_KIND = 'church_comms_sheet';
+// Contingency steps for a gateways row, in the order to try them (docs/PACE_PLAN.md §5).
+// A sheet from before 2026-11-12.2 has only a free-text mode: gwUse() reads the step from it.
+var GW_USES = ['RMS Gateway','VARA FM RMS Post Office','VARA FM P2P','VARA HF'];
+var GW_MODE = {'RMS Gateway':'VARA FM','VARA FM RMS Post Office':'VARA FM RMS Post Office','VARA FM P2P':'VARA FM P2P','VARA HF':'VARA HF'};
+function gwUse(g) { g=g||{}; if(GW_USES.indexOf(g.use)>=0) return g.use; var m=String(g.mode||'').toLowerCase();
+  if(/post ?office/.test(m)) return 'VARA FM RMS Post Office'; if(/p2p|peer/.test(m)) return 'VARA FM P2P'; if(/\bhf\b/.test(m)) return 'VARA HF'; if(/fm/.test(m)) return 'RMS Gateway'; return ''; }
+function gwSorted(rows) { return (rows||[]).map(function(g,i){ var u=gwUse(g), r={}; Object.keys(g).forEach(function(k){ r[k]=g[k]; }); r.use=u; return {r:r, o:u?GW_USES.indexOf(u):GW_USES.length, i:i}; })
+  .sort(function(a,b){ return a.o-b.o||a.i-b.i; }).map(function(x){ return x.r; }); }
 var COMMS_TABLES = [
   {key:'contacts', title:'Points of contact', hint:'Who to reach, in the order the chain works: Stake President, stake Welfare and Self-Reliance Specialist (emergency communications), Emergency Response Directors, bishops, then the two lines above the stake: the Area Seventy\'s coordinating council, and the welfare line (local Welfare and Self-Reliance Manager (WSRM), then the Area Welfare and Self-Reliance Manager (AWSRM)).', cols:[['role','Role'],['name','Name'],['phone','Phone'],['email','Email'],['winlink','Winlink address']]},
   {key:'eocs', title:'EOCs — where reports go', hint:'Every EOC in the chain with its Winlink address and drop email (what volunteers text or email forms to, and what HAMs address Winlink messages to).', cols:[['level','Level (Satellite / Stake / Council-Area)'],['name','EOC name / location'],['winlink','Winlink address'],['email','Drop email'],['phone','Phone']]},
-  {key:'gateways', title:'Winlink gateways (RMS) — try in this order', hint:'Contingency, in order: VARA FM gateways, the agreed VARA FM RMS Post Office, then VARA HF. In Notes, say if a gateway holds mail when its internet is down. Frequency in MHz; mode VARA FM / VARA FM RMS Post Office / VARA HF / Telnet.', cols:[['call','Callsign'],['freq','Frequency (MHz)'],['mode','Mode'],['loc','Location'],['notes','Notes (hours, power, tone)']]},
+  {key:'gateways', title:'Winlink gateways (RMS) — try in this order', hint:'Contingency, in this order: RMS Gateway (VARA FM), the agreed VARA FM RMS Post Office, VARA FM P2P, then VARA HF. Choose the step in Use; the list sorts itself. Holds mail: ask the gateway\'s sysop whether it is set to hold messages when its internet is down; one that is not answers "No CMS available". VARA FM P2P: one row per EOC station that listens, with its callsign and the stake\'s P2P frequency. Frequency in MHz.', cols:[['use','Use',GW_USES],['call','Callsign'],['freq','Frequency (MHz)'],['holds','Holds mail when its internet is down',['Yes','No','Ask the sysop']],['loc','Location'],['notes','Notes (hours, power, tone)']]},
   {key:'nets', title:'Voice nets', hint:'Stake amateur net (repeater, then simplex), the VHF/UHF voice path to the Area, HF voice as its backup, and the ward FRS/GMRS channels. Offset and tone for repeaters; "when" = schedule or check-in times.', cols:[['name','Net / use'],['freq','Frequency / channel'],['offset','Offset'],['tone','Tone'],['mode','Mode (repeater / simplex / HF / FRS-GMRS)'],['when','When']]}
 ];
 function commsEventLines() { var t=(incident&&incident.commsEvent)||''; return String(t).split('\n').map(function(s){return s.trim();}).filter(Boolean); }
@@ -1311,7 +1319,7 @@ function renderCommsEditor() {
   var h='<div class="form-group"><label>Organization (stake, district or area)</label><input type="text" id="comms-org" value="'+esc(s.org||'')+'" placeholder="e.g. Larkspur Stake"></div>';
   h+='<div class="form-group"><label>For this event only — one line each (shown on top in orange; cleared when the event closes)</label><textarea id="comms-event" rows="2" placeholder="Stake net moved to simplex 146.520 until the repeater is back\nTemporary gateway: W7XYZ-10 145.070 VARA FM">'+esc((incident&&incident.commsEvent)||'')+'</textarea></div>';
   COMMS_TABLES.forEach(function(t){
-    var rows=Array.isArray(s[t.key])?s[t.key]:[]; if(!rows.length) rows=[{}];
+    var rows=Array.isArray(s[t.key])?s[t.key]:[]; if(t.key==='gateways') rows=gwSorted(rows); if(!rows.length) rows=[{}];
     h+='<div style="margin-top:10px"><div style="font-weight:700;font-size:12px;color:var(--navy)">'+esc(t.title)+'</div><div style="font-size:10.5px;color:var(--muted);margin:2px 0 6px">'+esc(t.hint)+'</div>';
     h+='<div class="tbl-wrap"><table class="comms-edit" data-t="'+t.key+'"><thead><tr>'+t.cols.map(function(c){return '<th>'+esc(c[1])+'</th>';}).join('')+'<th></th></tr></thead><tbody>';
     rows.forEach(function(r){ h+=commsRowHtml(t,r); });
@@ -1321,12 +1329,20 @@ function renderCommsEditor() {
   h+='<div class="form-group"><label>Other notes (power, repeater owner, county EOC liaison, Starlink locations)</label><textarea id="comms-notes" rows="2">'+esc(s.notes||'')+'</textarea></div>';
   box.innerHTML=h;
 }
-function commsRowHtml(t,r) { r=r||{}; return '<tr>'+t.cols.map(function(c){ return '<td><input type="text" data-k="'+c[0]+'" value="'+esc(r[c[0]]||'')+'" style="min-width:90px;width:100%"></td>'; }).join('')+'<td><button class="btn-ghost" type="button" title="Remove row" onclick="this.closest(\'tr\').remove()">&#10005;</button></td></tr>'; }
-function commsAddRow(key) { var t=COMMS_TABLES.filter(function(x){return x.key===key;})[0]; var tb=document.querySelector('table.comms-edit[data-t="'+key+'"] tbody'); if(t&&tb){ tb.insertAdjacentHTML('beforeend', commsRowHtml(t,{})); var last=tb.lastElementChild.querySelector('input'); if(last) last.focus(); } }
+function commsRowHtml(t,r) { r=r||{};
+  // keys this table does not show (an older sheet's mode, a newer version's field) ride along unchanged
+  var extra={}; Object.keys(r).forEach(function(k){ if(!t.cols.some(function(c){ return c[0]===k; })) extra[k]=r[k]; });
+  return '<tr data-extra="'+esc(JSON.stringify(extra))+'">'+t.cols.map(function(c){ var v=r[c[0]]||'';
+    if(c[2]) return '<td><select data-k="'+c[0]+'" style="min-width:90px;width:100%"><option value=""></option>'+c[2].map(function(o){ return '<option'+(o===v?' selected':'')+'>'+esc(o)+'</option>'; }).join('')+(v&&c[2].indexOf(v)<0?'<option selected>'+esc(v)+'</option>':'')+'</select></td>';
+    return '<td><input type="text" data-k="'+c[0]+'" value="'+esc(v)+'" style="min-width:90px;width:100%"></td>'; }).join('')+'<td><button class="btn-ghost" type="button" title="Remove row" onclick="this.closest(\'tr\').remove()">&#10005;</button></td></tr>'; }
+function commsAddRow(key) { var t=COMMS_TABLES.filter(function(x){return x.key===key;})[0]; var tb=document.querySelector('table.comms-edit[data-t="'+key+'"] tbody'); if(t&&tb){ tb.insertAdjacentHTML('beforeend', commsRowHtml(t,{})); var last=tb.lastElementChild.querySelector('input,select'); if(last) last.focus(); } }
 function readCommsEditor() {
   var s={org:(document.getElementById('comms-org')||{}).value||'', schedule:(document.getElementById('comms-schedule')||{}).value||'', notes:(document.getElementById('comms-notes')||{}).value||''};
   s.org=s.org.trim(); s.schedule=s.schedule.trim(); s.notes=s.notes.trim();
-  COMMS_TABLES.forEach(function(t){ s[t.key]=[]; document.querySelectorAll('table.comms-edit[data-t="'+t.key+'"] tbody tr').forEach(function(tr){ var r={}, any=false; tr.querySelectorAll('input[data-k]').forEach(function(i){ var v=i.value.trim(); r[i.getAttribute('data-k')]=v; if(v) any=true; }); if(any) s[t.key].push(r); }); });
+  COMMS_TABLES.forEach(function(t){ s[t.key]=[]; document.querySelectorAll('table.comms-edit[data-t="'+t.key+'"] tbody tr').forEach(function(tr){ var r={}, any=false; tr.querySelectorAll('input[data-k],select[data-k]').forEach(function(i){ var v=i.value.trim(); r[i.getAttribute('data-k')]=v; if(v) any=true; });
+    if(!any) return; var extra={}; try{ extra=JSON.parse(tr.getAttribute('data-extra')||'{}'); }catch(e){} Object.keys(extra).forEach(function(k){ if(!(k in r)) r[k]=extra[k]; });
+    if(t.key==='gateways' && GW_MODE[r.use]) r.mode=GW_MODE[r.use];   // what a page from before 2026-11-12.2 shows
+    s[t.key].push(r); }); });
   return s;
 }
 function saveComms() {
@@ -1343,7 +1359,7 @@ function saveComms() {
 }
 function commsSections(s) {
   s=s||{}; var out=[];
-  COMMS_TABLES.forEach(function(t){ var rows=(s[t.key]||[]).filter(function(r){ return Object.keys(r).some(function(k){return r[k];}); }); if(rows.length) out.push({title:t.title, cols:t.cols, rows:rows}); });
+  COMMS_TABLES.forEach(function(t){ var rows=(s[t.key]||[]).filter(function(r){ return Object.keys(r).some(function(k){return r[k];}); }); if(t.key==='gateways') rows=gwSorted(rows); if(rows.length) out.push({title:t.title, cols:t.cols, rows:rows}); });
   return out;
 }
 function renderComms() {

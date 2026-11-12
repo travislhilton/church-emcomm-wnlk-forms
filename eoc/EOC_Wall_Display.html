@@ -227,6 +227,13 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
   var ITEM_NAME={}; ITEMS.forEach(function(r){ ITEM_NAME[r[0]]={num:r[1],name:r[2]}; ITEM_NAME[r[1]]={num:r[1],name:r[2]}; });
   function itemKey(k){ var it=ITEM_NAME[k]; if(it) return it.num; return k; }
   function itemName(k){ var it=ITEM_NAME[k]; if(it) return it.name; if(k.indexOf('LOCAL-')===0) return k.slice(6)+' (local)'; return 'Item '+k; }
+  // Contingency steps for a gateways row, in the order to try them (docs/PACE_PLAN.md §5); an older sheet has only a free-text mode.
+  var GW_USES = ['RMS Gateway','VARA FM RMS Post Office','VARA FM P2P','VARA HF'];
+  function gwUse(g) { g=g||{}; if(GW_USES.indexOf(g.use)>=0) return g.use; var m=String(g.mode||'').toLowerCase();
+    if(/post ?office/.test(m)) return 'VARA FM RMS Post Office'; if(/p2p|peer/.test(m)) return 'VARA FM P2P'; if(/\bhf\b/.test(m)) return 'VARA HF'; if(/fm/.test(m)) return 'RMS Gateway'; return ''; }
+  function gwSorted(rows) { return (rows||[]).map(function(g,i){ var u=gwUse(g), r={}; Object.keys(g).forEach(function(k){ r[k]=g[k]; }); r.use=u; return {r:r, o:u?GW_USES.indexOf(u):GW_USES.length, i:i}; })
+    .sort(function(a,b){ return a.o-b.o||a.i-b.i; }).map(function(x){ return x.r; }); }
+  var GW_SHORT = {'RMS Gateway':'RMS','VARA FM RMS Post Office':'Post Office','VARA FM P2P':'P2P','VARA HF':'HF'};
   function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
   function ni(v){ var n=parseInt(v,10); return isNaN(n)?0:n; }
   function nf(v){ var n=parseFloat(v); return isNaN(n)?0:n; }
@@ -429,7 +436,10 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
     evl.forEach(function(l){ ch+='<div class="kv" style="background:#5A3A05;border-radius:.3rem;padding:.3vh .4vw"><span class="v" style="color:#FFD58A;white-space:normal;text-align:left">'+esc(l)+'</span></div>'; });
     // Room is tight on a TV: the first few rows of each table — the full sheet is on the Comms tab and the printed copy.
     (cs.nets||[]).slice(0,2).forEach(function(n){ if(!n.name&&!n.freq) return; ch+='<div class="kv"><span class="k">'+esc(n.name||'Net')+'</span><span class="v">'+esc([n.freq,n.offset,n.tone?'T '+n.tone:''].filter(Boolean).join(' '))+'</span></div>'; });
-    (cs.gateways||[]).slice(0,2).forEach(function(g){ if(!g.call&&!g.freq) return; ch+='<div class="kv"><span class="k">RMS '+esc(g.call||'')+'</span><span class="v">'+esc([g.freq,g.mode].filter(Boolean).join(' '))+'</span></div>'; });
+    // two radio lines: the first gateway to try, and the stake's VARA FM P2P frequency (else the next gateway)
+    var gws=gwSorted((cs.gateways||[]).filter(function(g){ return g.call||g.freq; })), p2p=gws.filter(function(g){ return g.use==='VARA FM P2P'; })[0];
+    var gwShow=gws.slice(0,1); if(p2p&&gwShow[0]!==p2p) gwShow.push(p2p); else if(gws[1]) gwShow.push(gws[1]);
+    gwShow.forEach(function(g){ ch+='<div class="kv"><span class="k">'+esc((GW_SHORT[g.use]||'RMS')+' '+(g.call||''))+'</span><span class="v">'+esc([g.freq, g.holds==='Yes'?'holds mail':''].filter(Boolean).join(' · '))+'</span></div>'; });
     (cs.eocs||[]).slice(0,2).forEach(function(e){ if(!e.winlink&&!e.email) return; ch+='<div class="kv"><span class="k">'+esc(e.level||e.name||'EOC')+'</span><span class="v">'+esc(e.winlink||e.email)+'</span></div>'; });
     (cs.contacts||[]).slice(0,1).forEach(function(c){ if(!c.name&&!c.phone) return; ch+='<div class="kv"><span class="k">'+esc(c.role||c.name)+'</span><span class="v">'+esc(c.phone||c.winlink||c.email||c.name)+'</span></div>'; });
     pc.style.display=ch?'':'none'; var netsEl=document.getElementById('nets'); netsEl.innerHTML=ch;
@@ -492,6 +502,8 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
     var rows=[].slice.call(list.children).filter(function(r){return !r.classList.contains('more');}), limit=body.getBoundingClientRect().top+body.clientHeight-2, shown=0;
     rows.forEach(function(r){ r.style.display=''; });
     var old=body.querySelector('.more'); if(old) old.remove();
+    // a panel that sizes itself to its rows is exactly as tall as they are: nothing to hide (the margin below once hid its last row)
+    if(body.scrollHeight<=body.clientHeight+1) return;
     for(var i=0;i<rows.length;i++){ if(rows[i].getBoundingClientRect().bottom<=limit+1) shown++; else rows[i].style.display='none'; }
     var hidden=total-shown; if(hidden>0 && shown>0){ var m=document.createElement('div'); m.className='more'; m.textContent='+ '+hidden+' more on '+where; body.appendChild(m);
       while(shown>1 && m.getBoundingClientRect().bottom>limit+1){ shown--; rows[shown].style.display='none'; m.textContent='+ '+(total-shown)+' more on '+where; } }

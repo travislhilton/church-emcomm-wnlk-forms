@@ -8,11 +8,16 @@ import ctypes, string, shutil, email as _email, os, uuid
 
 # Port: 8080 unless given as the first argument or EOC_PORT (practice drills can run
 # a second EOC on the same laptop from another folder: python eoc_server.py 8081).
-PORT = int(os.environ.get('EOC_PORT') or (sys.argv[1] if len(sys.argv) > 1 and sys.argv[1].isdigit() else 8080))
+# the port: EOC_PORT, or the first argument (8180), or --port=8180; a mistyped one stops here instead of quietly taking 8080
+_port_arg = next((a.split('=', 1)[1] for a in sys.argv[1:] if a.startswith('--port=')), None) or (sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith('--') else None)
+try:
+    PORT = int(os.environ.get('EOC_PORT') or _port_arg or 8080)
+except ValueError:
+    sys.exit(f'  The port must be a number, for example 8080 (got {os.environ.get("EOC_PORT") or _port_arg!r}).')
 VERSION = '1.0'
 # The Worker forms / Church of Jesus Christ EMCOMM app version this server ships (APP_VERSION in templates/_shared/emcomm-app.js).
 # Phones whose app is older still send fine; the receive page just tells them to update when they have internet.
-FORMS_VERSION = '2026-11-12.1'
+FORMS_VERSION = '2026-11-12.2'
 BASE = pathlib.Path(__file__).resolve().parent   # resolve: before Python 3.9 __file__ is relative when started from this folder
 DB_FILE   = BASE / 'eoc_data.db'
 HTML_FILE = BASE / 'EOC_Message_Center.html'
@@ -1939,7 +1944,7 @@ def _discovery_listen_loop():
                 _peers[url] = {'name': str(p.get('name', ''))[:80], 'level': str(p.get('level', ''))[:20],
                                'event': str(p.get('event', ''))[:80], 'seen': time.time()}
             if new and url != _lan_url():
-                print(f'  [PEERS]  Found another EOC: {p.get("name") or url} ({url})')
+                print(f'  [PEERS]  Found another EOC: ' + (f'{p["name"]} ({url})' if p.get('name') else f'{url} (not named yet)'))
         except Exception:
             pass
 
@@ -2845,11 +2850,10 @@ if __name__ == '__main__':
         request_queue_size = 128
     server = _EOCServer(('0.0.0.0', PORT), EOCHandler)
 
-    width = max(len(net_url), len(loc_url)) + 14
-    bar = '=' * width
+    bar = '=' * 72
     def row(label, value=''):
-        content = f'  {label:<10}{value}' if value else f'  {label}'
-        return f'  | {content:<{width - 4}} |'
+        # no box: a long path or address would push a right-hand border out of line
+        return f'  {label:<13}{value}' if value else f'  {label}'
 
     # Which EOC is this? (set on the Setup tab; same software at Satellite, Stake and Council / Area EOCs)
     try:
@@ -2872,57 +2876,45 @@ if __name__ == '__main__':
                 + (f'  [{_ev.get("status", "open")}, {_ev.get("counts", {}).get("msgs", 0)} reports]' if _ev else ''))
 
     print()
-    print(f'  +{bar}+')
-    print(row('Church of Jesus Christ EMCOMM — EOC Message Center Server'))
-    print(f'  +{bar}+')
-    print(row('Local:',   loc_url))
-    print(row('Network:', net_url))
-    print(f'  |{" " * width}|')
-    print(row('Share the Network URL with all EOC operators on this WiFi.'))
-    print(row('Wall display (TV / projector, read-only, press F):'))
-    print(row(f'             {net_url}/wall'))
-    print(row('Phones on this Wi-Fi (new forms, Send to EOC):'))
-    print(row(f'             {net_url}/m'))
-    print(f'  |{" " * width}|')
+    print(f'  {bar}')
+    print('  Church of Jesus Christ EMCOMM - EOC Server')
+    print(f'  {bar}')
+    print('  KEEP THIS WINDOW OPEN. Closing it stops the EOC for every operator,')
+    print('  phone and wall display. To stop the server: press Ctrl+C, or close it.')
+    print()
+    print(row('Operators:', f'{net_url}   (any browser on this Wi-Fi)'))
+    print(row('This laptop:', loc_url))
+    print(row('Wall / TV:', f'{net_url}/wall   (press F for full screen)'))
+    print(row('Phones:', f'{net_url}/m   (new forms, Send to EOC)'))
+    print()
     print(row('This EOC:', _eoc_line))
     print(row('Event:', _ev_line))
-    print(row('Roll-ups:  .json from a lower EOC merge automatically'))
-    print(row('           (Drop Folder or Winlink attachment).'))
-    print(row('Comms:     a comms-sheet .json (contacts, gateways, nets) arriving'))
-    print(row('           the same way replaces the sheet on file when newer.'))
-    print(f'  |{" " * width}|')
-    print(row(f'Auto-backup: every {BACKUP_INTERVAL_SEC // 60} min -> {BACKUP_DIR.name}/'))
-    print(row('USB backup:  insert any USB drive to back up immediately.'))
-    print(row('Manual:      GET /api/backup  or  Export button in the EOC UI.'))
-    print(row('Read-out:    GET /api/readout (for a voice net) and the file'))
-    print(row(f'             {READOUT_FILE.name} here, refreshed on every SITREP.'))
-    print(f'  |{" " * width}|')
     _wv = _watcher_view()
     if _wv.get('enabled') and _wv.get('mode') == 'winlink':
-        print(row(f'Watcher:     AUTO — Winlink Express at {_wv["watch_path"]}'))
+        print(row('Winlink:', f'reading Winlink Express at {_wv["watch_path"]}'))
         if _wv['callsigns']:
-            print(row('             feeds this EOC: ' + ', '.join(_wv['callsigns']) + f'  ({_wfrom})'))
+            print(row('', 'feeds this EOC: ' + ', '.join(_wv['callsigns']) + f'  ({_wfrom})'))
         else:
-            print(row('             NO CALLSIGN CHOSEN: reading ' + (', '.join(_wv['available']) or 'every station') + '.'))
-            print(row('             Choose on the Message Center watcher bar, or set'))
-            print(row('             "winlinkCallsigns" in eoc-settings.json (see below).'))
+            print(row('', 'NO CALLSIGN CHOSEN: reading ' + (', '.join(_wv['available']) or 'every station') + '.'))
+            print(row('', 'Choose one on the Message Center watcher bar (the blue bar at the top).'))
         if _wv['missing']:
-            print(row('             NOT FOUND here: ' + ', '.join(_wv['missing']) + ' (check the callsign).'))
-        print(row('             Received messages since the event began; Winlink keeps its own.'))
+            print(row('', 'NOT FOUND here: ' + ', '.join(_wv['missing']) + ' (check the callsign).'))
+        print(row('', 'Received messages since the event began; Winlink keeps its own copy.'))
     elif _wv.get('enabled') and _wv.get('mode') == 'folder':
-        print(row('Watcher:     AUTO — .mime files in a folder (moved to EOC Ingested):'))
-        print(row(f'             {_wv["watch_path"]}'))
+        print(row('Winlink:', '.mime files in a folder (moved to EOC Ingested beside it):'))
+        print(row('', _wv['watch_path']))
     else:
-        print(row('Watcher:     Winlink Express not found (C:\\RMS Express).'))
-        print(row('             Set its folder on the Message Center watcher bar.'))
-    print(row(f'Settings:    {SETTINGS_FILE}'))
-    print(f'  |{" " * width}|')
-    print(row('Drop:        Internet drop folder — always watching.'))
-    print(row(f'             {DROP_FOLDER_DEFAULT}'))
-    print(row('             Save any Worker Form .txt file here to ingest (within 10 sec).'))
-    print(f'  |{" " * width}|')
-    print(row('Press Ctrl+C to stop.'))
-    print(f'  +{bar}+')
+        print(row('Winlink:', 'Winlink Express not found (C:\\RMS Express).'))
+        print(row('', 'Choose its folder on the Message Center watcher bar.'))
+    print(row('Drop Folder:', str(DROP_FOLDER_DEFAULT)))
+    print(row('', 'Save report files (.txt) and roll-ups (.json) here: filed within 10 s.'))
+    print(row('Backups:', f'every {BACKUP_INTERVAL_SEC // 60} min to {BACKUP_DIR}'))
+    print(row('', 'Insert any USB drive to back up to it right away.'))
+    print(row('Settings:', str(SETTINGS_FILE)))
+    print()
+    print('  Phones or other laptops cannot open the address? Windows Firewall is')
+    print('  blocking Python: a warning appears below if so, with the steps to fix it.')
+    print(f'  {bar}')
     print()
     threading.Thread(target=_check_firewall, daemon=True).start()   # in the background: PowerShell takes a few seconds to start
 
