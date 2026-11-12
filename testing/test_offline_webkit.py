@@ -13,7 +13,7 @@ What it checks, with the repo served on localhost (a secure context, so the serv
   * update safety: an update during which one file fails to download keeps every form available offline.
 
 Needs:  python -m pip install playwright  &&  python -m playwright install webkit
-Port 8099 must be free.   python testing/test_offline_webkit.py
+Uses port 8099, or a free port when 8099 is taken.   python testing/test_offline_webkit.py
 """
 import functools, http.server, json, pathlib, re, socket, sys, threading, time
 
@@ -24,7 +24,21 @@ except ImportError:
     sys.exit(0)
 
 REPO = pathlib.Path(__file__).resolve().parent.parent
-PORT = 8099
+def _pick_port(want=8099):
+    """8099, or any free port when another program holds it (the origin must stay the same for the whole run)."""
+    for port in (want, 0):
+        s = socket.socket()
+        try:
+            s.bind(('127.0.0.1', port))
+            return s.getsockname()[1]
+        except OSError:
+            continue
+        finally:
+            s.close()
+    return want
+
+
+PORT = _pick_port()
 BASE = f'http://localhost:{PORT}/'
 DR = 'templates/disaster-report/Church_of_Jesus_Christ_Disaster_Report_Worker.html'
 results = []

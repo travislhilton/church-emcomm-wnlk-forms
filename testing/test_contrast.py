@@ -32,6 +32,8 @@ except ImportError:
     print('SKIP: playwright is not installed (python -m pip install playwright; python -m playwright install firefox webkit)')
     sys.exit(0)
 
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(errors='replace')   # a Windows console (cp1252) cannot print every character a page shows
 REPO = pathlib.Path(__file__).resolve().parent.parent
 ARGS = dict(a[2:].split('=', 1) for a in sys.argv[1:] if a.startswith('--') and '=' in a)
 PE, PW = (int(x) for x in ARGS.get('ports', '8580,8581').split(','))

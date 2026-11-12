@@ -295,7 +295,7 @@ Stake HAM operators serve under the Stake President's direction, through the sta
 3. **Work down the *Set up this EOC* checklist** on the Overview tab. Each step has a **Go** button:
    1. Name this EOC and the EOC above it.
    2. Open the event.
-   3. Set the PACE level and the SITREP interval.
+   3. Set the PACE level (and the SITREP interval, once EOC leadership sets one).
    4. Choose the Winlink callsign (step 6 below).
    5. Put the units you expect reports from on the roster.
    6. Fill in or load the Comms Sheet.

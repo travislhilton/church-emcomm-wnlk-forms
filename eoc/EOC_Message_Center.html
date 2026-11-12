@@ -85,7 +85,7 @@ body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,sa
 /* Stake tracker grid */
 .tracker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;}
 .tracker-card{background:var(--surface);border:2px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px;}
-.tracker-card.green{border-color:#16a34a;background:var(--ok-bg);}
+.tracker-card.green{border-color:var(--ok);background:var(--ok-bg);}
 .tracker-card.yellow{border-color:#ca8a04;background:var(--warn-bg);}
 .tracker-card.red{border-color:var(--danger);background:var(--danger-bg);}
 .tracker-card.overdue{border-color:var(--overdue);background:var(--overdue-bg);}
@@ -3376,7 +3376,7 @@ function setupSteps() {
   return [
     {done: !!(incident && incident.eocName), what: 'Name this EOC and the EOC above it', why: 'Setup tab, This EOC: level, name, the units it covers, where roll-ups go', go: "goSetup('sec-identity')"},
     {done: !!(ev && ev.name), what: 'Open the event', why: 'Setup tab, Emergency Event: + Open a New Event (every operator switches to it)', go: "goSetup('event-card')"},
-    {done: !!(incident && incident.pace && incident.sitrepHrs), what: 'Set the PACE level and the SITREP interval', why: 'Setup tab, Active event: the level the Stake President decided, and the SITREP interval EOC leadership set', go: "goSetup('sec-details')"},
+    {done: !!(incident && incident.pace), what: 'Set the PACE level', why: 'Setup tab, Active event: the level the Stake President decided; also the SITREP interval, once EOC leadership sets one (it may stay "not set")', go: "goSetup('sec-details')"},
     {done: !networkMode || !!(w.enabled && (w.mode !== 'winlink' || (w.callsigns||[]).length)), what: 'Choose the Winlink callsign that feeds this EOC', why: networkMode && w.mode === 'none' ? 'Winlink Express is not on this laptop: radio reports arrive as files in the Drop Folder' : 'Then reports sent by radio file themselves (auto-ingest)', go: 'configureWatcher()', btn: 'Choose'},
     {done: roster.length > 0, what: 'Put the ' + unitPlural() + ' you expect reports from on the roster', why: 'Roster tab: + Add ' + unitLabel(), go: "switchTab('roster')"},
     {done: hasSheet, what: 'Fill in or load the Comms Sheet', why: 'Setup tab, Comms Sheet: who to call, Winlink addresses, gateways, nets', go: "goSetup('comms-card')"}
@@ -3697,7 +3697,7 @@ function fbList(d, note) {
     d.drives.forEach(function(x){ var b = document.createElement('button'); b.type = 'button'; b.className = 'btn secondary'; b.textContent = x; b.onclick = function(){ _fbQuiet = 0; fbGo(x); }; drives.appendChild(b); });
     var rows = (d.parent ? [{name: '\u2191 Up one folder', path: d.parent, mark: false}] : []).concat(d.folders.map(function(f){ return {name: '\uD83D\uDCC1 ' + f.name, path: f.path, mark: f.mark}; }));
     rows.forEach(function(f){ var b = document.createElement('button'); b.type = 'button'; b.textContent = f.name; b.onclick = function(e){ if (e.detail > 1) return; fbGo(f.path, true); };
-      if (f.mark) { var m = document.createElement('b'); m.style.color = '#16a34a'; m.textContent = '  \u2713 ' + d.label; b.appendChild(m); }
+      if (f.mark) { var m = document.createElement('b'); m.style.color = 'var(--ok)'; m.textContent = '  \u2713 ' + d.label; b.appendChild(m); }
       list.appendChild(b); });
     if (!rows.length) list.innerHTML = '<div style="padding:7px 10px;opacity:.7">No folders here.</div>';
   }
@@ -3797,7 +3797,7 @@ function updateDropZone() {
   var lbl = document.getElementById('drop-label');
   var hint = document.getElementById('drop-hint');
   var ico = document.getElementById('drop-ico');
-  if (lbl)  lbl.innerHTML  = '<span style="color:#16a34a">&#10003; Auto-ingest active</span> — or drop a file to add manually';
+  if (lbl)  lbl.innerHTML  = '<span style="color:var(--ok)">&#10003; Winlink auto-ingest on</span> — or drop a file to add manually';
   if (hint) hint.textContent = 'Winlink messages with Church tags are picked up automatically every 10 seconds.';
   if (ico)  ico.textContent  = '⚡';
 }
