@@ -15,7 +15,7 @@
 <style>
 :root{
   --bg:#0B1220; --panel:#131C2E; --panel2:#182440; --line:#24324F; --fg:#F2F5F9; --muted:#9FB0C8;
-  --red:#E0263F; --amber:#F2A20C; --green:#3FBF7F; --blue:#4F8FE0; --navy:#1A2744; --purple:#8A6CE0;
+  --red:#E0263F; --amber:#F2A20C; --green:#3FBF7F; --blue:#1d5fa8; --navy:#1A2744; --purple:#8A6CE0;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{font-size:calc(0.52vw + 0.52vh);}
@@ -327,7 +327,9 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
     var lv=level(), unitP = lv==='area'?'Stakes':'Wards';
     // header
     document.getElementById('eoc-name').textContent = inc.eocName || (LEVEL[lv]||'EOC');
-    document.getElementById('eoc-level').textContent = (LEVEL[lv]||'EOC') + (inc.eocUnits?' · '+inc.eocUnits:'');
+    // the level under the name, unless the name already says it (an unnamed EOC shows only its level)
+    var lvTxt = inc.eocName && inc.eocName.toLowerCase().indexOf((LEVEL[lv]||'EOC').toLowerCase()) < 0 ? (LEVEL[lv]||'EOC') : '';
+    document.getElementById('eoc-level').textContent = [lvTxt, inc.eocUnits||(inc.eocName?'':'name this EOC on the Setup tab')].filter(Boolean).join(' · ');
     var evn=document.getElementById('ev-name'); evn.innerHTML = (inc.name?esc(inc.name):'No event named') + (inc.eventStatus==='closed'?'<span class="closed">CLOSED</span>':'')
       + (msgs.length && msgs.every(isEx) ? '<span class="closed" style="background:#991b1b;color:#fff">EXERCISE</span>' : '');
     var sub=[]; if(inc.type) sub.push(inc.type); if(inc.area) sub.push(inc.area); if(inc.startTs) sub.push('started '+dhm(inc.startTs)+' · '+dur(now-inc.startTs)+' elapsed');
@@ -339,7 +341,7 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
     tp.className='tile pace '+(p?p:'none');
     var PN={P:'Primary — cell + internet',A:'Alternate — any internet / Wi-Fi',C:'Contingency — radio: VARA FM / HF',E:'Emergency — runner / paper'};
     document.getElementById('pace-v').textContent = p||'—';
-    document.getElementById('pace-sub').textContent = p ? (PN[p]+(inc.paceTs?' · since '+hm(inc.paceTs):'')) : 'not set — Setup tab → Active event details';
+    document.getElementById('pace-sub').textContent = p ? (PN[p]+(inc.paceTs?' · since '+hm(inc.paceTs):'')) : 'not set yet — the Stake President decides the level';
 
     // counts
     var drs=msgs.filter(function(m){return m.type==='dr';}), sos=msgs.filter(function(m){return m.type==='so';}), wcls=msgs.filter(function(m){return m.type==='wcl';});
@@ -404,7 +406,7 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
     var nd=''; nd+='<div class="kv"><span class="k">Missionaries not accounted for</span><span class="v wrap '+(missNo.length?'bad':'good')+'">'+(missNo.length?esc(missNo.join(', ')):'none reported')+'</span></div>';
     nd+='<div class="kv"><span class="k">Need local Church facilities</span><span class="v wrap">'+(needL.length?esc(needL.join(', ')):'—')+'</span></div>';
     nd+='<div class="kv"><span class="k">Need neighboring unit help</span><span class="v wrap">'+(needN.length?esc(needN.join(', ')):'—')+'</span></div>';
-    nd+='<div class="kv"><span class="k">Request Church HQ support</span><span class="v wrap '+(needH.length?'bad':'')+'">'+(needH.length?esc(needH.join(', ')):'—')+'</span></div>';
+    nd+='<div class="kv"><span class="k">Need Church headquarters help</span><span class="v wrap '+(needH.length?'bad':'')+'">'+(needH.length?esc(needH.join(', ')):'—')+'</span></div>';
     // supplies (by item key from the tag string num:qty;...) — the catalog names carry the unit ("case", "pkg", "pallet")
     var agg={}; sos.forEach(function(m){ ((m.so&&m.so.items)||'').split(';').forEach(function(p){ var c=p.lastIndexOf(':'); if(c<1) return; var k=p.slice(0,c).trim(), q=ni(p.slice(c+1)); if(!k||!q) return; k=itemKey(k); agg[k]=(agg[k]||0)+q; }); });
     var top=Object.keys(agg).map(function(k){return {k:k,q:agg[k]};}).sort(function(a,b){return b.q-a.q;}).slice(0,3);
@@ -465,7 +467,7 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
     // alerts
     var al=[]; if(missNo.length) al.push('MISSIONARIES NOT ACCOUNTED FOR: '+missNo.join(', ')+' — contact '+(lv==='area'?'stake presidents':'bishops')+' now');
     if(dead) al.push(dead+' member death'+(dead>1?'s':'')+' reported'); if(inj) al.push(inj+' member'+(inj>1?'s':'')+' injured');
-    if(needH.length) al.push('Church HQ support requested by '+needH.join(', '));
+    if(needH.length) al.push('Church headquarters help requested by '+needH.join(', '));
     if(overdue.length) al.push('Overdue: '+overdue.join(', '));
     var hiNo=acts.filter(function(a){return a.prio===1 && !(a.owner||'').trim();}).length; if(hiNo) al.push(hiNo+' high-priority work item'+(hiNo>1?'s':'')+' with no owner');
     var ab=document.getElementById('alerts'); var warnOnly = !missNo.length && !dead && !inj && !needH.length;

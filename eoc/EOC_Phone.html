@@ -126,7 +126,7 @@ function renderWork(){
       + (a.due ? 'Due ' + esc(a.due) + ' · ' : '') + (a.from ? 'From ' + esc(a.from) + ' · ' : '') + 'Owner: ' + esc(a.owner || 'nobody') + '</div>'
       + '<button onclick="workAct(\'' + id + '\',\'take\')">Take it</button>'
       + (a.status !== 'progress' ? '<button onclick="workAct(\'' + id + '\',\'progress\')">In work</button>' : '')
-      + (a.status !== 'up' ? '<button onclick="workAct(\'' + id + '\',\'up\')">Up (line above)</button>' : '')
+      + (a.status !== 'up' ? '<button onclick="workAct(\'' + id + '\',\'up\')">Waiting on the line above</button>' : '')
       + '<button onclick="workAct(\'' + id + '\',\'done\')">Done</button></div>';
     return '<div class="wi' + (workOpen === a.id ? ' open' : '') + '" onclick="workToggle(\'' + id + '\', event)"><div class="t">'
       + (a.prio === 1 ? '<span class="tag hi">HIGH</span>' : '') + '<span class="tag ' + (a.status === 'up' ? 'up' : a.status === 'progress' ? 'work' : 'open') + '">' + (ST[a.status] || 'OPEN') + '</span>' + esc(a.title) + '</div>'
@@ -145,7 +145,7 @@ function workAct(id, act){
 function landing(){
   var h = '';
   h += '<div id="drill-card"></div>';
-  h += '<div class="card"><h2>Fill in a new report</h2><p class="muted" style="margin:0 0 4px">No app needed. The form opens on this phone. When you are done, tap <b>Send to EOC</b> at the bottom. No saving or files needed.</p>';
+  h += '<div class="card"><h2>Fill in a new report</h2><p class="muted" style="margin:0 0 4px">No app needed. Tap a form and fill it in on this phone. Then tap <b>Send to EOC</b> at the bottom.</p>';
   ['dr','so','wcl'].forEach(function(k, i){
     h += '<a class="big" href="/forms/' + k + '"><span class="i">' + ['&#128203;','&#128230;','&#128296;'][i] + '</span>New ' + FORM_NAME[k] + '</a>';
   });
@@ -155,7 +155,7 @@ function landing(){
      + '<p class="muted" style="margin:0 0 6px">Only if you installed the app before today and filled in forms out in the field. No app? Use <b>New</b> report above.</p>'
      + '<ol><li>Open the <b>EMCOMM</b> app on your home screen.</li><li>Tap <b>Outbox</b>, then <b>Send to EOC</b>.</li><li>Tap <b>Scan the EOC QR code</b> and point the camera at the code on the wall. Or type this address:</li></ol>'
      + '<div class="addr">' + esc(location.host) + '</div>'
-     + '<p class="muted" style="margin:6px 0 0">Android: this button also opens your saved reports.</p>'
+     + '<p class="muted" style="margin:6px 0 0">On Android, this button does steps 1 and 2 for you:</p>'
      + '<a class="sec" href="' + esc(PORTAL + '?eoc=' + encodeURIComponent(location.origin) + '#outbox') + '">Open my saved reports (Android)</a></div>';
   h += '<div class="card" id="work-card" style="display:none"><h2>Work items <span class="muted" id="work-n"></span></h2>'
      + '<p class="muted" style="margin:0 0 6px">What the reports ask the EOC to do or decide. Tap an item to see it, take it or move it.</p><div id="work"></div></div>';
@@ -315,7 +315,7 @@ function sendIncoming(){
 }
 
 // ── Start ─────────────────────────────────────────────────────────────────────
-getJSON('/api/status').then(function(s){ srv = s; header(); }).catch(function(){ document.getElementById('eoc-ev').textContent = 'The EOC server is not answering. Check the Wi-Fi.'; })
+getJSON('/api/status').then(function(s){ srv = s; header(); }).catch(function(){ document.getElementById('eoc-ev').textContent = 'The EOC server is not answering. Check that this phone is on the EOC Wi-Fi, then reload this page.'; })
   .then(function(){ return getJSON('/api/peers').then(function(p){ peers = Array.isArray(p) ? p : []; }).catch(function(){}); })
   .then(function(){ var p = hashParams(); if (p.d) receive(p); else landing(); });
 </script>

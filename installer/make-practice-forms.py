@@ -150,7 +150,7 @@ def main():
             name = f'Practice {n} - {label} - {it["unit"]}.txt'
             (out / name).write_bytes(tdef.replace(initial.encode(), f'{base}.html'.encode(), 1))
             made.append((n, label, it['unit'], summary(form, d), unused))
-    lines = [f'  {i}. {label} - {unit}: {s}' for i, label, unit, s, _ in made]
+    lines = [f'  {i}. {label} - {unit}: {s[len(unit) + 2:] if s.startswith(unit + ": ") else s}' for i, label, unit, s, _ in made]
     readme = f"""Church of Jesus Christ EMCOMM practice forms - pre-filled Winlink templates
 ===========================================================
 
@@ -164,16 +164,21 @@ report as an exercise. Leave it ticked.
 
 Install: copy this whole folder to
   C:\\RMS Express\\Global Folders\\Templates\\Church of Jesus Christ EMCOMM Practice\\
-(the Church of Jesus Christ EMCOMM installer does this for the HAM Field Operator (licensed amateur radio) and EOC Operator roles, and
-also puts a training copy in Documents\\Church of Jesus Christ EMCOMM\\Training\\Winlink Practice Forms\\
-with a shortcut in the desktop folder Church of Jesus Christ EMCOMM Forms).
+then restart Winlink Express so it lists the forms.
+The installer does this for you when you choose [2] HAM (licensed amateur radio) Field Operator or [3] EOC Operator.
+It also puts a training copy in
+  Documents\\Church of Jesus Christ EMCOMM\\Training\\Winlink Practice Forms\\
+(desktop shortcut "Training - Winlink Practice Forms" in the folder Church of Jesus Christ EMCOMM Forms).
 
 Use: Winlink Express -> New Message -> Select Template -> Global Templates ->
 Church of Jesus Christ EMCOMM Practice -> pick one. The form opens already filled in. Change
 anything you like (the date fields reset to today, Sender Location is your station), click Submit,
-address the message to your EOC's Winlink address, Open Session and send: Telnet over the internet,
-or by radio with VARA (the sound-card radio modem Winlink uses), VARA FM on VHF/UHF (very high /
-ultra high frequency), then VARA HF (high frequency). On the EOC the report arrives marked
+address the message to your EOC's Winlink address, Open Session and send by the PACE (Primary,
+Alternate, Contingency, Emergency) level you are practicing. Primary or Alternate: Telnet over any
+internet. Contingency: VARA FM (the sound-card radio modem Winlink uses on VHF/UHF, very high /
+ultra high frequency) to the RMS (Radio Message Server) Gateway first, then the local VARA FM RMS
+Post Office, then VARA FM P2P (peer-to-peer). VARA HF (high frequency) only once VARA FM has failed
+in every mode, and only when your net asks for HF practice. On the EOC the report arrives marked
 EXERCISE; the viewer shows the exercise box when the message is opened in Winlink Express.
 
 The forms:

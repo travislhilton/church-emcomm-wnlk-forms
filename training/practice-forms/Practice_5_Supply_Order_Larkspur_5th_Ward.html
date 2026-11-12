@@ -30,6 +30,7 @@ input[type=button] { border: 2px solid #0f88f2; border-radius: 3px; background-c
 .logo .bot { font-size: 12px; letter-spacing: 0.12em; font-weight: normal; text-transform: uppercase; display: block; }
 .exbox { border:2px solid #b00000; background:#fff3f3; padding:4px 8px; margin:4px 0 6px; font-size:13px; font-weight:bold; color:#b00000; }
 .exbox small { font-weight:normal; color:#444; }
+input::placeholder, textarea::placeholder { color:#6b7280; opacity:1; }   /* WebKit's default #a9a9a9 fails WCAG AA */
 </style>
 <script type="text/javascript">
 
@@ -289,7 +290,8 @@ function populateForm() {
       if (!el) continue;
       if (LOAD_SKIP[k]) continue;
       if (el.type === 'date' && !o[k] && el.value) continue;   // keep today's default when the file has no date
-      if (el.type === 'date') { el.value = toIsoDate(o[k]); } else { el.value = o[k]; }
+      if (el.type === 'checkbox') { el.checked = (o[k] === true || o[k] === 1 || o[k] === '1' || o[k] === 'true' || o[k] === 'YES'); }   // Save Data writes 1 / 0, the phone form true / false
+      else if (el.type === 'date') { el.value = toIsoDate(o[k]); } else { el.value = o[k]; }
     }
   } catch(e) {}
   reconcileGPS(o);
@@ -461,7 +463,7 @@ window.onload = function() {
       <tr>
         <td><div class="lbl">Delivery Contact</div><input type="text"  id="del_contact" name="del_contact" style="width:98%;" value="Scott Jeppson (Larkspur 5th Ward)" /></td>
         <td><div class="lbl">Phone (with area code)</div><input type="tel"  id="del_phone" name="del_phone" style="width:180px;" value="555-555-0150" /></td>
-        <td><div class="lbl">Order Date</div><input type="date"  id="order_date" name="order_date" value="2026-11-02" /></td>
+        <td><div class="lbl">Order Date</div><input type="date"  id="order_date" name="order_date" value="2026-11-12" /></td>
       </tr>
       <tr>
         <td><div class="lbl">Delivery Address</div><input type="text"  id="del_addr" name="del_addr" style="width:98%;" value="300 N 200 W" /></td>
@@ -607,7 +609,7 @@ window.onload = function() {
       </tr>
       <tr>
         <td><div class="lbl">Area Welfare Manager's Signature / Name</div><input type="text" id="awm_sig" name="awm_sig" style="width:98%;" /></td>
-        <td><div class="lbl">Requested Delivery Date</div><input type="date"  id="req_del_date" name="req_del_date" value="2026-11-03" /></td>
+        <td><div class="lbl">Requested Delivery Date</div><input type="date"  id="req_del_date" name="req_del_date" value="2026-11-13" /></td>
       </tr>
     </table>
   </td></tr>

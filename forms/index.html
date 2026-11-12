@@ -9,12 +9,12 @@
 :root {
   --navy:  #1A2744;
   --red:   #C8102E;
-  --blue:  #4A7FC1;
-  --green: #5BAD8A;
+  --blue:  #1d5fa8;
+  --green: #1b7a47;
   --bg:    #F7F8FA;
   --card:  #FFFFFF;
   --text:  #1A2744;
-  --muted: #6B7A8D;
+  --muted: #556070;
   --border:#D1DBE8;
   --body: system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
@@ -242,15 +242,15 @@ body {
     </div>
     <div class="step">
       <span class="step-num">2</span>
-      <span>Fill in all fields — allow location access when asked and your <strong>GPS (Global Positioning System) location</strong> fills in automatically, even with no signal</span>
+      <span>Fill in the form. In a drill, tick <strong>THIS IS AN EXERCISE</strong>. Allow location: your <strong>GPS (Global Positioning System) location</strong> fills in, even with no signal</span>
     </div>
     <div class="step">
       <span class="step-num">3</span>
-      <span>No signal? Tap <strong>Save to Outbox</strong>. Reports wait on this phone; save as many as you need</span>
+      <span>Tap <strong>Save to Outbox</strong>. Reports wait on this phone, even with no signal</span>
     </div>
     <div class="step">
       <span class="step-num">4</span>
-      <span>At the <strong>EOC</strong>: join its Wi-Fi, tap <strong>Send to EOC</strong> and scan the QR (Quick Response) code on the wall. With cell or internet anywhere, you can also <strong>Share by text or email</strong> to your leader or EOC. <strong>iPhone:</strong> after the green receipt, switch back to the app and tap <strong>Yes</strong>. If the receipt says a report failed, tap <strong>No</strong>: it stays in your Outbox. Your EOC sends it on to the Stake EOC and up the welfare line.</span>
+      <span>At the <strong>EOC</strong>: join its Wi-Fi, tap <strong>Send to EOC</strong> and scan the QR (Quick Response) code on the wall. With cell or internet anywhere, you can also <strong>Share by text or email</strong> to your leader or EOC. <strong>iPhone:</strong> after the green receipt, switch back to the app and tap <strong>Yes</strong> (a report failed? tap <strong>No</strong>: it stays in your Outbox).</span>
     </div>
   </div>
 
@@ -317,12 +317,12 @@ body {
   <div class="footer-box">
     <p><strong>No account required.</strong> Forms run entirely on your device — nothing is sent over the internet when you fill them out.</p>
     <p>An independent volunteer project supporting Church emergency communications. Not an official product of The Church of Jesus Christ of Latter-day Saints.</p>
-    <p>Reports in the Outbox stay on your phone until an EOC confirms it has them. You can also tap <strong>Save to My Phone</strong> for a .txt file. <strong>Have cell or Wi-Fi service?</strong> Any Wi-Fi with internet counts &mdash; home, a shelter, a business, a neighbor's house, a meetinghouse, Starlink. Tap <strong>Share / Send</strong> and text or email the file straight to your Team Leader, Emergency Response Director, or your Stake or Satellite EOC.</p>
+    <p>Reports in the Outbox stay on your phone until an EOC confirms it has them. You can also tap <strong>Save to My Phone</strong> for a .txt file. <strong>Have cell or Wi-Fi service?</strong> Any Wi-Fi with internet counts &mdash; home, a shelter, a business, a neighbor's house, a meetinghouse, Starlink. Tap <strong>Share by text or email</strong> and send the file straight to your Team Leader, Emergency Response Director, or your Stake or Satellite EOC.</p>
     <p><strong>Comms sheet:</strong> <a href="comms.html" style="color:inherit;font-weight:600">who to call, where reports go, which nets to use</a> &mdash; load the sheet file your stake Welfare and Self-Reliance Specialist (emergency communications) sends; it stays on your phone and works without service.</p>
     <p><strong>Keep the card:</strong> <a href="../training/pdf/Quick_Reference_Card_1_Helping_Hands_Volunteer.pdf" target="_blank" rel="noopener" style="color:inherit;font-weight:600">download the Volunteer Quick Reference Card (PDF, Portable Document Format)</a> &mdash; one sheet, print double-sided, laminate, keep it in your go-bag. <a href="../training/quick-ref-cards.html" target="_blank" rel="noopener" style="color:inherit">All cards on one web page</a>.</p>
     <p><strong>Something not working, or feedback after a drill?</strong> Tell your Team Leader or the stake specialist: what you did, what you saw, which phone.</p>
     <p style="font-size:12px">With a GitHub account you can file it directly: <a href="#" onclick="return openIssue('bug')" style="color:inherit">report a problem</a> &middot; <a href="#" onclick="return openIssue('drill')" style="color:inherit">drill feedback</a> &middot; <a href="https://github.com/travislhilton/church-emcomm-wnlk-forms/issues/new?template=feature_request.yml&role=Helping%20Hands%20Volunteers" style="color:inherit">an idea</a> (your phone and the date are filled in).</p>
-    <p><strong>No service?</strong> Get the file to a HAM (amateur radio) operator any way you can — USB (Universal Serial Bus) thumb drive, AirDrop, or Android Nearby Share (these work phone-to-phone with no signal). The operator loads it into Winlink and sends it to the Stake EOC by radio. The Stake EOC sends it up the welfare line (the Welfare and Self-Reliance Manager, WSRM, then the Area Welfare and Self-Reliance Manager, AWSRM).</p>
+    <p><strong>No service?</strong> Get the file to a HAM (amateur radio) operator any way you can — USB (Universal Serial Bus) thumb drive, AirDrop, or Android Nearby Share (these work phone-to-phone with no signal). The operator loads it into Winlink and sends it to your EOC by radio.</p>
   </div>
 
 </div>
@@ -364,7 +364,7 @@ document.addEventListener('DOMContentLoaded', function () {
      'file'   an installed copy opened from disk: same as portal, without the offline app.
    Phones are clients only; the EOC server on the laptop is the only server. */
 (function () {
-  var APP_VERSION = '2026-11-12.3';   // bump with any change the EOC server must know about (see FORMS_VERSION in eoc_server.py)
+  var APP_VERSION = '2026-11-12.4';   // bump with any change the EOC server must know about (see FORMS_VERSION in eoc_server.py)
   var OUTBOX_KEY = 'church_outbox_v1', EOCS_KEY = 'church_eocs_v1', PENDING_KEY = 'church_outbox_pending_v1';
   var FORM_NAME = {dr: 'Disaster Report', so: 'Supply Order', wcl: 'Work Crew Log'};
   var FILENAME = {dr: 'Church_Disaster_Report_Worker.txt', so: 'Church_Supply_Order_Worker.txt', wcl: 'Church_Work_Crew_Log_Worker.txt'};

@@ -6,11 +6,11 @@
 <title>Church of Jesus Christ EMCOMM (Emergency Communications) — EOC (Emergency Operations Center) Message Center</title>
 <style>
 :root {
-  --bg:#f2f4f7; --surface:#ffffff; --border:#d4d9e1; --fg:#0f172a; --muted:#64748b;
+  --bg:#f2f4f7; --surface:#ffffff; --border:#d4d9e1; --fg:#0f172a; --muted:#4b5563;
   --accent:#1e40af; --accent-lt:#dbeafe; --danger:#be123c; --danger-bg:#fff1f2;
   --warn:#92400e; --warn-bg:#fffbeb; --ok:#065f46; --ok-bg:#ecfdf5;
   --hdr:#1e3a8a; --hdr-fg:#e0e7ff; --tab-act:#ffffff; --tab-in:#e2e8f0;
-  --overdue:#c2410c; --overdue-bg:#fff7ed;
+  --overdue:#c2410c; --overdue-bg:#fff7ed; --on-accent:#ffffff;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -19,7 +19,7 @@
     --muted:#94a3b8; --accent:#60a5fa; --accent-lt:#1e3a8a;
     --danger:#fb7185; --danger-bg:#1c0014; --warn:#fbbf24; --warn-bg:#1c1400;
     --ok:#4ade80; --ok-bg:#052e16; --hdr:#0f2a6e; --hdr-fg:#c7d2fe;
-    --tab-act:#1e293b; --tab-in:#0f172a; --overdue:#fb923c; --overdue-bg:#1c0a00;
+    --tab-act:#1e293b; --tab-in:#0f172a; --overdue:#fb923c; --overdue-bg:#1c0a00; --on-accent:#0b1220;
     color-scheme: dark;
   }
 }
@@ -28,7 +28,7 @@
   --muted:#94a3b8; --accent:#60a5fa; --accent-lt:#1e3a8a;
   --danger:#fb7185; --danger-bg:#1c0014; --warn:#fbbf24; --warn-bg:#1c1400;
   --ok:#4ade80; --ok-bg:#052e16; --hdr:#0f2a6e; --hdr-fg:#c7d2fe;
-  --tab-act:#1e293b; --tab-in:#0f172a; --overdue:#fb923c; --overdue-bg:#1c0a00;
+  --tab-act:#1e293b; --tab-in:#0f172a; --overdue:#fb923c; --overdue-bg:#1c0a00; --on-accent:#0b1220;
   color-scheme: dark;
 }
 *,*::before,*::after{box-sizing:border-box;}
@@ -50,12 +50,13 @@ body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,sa
 .tabs{display:flex;gap:2px;overflow-x:auto;}
 .tab-btn{padding:6px 14px;border:none;cursor:pointer;font-size:12px;font-weight:600;border-radius:6px 6px 0 0;background:var(--tab-in);color:var(--muted);font-family:inherit;transition:background .1s;white-space:nowrap;flex-shrink:0;}
 .tab-btn.active{background:var(--tab-act);color:var(--accent);}
-.cnt{display:inline-block;background:var(--accent);color:#fff;border-radius:10px;font-size:10px;padding:0 5px;margin-left:4px;line-height:15px;}
-.cnt.empty{background:var(--muted);color:#fff;padding:0 5px;}  /* undo the empty-state panel rule (.empty, padding 40px) that shares the class name */
+.cnt{display:inline-block;background:var(--accent);color:var(--on-accent);border-radius:10px;font-size:10px;padding:0 5px;margin-left:4px;line-height:15px;}
+.cnt.empty{background:var(--muted);color:var(--on-accent);padding:0 5px;}  /* undo the empty-state panel rule (.empty, padding 40px) that shares the class name */
 /* Miss bar */
 #miss-bar{padding:6px 16px;font-size:12px;font-weight:600;text-align:center;transition:background .3s,color .3s;}
 #miss-bar.ok{background:var(--ok-bg);color:var(--ok);}
-#miss-bar.alert{background:var(--danger);color:#fff;}
+#miss-bar.alert{background:var(--danger);color:var(--on-accent);}
+#miss-bar.unknown{background:var(--warn-bg);color:var(--warn);}
 /* Drop zone */
 #drop-wrap{padding:0 16px 4px;}
 .drop-zone{border:2px dashed var(--border);border-radius:10px;padding:20px;text-align:center;cursor:pointer;background:var(--surface);transition:border-color .15s,background .15s;margin-bottom:12px;}
@@ -109,12 +110,12 @@ tr:hover td{background:var(--bg);}
 .chip{display:inline-block;border-radius:5px;padding:1px 7px;font-size:10px;font-weight:700;}
 .chip.dr{background:var(--warn-bg);color:var(--warn);}
 .chip.so{background:var(--ok-bg);color:var(--ok);}
-.chip.miss-no{background:var(--danger);color:#fff;}
+.chip.miss-no{background:var(--danger);color:var(--on-accent);}
 .chip.miss-yes{background:var(--ok-bg);color:var(--ok);}
 .chip.wcl{background:#ede9fe;color:#5b21b6;}
 .chip.ex{background:#991b1b;color:#fff;margin-left:4px;}
 .pri{display:inline-block;min-width:18px;text-align:center;border-radius:4px;font-size:10px;font-weight:800;padding:1px 5px;}
-.pri.p1{background:var(--danger);color:#fff;} .pri.p2{background:var(--warn-bg);color:var(--warn);} .pri.p3{background:var(--bg);color:var(--muted);border:1px solid var(--border);}
+.pri.p1{background:var(--danger);color:var(--on-accent);} .pri.p2{background:var(--warn-bg);color:var(--warn);} .pri.p3{background:var(--bg);color:var(--muted);border:1px solid var(--border);}
 tr.act-done td{color:var(--muted);} tr.act-done .act-title{text-decoration:line-through;}
 .act-title{font-weight:600;cursor:pointer;} .act-title:hover{color:var(--accent);text-decoration:underline;}
 .act-from{display:inline-block;background:#ede9fe;color:#5b21b6;border-radius:4px;font-size:10px;font-weight:700;padding:1px 6px;margin-left:4px;}
@@ -124,10 +125,23 @@ tr.act-done td{color:var(--muted);} tr.act-done .act-title{text-decoration:line-
 .act-log .t{color:var(--muted);white-space:nowrap;}
 /* Buttons */
 button{cursor:pointer;font-family:inherit;}
-.btn{padding:6px 14px;border:none;border-radius:6px;font-size:12px;font-weight:600;background:var(--accent);color:#fff;transition:opacity .1s;}
+.btn{padding:6px 14px;border:none;border-radius:6px;font-size:12px;font-weight:600;background:var(--accent);color:var(--on-accent);transition:opacity .1s;}
 .btn:hover{opacity:.85;}
 .btn.secondary{background:var(--surface);color:var(--fg);border:1px solid var(--border);}
-.btn.danger{background:var(--danger);}
+.btn.danger{background:var(--danger);color:var(--on-accent);}
+.setup-nav{position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0 10px;font-size:12px;font-weight:600;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;}
+.setup-nav a{color:var(--accent);text-decoration:none;padding:3px 8px;border:1px solid var(--border);border-radius:12px;background:var(--surface);}
+.setup-nav a:hover,.setup-nav a:focus{background:var(--accent-lt);}
+#tab-setup .card{scroll-margin-top:52px;}
+.start-card{border-left:4px solid var(--accent);}
+.start-card ol{margin:6px 0 0;padding:0;list-style:none;}
+.start-card li{display:flex;gap:10px;align-items:center;padding:6px 0;border-top:1px solid var(--border);font-size:13px;}
+.start-card li .tk{flex:none;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;border:2px solid var(--border);color:var(--muted);}
+.start-card li.done .tk{background:var(--ok);border-color:var(--ok);color:var(--on-accent);}
+.start-card li.done .what{color:var(--muted);}
+.start-card li .what{flex:1;font-weight:600;}
+.start-card li .why{display:block;font-size:11px;color:var(--muted);font-weight:400;}
+input::placeholder,textarea::placeholder{color:var(--muted);opacity:1;}
 .btn.sm{padding:3px 9px;font-size:11px;}
 .btn-ghost{background:none;border:none;color:var(--muted);font-size:13px;padding:2px 6px;border-radius:4px;}
 .btn-ghost:hover{background:var(--bg);color:var(--danger);}
@@ -206,7 +220,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
 /* Filter bar */
 .filter-bar{display:flex;gap:6px;margin-bottom:10px;}
 .filter-btn{padding:4px 12px;border:1px solid var(--border);border-radius:20px;background:var(--surface);color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;}
-.filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.filter-btn.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent);}
 /* Empty states */
 .empty{text-align:center;padding:40px;color:var(--muted);}
 .empty .ico{font-size:36px;margin-bottom:8px;}
@@ -231,8 +245,8 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
 .help-sec p{margin:6px 0;}
 .help-sec table td,.help-sec table th{padding:5px 8px;}
 .pace-badge{display:inline-block;min-width:22px;text-align:center;font-weight:800;border-radius:4px;color:#fff;padding:0 5px;}
-.pace-badge.P{background:#047857;} .pace-badge.A{background:#1d4ed8;} .pace-badge.C{background:#b45309;} .pace-badge.E{background:#be123c;}
-.pace-badge.none{background:var(--muted);}
+.pace-badge.P{background:#1b7a47;} .pace-badge.A{background:#1d5fa8;} .pace-badge.C{background:#9a5300;} .pace-badge.E{background:#b42318;}   /* one PACE palette on every page and card */
+.pace-badge.none{background:var(--muted);color:var(--on-accent);}
 .help-warn{background:var(--warn-bg);color:var(--warn);border-left:4px solid #f59e0b;padding:6px 10px;border-radius:4px;margin:8px 0;}
 .pace-now{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin:0 0 6px;background:var(--bg);}
 .pace-now .pace-badge{font-size:26px;padding:2px 12px;}
@@ -286,7 +300,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
     </div>
     <div class="hdr-center">
       <h1>EOC Message Center <span style="font-weight:400;opacity:.7;font-size:10px;letter-spacing:.04em">EMERGENCY OPERATIONS CENTER &#183; PACE: PRIMARY, ALTERNATE, CONTINGENCY, EMERGENCY</span> <span id="hdr-eoc" style="display:none;font-size:10px;font-weight:700;background:#ffffff22;border-radius:4px;padding:1px 6px;margin-left:4px;vertical-align:middle"></span></h1>
-      <p class="hdr-incident" id="hdr-incident">No incident open — go to Setup tab</p>
+      <p class="hdr-incident" id="hdr-incident">No event open yet — Setup tab → Emergency Event</p>
     </div>
     <div class="hdr-right">
       <div id="live-clock">--:--:--</div>
@@ -314,7 +328,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
 </div>
 
 <!-- ── Missionary Status Bar ── -->
-<div id="miss-bar" class="ok">MISSIONARY STATUS: All accounted for &#10003;</div>
+<div id="miss-bar" class="unknown">MISSIONARY STATUS: no report has answered yet</div>
 
 <!-- ── Network Status Bar ── -->
 <div id="net-bar" style="display:none"></div>
@@ -332,7 +346,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
     <input type="file" id="file-input" multiple accept=".mime,.msg,.eml,.txt,.json" onchange="doFileInput(event)">
     <div class="ico" id="drop-ico">&#128229;</div>
     <strong id="drop-label">Drop Winlink .mime files here</strong> <span id="drop-or">or click to browse</span>
-    <p id="drop-hint">Accepts .mime .msg .eml .txt — scans for [Church-DR|...], [Church-SO|...], [Church-WCL|...] tags</p>
+    <p id="drop-hint">Winlink messages (.mime, .msg, .eml), form files saved on a phone (.txt), roll-ups and Comms Sheets (.json). Only the three Church forms are filed; anything else is skipped.</p>
   </div>
   <div id="drop-mini">
     <button class="btn secondary sm" onclick="document.getElementById('file-input').click()">&#128229; Drop / Add More Files</button>
@@ -345,11 +359,12 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
   <!-- OVERVIEW -->
   <div id="tab-overview" class="tab-panel active">
     <div id="ov-alerts"></div>
+    <div id="ov-start"></div>
     <div class="stat-row" id="ov-stats"></div>
     <div class="card">
       <h2 id="tracker-title">Unit Tracker</h2>
       <div id="tracker-grid" class="tracker-grid"></div>
-      <div id="tracker-empty" class="empty" style="display:none"><div class="ico">&#127975;</div><p id="tracker-empty-txt">No units in roster. Add them in the Roster tab.</p></div>
+      <div id="tracker-empty" class="empty" style="display:none"><div class="ico">&#127968;</div><p id="tracker-empty-txt">No units in roster. Add them in the Roster tab.</p></div>
     </div>
     <div class="card" id="rollup-card" style="display:none">
       <h2>Roll-ups received from other EOCs</h2>
@@ -409,7 +424,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
           </tr></thead>
           <tbody id="roster-tbody"></tbody>
         </table>
-        <div id="roster-empty" class="empty"><div class="ico">&#127975;</div><p id="roster-empty-txt">No units added yet.</p></div>
+        <div id="roster-empty" class="empty"><div class="ico">&#127968;</div><p id="roster-empty-txt">No units added yet.</p></div>
       </div>
     </div>
   </div>
@@ -434,13 +449,13 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
         <table>
           <thead><tr>
             <th>Received</th><th id="dr-th-unit">Unit</th><th>Date</th><th>Type</th>
-            <th>Miss.Safe</th><th>Inj</th><th>Dead</th><th>HomeDmg</th><th>HomeDest</th>
-            <th>Vols</th><th>VolHrs</th><th>LocalFac</th><th>NbrUnits</th><th>HQAsst</th>
+            <th title="All missionaries are safe and accounted for">Missionaries safe</th><th>Injuries</th><th>Deaths</th><th>Homes damaged</th><th>Homes destroyed</th>
+            <th>Volunteers</th><th>Volunteer hours</th><th>Needs local facilities</th><th>Needs neighbor units</th><th>Needs headquarters</th>
             <th>Submitter</th><th>Notes/GPS (Global Positioning System)</th><th></th>
           </tr></thead>
           <tbody id="dr-tbody"></tbody>
         </table>
-        <div id="dr-empty" class="empty"><div class="ico">&#128203;</div><p>No disaster reports loaded yet.</p></div>
+        <div id="dr-empty" class="empty"><div class="ico">&#128203;</div><p>No Disaster Reports yet. They file themselves from phones on the EOC Wi-Fi, Winlink and the Drop Folder. For a file that came another way, drop it on the box above.</p></div>
       </div>
     </div>
   </div>
@@ -494,9 +509,9 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
   <div id="tab-messages" class="tab-panel">
     <div class="filter-bar">
       <button class="filter-btn active" onclick="setMsgFilter('all',this)">All</button>
-      <button class="filter-btn" onclick="setMsgFilter('dr',this)">DR Only</button>
-      <button class="filter-btn" onclick="setMsgFilter('so',this)">SO Only</button>
-      <button class="filter-btn" onclick="setMsgFilter('wcl',this)">WCL Only</button>
+      <button class="filter-btn" onclick="setMsgFilter('dr',this)">Disaster Reports</button>
+      <button class="filter-btn" onclick="setMsgFilter('so',this)">Supply Orders</button>
+      <button class="filter-btn" onclick="setMsgFilter('wcl',this)">Work Crew Logs</button>
     </div>
     <div class="card" style="padding:0">
       <div class="tbl-wrap">
@@ -564,7 +579,8 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
 
   <!-- SETUP -->
   <div id="tab-setup" class="tab-panel">
-    <div class="card">
+    <nav class="setup-nav" aria-label="Setup sections">Jump to: <a href="#sec-identity">This EOC</a> <a href="#drillcfg-card">Drill setup</a> <a href="#must-card">Must-have roles</a> <a href="#event-card">Emergency Event</a> <a href="#sec-details">PACE &amp; SITREP</a> <a href="#sec-rollup">Roll-up</a> <a href="#sec-handoff">Shift handoff</a> <a href="#comms-card">Comms Sheet</a> <a href="#phone-card">Phone page</a> <a href="#wall-card">Wall display</a> <a href="#sec-help">Help &amp; feedback</a></nav>
+    <div class="card" id="sec-identity">
       <h2>This EOC — who we are and who we report to</h2>
       <p style="font-size:11px;color:var(--muted);margin:0 0 10px">The same Message Center runs at every EOC. A <b>Satellite EOC</b> (in a ward building) covers part of a stake and rolls up to the <b>Stake EOC</b>. Above the Stake EOC the Church structure has <b>two lines</b>: the <b>council line</b> (the coordinating council, that is the Area Seventy: decisions) and the <b>welfare line</b> (the local Welfare and Self-Reliance Manager (WSRM), then the Area Welfare and Self-Reliance Manager (AWSRM): supplies, approvals, reporting). The SITREP goes to both; forms go to the welfare line. A <b>Council / Area EOC</b> exists only when the council or the welfare region opens one (the Area Welfare and Self-Reliance Specialist's station); then the stakes report to it and their roll-ups merge there. The level sets the roster vocabulary (wards or stakes) and the SITREP header.</p>
       <div class="form-row">
@@ -600,8 +616,8 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
         </div>
       </div>
       <div class="form-row">
-        <div class="form-group" style="flex:0 0 140px"><label>EOC latitude</label><input type="text" id="eoc-lat" inputmode="decimal" placeholder="41.73500"></div>
-        <div class="form-group" style="flex:0 0 140px"><label>EOC longitude</label><input type="text" id="eoc-lon" inputmode="decimal" placeholder="-111.83400"></div>
+        <div class="form-group" style="flex:0 0 140px"><label>EOC latitude</label><input type="text" id="eoc-lat" inputmode="decimal" placeholder="40.33000"></div>
+        <div class="form-group" style="flex:0 0 140px"><label>EOC longitude</label><input type="text" id="eoc-lon" inputmode="decimal" placeholder="-117.52000"></div>
         <div class="form-group" style="flex:0 0 auto;align-self:flex-end"><button class="btn secondary" type="button" onclick="useHereForEoc()">Use this computer's location</button></div>
         <div class="form-group"><label>EOC Wi-Fi name (for the wall's join-Wi-Fi QR, Quick Response, code)</label><input type="text" id="eoc-wifi-name" placeholder="optional, e.g., EOC-Net"></div>
         <div class="form-group"><label>EOC Wi-Fi password</label><input type="text" id="eoc-wifi-pass" autocomplete="off" placeholder="optional"></div>
@@ -661,11 +677,11 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
       <p style="font-size:11px;color:var(--muted);margin:8px 0 0">Switching changes what every operator sees and where new arrivals go. Export any past event as a handoff file from its row; delete only an empty event. The server backup always holds every event.</p>
     </div>
 
-    <div class="card">
+    <div class="card" id="sec-details">
       <h2>Active event — details (SITREP header)</h2>
       <div class="form-row">
-        <div class="form-group"><label>Event Name</label><input type="text" id="inc-name" placeholder="e.g., Utah County Earthquake Response"></div>
-        <div class="form-group"><label>Area / Location</label><input type="text" id="inc-area" placeholder="e.g., Utah County, UT"></div>
+        <div class="form-group"><label>Event Name</label><input type="text" id="inc-name" placeholder="e.g., Larkspur Valley Flood — April 2027"></div>
+        <div class="form-group"><label>Area / Location</label><input type="text" id="inc-area" placeholder="e.g., Larkspur Valley"></div>
       </div>
       <div class="form-row">
         <div class="form-group"><label>Event Type</label><input type="text" id="inc-type" placeholder="e.g., Earthquake, Flood, Wildfire"></div>
@@ -710,7 +726,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
       <button class="btn" onclick="saveIncident()" id="inc-btn">Save Event Details</button>
     </div>
 
-    <div class="card">
+    <div class="card" id="sec-rollup">
       <h2>Roll-up to the EOC above us</h2>
       <p style="font-size:11px;color:var(--muted);margin:0 0 10px" id="rollup-help">Export a roll-up bundle (one <code>.json</code> file) and send it to the parent EOC with every SITREP: <b>P / A</b> attach it to an email to the parent EOC's drop email; <b>C</b> attach it to a Winlink message to the parent's Winlink address (keep "only new" ticked so it stays small); <b>E</b> carry it on a USB (Universal Serial Bus) drive with the printed SITREP. The parent's Drop Folder or Winlink watcher merges it automatically. Nothing is counted twice: the parent skips any record it already has, even one that also arrived by Winlink forward.</p>
       <div class="toolbar" style="flex-wrap:wrap;gap:10px">
@@ -725,7 +741,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
       <p style="font-size:11px;color:var(--muted);margin:8px 0 0" id="rollup-parent-line"></p>
     </div>
 
-    <div class="card">
+    <div class="card" id="sec-handoff">
       <h2>Shift Handoff</h2>
       <div class="toolbar" style="flex-wrap:wrap;gap:10px">
         <button class="btn secondary" onclick="exportHandoff()">&#128229; Export Handoff JSON</button>
@@ -781,7 +797,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
       <p style="font-size:11px;color:var(--muted);margin:8px 0 0">Needs the networked server (standalone mode has no wall). If the server stops, the wall says so and keeps the last picture.</p>
     </div>
 
-    <div class="card">
+    <div class="card" id="sec-help">
       <h2>Help &amp; feedback</h2>
       <p style="font-size:11px;color:var(--muted);margin:0 0 8px">Something wrong, or notes from a drill? File it on GitHub (<b>github.com/travislhilton/church-emcomm-wnlk-forms/issues</b>) or tell the stake Welfare and Self-Reliance Specialist. The buttons open the issue form with your role, this part of the system, the browser, the date, the active event, the PACE level and the diagnostic block already filled in — you add what happened.</p>
       <div class="toolbar" style="flex-wrap:wrap;gap:10px">
@@ -794,7 +810,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
       <p style="font-size:10px;color:var(--muted);margin:6px 0 0">Needs a GitHub account. No account? Copy the diagnostic info and send it with your notes to the specialist, who files it.</p>
     </div>
 
-    <div class="card">
+    <div class="card" id="sec-danger">
       <h2>Danger Zone</h2>
       <button class="btn danger" onclick="confirmClearAll()">&#9888; Clear this event's data</button>
       <p style="font-size:11px;color:var(--muted);margin:8px 0 0">This permanently clears the active event's messages, roster and notes on every operator's screen. Export a handoff first if needed. For a new emergency, open a new event instead.</p>
@@ -933,8 +949,8 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
         <h2>3. Reading the screen</h2>
         <ul>
           <li><b>Header:</b> event name, PACE level, clock and time left in the operational period. The <b>PACE</b> button shows the level in force and opens section 1. <b>Help</b> opens this guide. You can also press <b>?</b> on the keyboard.</li>
-          <li><b>Missionary bar:</b> turns red when any Disaster Report says missionaries are not all accounted for. Tell the Stake President at once.</li>
-          <li><b>Mode banner:</b> green means networked (shared by every operator on the server). Yellow means standalone (this browser only).</li>
+          <li><b>Missionary bar:</b> yellow until a Disaster Report answers the missionary question. Green when every report that answered says yes. Red when any report says no: tell the Stake President at once.</li>
+          <li><b>Server bar:</b> green (connected) means every operator on the server shares the data. Amber (connection lost) means the server stopped answering: check its window. No bar means standalone: this browser only, no Winlink auto-ingest, no wall display.</li>
           <li><b>Blue bar:</b> Winlink auto-ingest. <b>Green bar:</b> internet Drop Folder. Click either bar to check or change its folder.</li>
         </ul>
         <p>What each tab is for:</p>
@@ -1045,7 +1061,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
           <thead><tr><th>What you see</th><th>What to do</th></tr></thead>
           <tbody>
             <tr><td>Phones cannot open the phone page, or Send to EOC fails</td><td>The phone must be on the EOC Wi-Fi, not cellular. Allow the Windows firewall prompt for Python on private networks. Guest Wi-Fi often keeps devices apart; use the EOC's own router. Reports stay in the phone's Outbox until they go through.</td></tr>
-            <tr><td>Yellow banner, or other operators cannot connect</td><td>Start <i>Church of Jesus Christ EMCOMM EOC Server</i> and use the address it prints. Make sure everyone is on the same Wi-Fi, and allow the Windows firewall prompt.</td></tr>
+            <tr><td>Amber connection-lost bar, no green bar, or other operators cannot connect</td><td>Start <i>Church of Jesus Christ EMCOMM EOC Server</i> and use the address it prints. Make sure everyone is on the same Wi-Fi, and allow the Windows firewall prompt.</td></tr>
             <tr><td>Winlink messages are not appearing</td><td>Click the blue bar. Check the callsign chosen there: it must be the station the messages are sent to. Check the folder: <code>C:\RMS Express</code>. Check that Winlink Express actually connected. As a fallback, drag the <code>.mime</code> file onto the page.</td></tr>
             <tr><td>A Drop Folder file is not filed</td><td>It must be the <code>.txt</code> saved by a Worker form, or a <code>.json</code> roll-up or Comms Sheet. Click the green bar to check the folder. Look in <code>Ingested</code>, because it may already be filed.</td></tr>
             <tr><td>"Duplicate skipped"</td><td>This is normal. That report is already on file.</td></tr>
@@ -1366,7 +1382,7 @@ function commsSections(s) {
   COMMS_TABLES.forEach(function(t){ var rows=(s[t.key]||[]).filter(function(r){ return Object.keys(r).some(function(k){return r[k];}); }); if(t.key==='gateways') rows=gwSorted(rows); if(rows.length) out.push({title:t.title, cols:t.cols, rows:rows}); });
   return out;
 }
-function renderComms() {
+function renderComms() { if (typeof renderStart === 'function') renderStart();
   var s=comms.sheet||{}, secs=commsSections(s), lines=commsEventLines();
   var stamp=document.getElementById('comms-stamp'); if(stamp) stamp.textContent=comms.updatedMs?((s.org?s.org+' · ':'')+'sheet dated '+fmtTs(comms.updatedMs)):'No comms sheet yet — fill it in on the Setup tab';
   var ban=document.getElementById('comms-event-banner'); if(ban){ ban.style.display=lines.length?'':'none'; ban.innerHTML='<b>For this event'+(incident&&incident.name?' — '+esc(incident.name):'')+':</b><ul style="margin:4px 0 0 18px">'+lines.map(function(l){return '<li>'+esc(l)+'</li>';}).join('')+'</ul>'; }
@@ -1412,8 +1428,8 @@ function importComms(e) {
   var file=e.target.files[0]; e.target.value=''; if(!file) return;
   var reader=new FileReader();
   reader.onload=function(ev){
-    var data; try{ data=JSON.parse(ev.target.result); }catch(err){ toast('Invalid JSON file'); return; }
-    if(!data||data.kind!==COMMS_KIND||!data.sheet){ toast('Not a comms sheet file (expected kind church_comms_sheet)'); return; }
+    var data; try{ data=JSON.parse(ev.target.result); }catch(err){ toast('That file could not be read. Choose the .json file made by Export sheet JSON.'); return; }
+    if(!data||data.kind!==COMMS_KIND||!data.sheet){ toast('That is not a Comms Sheet. Choose the file made by Export sheet JSON.'); return; }
     var via=(data.from&&data.from.name)||'another EOC'; var older=comms.updatedMs&&data.updatedMs&&data.updatedMs<=comms.updatedMs;
     pendingConfirm=function(){ applyCommsBundle(data, via); closeModal(); toast('Comms sheet from '+via+' is now in force'); };
     document.getElementById('modal-title').textContent='Replace the Comms Sheet';
@@ -1713,7 +1729,7 @@ function importRollup(e) {
   if(!file) return;
   var reader=new FileReader();
   reader.onload=function(ev){
-    var data; try{ data=JSON.parse(ev.target.result); }catch(err){ toast('Invalid JSON file'); return; }
+    var data; try{ data=JSON.parse(ev.target.result); }catch(err){ toast('That file could not be read. Choose a .json roll-up or reply exported by another Message Center.'); return; }
     if(data && data.kind==='church_eoc_reply' && Array.isArray(data.replies)){
       var rvia=(data.from&&data.from.name)||'the line above';
       pendingConfirm=function(){
@@ -1779,7 +1795,7 @@ function mapStatusLine() {
 var _MAPORGS = null;
 function _normName(s){ return String(s||'').toLowerCase().replace(/\s+/g,' ').trim(); }
 function unitsFromMap() {
-  if (!networkMode) { toast('The map data needs the EOC server (networked mode)'); return; }
+  if (!networkMode) { toast('The map needs the EOC server. Start Church of Jesus Christ EMCOMM EOC Server and open the address it prints.'); return; }
   fetch('/map/organization_boundaries.geojson').then(function(r){ if (!r.ok) throw new Error('HTTP '+r.status); return r.json(); }).then(function(gj){
     var P = (gj.features||[]).map(function(f){ return f.properties||{}; });
     var byName = function(a,b){ return String(a.org_name||'').localeCompare(String(b.org_name||'')); };
@@ -2106,12 +2122,18 @@ function render() {
   var missBar = document.getElementById('miss-bar');
   if (missNo.length) {
     missBar.className='alert';
-    missBar.innerHTML='&#9888; MISSIONARIES NOT ACCOUNTED FOR &mdash; '+esc(unitPlural().charAt(0).toUpperCase()+unitPlural().slice(1))+': <strong>'+missNo.map(esc).join(', ')+'</strong>';
+    missBar.innerHTML='&#9888; MISSIONARIES NOT ACCOUNTED FOR &mdash; tell the Stake President now &mdash; '+esc(unitPlural().charAt(0).toUpperCase()+unitPlural().slice(1))+': <strong>'+missNo.map(esc).join(', ')+'</strong>';
+  } else if (!drs.some(function(m){ return isYes(m.dr.miss_safe); })) {
+    // Nothing reported is not the same as everyone safe: say so until a report answers the question.
+    missBar.className='unknown';
+    missBar.innerHTML='MISSIONARIES: no Disaster Report has answered yet'+(drs.length?' ('+drs.length+' left the question blank: call the sender and ask)':'');
   } else {
+    var yesUnits = drs.filter(function(m){ return isYes(m.dr.miss_safe); }).map(function(m){ return unitOf(m)||''; }).filter(function(u,i,a){ return u && a.indexOf(u)===i; });
     missBar.className='ok';
-    missBar.innerHTML='MISSIONARY STATUS: All accounted for &#10003;';
+    missBar.innerHTML='MISSIONARY STATUS: accounted for in every report that answered &#10003; ('+yesUnits.length+' '+esc(yesUnits.length===1?unitLabel().toLowerCase():unitPlural())+')';
   }
 
+  renderStart();
   renderOverview(drs, sos, wcls);
   renderActions();
   renderRoster(drs);
@@ -2147,9 +2169,9 @@ function renderOverview(drs, sos, wcls) {
   var alerts = document.getElementById('ov-alerts');
   var html = '';
   var UP = unitPlural().charAt(0).toUpperCase()+unitPlural().slice(1);
-  if (missNoList.length) html += '<div class="alert-box"><h3>&#9888; Missionaries Not Accounted For</h3>'+esc(UP)+': <strong>'+missNoList.map(esc).join(', ')+'</strong><br><em>Contact '+(eocLevel()==='area'?'stake presidents':'bishops')+' immediately. Call 1-801-240-0450 if needed.</em></div>';
+  if (missNoList.length) html += '<div class="alert-box"><h3>&#9888; Missionaries not accounted for: what to do</h3>'+esc(UP)+': <strong>'+missNoList.map(esc).join(', ')+'</strong><br><em>1. Tell the Stake President now. 2. Call the '+(eocLevel()==='area'?'stake presidents':'bishops')+' of these '+unitPlural()+'. 3. Add a Note with who you told.</em></div>';
   if (overdueList.length) html += '<div class="alert-box overdue"><h3>&#8987; Overdue — No Report Received</h3>'+overdueList.map(esc).join(', ')+'</div>';
-  if (hqList.length) html += '<div class="alert-box warn"><h3>&#128222; '+esc(UP)+' Requesting HQ Assistance</h3>'+hqList.map(esc).join(', ')+'<br><em>Contact Area Welfare Administration: 1-801-240-0450</em></div>';
+  if (hqList.length) html += '<div class="alert-box warn"><h3>&#128222; '+esc(UP)+' asking for help from Church headquarters</h3>'+hqList.map(esc).join(', ')+'<br><em>Pass the request to the welfare line (Setup, This EOC), or call the area welfare manager: 1-801-240-0450.</em></div>';
   var openAct = openActions();
   if (openAct.length) {
     var hi = openAct.filter(function(a){return a.prio===1;}).length, up = openAct.filter(function(a){return a.status==='up';}).length, nobody = openAct.filter(function(a){return !(a.owner||'').trim();}).length;
@@ -2162,12 +2184,12 @@ function renderOverview(drs, sos, wcls) {
   function tile(n,l,cls){return '<div class="stat'+(cls?' '+cls:'')+'"><div class="n">'+n+'</div><div class="l">'+esc(l)+'</div></div>';}
   statsEl.innerHTML =
     tile(drs.length,'Disaster Reports') +
-    tile(missNoList.length>0?'NO':'YES','Miss. Accounted', missNoList.length>0?'danger':'ok') +
+    (missNoList.length>0 ? tile('NO','Missionaries accounted for','danger') : accounted>0 ? tile('YES','Missionaries accounted for','ok') : tile('&mdash;','Missionaries: no answer yet','')) +
     tile(totInj,'Injuries', totInj>0?'warn':'') +
     tile(totDead,'Deaths', totDead>0?'danger':'') +
     tile(totDmg,'Homes Damaged', totDmg>0?'warn':'') +
     tile(totDest,'Homes Destroyed', totDest>0?'danger':'') +
-    tile(totVol,'Volunteers (DR)') +
+    tile(totVol,'Volunteers (Disaster Reports)') +
     tile(wcls.length,'Crew Logs') +
     tile(totCrewCount,'Crew Members') +
     tile(totWclHrs,'Crew Hours') +
@@ -2191,7 +2213,7 @@ function renderOverview(drs, sos, wcls) {
     else if (lastDR) {
       var isMissNo = isNo(lastDR.dr.miss_safe);
       var hasNeed = isYes(lastDR.dr.need_local)||isYes(lastDR.dr.need_neighbor)||isYes(lastDR.dr.need_hq);
-      if (isMissNo) { cls+=' red'; statusLabel='&#9888; Miss. not safe'; }
+      if (isMissNo) { cls+=' red'; statusLabel='&#9888; Missionaries not accounted for'; }
       else if (hasNeed) { cls+=' yellow'; statusLabel='Reported — has needs'; }
       else { cls+=' green'; statusLabel='Reported OK &#10003;'; }
     } else if (isOverdue) { cls+=' overdue'; statusLabel='OVERDUE'; }
@@ -2216,7 +2238,7 @@ function renderRoster(drs) {
     if (r.voiceContact) statusHtml='<span class="chip so">Voice &#9742;</span>';
     else if (lastDR) {
       var isMissNo = isNo(lastDR.dr.miss_safe);
-      statusHtml = isMissNo ? '<span class="chip miss-no">MISS NO</span>' : '<span class="chip miss-yes">Reported</span>';
+      statusHtml = isMissNo ? '<span class="chip miss-no">Missionaries not accounted for</span>' : '<span class="chip miss-yes">Reported</span>';
     } else statusHtml = isOverdue ? '<span style="color:var(--overdue);font-weight:700">OVERDUE</span>' : '<span style="color:var(--muted)">Waiting</span>';
     var expected = r.expectedMinutes ? (r.expectedMinutes >= 60 ? Math.round(r.expectedMinutes/60)+'h' : r.expectedMinutes+'m') + ' after start' : '—';
     return '<tr><td><strong>'+esc(r.name)+'</strong></td><td>'+esc(r.spName||'—')+'</td><td>'+esc(r.spPhone||'—')+'</td><td>'+esc(expected)+'</td><td>'+statusHtml+'</td><td>'+esc(lastDR?fmtTs(lastDR.ts):(r.voiceContact?fmtTs(r.voiceContactTs):'—'))+'</td><td style="white-space:nowrap">'
@@ -2242,7 +2264,7 @@ function showModalForm(title, r) {
   document.getElementById('modal-body').innerHTML =
     '<div class="form-row"><div class="form-group"><label>'+esc(unitLabel())+' Name *</label><input type="text" id="mf-name" value="'+esc(r.name||'')+'"></div></div>'+
     '<div class="form-row"><div class="form-group"><label>'+esc(leaderLabel())+' Name</label><input type="text" id="mf-sp" value="'+esc(r.spName||'')+'"></div><div class="form-group"><label>'+esc(leaderLabel())+' Phone</label><input type="text" id="mf-phone" value="'+esc(r.spPhone||'')+'"></div></div>'+
-    '<div class="form-row"><div class="form-group"><label>Expected Report Window (minutes after incident start)</label><input type="number" id="mf-mins" value="'+esc(r.expectedMinutes||'')+'"></div></div>';
+    '<div class="form-row"><div class="form-group"><label>Report expected within (minutes after the event starts; blank = no due time)</label><input type="number" id="mf-mins" value="'+esc(r.expectedMinutes||'')+'"></div></div>';
   document.getElementById('modal-confirm-btn').textContent = editingRosterId ? 'Save Changes' : 'Add '+unitLabel();
   pendingConfirm = function(){
     var name = document.getElementById('mf-name').value.trim();
@@ -2639,7 +2661,11 @@ function saveEocIdentity() {
   incident.wifiPass = document.getElementById('eoc-wifi-pass').value;
   var mp = document.getElementById('eoc-map-path').value.trim(); if (mp !== (incident.mapPath||'')) { incident.mapPath = mp; MAP_LOADED = false; }
   _identitySavedMs = Date.now();
-  save(); render(); toast('EOC identity saved — '+eocLabel()+(incident.eocName?': '+incident.eocName:''));
+  // The units covered go on the roster too (by name, case-insensitive): the operator types each ward or stake once.
+  var have = {}; roster.forEach(function(r){ have[String(r.name||'').trim().toLowerCase()] = 1; });
+  var added = incident.eocUnits.split(/[,;\n]/).map(function(u){ return u.trim(); }).filter(function(u){ return u && !have[u.toLowerCase()] && (have[u.toLowerCase()] = 1); });
+  added.forEach(function(u){ roster.push({id:uid(), name:u, spName:'', spPhone:'', expectedMinutes:0, voiceContact:false, voiceContactTs:null}); });
+  save(); render(); toast('EOC identity saved — '+eocLabel()+(incident.eocName?': '+incident.eocName:'')+(added.length?'; '+added.length+' '+(added.length===1?unitLabel().toLowerCase():unitPlural())+' added to the Roster tab':''));
 }
 // EOC location for phone forms served by this server (a plain-http page cannot read the phone's GPS).
 // This page on the server laptop (localhost) is a secure context, so the browser can share its location.
@@ -2716,7 +2742,7 @@ function importHandoff(e) {
   var reader = new FileReader();
   reader.onload = function(ev){
     var data;
-    try { data = JSON.parse(ev.target.result); } catch(err) { toast('Invalid JSON file'); return; }
+    try { data = JSON.parse(ev.target.result); } catch(err) { toast('That file could not be read. Choose the file made by Export Handoff JSON.'); return; }
     if (!data.msgs || !data.incident) {
       if (data && Array.isArray(data.msgs) && data.kind==='church_eoc_rollup') { toast('That is a roll-up from another EOC — use Import Roll-up JSON (merge)'); return; }
       toast('File does not look like a handoff export'); return;
@@ -3343,6 +3369,32 @@ function renderHelpPace() {
     + '<div style="font-size:12px;color:var(--muted)">' + (p ? (since ? 'Since ' + esc(since) + '. ' : '') + 'Set on the Setup tab; the header, wall and SITREP follow it.' : 'Set it on the Setup tab when the Stake President announces one.') + '</div></div>'
     + '<button class="btn" onclick="goSetPace()">Change the level</button>';
 }
+// ── First run: what this EOC still needs before reports can be worked (card 3 "Starting up", cards 6-8 "Setup tab, once") ──
+function setupSteps() {
+  var ev = activeEvent(), w = watcherState || {}, sheet = (comms && comms.sheet) || {};
+  var hasSheet = ['contacts','eocs','gateways','nets'].some(function(k){ return (sheet[k]||[]).length; });
+  return [
+    {done: !!(incident && incident.eocName), what: 'Name this EOC and the EOC above it', why: 'Setup tab, This EOC: level, name, the units it covers, where roll-ups go', go: "goSetup('sec-identity')"},
+    {done: !!(ev && ev.name), what: 'Open the event', why: 'Setup tab, Emergency Event: + Open a New Event (every operator switches to it)', go: "goSetup('event-card')"},
+    {done: !!(incident && incident.pace && incident.sitrepHrs), what: 'Set the PACE level and the SITREP interval', why: 'Setup tab, Active event: the level the Stake President decided, and the SITREP interval EOC leadership set', go: "goSetup('sec-details')"},
+    {done: !networkMode || !!(w.enabled && (w.mode !== 'winlink' || (w.callsigns||[]).length)), what: 'Choose the Winlink callsign that feeds this EOC', why: networkMode && w.mode === 'none' ? 'Winlink Express is not on this laptop: radio reports arrive as files in the Drop Folder' : 'Then reports sent by radio file themselves (auto-ingest)', go: 'configureWatcher()', btn: 'Choose'},
+    {done: roster.length > 0, what: 'Put the ' + unitPlural() + ' you expect reports from on the roster', why: 'Roster tab: + Add ' + unitLabel(), go: "switchTab('roster')"},
+    {done: hasSheet, what: 'Fill in or load the Comms Sheet', why: 'Setup tab, Comms Sheet: who to call, Winlink addresses, gateways, nets', go: "goSetup('comms-card')"}
+  ];
+}
+function goSetup(id) { switchTab('setup'); var el = document.getElementById(id); if (el) setTimeout(function(){ el.scrollIntoView({block:'start'}); }, 30); }
+function renderStart() {
+  var box = document.getElementById('ov-start'); if (!box) return;
+  var steps = setupSteps(), left = steps.filter(function(x){ return !x.done; }).length, hidden = false;
+  try { hidden = localStorage.getItem('emcomm_start_hidden') === String(activeEventId() || 'none'); } catch (e) {}
+  if (!left || hidden) { box.innerHTML = ''; return; }
+  box.innerHTML = '<div class="card start-card"><div style="display:flex;align-items:baseline;gap:10px"><h2 style="margin:0;flex:1">Set up this EOC <span style="font-weight:600;font-size:12px;color:var(--muted);text-transform:none;letter-spacing:0">'
+    + left + ' of ' + steps.length + ' steps left · quick reference card 3</span></h2><button class="btn-ghost" type="button" style="font-size:11px" onclick="hideStart()">Hide this list</button></div><ol>'
+    + steps.map(function(x, i){ return '<li class="' + (x.done ? 'done' : '') + '"><span class="tk">' + (x.done ? '&#10003;' : (i + 1)) + '</span><span class="what">' + esc(x.what)
+      + '<span class="why">' + esc(x.why) + '</span></span>' + (x.done ? '' : '<button class="btn sm" type="button" onclick="' + x.go + '">' + (x.btn || 'Go') + '</button>') + '</li>'; }).join('')
+    + '</ol></div>';
+}
+function hideStart() { try { localStorage.setItem('emcomm_start_hidden', String(activeEventId() || 'none')); } catch (e) {} renderStart(); }
 function goSetPace() {
   switchTab('setup');
   var s = document.getElementById('inc-pace');
@@ -3453,14 +3505,14 @@ function showNetBar(ok) {
   var el = document.getElementById('net-bar');
   if(ok){
     el.style.cssText='background:#065f46;color:#d1fae5;padding:5px 16px;font-size:12px;font-weight:600;text-align:center;';
-    el.textContent='⚡ NETWORKED MODE — Connected to EOC Server · All operators on this network share this data';
+    el.textContent='⚡ Connected to the EOC server — every operator on this network sees the same data';
     var hw=document.getElementById('hdr-wall'); if(hw) hw.style.display='';
     var wt=document.getElementById('wall-url-txt'); if(wt) wt.textContent=location.origin+'/wall';
     var pt=document.getElementById('phone-url-txt'); if(pt) pt.textContent=location.origin+'/m';
     if(!window._srvVer) fetch('/api/status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){ window._srvVer=j.version||''; window._lanUrl=j.lanUrl||''; var wt2=document.getElementById('wall-url-txt'); if(wt2&&window._lanUrl) wt2.textContent=window._lanUrl+'/wall'; var pt2=document.getElementById('phone-url-txt'); if(pt2&&window._lanUrl) pt2.textContent=window._lanUrl+'/m'; }).catch(function(){});
   } else {
     el.style.cssText='background:#92400e;color:#fef3c7;padding:5px 16px;font-size:12px;font-weight:600;text-align:center;';
-    el.textContent='⚠ CONNECTION LOST — Working offline, will retry…';
+    el.textContent='⚠ CONNECTION LOST — the EOC server is not answering. Check its window on the EOC laptop. This page tries again every 5 seconds.';
   }
   el.style.display='';
 }
@@ -3622,8 +3674,8 @@ function showDropBar() {
         + (lastFile ? ' · Last: ' + lastFile : '');
   var lastTxt = lastCheck ? '  ·  Last check: ' + lastCheck : '';
   bar.style.cssText = 'background:#0f2a1a;color:#6ee7b7;padding:5px 16px;font-size:12px;font-weight:600;text-align:center;cursor:pointer;';
-  bar.innerHTML = '&#127760; INTERNET DROP ACTIVE — ' + ingestedTxt + lastTxt + errTxt
-      + '  &nbsp;<span style="opacity:.7;font-weight:400">(click to configure)</span>';
+  bar.innerHTML = '&#127760; DROP FOLDER ON — ' + ingestedTxt + lastTxt + errTxt
+      + '  &nbsp;<span style="font-weight:400;text-decoration:underline">(click to configure)</span>';
   bar.style.display = '';
   bar.onclick = function(){ configureDrop(); };
 }
@@ -3691,7 +3743,7 @@ function saveDropFolder(p) {
   var payload = {watch_path: p, enabled: true};
   fetch('/api/drop/config', {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)})
     .then(function(r){ return r.json(); }).then(function(d){ dropState = d; showDropBar(); })
-    .catch(function(){ alert('Could not reach server to update drop folder config.'); });
+    .catch(function(){ toast('Could not reach the EOC server, so the Drop Folder did not change. Check the server window, then click the green bar again.'); });
 }
 
 // ── Winlink Auto-Ingest Watcher ───────────────────────────────────────────────
@@ -3728,15 +3780,16 @@ function showWatcherBar() {
         ? '  ·  Winlink: ' + (chosen.length ? chosen.join(', ') : 'NO CALLSIGN CHOSEN (' + (avail.join(', ') || 'all') + ') — click to choose')
           + (missing.length ? '  ·  not found: ' + missing.join(', ') : '')
         : watcherState.mode === 'none' ? '  ·  folder not found: ' + (watcherState.watch_path || '') : '';
-    bar.innerHTML = '&#128225; AUTO-INGEST ACTIVE — ' + ingestedTxt + whereTxt + lastTxt + errTxt
-        + '  &nbsp;<span style="opacity:.7;font-weight:400">(click to configure)</span>';
+    bar.innerHTML = '&#128225; WINLINK AUTO-INGEST ON — ' + ingestedTxt + whereTxt + lastTxt + errTxt
+        + '  &nbsp;<span style="font-weight:400;text-decoration:underline">(click to configure)</span>';
   } else {
-    bar.style.cssText = 'background:#374151;color:#9ca3af;padding:5px 16px;font-size:12px;font-weight:600;text-align:center;cursor:pointer;';
-    bar.innerHTML = '&#9634; AUTO-INGEST OFF — Drag .mime files manually'
-        + '  &nbsp;<span style="opacity:.7;font-weight:400">(click to configure)</span>';
+    bar.style.cssText = 'background:#374151;color:#e5e7eb;padding:5px 16px;font-size:12px;font-weight:600;text-align:center;cursor:pointer;';
+    bar.innerHTML = '&#9634; WINLINK AUTO-INGEST OFF — click this bar to choose the Winlink Express folder, or drag .mime files onto the page'
+        + '  &nbsp;<span style="font-weight:400;text-decoration:underline">(click to configure)</span>';
   }
   bar.style.display = '';
   bar.onclick = function(){ configureWatcher(); };
+  renderStart();
 }
 
 function updateDropZone() {
@@ -3750,22 +3803,41 @@ function updateDropZone() {
 }
 
 function configureWatcher() {
+  // Step 1: the Winlink Express folder (normally C:\RMS Express). Step 2: tick the callsign(s) found there that feed this EOC.
   if (!networkMode) return;
   var w = watcherState || {};
-  var avail = (w.available || []).join(', ');
-  var c = prompt('Which Winlink callsign feeds this EOC?\n'
-    + (avail ? 'Found on this computer: ' + avail + '\n' : '')
-    + 'Type one, or several separated by commas. Leave blank for every callsign.', (w.callsigns || []).join(', '));
-  if (c === null) return;
-  browseFolders({title: 'Winlink Express folder', kind: 'winlink', start: w.watch_path || 'C:\\RMS Express',
+  browseFolders({title: 'Step 1 of 2: the Winlink Express folder', kind: 'winlink', start: w.watch_path || 'C:\\RMS Express',
     help: 'Normally C:\\RMS Express. A plain folder of .mime files also works. Saved in ' + (w.settingsFile || 'eoc-settings.json') + ' for the next start.',
-    onUse: function(p){ saveWatcher(c.trim(), p); }});
+    onUse: function(p){
+      fetch('/api/watcher/config', {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({enabled: true, watch_path: p})})
+        .then(function(r){ return r.json(); }).then(function(d){
+          watcherState = d; showWatcherBar(); updateDropZone();
+          if ((d.available || []).length) chooseCallsigns(d); else toast('Auto-ingest reads every .mime file in ' + p);
+        }).catch(function(){ toast('Could not reach the EOC server to save the Winlink folder'); });
+    }});
+}
+function chooseCallsigns(d) {
+  var chosen = d.callsigns || [], avail = d.available || [];
+  document.getElementById('modal-title').textContent = 'Step 2 of 2: which callsign feeds this EOC?';
+  document.getElementById('modal-body').innerHTML = '<p style="margin:0 0 8px">Winlink Express on this laptop has these callsigns. Tick the callsign the field sends this EOC\'s reports to. Its Church forms file themselves every 10 seconds. Mail for the other callsigns is never read.</p>'
+    + avail.map(function(c){ var on = chosen.indexOf(c) >= 0 || (!chosen.length && avail.length === 1);
+        return '<label style="display:flex;gap:8px;align-items:center;padding:6px 0;font-size:15px;font-weight:700"><input type="checkbox" class="wl-call" value="' + esc(c) + '"' + (on ? ' checked' : '') + '> ' + esc(c) + '</label>'; }).join('')
+    + '<p style="font-size:11px;color:var(--muted);margin:8px 0 0">Folder: <code>' + esc(d.watch_path || '') + '</code></p>';
+  document.getElementById('modal-confirm-btn').textContent = 'Use the ticked callsign';
+  document.getElementById('modal-confirm-btn').className = 'btn';
+  pendingConfirm = function(){
+    var calls = Array.prototype.map.call(document.querySelectorAll('.wl-call:checked'), function(x){ return x.value; });
+    if (!calls.length) { toast('Tick at least one callsign'); return; }
+    closeModal(); saveWatcher(calls.join(','), d.watch_path);
+    toast('Auto-ingest reads ' + calls.join(', '));
+  };
+  document.getElementById('modal-bg').classList.add('open');
 }
 function saveWatcher(callsigns, p) {
   var payload = {enabled: true, callsigns: callsigns, watch_path: p};
   fetch('/api/watcher/config', {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)})
     .then(function(r){ return r.json(); }).then(function(d){ watcherState = d; showWatcherBar(); updateDropZone(); })
-    .catch(function(){ alert('Could not reach server to update watcher config.'); });
+    .catch(function(){ toast('Could not reach the EOC server, so the callsign did not change. Check the server window, then click the Winlink bar again.'); });
 }
 
 // ── Boot ──────────────────────────────────────────────────────────────────────

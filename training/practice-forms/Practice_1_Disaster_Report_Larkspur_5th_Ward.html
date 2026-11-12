@@ -25,6 +25,7 @@ input[type=button] { border: 2px solid #0f88f2; border-radius: 3px; background-c
 .logo .bot { font-size: 12px; letter-spacing: 0.12em; font-weight: normal; text-transform: uppercase; display: block; }
 .exbox { border:2px solid #b00000; background:#fff3f3; padding:4px 8px; margin:4px 0 6px; font-size:13px; font-weight:bold; color:#b00000; }
 .exbox small { font-weight:normal; color:#444; }
+input::placeholder, textarea::placeholder { color:#6b7280; opacity:1; }   /* WebKit's default #a9a9a9 fails WCAG AA */
 </style>
 <script type="text/javascript">
 
@@ -207,6 +208,8 @@ function populateForm() {
       if (el.type === 'radio') {
         var rads = document.querySelectorAll('[name="' + k + '"]');
         for (var j = 0; j < rads.length; j++) rads[j].checked = (rads[j].value === o[k]);
+      } else if (el.type === 'checkbox') {   // Winlink's Save Data writes 1 / 0; the phone form writes true / false
+        el.checked = (o[k] === true || o[k] === 1 || o[k] === '1' || o[k] === 'true' || o[k] === 'YES');
       } else if (typeof o[k] === 'number') {
         el.checked = !!o[k];
       } else if (el.type === 'date') {
@@ -216,6 +219,7 @@ function populateForm() {
       }
     }
   } catch(e) {}
+  if (typeof exChanged === 'function') exChanged();   // the EXERCISE subject prefix follows the loaded box
   reconcileGPS(o);
 }
 
@@ -420,7 +424,7 @@ window.onload = function() {
   <tr><td colspan="2" style="padding:0;">
     <table class="fields">
       <tr>
-        <td width="40%"><div class="lbl">Date</div><input type="date"  id="inc_date" name="inc_date" value="2026-11-02" /></td>
+        <td width="40%"><div class="lbl">Date</div><input type="date"  id="inc_date" name="inc_date" value="2026-11-12" /></td>
         <td><div class="lbl">Location</div><input type="text"  id="inc_location" name="inc_location" placeholder="City, State" value="950 S 600 W, Larkspur" /></td>
       </tr>
       <tr>

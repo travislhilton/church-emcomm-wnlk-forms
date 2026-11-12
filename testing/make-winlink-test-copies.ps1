@@ -60,7 +60,7 @@ $base = @{
              inc_type = 'Flooding'; sub_name = 'Test Volunteer'; mem_injuries = '0';
              miss_safe = 'YES'; vol_injuries = 'NO'; need_local = 'NO'; need_neighbor = 'YES'; need_hq = 'NO' }
     so  = @{ order_date = '2026-10-26'; req_stake = 'Test Stake'; del_contact = 'Test Contact';
-             del_phone = '801-555-0100'; del_addr = '123 Main St'; del_city = 'Provo'; del_state = 'UT'; del_zip = '84601';
+             del_phone = '801-555-0100'; del_addr = '123 Main St'; del_city = 'Larkspur'; del_state = 'UT'; del_zip = '84601';
              gs02 = '3'; tl26 = '1'; kb03 = '10'; other_desc1 = 'Sump pump hose'; other_unit1 = 'each'; other_qty1 = '4';
              req_del_date = '2026-10-30'; proj_num = 'P17'; proj_name = 'Flood cleanup' }
     wcl = @{ log_date = '2026-10-26'; chief_stake = 'Test Stake'; chief_name = 'Test Chief';
@@ -69,7 +69,7 @@ $base = @{
 
 foreach ($k in $base.Keys) {
     $gps = $base[$k].Clone()
-    $gps.stn_lat_d = '40.23380'; $gps.stn_lon_d = '-111.65850'; $gps.stn_grid_d = 'DN40CF'
+    $gps.stn_lat_d = '40.12340'; $gps.stn_lon_d = '-105.43210'; $gps.stn_grid_d = 'DN70GC'
     [IO.File]::WriteAllText((Join-Path $Out "${k}_gps.txt"), ($gps | ConvertTo-Json), $enc)
 
     $nogps = $base[$k].Clone()

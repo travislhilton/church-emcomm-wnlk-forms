@@ -17,7 +17,7 @@ except ValueError:
 VERSION = '1.0'
 # The Worker forms / Church of Jesus Christ EMCOMM app version this server ships (APP_VERSION in templates/_shared/emcomm-app.js).
 # Phones whose app is older still send fine; the receive page just tells them to update when they have internet.
-FORMS_VERSION = '2026-11-12.3'
+FORMS_VERSION = '2026-11-12.4'
 BASE = pathlib.Path(__file__).resolve().parent   # resolve: before Python 3.9 __file__ is relative when started from this folder
 DB_FILE   = BASE / 'eoc_data.db'
 HTML_FILE = BASE / 'EOC_Message_Center.html'
@@ -791,6 +791,17 @@ def _agency_for(conn, from_hdr: str) -> dict:
     for a in ags:
         if isinstance(a, dict) and call and call in [c.strip().upper() for c in str(a.get('call', '')).split(',')]:
             return a
+    # No drill configuration names it: a partner listed on the Comms Sheet (Points of contact or EOCs) with this
+    # Winlink address is named as the operator typed it there.
+    try:
+        sheet = _get_comms(conn)['sheet']
+    except Exception:
+        sheet = {}
+    for key, name_of in (('contacts', lambda r: ' · '.join(x for x in (str(r.get('name') or '').strip(), str(r.get('role') or '').strip()) if x)),
+                         ('eocs', lambda r: str(r.get('name') or '').strip())):
+        for r in sheet.get(key) or []:
+            if isinstance(r, dict) and call and _sender_call(str(r.get('winlink') or '')) == call and name_of(r):
+                return {'name': name_of(r), 'call': call}
     return {'name': call or 'Partner agency', 'call': call}
 
 

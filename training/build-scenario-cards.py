@@ -156,8 +156,8 @@ def side(card: dict, which: str, ctx: dict) -> str:
     if which == 'back' or not card.get('back'):
         turn += ('<p class="pdf-foot">Church of Jesus Christ EMCOMM &#8212; an independent volunteer project by Travis Hilton (W9TLH), '
                  'not an official publication of the Church</p>')
-    return (f'<div class="card card-{which}" style="border-top-color:{col}">\n<div class="card-head"><div>\n'
-            f'<p class="card-role">{E(card.get("role", ""))}</p>\n<span class="card-side{" back" if which == "back" else ""}" style="background:{col}">{label}</span>\n'
+    return (f'<div class="card card-{which}" style="--role:{col}">\n<div class="card-head"><div>\n'
+            f'<p class="card-role">{E(card.get("role", ""))}</p>\n<span class="card-side{" back" if which == "back" else ""}">{label}</span>\n'
             f'<h2 class="card-title">{E(s["title"])}</h2>\n</div></div>\n{priv}{body}{turn}\n</div>\n')
 
 

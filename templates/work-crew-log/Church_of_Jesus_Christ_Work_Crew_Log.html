@@ -16,12 +16,13 @@ table.crew td { border: 1px solid #999; padding: 2px 3px; font-size: 11px; verti
 .hdr { background-color: #c8d8f0; font-weight: bold; font-size: 13px; text-align: center; border-bottom: 2px solid #000; }
 .sechdr { background-color: #dee9f9; font-weight: bold; font-style: italic; font-size: 12px; padding: 3px 6px; }
 .lbl { font-size: 10px; color: #444; }
-.rn { font-size: 10px; color: #888; text-align: center; font-weight: bold; }
+.rn { font-size: 10px; color: #595959; text-align: center; font-weight: bold; }
 input[type=text], input[type=date], input[type=tel] { border: none; border-bottom: 1px solid #888; font-size: 12px; font-family: Arial, Helvetica, sans-serif; background: transparent; }
 input[type=date] { width: auto; }
 input.cr { width: 98%; border: 1px solid #bbb; padding: 1px 2px; font-size: 11px; background: #fafeff; }
 input.hrs { width: 44px; border: 1px solid #bbb; padding: 1px 2px; text-align: center; background: #fffde8; font-size: 11px; }
 input[readonly] { background: #e8e8e8; cursor: default; color: #444; }
+input[readonly]::placeholder { color: #4b5563; opacity: 1; }
 textarea { width: 99%; border: 1px solid #999; font-size: 12px; font-family: Arial, Helvetica, sans-serif; resize: vertical; }
 input[type=submit] { border: 2px solid green; border-radius: 3px; background-color: #fff; padding: 3px 10px; font-size: 13px; cursor: pointer; }
 input[type=reset]  { border: 2px solid red;   border-radius: 3px; background-color: #fff; padding: 3px 10px; font-size: 13px; cursor: pointer; }
@@ -33,6 +34,7 @@ input[type=button] { border: 2px solid #0f88f2; border-radius: 3px; background-c
 .safety-note { font-size: 10px; font-style: italic; color: #555; padding: 4px 6px; background: #fffde8; border: 1px solid #e0c050; border-radius: 2px; }
 .exbox { border:2px solid #b00000; background:#fff3f3; padding:4px 8px; margin:4px 0 6px; font-size:13px; font-weight:bold; color:#b00000; }
 .exbox small { font-weight:normal; color:#444; }
+input::placeholder, textarea::placeholder { color:#6b7280; opacity:1; }   /* WebKit's default #a9a9a9 fails WCAG AA */
 </style>
 <script type="text/javascript">
 

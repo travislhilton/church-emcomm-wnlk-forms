@@ -46,11 +46,13 @@ input[readonly] { background: #e8e8e8; cursor: default; color: #444; }
 .gps-status { font-size:13px; color:#555; margin-top:6px; line-height:1.4; }
 .gps-status.ok { color:#1a6b3c; }
 .gps-status.err { color:#b00020; }
-.gps-off .sec-hdr { background:#8a94a0; }
-.gps-off .btn-gps { background:#9aa3ad; opacity:1; }
-.gps-off input[type=text] { background:#ececec; color:#888; }
-.gps-off label { color:#999; }
+.gps-off .sec-hdr { background:#556070; }
+.gps-off .btn-gps { background:#e5e7eb; color:#374151; opacity:1; }
+.gps-off input[type=text] { background:#ececec; color:#4b5563; }
+.gps-off label { color:#4b5563; }
+.gps-off input::placeholder, input[readonly]::placeholder { color:#4b5563; opacity:1; }
 .gps-manual { display:none; font-size:13px; color:#1a3a5c; text-decoration:underline; margin-top:6px; }
+input::placeholder, textarea::placeholder { color:#6b7280; opacity:1; }   /* WebKit's default #a9a9a9 fails WCAG AA */
 </style>
 </head>
 <body>
@@ -69,17 +71,17 @@ input[readonly] { background: #e8e8e8; cursor: default; color: #444; }
 
 <details class="instructions">
   <summary><strong>How to send this form</strong> (tap to read: EOC Wi-Fi, no signal, radio, paper)</summary>
-  1. Fill in the fields below. Your GPS (Global Positioning System) location fills itself in when the phone allows it.<br/>
+  1. Fill in the fields below. Your GPS (Global Positioning System) location fills itself in when the phone allows it. On the EOC Wi-Fi the form uses the EOC's location.<br/>
   2. <strong>On the EOC (Emergency Operations Center) Wi-Fi?</strong> Tap <strong>Send to EOC</strong>. The EOC has it in seconds and you see a green &ldquo;received&rdquo; screen. No files to save.<br/>
   3. <strong>No signal where you are?</strong> Tap <strong>Save to Outbox</strong>. The report stays on this phone; save as many as you need. When you reach the EOC Wi-Fi, tap <strong>Send to EOC</strong> and scan the EOC QR (Quick Response) code on the wall.<br/>
   4. <strong>Have cell service or internet?</strong> (Any Wi-Fi with internet counts &mdash; home, a shelter, a business, a neighbor, a meetinghouse, Starlink.) Tap <strong>Share by text or email</strong> and send the file straight to whoever you report to — your Crew Chief, Team Leader, Church leader, or your Stake or Satellite EOC (Emergency Operations Center).<br/>
-  5. <strong>Cannot reach the EOC at all?</strong> Tap <strong>Save to My Phone</strong> and get the file to an EMCOMM (emergency communications) HAM (amateur radio) operator any way you can — USB (Universal Serial Bus) drive, AirDrop, or Android Nearby Share (these work phone-to-phone with no signal). They load it into Winlink and send it to the Stake EOC by radio. The EOC keeps it for the Stake President's crew totals.<br/>
-  6. <strong>Nothing works at all (Emergency)?</strong> Paper goes by hand. If a printer is on your Wi-Fi, or offers its own Wi-Fi (Wi-Fi Direct), tap <strong>Print</strong> and give the printed form to your Crew Chief or a runner. No printer? Copy the report onto a blank paper form and keep it in your Outbox too. <a href="?blank=1">Print blank forms</a> before an event and keep a few with a pen in your go-bag.
+  5. <strong>Cannot reach the EOC at all?</strong> Tap <strong>Save to My Phone</strong> and get the file to an EMCOMM (emergency communications) HAM (amateur radio) operator any way you can — USB (Universal Serial Bus) drive, AirDrop, or Android Nearby Share (these work phone-to-phone with no signal). They load it into Winlink and send it to the EOC by radio.<br/>
+  6. <strong>Nothing works at all (Emergency)?</strong> Paper goes by hand. If a printer is on your Wi-Fi, or offers its own Wi-Fi (Wi-Fi Direct), tap <strong>Print</strong> and give the printed form to your Crew Chief or a runner. No printer? Copy the report onto a blank paper form. Also tap <strong>Save to Outbox</strong>, so you can send it when a path comes back. <a href="?blank=1">Print blank forms</a> before an event and keep a few with a pen in your go-bag.
 </details>
 
 <div class="emcomm-actions"></div>
 <div style="margin:0 16px 8px;text-align:center;">
-  <button class="btn-load" onclick="document.getElementById('loadInput').click()">&#128194; Load Saved Draft</button>
+  <button class="btn-load" onclick="document.getElementById('loadInput').click()">&#128194; Open a Saved Report File</button>
   <input type="file" id="loadInput" accept=".txt" style="display:none;" onchange="loadFromFile(this)" />
 </div>
 
@@ -101,11 +103,11 @@ input[readonly] { background: #e8e8e8; cursor: default; color: #444; }
   <div class="two-col">
     <div class="frow">
       <label for="stn_lat_d">Latitude</label>
-      <input type="text" id="stn_lat_d" name="stn_lat_d" inputmode="decimal" placeholder="e.g. 40.2338" onchange="updateGrid()" />
+      <input type="text" id="stn_lat_d" name="stn_lat_d" inputmode="decimal" placeholder="e.g. 40.1234" onchange="updateGrid()" />
     </div>
     <div class="frow">
       <label for="stn_lon_d">Longitude</label>
-      <input type="text" id="stn_lon_d" name="stn_lon_d" inputmode="decimal" placeholder="e.g. -111.6585" onchange="updateGrid()" />
+      <input type="text" id="stn_lon_d" name="stn_lon_d" inputmode="decimal" placeholder="e.g. -105.4321" onchange="updateGrid()" />
     </div>
   </div>
   <input type="hidden" id="stn_grid_d" name="stn_grid_d" />
@@ -121,7 +123,7 @@ input[readonly] { background: #e8e8e8; cursor: default; color: #444; }
     </div>
     <div class="frow">
       <label for="log_location">Location (city, state, and zip code)</label>
-      <input type="text" id="log_location" name="log_location" placeholder="e.g. Provo, UT 84601" />
+      <input type="text" id="log_location" name="log_location" placeholder="e.g. Larkspur, Juniper Plains" />
     </div>
   </div>
 </div>
@@ -432,7 +434,7 @@ input[readonly] { background: #e8e8e8; cursor: default; color: #444; }
 </form>
 
 <div class="emcomm-actions"></div>
-<p style="margin:0 16px 20px;font-size:12px;color:#6B7A8D;line-height:1.45">Something not working, or notes after a drill? Tell your Team Leader or the stake specialist: what you did, what you saw, which phone. With a GitHub account you can file it directly: <a href="#" onclick="return openIssue('bug')" style="color:#4A7FC1">report a problem</a> (this form, your device and the date are filled in for you) &middot; <a href="#" onclick="return openIssue('drill')" style="color:#4A7FC1">drill feedback</a>.</p>
+<p style="margin:0 16px 20px;font-size:12px;color:#556070;line-height:1.45">Something not working, or notes after a drill? Tell your Team Leader or the stake specialist: what you did, what you saw, which phone. With a GitHub account you can file it directly: <a href="#" onclick="return openIssue('bug')" style="color:#1d5fa8">report a problem</a> (this form, your device and the date are filled in for you) &middot; <a href="#" onclick="return openIssue('drill')" style="color:#1d5fa8">drill feedback</a>.</p>
 
 <script>
 var ISSUE_FORM = 'Work Crew Log', ISSUE_ROLE = 'Helping Hands Volunteer (phone form)';
@@ -608,7 +610,7 @@ document.addEventListener('DOMContentLoaded', function() {
      'file'   an installed copy opened from disk: same as portal, without the offline app.
    Phones are clients only; the EOC server on the laptop is the only server. */
 (function () {
-  var APP_VERSION = '2026-11-12.3';   // bump with any change the EOC server must know about (see FORMS_VERSION in eoc_server.py)
+  var APP_VERSION = '2026-11-12.4';   // bump with any change the EOC server must know about (see FORMS_VERSION in eoc_server.py)
   var OUTBOX_KEY = 'church_outbox_v1', EOCS_KEY = 'church_eocs_v1', PENDING_KEY = 'church_outbox_pending_v1';
   var FORM_NAME = {dr: 'Disaster Report', so: 'Supply Order', wcl: 'Work Crew Log'};
   var FILENAME = {dr: 'Church_Disaster_Report_Worker.txt', so: 'Church_Supply_Order_Worker.txt', wcl: 'Church_Work_Crew_Log_Worker.txt'};

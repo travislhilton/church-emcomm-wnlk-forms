@@ -14,7 +14,7 @@
   repository can also be opened by code:  comms.html?stake=<code>  ->  comms/<code>.json
 -->
 <style>
-:root{--navy:#1A2744;--red:#C8102E;--blue:#4A7FC1;--green:#5BAD8A;--amber:#D4850A;--bg:#F7F8FA;--card:#fff;--text:#1A2744;--muted:#6B7A8D;--border:#D1DBE8}
+:root{--navy:#1A2744;--red:#C8102E;--blue:#1d5fa8;--green:#1b7a47;--amber:#9a5300;--bg:#F7F8FA;--card:#fff;--text:#1A2744;--muted:#556070;--border:#D1DBE8}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px;line-height:1.5}
 .page{max-width:560px;margin:0 auto;padding:22px 16px 60px}
@@ -74,8 +74,8 @@ pre{white-space:pre-wrap;font-size:12px}
     <p class="pace-title">PACE levels (Primary, Alternate, Contingency, Emergency) &#8212; which path to use</p>
     <table class="pace">
       <tr><td class="p">P</td><td><b>Primary</b> &#8212; cell and internet up: text or email the form file</td></tr>
-      <tr><td class="a">A</td><td><b>Alternate</b> &#8212; any surviving internet: Wi-Fi anywhere, Starlink</td></tr>
-      <tr><td class="c">C</td><td><b>Contingency</b> &#8212; radio: forms by Winlink over VHF/UHF (very high / ultra high frequency) with VARA FM (VARA: the sound-card radio modem Winlink uses), then HF (high frequency) with VARA HF; voice on the nets above</td></tr>
+      <tr><td class="a">A</td><td><b>Alternate</b> &#8212; any internet anywhere: home, a shelter, a business, a meetinghouse, Starlink</td></tr>
+      <tr><td class="c">C</td><td><b>Contingency</b> &#8212; radio: forms by Winlink over VARA FM (VARA: the sound-card radio modem Winlink uses), the gateways in their listed order, then VARA HF; voice on the nets above</td></tr>
       <tr><td class="e">E</td><td><b>Emergency</b> &#8212; runner with the paper form (<b>Print</b> under the form, or a blank form filled by hand)</td></tr>
     </table>
     <p><b>Rule:</b> step down a level after two failed attempts in 15 minutes, or when the Stake President decides it on the specialist's recommendation. Step back up only after a test message round-trips.</p>
@@ -114,7 +114,7 @@ function render(){
 }
 function take(d, src){ if(!d||d.kind!=='church_comms_sheet'||!d.sheet){ alert('That is not a comms sheet file.'); return; } data=d; try{ localStorage.setItem('church_comms_sheet', JSON.stringify(d)); }catch(e){} render(); }
 function loadFile(e){ var f=e.target.files[0]; e.target.value=''; if(!f) return; var r=new FileReader(); r.onload=function(ev){ var d; try{ d=JSON.parse(ev.target.result); }catch(err){ alert('Could not read that file.'); return; } take(d,'file'); }; r.readAsText(f); }
-function asText(){ var s=(data&&data.sheet)||{}, out=['EMCOMM COMMS SHEET'+(s.org?' — '+s.org:''),'Sheet dated '+fmt(data&&data.updatedMs)]; TABLES.forEach(function(t){ var rows=(s[t.key]||[]); if(!rows.length) return; if(t.key==='gateways') rows=gwSorted(rows).map(function(g){ delete g.mode; return g; }); out.push(''); out.push(t.title.toUpperCase()); rows.forEach(function(r){ out.push('  '+Object.keys(r).filter(function(k){return r[k];}).map(function(k){return k+': '+r[k];}).join(' | ')); }); }); if(s.schedule){ out.push(''); out.push('NET SCHEDULE'); out.push(s.schedule); } if(s.notes){ out.push(''); out.push('NOTES'); out.push(s.notes); } out.push(''); out.push('PACE LEVELS'); out.push('  P Primary     - cell and internet: text or email the form file'); out.push('  A Alternate   - any surviving internet (Wi-Fi anywhere, Starlink)'); out.push('  C Contingency - radio: forms by Winlink VHF/UHF VARA FM, then VARA HF; voice on the nets above'); out.push('  E Emergency   - runner with the paper form'); out.push('  Rule: step down after two failed attempts in 15 min or when the Stake President declares it; back up only after a test message round-trips.'); return out.join('\n'); }
+function asText(){ var s=(data&&data.sheet)||{}, out=['EMCOMM COMMS SHEET'+(s.org?' — '+s.org:''),'Sheet dated '+fmt(data&&data.updatedMs)]; TABLES.forEach(function(t){ var rows=(s[t.key]||[]); if(!rows.length) return; if(t.key==='gateways') rows=gwSorted(rows).map(function(g){ delete g.mode; return g; }); out.push(''); out.push(t.title.toUpperCase()); rows.forEach(function(r){ out.push('  '+Object.keys(r).filter(function(k){return r[k];}).map(function(k){return k+': '+r[k];}).join(' | ')); }); }); if(s.schedule){ out.push(''); out.push('NET SCHEDULE'); out.push(s.schedule); } if(s.notes){ out.push(''); out.push('NOTES'); out.push(s.notes); } out.push(''); out.push('PACE LEVELS'); out.push('  P Primary     - cell and internet: text or email the form file'); out.push('  A Alternate   - any internet anywhere (home, shelter, business, meetinghouse, Starlink)'); out.push('  C Contingency - radio: Winlink by VARA FM, gateways in the order above, then VARA HF; voice on the nets above'); out.push('  E Emergency   - runner with the paper form'); out.push('  Rule: step down after two failed attempts in 15 min or when the Stake President decides it; back up only after a test message round-trips.'); return out.join('\n'); }
 function shareText(){ if(!data){ alert('Load a sheet first.'); return; } var t=asText(); if(navigator.share){ navigator.share({title:'EMCOMM Comms Sheet', text:t}).catch(function(){}); } else if(navigator.clipboard){ navigator.clipboard.writeText(t).then(function(){ alert('Copied as text — paste it into a message.'); }); } }
 (function(){
   var q={}; location.search.replace(/^\?/,'').split('&').forEach(function(p){ var kv=p.split('='); if(kv[0]) q[decodeURIComponent(kv[0])]=decodeURIComponent(kv[1]||''); });

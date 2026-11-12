@@ -11,26 +11,31 @@ report as an exercise. Leave it ticked.
 
 Install: copy this whole folder to
   C:\RMS Express\Global Folders\Templates\Church of Jesus Christ EMCOMM Practice\
-(the Church of Jesus Christ EMCOMM installer does this for the HAM Field Operator (licensed amateur radio) and EOC Operator roles, and
-also puts a training copy in Documents\Church of Jesus Christ EMCOMM\Training\Winlink Practice Forms\
-with a shortcut in the desktop folder Church of Jesus Christ EMCOMM Forms).
+then restart Winlink Express so it lists the forms.
+The installer does this for you when you choose [2] HAM (licensed amateur radio) Field Operator or [3] EOC Operator.
+It also puts a training copy in
+  Documents\Church of Jesus Christ EMCOMM\Training\Winlink Practice Forms\
+(desktop shortcut "Training - Winlink Practice Forms" in the folder Church of Jesus Christ EMCOMM Forms).
 
 Use: Winlink Express -> New Message -> Select Template -> Global Templates ->
 Church of Jesus Christ EMCOMM Practice -> pick one. The form opens already filled in. Change
 anything you like (the date fields reset to today, Sender Location is your station), click Submit,
-address the message to your EOC's Winlink address, Open Session and send: Telnet over the internet,
-or by radio with VARA (the sound-card radio modem Winlink uses), VARA FM on VHF/UHF (very high /
-ultra high frequency), then VARA HF (high frequency). On the EOC the report arrives marked
+address the message to your EOC's Winlink address, Open Session and send by the PACE (Primary,
+Alternate, Contingency, Emergency) level you are practicing. Primary or Alternate: Telnet over any
+internet. Contingency: VARA FM (the sound-card radio modem Winlink uses on VHF/UHF, very high /
+ultra high frequency) to the RMS (Radio Message Server) Gateway first, then the local VARA FM RMS
+Post Office, then VARA FM P2P (peer-to-peer). VARA HF (high frequency) only once VARA FM has failed
+in every mode, and only when your net asks for HF practice. On the EOC the report arrives marked
 EXERCISE; the viewer shows the exercise box when the message is opened in Winlink Express.
 
 The forms:
-  1. Disaster Report - Larkspur 5th Ward: Larkspur 5th Ward: Flood (dam failure); injured 1, deaths 0, homes damaged 12, missionaries safe YES
-  2. Disaster Report - Larkspur Care Center Branch: Larkspur Care Center Branch: Flood (dam failure); injured 0, deaths 0, homes damaged 0, missionaries safe YES
-  3. Disaster Report - Larkspur 1st Ward: Larkspur 1st Ward: Flood (dam failure); injured 0, deaths 0, homes damaged 0, missionaries safe YES
+  1. Disaster Report - Larkspur 5th Ward: Flood (dam failure); injured 1, deaths 0, homes damaged 12, missionaries safe YES
+  2. Disaster Report - Larkspur Care Center Branch: Flood (dam failure); injured 0, deaths 0, homes damaged 0, missionaries safe YES
+  3. Disaster Report - Larkspur 1st Ward: Flood (dam failure); injured 0, deaths 0, homes damaged 0, missionaries safe YES
   4. Supply Order - Larkspur Care Center Branch: Larkspur Stake: 5 item types, deliver to Larkspur
   5. Supply Order - Larkspur 5th Ward: Larkspur Stake: 6 item types, deliver to Larkspur
-  6. Work Crew Log - Larkspur 1st Ward: Larkspur 1st Ward: chief Eric Felt, 7 crew
-  7. Work Crew Log - Larkspur 4th Ward: Larkspur 4th Ward: chief Neil Dunford, 6 crew
+  6. Work Crew Log - Larkspur 1st Ward: chief Eric Felt, 5 crew
+  7. Work Crew Log - Larkspur 3rd Ward: chief Cody Wadley, 5 crew
 
 Regenerate (different seed, more forms, your own stake):
   python installer/make-practice-forms.py --seed 11 --dr 4 --so 3 --wcl 3

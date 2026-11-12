@@ -33,7 +33,7 @@ FORMS = [
 
 VIEWER_CSS = """.v { display:inline-block; min-width:40px; min-height:14px; border-bottom:1px solid #888; padding:1px 3px; font-size:12px; vertical-align:bottom; }
 .v.ta { display:block; white-space:pre-wrap; border:1px solid #999; min-height:28px; padding:3px 5px; width:99%; box-sizing:border-box; }
-.rcvd { background:#e8f3e8; border:2px solid #2d8b69; padding:6px 8px; font-size:12px; margin-bottom:6px; }
+.rcvd { background:#e8f3e8; border:2px solid #1b7a47; padding:6px 8px; font-size:12px; margin-bottom:6px; }
 @media print { details, input[type=button], .rcvd { display:none; } }
 """
 

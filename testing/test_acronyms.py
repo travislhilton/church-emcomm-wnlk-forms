@@ -13,7 +13,7 @@ where it first appears.
 Documents read:
   README.md, CONTRIBUTING.md, simulation/README.md, docs/*.md
   training/quick-ref-cards.html (one document per card), training/scenario-cards/CCD-1/cards.json (one per card)
-  training/practice-forms/README.txt, training/scenario-samples/CCD-1/README.txt
+  installer/dist-readme.txt (the ZIP read-me), training/practice-forms/README.txt, training/scenario-samples/CCD-1/README.txt
   forms/*.html, eoc/*.html (the Message Center, the wall display, the phone page /m), simulation/index.html
   the three Worker forms and the three Winlink Initial templates
   the deck (deck/slides/*.html in deck/deck.json order)
@@ -153,6 +153,7 @@ NAMES = ['RMS Express', 'MapLibre GL JS', 'ES-Alert']
 # headings), names (file names, products, form numbers, request and call-sign prefixes), the form and status codes of
 # the message tag (DR, SO, WCL, ACK, ASSGN), the simulator's SIM: prefix, everyday words (TV, PC, OK, ID) and units
 NOT_ACRONYMS = set('''
+FOLDER OFF VERSION QUICK INSTALL AFTER INSTALLING VOLUNTEER OPERATOR LAPTOP GETS INSTALLED DEPENDENCIES TROUBLESHOOTING FILES PACKAGE SUPPORT
 A AN AND ARE AT BE BY DO GO IF IN IS IT NO NOT OF ON OR SO TO UP US WE YES THE THIS THAT ALL ANY ONLY NOW NEW
 ABOVE ACCOUNTED ACTIVE ALTERNATE AREA AUTO BEFORE BISHOP CARD CELL CENTER CHAIN COMES CONTACTS CONTINGENCY
 COORDINATION COUNCIL CREW DATA DECIDES DISASTER DOES DONE DOWN DRILL DROP DURING EACH EMERGENCY END EVERY EXERCISE
@@ -205,7 +206,7 @@ def documents():
     md = ['README.md', 'CONTRIBUTING.md', 'simulation/README.md', *sorted(p.relative_to(REPO).as_posix() for p in REPO.glob('docs/*.md'))]
     for rel in md:
         add(rel, read(rel), 'md')
-    for rel in ['training/practice-forms/README.txt', 'training/scenario-samples/CCD-1/README.txt']:
+    for rel in ['installer/dist-readme.txt', 'training/practice-forms/README.txt', 'training/scenario-samples/CCD-1/README.txt']:
         add(rel, read(rel), 'txt')
     # Quick Reference Cards: one document per card row (its front and back)
     rows = re.split(r'<div class="card-row">', read('training/quick-ref-cards.html'))[1:]
