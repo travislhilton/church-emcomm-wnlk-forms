@@ -8,12 +8,16 @@
 :root {
   --red: #C8102E;
   --navy: #1A2744;
-  --blue: #4A7FC1;
-  --green: #5BAD8A;
-  --amber: #D4850A;
+  --blue: #1d5fa8;
+  --green: #1b7a47;
+  --amber: #9a5300;
   --light: #F7F8FA;
   --muted: #4A5568;
   --border: #CBD5E0;
+  /* who the card is for (a stray sheet still shows its audience); white text clears WCAG AA on each */
+  --role-field: #1b7a47; --role-ham: #9a5300; --role-eoc: #1a2744; --role-leader: #0f6b6b; --role-drill: #6b2fb3;
+  /* PACE: the same four colors on every page, card and wall; the letter is always printed */
+  --pace-p: #1b7a47; --pace-a: #1d5fa8; --pace-c: #9a5300; --pace-e: #b42318;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) { --light: #111827; }
@@ -84,9 +88,11 @@ h1 {
   min-width: 340px;
   flex: 1;
 }
-.card-front { border-top: 5px solid var(--red); max-width: 540px; }
-.card-back { border-top: 5px solid var(--navy); max-width: 540px; }
-.card-overview { border-top: 5px solid var(--blue); max-width: 680px; flex: 2; }
+.card { --role: var(--navy); }
+.card.role-field { --role: var(--role-field); } .card.role-ham { --role: var(--role-ham); } .card.role-eoc { --role: var(--role-eoc); }
+.card.role-leader { --role: var(--role-leader); } .card.role-drill { --role: var(--role-drill); }
+.card-front { border-top: 5px solid var(--role); max-width: 540px; }
+.card-back { border-top: 5px solid var(--role); max-width: 540px; }
 
 .card-role {
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
@@ -110,13 +116,13 @@ h1 {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  background: var(--red);
+  background: var(--role);
   color: #fff;
   padding: 2px 10px;
   border-radius: 4px;
   margin-bottom: 2px;
 }
-.card-side.back { background: var(--navy); }
+.card-side.back { background: #fff; color: var(--role); box-shadow: inset 0 0 0 2px var(--role); }   /* front filled, back outlined: same hue */
 .card-head { display: flex; gap: 12px; align-items: flex-start; }
 .card-head > div:first-child { flex: 1; min-width: 0; }
 .card-qr { flex: none; width: 100px; text-align: center; font-size: 13.5px; line-height: 1.15; color: var(--muted); }
@@ -129,14 +135,14 @@ h1 {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--red);
+  color: var(--role);
   border-bottom: 1px solid #D5DCE5;
   padding-bottom: 2px;
 }
 .card-part span { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--muted); font-size: 13.5px; }
 .step { display: flex; gap: 12px; align-items: flex-start; }
 .step-num {
-  background: var(--red);
+  background: var(--role);
   color: #fff;
   border-radius: 50%;
   width: 28px;
@@ -193,11 +199,6 @@ h1 {
 .tier-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
 .tier-table tr:nth-child(even) td { background: #F7F9FC; }
 .tier-label { font-weight: 600; white-space: nowrap; }
-.tier-t1 { color: #2D8B69; }
-.tier-t2 { color: var(--blue); }
-.tier-t3 { color: #5A44A8; }
-.tier-t4 { color: var(--amber); }
-.tier-t5 { color: var(--red); }
 
 .phrase-box {
   background: var(--navy);
@@ -239,7 +240,10 @@ h1 {
 .pace-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
 .pace-table td:first-child { width: 34px; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 20px; font-weight: 700; text-align: center; }
 .pace-table td:nth-child(2) { width: 26%; font-weight: 600; color: var(--navy); }
-.pace-table .p { color: #2D8B69; } .pace-table .a { color: var(--blue); } .pace-table .c { color: var(--amber); } .pace-table .e { color: var(--red); }
+.pace-table td.p, .pace-table td.a, .pace-table td.c, .pace-table td.e, .pace-l { color: #fff; }
+.pace-table td.p, .pace-l.p { background: var(--pace-p); } .pace-table td.a, .pace-l.a { background: var(--pace-a); }
+.pace-table td.c, .pace-l.c { background: var(--pace-c); } .pace-table td.e, .pace-l.e { background: var(--pace-e); }
+.pace-l { display: inline-block; min-width: 26px; text-align: center; border-radius: 5px; padding: 1px 6px; font-weight: 700; }
 .box-title { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 6px; text-transform: uppercase; }
 .turn-over { margin-top: auto; text-align: right; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); }
 .card-disclaimer { margin-top: auto; padding-top: 6px; border-top: 1px solid #e2e8f0; font-size: 13.5px; line-height: 1.35; color: var(--muted); }
@@ -305,29 +309,29 @@ html, body { background: #fff; padding: 0; margin: 0; }
 </head>
 <body>
 <div class="card-row">
-  <div style="zoom:1" class="card card-front" style="border-top-color:var(--green)">
+  <div style="zoom:1" class="card card-front role-drill">
     <div class="card-head"><div>
       <p class="card-role">Drill Controller &#8212; Welfare and Self-Reliance Specialist (emergency communications) or Emergency Response Director (ERD)</p>
-      <span class="card-side" style="background:var(--green)">Card 5 &#183; Front &#183; side 1 of 2</span>
+      <span class="card-side">Card 5 &#183; Front &#183; side 1 of 2</span>
       <h2 class="card-title">Running a Drill with the Church of Jesus Christ EMCOMM Simulator</h2>
     </div><div class="card-qr"><canvas data-card="5"></canvas>Share this card</div></div>
     <div>
       <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:8px">BEFORE THE ROOM FILLS</p>
       <div class="steps">
         <div class="step">
-          <div class="step-num" style="background:var(--green)">1</div>
-          <div class="step-text">Start the EOC (Emergency Operations Center) server and set it up<small>Setup tab: EOC level, name and roster (the playing wards). <b>Reset for the session</b> (step 4) opens the drill event. Wall display on the TV.</small></div>
+          <div class="step-num">1</div>
+          <div class="step-text">Start the EOC (Emergency Operations Center) server and set it up<small>Drill file? Setup &#8594; <b>Load a drill configuration</b> &#8594; <b>Set up this EOC</b>. Else the Overview checklist. <b>Reset for the session</b> (step 4) opens the event.</small></div>
         </div>
         <div class="step">
-          <div class="step-num" style="background:var(--green)">2</div>
+          <div class="step-num">2</div>
           <div class="step-text">Start the simulator on the Windows EOC laptop<small>Double-click <b>Church of Jesus Christ EMCOMM Simulator</b> on the Desktop (installer role 3), then open <code style="font-size:13.5px">http://&lt;this laptop&gt;:8090</code>. The organization pack and map data stay on this laptop.</small></div>
         </div>
         <div class="step">
-          <div class="step-num" style="background:var(--green)">3</div>
-          <div class="step-text">Setup tab: pack &#8594; privacy &#8594; what this simulator plays &#8594; EOC &#8594; scenario &#8594; speed<small><b>Pseudonymized</b> (invented names) unless the Stake President agreed to real contacts. Add missing callings under the pack. Plays <b>this Stake EOC</b>, <b>a Satellite EOC</b> or <b>a Council / Area EOC</b>. Speed 2&#215; for a two-hour room, 1&#215; for four hours.</small></div>
+          <div class="step-num">3</div>
+          <div class="step-text">Setup tab: pack &#8594; privacy &#8594; what this simulator plays &#8594; EOC &#8594; scenario &#8594; speed<small><b>Pseudonymized</b> (invented names) unless the Stake President agreed to real contacts. Add missing callings under the pack. Plays a <b>Stake EOC</b>, <b>Satellite EOC</b> or <b>Council / Area EOC</b>. Speed 2&#215; for a two-hour room, 1&#215; for four hours.</small></div>
         </div>
         <div class="step">
-          <div class="step-num" style="background:var(--green)">4</div>
+          <div class="step-num">4</div>
           <div class="step-text">Session tab: rehearse, then <b>Reset for the session</b><small>Reset opens a fresh drill event; the EOC screens show <i>waiting for the trainer&#8217;s GO</i>. Print the Roles tab.</small></div>
         </div>
       </div>
@@ -336,20 +340,20 @@ html, body { background: #fff; padding: 0; margin: 0; }
       <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:8px">DURING THE RUN</p>
       <div class="steps">
         <div class="step">
-          <div class="step-num" style="background:var(--navy)">5</div>
+          <div class="step-num">5</div>
           <div class="step-text">Hand each newcomer <b>card 9</b> (Your First Drill). Give the instructions, then <b>GO</b> on the Session tab. Hand out each card as it comes due<small>Reports reach the EOC by the path the PACE (Primary, Alternate, Contingency, Emergency) level selects. Net cards to the HAM (amateur radio) operators, prompts to the role named, paper to a runner. After a restart: <b>Resume</b> on the Session tab.</small></div>
         </div>
         <div class="step">
-          <div class="step-num" style="background:var(--navy)">6</div>
+          <div class="step-num">6</div>
           <div class="step-text">PACE changes follow the scenario&#8217;s triggers<small>The specialist recommends, the Stake President decides, the ERD or the specialist announces it on the net; then you set the level on the Run tab and it reaches the EOC header. Never change it for them.</small></div>
         </div>
         <div class="step">
-          <div class="step-num" style="background:var(--navy)">7</div>
+          <div class="step-num">7</div>
           <div class="step-text">Watch the scoreboard; at the end open the after-action report<small>Run tab: needs met, overdue, score. Needs tab: <b>Waive</b> what the room is not playing. Hot wash tab (the after-drill review): mark each line, then <b>After-action report</b>. Results on any device: <code style="font-size:13.5px">http://&lt;laptop&gt;:8090/results</code>.</small></div>
         </div>
         <div class="step">
-          <div class="step-num" style="background:var(--navy)">8</div>
-          <div class="step-text"><b>Debrief for the room</b><small>Session tab step 5 &#8594; projector slides (&#8592; &#8594; move, F full screen): what went well, the score, one thing per role, the date of the next drill. Pick the date before people leave.</small></div>
+          <div class="step-num">8</div>
+          <div class="step-text"><b>Debrief for the room</b><small>Session tab step 5 &#8594; projector slides (&#8592; &#8594; move, F full screen): what went well, the score, one thing per role, the date of the next drill.</small></div>
         </div>
       </div>
     </div>
@@ -359,7 +363,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
     <p class="turn-over">Turn over &#8594; Card 5, side 2: What the Simulator Sends, Who Plays, What the Hot Wash Reads</p>
   </div>
 
-  <div style="zoom:1" class="card card-back" style="border-top-color:var(--green)">
+  <div style="zoom:1" class="card card-back role-drill">
     <div>
       <p class="card-role">Drill Controller &#8212; Welfare and Self-Reliance Specialist (emergency communications) or ERD</p>
       <span class="card-side back">Card 5 &#183; Back &#183; side 2 of 2</span>

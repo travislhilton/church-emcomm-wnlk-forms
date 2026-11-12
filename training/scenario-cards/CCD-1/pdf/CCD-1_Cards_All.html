@@ -8,12 +8,16 @@
 :root {
   --red: #C8102E;
   --navy: #1A2744;
-  --blue: #4A7FC1;
-  --green: #5BAD8A;
-  --amber: #D4850A;
+  --blue: #1d5fa8;
+  --green: #1b7a47;
+  --amber: #9a5300;
   --light: #F7F8FA;
   --muted: #4A5568;
   --border: #CBD5E0;
+  /* who the card is for (a stray sheet still shows its audience); white text clears WCAG AA on each */
+  --role-field: #1b7a47; --role-ham: #9a5300; --role-eoc: #1a2744; --role-leader: #0f6b6b; --role-drill: #6b2fb3;
+  /* PACE: the same four colors on every page, card and wall; the letter is always printed */
+  --pace-p: #1b7a47; --pace-a: #1d5fa8; --pace-c: #9a5300; --pace-e: #b42318;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) { --light: #111827; }
@@ -84,9 +88,11 @@ h1 {
   min-width: 340px;
   flex: 1;
 }
-.card-front { border-top: 5px solid var(--red); max-width: 540px; }
-.card-back { border-top: 5px solid var(--navy); max-width: 540px; }
-.card-overview { border-top: 5px solid var(--blue); max-width: 680px; flex: 2; }
+.card { --role: var(--navy); }
+.card.role-field { --role: var(--role-field); } .card.role-ham { --role: var(--role-ham); } .card.role-eoc { --role: var(--role-eoc); }
+.card.role-leader { --role: var(--role-leader); } .card.role-drill { --role: var(--role-drill); }
+.card-front { border-top: 5px solid var(--role); max-width: 540px; }
+.card-back { border-top: 5px solid var(--role); max-width: 540px; }
 
 .card-role {
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
@@ -110,13 +116,13 @@ h1 {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  background: var(--red);
+  background: var(--role);
   color: #fff;
   padding: 2px 10px;
   border-radius: 4px;
   margin-bottom: 2px;
 }
-.card-side.back { background: var(--navy); }
+.card-side.back { background: #fff; color: var(--role); box-shadow: inset 0 0 0 2px var(--role); }   /* front filled, back outlined: same hue */
 .card-head { display: flex; gap: 12px; align-items: flex-start; }
 .card-head > div:first-child { flex: 1; min-width: 0; }
 .card-qr { flex: none; width: 100px; text-align: center; font-size: 13.5px; line-height: 1.15; color: var(--muted); }
@@ -129,14 +135,14 @@ h1 {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--red);
+  color: var(--role);
   border-bottom: 1px solid #D5DCE5;
   padding-bottom: 2px;
 }
 .card-part span { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--muted); font-size: 13.5px; }
 .step { display: flex; gap: 12px; align-items: flex-start; }
 .step-num {
-  background: var(--red);
+  background: var(--role);
   color: #fff;
   border-radius: 50%;
   width: 28px;
@@ -193,11 +199,6 @@ h1 {
 .tier-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
 .tier-table tr:nth-child(even) td { background: #F7F9FC; }
 .tier-label { font-weight: 600; white-space: nowrap; }
-.tier-t1 { color: #2D8B69; }
-.tier-t2 { color: var(--blue); }
-.tier-t3 { color: #5A44A8; }
-.tier-t4 { color: var(--amber); }
-.tier-t5 { color: var(--red); }
 
 .phrase-box {
   background: var(--navy);
@@ -239,7 +240,10 @@ h1 {
 .pace-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
 .pace-table td:first-child { width: 34px; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 20px; font-weight: 700; text-align: center; }
 .pace-table td:nth-child(2) { width: 26%; font-weight: 600; color: var(--navy); }
-.pace-table .p { color: #2D8B69; } .pace-table .a { color: var(--blue); } .pace-table .c { color: var(--amber); } .pace-table .e { color: var(--red); }
+.pace-table td.p, .pace-table td.a, .pace-table td.c, .pace-table td.e, .pace-l { color: #fff; }
+.pace-table td.p, .pace-l.p { background: var(--pace-p); } .pace-table td.a, .pace-l.a { background: var(--pace-a); }
+.pace-table td.c, .pace-l.c { background: var(--pace-c); } .pace-table td.e, .pace-l.e { background: var(--pace-e); }
+.pace-l { display: inline-block; min-width: 26px; text-align: center; border-radius: 5px; padding: 1px 6px; font-weight: 700; }
 .box-title { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 6px; text-transform: uppercase; }
 .turn-over { margin-top: auto; text-align: right; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); }
 .card-disclaimer { margin-top: auto; padding-top: 6px; border-top: 1px solid #e2e8f0; font-size: 13.5px; line-height: 1.35; color: var(--muted); }
@@ -316,54 +320,54 @@ html, body { background: #fff; padding: 0; margin: 0; }
 </head>
 <body>
 <div class="card-row">
-<div class="card card-front" style="border-top-color:#C8102E">
+<div class="card card-front" style="--role:#C8102E">
 <div class="card-head"><div>
 <p class="card-role">Every participant: EOC (Emergency Operations Center) operators, HAM (amateur radio) operators, bishops, leaders, role players</p>
-<span class="card-side" style="background:#C8102E">CCD-1 card A &#8212; Front</span>
+<span class="card-side">CCD-1 card A &#8212; Front</span>
 <h2 class="card-title">Copper Creek Dam: what has happened</h2>
 </div></div>
 <div class="sc-note stop"><b>THIS IS AN EXERCISE</b> in an invented community (the Juniper Plains Area). Every form, message and net call says so. If anything real happens, anyone says <b>“REAL WORLD”</b> on the net or in the room and the drill stops. Never call 911 for the drill.</div><p class="card-part">07:50, Sunday 21 March</p><ul class="sc-list"><li>Three days of warm rain on deep snow. Copper Creek Dam has seeped since last evening; at 07:40 the seep started carrying mud.</li><li>The sheriff orders Copper Ridge below Route 30 and the Copper Creek corridor through south Larkspur <b>out now</b>.</li><li>The Larkspur River bottoms from Center Street to Alder Flat are <b>warned</b>: get ready to leave.</li><li>+4 °C, light rain. Most members are getting ready for 9:00 sacrament meetings.</li><li>Phones work for now. Nobody knows how long the dam will hold.</li></ul><p class="card-part">Your first fifteen minutes</p><div class="steps"><div class="step"><div class="step-num">1</div><div class="step-text"><b>Your own family first.</b> In the order zone: leave now, by the routes the sheriff gives.<small>Then go to your assignment: the EOC, your ward’s gathering point, your radio.</small></div></div><div class="step"><div class="step-num">2</div><div class="step-text"><b>Bishops and Team Leaders:</b> account for members and missionaries in the zones.<small>Who has left, who needs a ride, who will not leave.</small></div></div><div class="step"><div class="step-num">3</div><div class="step-text"><b>HAM operators:</b> check in on the stake net and stand by.<small>The specialist recommends the PACE level (Primary, Alternate, Contingency, Emergency), the Stake President decides it, the net announces it.</small></div></div><div class="step"><div class="step-num">4</div><div class="step-text"><b>EOC operators:</b> open the Message Center, confirm the drill event and the level.<small>First SITREP (situation report) as soon as you have a first assessment.</small></div></div></div><p class="turn-over">Turn over &#8594;</p>
 </div>
-<div class="card card-back" style="border-top-color:#C8102E">
+<div class="card card-back" style="--role:#C8102E">
 <div class="card-head"><div>
 <p class="card-role">Every participant: EOC (Emergency Operations Center) operators, HAM (amateur radio) operators, bishops, leaders, role players</p>
-<span class="card-side back" style="background:#C8102E">CCD-1 card A &#8212; Back</span>
+<span class="card-side back">CCD-1 card A &#8212; Back</span>
 <h2 class="card-title">Who is in this drill and how traffic moves</h2>
 </div></div>
 <p class="card-part">EOCs (Emergency Operations Centers) and partners</p><table class="sc-table compact"><tr><th>EOC</th><th>Level</th><th>People</th><th>Winlink</th></tr><tr><td>Larkspur Stake</td><td>Stake EOC</td><td>always</td><td>SIM-LKS</td></tr><tr><td>Copper Ridge Stake</td><td>Stake EOC</td><td>optional</td><td>SIM-CRS</td></tr><tr><td>Alder Flat Stake</td><td>Stake EOC</td><td>optional</td><td>SIM-AFS</td></tr><tr><td>Larkspur East Stake</td><td>Stake EOC</td><td>optional</td><td>set at the drill</td></tr><tr><td>Larkspur West Stake</td><td>Stake EOC</td><td>optional</td><td>set at the drill</td></tr><tr><td>Juniper Springs Stake</td><td>Stake EOC</td><td>optional</td><td>set at the drill</td></tr><tr><td>Kestrel Stake</td><td>Stake EOC</td><td>optional</td><td>set at the drill</td></tr><tr><td>Saddleback Stake</td><td>Stake EOC</td><td>optional</td><td>set at the drill</td></tr><tr><td>Council / Area EOC: Juniper Springs Stake Center</td><td>Council / Area EOC</td><td>optional</td><td>SIM-JPA</td></tr><tr><td>Larkspur City EOC</td><td>Partner agency (ICS forms only)</td><td></td><td>SIM-LKCITY</td></tr><tr><td>Copper Ridge City EOC</td><td>Partner agency (ICS forms only)</td><td></td><td>SIM-CRCITY</td></tr></table><div class="sc-note info">The <b>Larkspur City EOC</b> does not run our system. It asks for Helping Hands crews with <b>ICS 213RR</b> (Incident Command System) Resource Requests on Winlink’s standard form; the stake answers with an <b>ICS 213</b> General Message. Never send it Church forms.</div><p class="card-part">The PACE plan</p><table class="sc-table"><tr><th>Level</th><th>Path</th><th>In this drill</th></tr><tr><td><b>P</b></td><td>Cellular</td><td>Text or email the form file from the phone</td></tr><tr><td><b>A</b></td><td>Any internet anywhere</td><td>Home, shelter, business, meetinghouse or Starlink Wi-Fi</td></tr><tr><td><b>C</b></td><td>Radio</td><td>Winlink by VARA FM to the stake EOC, then VARA HF (VARA: the radio modem Winlink uses); voice on FRS/GMRS (Family Radio Service / General Mobile Radio Service) and the stake net</td></tr><tr><td><b>E</b></td><td>Runner</td><td>Paper form carried to the EOC</td></tr></table><ul class="sc-list"><li>Step down after <b>two failed attempts in 15 minutes</b>; step back up only after a round-trip test.</li><li>Life safety first: injured, missing and missionaries go at the top of every report.</li><li>Training messages are numbered <b>CCD-1 NN</b> in drill-clock order.</li><li>At the end: the hot wash. Bring what went wrong; that is the point.</li></ul><p class="pdf-foot">Church of Jesus Christ EMCOMM &#8212; an independent volunteer project by Travis Hilton (W9TLH), not an official publication of the Church</p>
 <p class="pdf-foot pdf-url">travislhilton.github.io/church-emcomm-wnlk-forms/forms/</p></div>
 </div><!-- row -->
 <div class="card-row">
-<div class="card card-front" style="border-top-color:#1A2744">
+<div class="card card-front" style="--role:#1A2744">
 <div class="card-head"><div>
 <p class="card-role">Drill controller and evaluators</p>
-<span class="card-side" style="background:#1A2744">CCD-1 card B &#8212; Front</span>
+<span class="card-side">CCD-1 card B &#8212; Front</span>
 <h2 class="card-title">Running CCD-1: setup and the timeline</h2>
 </div></div>
 <p class="card-part">Before the session</p><div class="steps"><div class="step"><div class="step-num">1</div><div class="step-text"><b>Start the EOC (Emergency Operations Center) server and the simulator</b> on the Stake EOC laptop.<small>Simulator Setup: organization pack = the example community (EOC Message Center\simulation\example\juniper-plains), then the drill configuration in its simulation folder (EOC larkspur).</small></div></div><div class="step"><div class="step-num">2</div><div class="step-text"><b>Open a fresh drill event</b> on every EOC (DRILL in its name).<small>A drill event left over from a rehearsal keeps its SITREP (situation report) clock and traffic.</small></div></div><div class="step"><div class="step-num">3</div><div class="step-text"><b>Plan the run</b> (Copper Creek Dam failure, same seed on every laptop); check the Run tab lists the items.</div></div><div class="step"><div class="step-num">4</div><div class="step-text"><b>Hand out the cards</b> and the role cards (Roles tab). Load the Winlink training set on the HAM (amateur radio) stations.</div></div><div class="step"><div class="step-num">5</div><div class="step-text"><b>Say go and press Start</b> (or Schedule a start time on every laptop).</div></div></div><p class="card-part">PACE timeline: Primary, Alternate, Contingency, Emergency (the scenario sets it; players should reach the same decision)</p><table class="sc-table"><tr><th>When</th><th>Level</th><th>Why</th></tr><tr><td>T+0 (07:50)</td><td><b>P</b> Primary: cellular</td><td>Cellular is up but congested: one call in three fails and texts arrive late; data works.</td></tr><tr><td>T+80 (09:10)</td><td><b>C</b> Contingency: radio</td><td>The Copper Creek substation flooded at T+75 and the fibre under the Route 12 bridge was cut at T+78: cell sites in the south half are off the air. Two failed attempts in 15 minutes (T+72, T+78): the specialist recommended Contingency, the Stake President decided, the net announced it.</td></tr><tr><td>T+175 (10:45)</td><td><b>A</b> Alternate: any internet</td><td>Internet works in the north half (home Wi-Fi, a business on Main Street) and the stake center has Starlink with a named operator; a round-trip test with the line above passed three times at T+170.</td></tr><tr><td>T+225 (11:35)</td><td><b>P</b> Primary: cellular</td><td>Portable cell sites on generators serve the north half; a second round-trip test passed. The south wards stay on what works for them.</td></tr></table><div class="sc-note info">Several EOC laptops: every simulator on the same scenario and seed; Schedule the same start time on each Run tab.</div><p class="turn-over">Turn over &#8594;</p>
 </div>
-<div class="card card-back" style="border-top-color:#1A2744">
+<div class="card card-back" style="--role:#1A2744">
 <div class="card-head"><div>
 <p class="card-role">Drill controller and evaluators</p>
-<span class="card-side back" style="background:#1A2744">CCD-1 card B &#8212; Back</span>
+<span class="card-side back">CCD-1 card B &#8212; Back</span>
 <h2 class="card-title">Done when, and what to watch</h2>
 </div></div>
 <p class="card-part">Done-when checks (the scoreboard and the after-action report)</p><ul class="sc-list"><li>SITREP #1 generated by T+75 (first assessment as soon as possible)</li><li>SITREP #2 generated by T+210 (the interval leadership set)</li><li>Every missionaries need met (owned, mission office answered, closed when found)</li><li>No high-priority need left without an owner</li><li>At least 70% of the needs met (late counts half)</li><li>Sunday meetings decided and recorded before members left for church (T+3 card)</li><li>Member notification for the order and warning zones recommended, decided and announced in time (T+5 card)</li><li>The Pine Hollow rumour verified with the county before relay (T+125 card)</li></ul><p class="card-part">Phases</p><table class="sc-table"><tr><th>Minutes</th><th>Phase</th><th>What happens</th></tr><tr><td>T+0 to T+38</td><td><b>Order and warning</b></td><td>Sunday morning, steady rain, the creek brown and loud. Deputies drive the streets below the dam with loudspeakers; cell broadcast alerts reach most…</td></tr><tr><td>T+38 to T+80</td><td><b>Breach and flood wave</b></td><td>At 08:28 the embankment goes. A wall of brown water takes the Route 30 bridge at Copper Ridge and cuts the town in two; the retirement village…</td></tr><tr><td>T+80 to T+160</td><td><b>Contingency: radio and runners</b></td><td>The south half of the valley is dark and silent except for radios. Reports come by Winlink VARA FM, by net cards and by a soaked runner. The river…</td></tr><tr><td>T+160 to T+240</td><td><b>Holding through a cold, wet night</b></td><td>Rain turns to wet snow. Internet returns in the north first; the stake steps up to Alternate after a round-trip test and to Primary for the north…</td></tr></table><div class="sc-note warn">Watch for: the 9:00 meetings decided by the Stake President; members in the zones notified on the specialist’s recommendation; the care center moved by county transport, with a roll call at the destination; missionaries owned within 10 minutes; the second-dam rumour checked with the county before anything goes out.</div><div class="sc-note info">At the end: Hot wash tab → <b>Gather evidence from the EOC</b>, then the after-action report.</div><p class="pdf-foot">Church of Jesus Christ EMCOMM &#8212; an independent volunteer project by Travis Hilton (W9TLH), not an official publication of the Church</p>
 <p class="pdf-foot pdf-url">travislhilton.github.io/church-emcomm-wnlk-forms/forms/</p></div>
 </div><!-- row -->
 <div class="card-row">
-<div class="card card-front" style="border-top-color:#5BAD8A">
+<div class="card card-front" style="--role:#5BAD8A">
 <div class="card-head"><div>
 <p class="card-role">HAM (amateur radio) operators and the EOC (Emergency Operations Center) Winlink station</p>
-<span class="card-side" style="background:#5BAD8A">CCD-1 card C &#8212; Front</span>
+<span class="card-side">CCD-1 card C &#8212; Front</span>
 <h2 class="card-title">The CCD-1 Winlink messages, in order</h2>
 </div></div>
 <div class="sc-note info">Select Template → Global Templates → <b>Church of Jesus Christ EMCOMM Training CCD-1</b> (EMCOMM: emergency communications). Submit, address to the stake EOC (ICS, Incident Command System, requests to the receiving EOC), send by VARA FM or VARA HF (the radio modem Winlink uses) or Telnet.</div><table class="sc-table compact"><tr><th>No.</th><th>Time</th><th>Form</th><th>From</th></tr><tr><td>CCD-1 01</td><td>08:02</td><td>Disaster Report</td><td>Larkspur 4th Ward</td></tr><tr><td>CCD-1 02</td><td>08:05</td><td>Disaster Report</td><td>Larkspur Care Center Branch</td></tr><tr><td>CCD-1 03</td><td>08:10</td><td>Supply Order</td><td>Larkspur Care Center Branch</td></tr><tr><td>CCD-1 04</td><td>08:15</td><td>Disaster Report</td><td>Larkspur 5th Ward</td></tr><tr><td>CCD-1 05</td><td>08:20</td><td>Disaster Report</td><td>Larkspur 6th Ward</td></tr><tr><td>CCD-1 06</td><td>08:24</td><td>Disaster Report</td><td>Larkspur 1st Ward</td></tr><tr><td>CCD-1 07</td><td>08:30</td><td>Disaster Report</td><td>Larkspur 3rd Ward</td></tr><tr><td>CCD-1 08</td><td>08:50</td><td>ICS 213RR</td><td>Larkspur City EOC: Sandbag crews River Road</td></tr><tr><td>CCD-1 09</td><td>09:12</td><td>ICS 213RR</td><td>Larkspur Stake EOC: High-water vehicle care center</td></tr><tr><td>CCD-1 10</td><td>09:40</td><td>Disaster Report UPDATE</td><td>Larkspur 5th Ward</td></tr><tr><td>CCD-1 11</td><td>09:45</td><td>ICS 213RR</td><td>Larkspur City EOC: Moving crews Riverside</td></tr><tr><td>CCD-1 12</td><td>09:55</td><td>Supply Order</td><td>Larkspur 4th Ward</td></tr><tr><td>CCD-1 13</td><td>10:05</td><td>Disaster Report UPDATE</td><td>Larkspur Care Center Branch</td></tr><tr><td>CCD-1 14</td><td>10:15</td><td>ICS 213RR</td><td>Larkspur Stake EOC: Fire-safety check stake center</td></tr><tr><td>CCD-1 15</td><td>10:25</td><td>ICS 213RR</td><td>Larkspur Stake EOC: Drinking water warming centres</td></tr><tr><td>CCD-1 16</td><td>10:30</td><td>Supply Order</td><td>Larkspur 1st Ward</td></tr><tr><td>CCD-1 17</td><td>11:00</td><td>ICS 213RR</td><td>Larkspur City EOC: Warming centre staff tonight</td></tr><tr><td>CCD-1 18</td><td>11:05</td><td>Disaster Report UPDATE</td><td>Larkspur 6th Ward</td></tr><tr><td>CCD-1 19</td><td>11:15</td><td>Work Crew Log</td><td>Larkspur 5th Ward</td></tr><tr><td>CCD-1 20</td><td>11:20</td><td>Work Crew Log</td><td>Larkspur 1st Ward</td></tr><tr><td>CCD-1 21</td><td>11:25</td><td>ICS 213RR</td><td>Larkspur Stake EOC: Generator fuel overnight</td></tr><tr><td>CCD-1 22</td><td>11:30</td><td>Work Crew Log</td><td>Larkspur 3rd Ward</td></tr><tr><td>CCD-1 23</td><td>11:34</td><td>ICS 213RR</td><td>Larkspur City EOC: Mud-out crews tomorrow</td></tr><tr><td>CCD-1 24</td><td>11:45</td><td>Disaster Report UPDATE</td><td>Larkspur 4th Ward</td></tr></table><p class="turn-over">Turn over &#8594;</p>
 </div>
-<div class="card card-back" style="border-top-color:#5BAD8A">
+<div class="card card-back" style="--role:#5BAD8A">
 <div class="card-head"><div>
 <p class="card-role">HAM (amateur radio) operators and the EOC (Emergency Operations Center) Winlink station</p>
-<span class="card-side back" style="background:#5BAD8A">CCD-1 card C &#8212; Back</span>
+<span class="card-side back">CCD-1 card C &#8212; Back</span>
 <h2 class="card-title">City EOC requests (ICS 213RR) and answers</h2>
 </div></div>
 <table class="sc-table"><tr><th>No.</th><th>Time</th><th>Form</th><th>From</th></tr><tr><td>CCD-1 08</td><td>08:50</td><td>ICS 213RR</td><td>Larkspur City EOC: Sandbag crews River Road</td></tr><tr><td>CCD-1 09</td><td>09:12</td><td>ICS 213RR</td><td>Larkspur Stake EOC: High-water vehicle care center</td></tr><tr><td>CCD-1 11</td><td>09:45</td><td>ICS 213RR</td><td>Larkspur City EOC: Moving crews Riverside</td></tr><tr><td>CCD-1 14</td><td>10:15</td><td>ICS 213RR</td><td>Larkspur Stake EOC: Fire-safety check stake center</td></tr><tr><td>CCD-1 15</td><td>10:25</td><td>ICS 213RR</td><td>Larkspur Stake EOC: Drinking water warming centres</td></tr><tr><td>CCD-1 17</td><td>11:00</td><td>ICS 213RR</td><td>Larkspur City EOC: Warming centre staff tonight</td></tr><tr><td>CCD-1 21</td><td>11:25</td><td>ICS 213RR</td><td>Larkspur Stake EOC: Generator fuel overnight</td></tr><tr><td>CCD-1 23</td><td>11:34</td><td>ICS 213RR</td><td>Larkspur City EOC: Mud-out crews tomorrow</td></tr></table><div class="steps"><div class="step"><div class="step-num">1</div><div class="step-text"><b>A request arrives</b> from the city’s call sign: the EOC files it as a work item named for the city.</div></div><div class="step"><div class="step-num">2</div><div class="step-text"><b>Own it and decide</b>: the Stake President or the Emergency Response Director says yes, how many, from which wards.</div></div><div class="step"><div class="step-num">3</div><div class="step-text"><b>Answer with an ICS 213 General Message</b> from Winlink’s ICS USA Forms: what you send, where, when, who leads.</div></div><div class="step"><div class="step-num">4</div><div class="step-text"><b>Close the loop</b>: the crew’s Work Crew Log comes back to the stake EOC as a Church form.</div></div></div><div class="sc-note warn">Keep the requests short and numbered. Never put Church forms, member names or ward details in a message to the city.</div><p class="pdf-foot">Church of Jesus Christ EMCOMM &#8212; an independent volunteer project by Travis Hilton (W9TLH), not an official publication of the Church</p>

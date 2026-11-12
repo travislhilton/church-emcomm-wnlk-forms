@@ -8,12 +8,16 @@
 :root {
   --red: #C8102E;
   --navy: #1A2744;
-  --blue: #4A7FC1;
-  --green: #5BAD8A;
-  --amber: #D4850A;
+  --blue: #1d5fa8;
+  --green: #1b7a47;
+  --amber: #9a5300;
   --light: #F7F8FA;
   --muted: #4A5568;
   --border: #CBD5E0;
+  /* who the card is for (a stray sheet still shows its audience); white text clears WCAG AA on each */
+  --role-field: #1b7a47; --role-ham: #9a5300; --role-eoc: #1a2744; --role-leader: #0f6b6b; --role-drill: #6b2fb3;
+  /* PACE: the same four colors on every page, card and wall; the letter is always printed */
+  --pace-p: #1b7a47; --pace-a: #1d5fa8; --pace-c: #9a5300; --pace-e: #b42318;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) { --light: #111827; }
@@ -84,9 +88,11 @@ h1 {
   min-width: 340px;
   flex: 1;
 }
-.card-front { border-top: 5px solid var(--red); max-width: 540px; }
-.card-back { border-top: 5px solid var(--navy); max-width: 540px; }
-.card-overview { border-top: 5px solid var(--blue); max-width: 680px; flex: 2; }
+.card { --role: var(--navy); }
+.card.role-field { --role: var(--role-field); } .card.role-ham { --role: var(--role-ham); } .card.role-eoc { --role: var(--role-eoc); }
+.card.role-leader { --role: var(--role-leader); } .card.role-drill { --role: var(--role-drill); }
+.card-front { border-top: 5px solid var(--role); max-width: 540px; }
+.card-back { border-top: 5px solid var(--role); max-width: 540px; }
 
 .card-role {
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
@@ -110,13 +116,13 @@ h1 {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  background: var(--red);
+  background: var(--role);
   color: #fff;
   padding: 2px 10px;
   border-radius: 4px;
   margin-bottom: 2px;
 }
-.card-side.back { background: var(--navy); }
+.card-side.back { background: #fff; color: var(--role); box-shadow: inset 0 0 0 2px var(--role); }   /* front filled, back outlined: same hue */
 .card-head { display: flex; gap: 12px; align-items: flex-start; }
 .card-head > div:first-child { flex: 1; min-width: 0; }
 .card-qr { flex: none; width: 100px; text-align: center; font-size: 13.5px; line-height: 1.15; color: var(--muted); }
@@ -129,14 +135,14 @@ h1 {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--red);
+  color: var(--role);
   border-bottom: 1px solid #D5DCE5;
   padding-bottom: 2px;
 }
 .card-part span { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--muted); font-size: 13.5px; }
 .step { display: flex; gap: 12px; align-items: flex-start; }
 .step-num {
-  background: var(--red);
+  background: var(--role);
   color: #fff;
   border-radius: 50%;
   width: 28px;
@@ -193,11 +199,6 @@ h1 {
 .tier-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
 .tier-table tr:nth-child(even) td { background: #F7F9FC; }
 .tier-label { font-weight: 600; white-space: nowrap; }
-.tier-t1 { color: #2D8B69; }
-.tier-t2 { color: var(--blue); }
-.tier-t3 { color: #5A44A8; }
-.tier-t4 { color: var(--amber); }
-.tier-t5 { color: var(--red); }
 
 .phrase-box {
   background: var(--navy);
@@ -239,7 +240,10 @@ h1 {
 .pace-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
 .pace-table td:first-child { width: 34px; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 20px; font-weight: 700; text-align: center; }
 .pace-table td:nth-child(2) { width: 26%; font-weight: 600; color: var(--navy); }
-.pace-table .p { color: #2D8B69; } .pace-table .a { color: var(--blue); } .pace-table .c { color: var(--amber); } .pace-table .e { color: var(--red); }
+.pace-table td.p, .pace-table td.a, .pace-table td.c, .pace-table td.e, .pace-l { color: #fff; }
+.pace-table td.p, .pace-l.p { background: var(--pace-p); } .pace-table td.a, .pace-l.a { background: var(--pace-a); }
+.pace-table td.c, .pace-l.c { background: var(--pace-c); } .pace-table td.e, .pace-l.e { background: var(--pace-e); }
+.pace-l { display: inline-block; min-width: 26px; text-align: center; border-radius: 5px; padding: 1px 6px; font-weight: 700; }
 .box-title { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 6px; text-transform: uppercase; }
 .turn-over { margin-top: auto; text-align: right; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); }
 .card-disclaimer { margin-top: auto; padding-top: 6px; border-top: 1px solid #e2e8f0; font-size: 13.5px; line-height: 1.35; color: var(--muted); }
@@ -305,7 +309,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
 </head>
 <body>
 <div class="card-row">
-  <div style="zoom:1" class="card card-front">
+  <div style="zoom:1" class="card card-front role-field">
     <div class="card-head"><div>
       <p class="card-role">Helping Hands Team Leader and Crew Chief</p>
       <span class="card-side">Card 10 &#183; Front &#183; side 1 of 2</span>
@@ -337,7 +341,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
     <p class="turn-over">Turn over &#8594; Card 10, side 2: Sharing the Forms, What the EOC Needs, End of Shift</p>
   </div>
 
-  <div style="zoom:1" class="card card-back">
+  <div style="zoom:1" class="card card-back role-field">
     <div>
       <p class="card-role">Helping Hands Team Leader and Crew Chief</p>
       <span class="card-side back">Card 10 &#183; Back &#183; side 2 of 2</span>
@@ -367,7 +371,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
       <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">END OF SHIFT</p>
       <ul class="checklist">
         <li>Every volunteer checked out; hours written down.</li>
-        <li>Work Crew Log filled in, Safety Certification box ticked, sent.</li>
+        <li>Work Crew Log sent; Safety Certification ticked only if true.</li>
         <li>Every phone&#8217;s Outbox empty (nothing waiting), or the paper copies handed in.</li>
         <li>Injuries and unsafe places reported.</li>
         <li>Tell your ERD what is left to do tomorrow.</li>

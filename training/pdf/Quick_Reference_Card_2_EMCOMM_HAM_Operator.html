@@ -8,12 +8,16 @@
 :root {
   --red: #C8102E;
   --navy: #1A2744;
-  --blue: #4A7FC1;
-  --green: #5BAD8A;
-  --amber: #D4850A;
+  --blue: #1d5fa8;
+  --green: #1b7a47;
+  --amber: #9a5300;
   --light: #F7F8FA;
   --muted: #4A5568;
   --border: #CBD5E0;
+  /* who the card is for (a stray sheet still shows its audience); white text clears WCAG AA on each */
+  --role-field: #1b7a47; --role-ham: #9a5300; --role-eoc: #1a2744; --role-leader: #0f6b6b; --role-drill: #6b2fb3;
+  /* PACE: the same four colors on every page, card and wall; the letter is always printed */
+  --pace-p: #1b7a47; --pace-a: #1d5fa8; --pace-c: #9a5300; --pace-e: #b42318;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) { --light: #111827; }
@@ -84,9 +88,11 @@ h1 {
   min-width: 340px;
   flex: 1;
 }
-.card-front { border-top: 5px solid var(--red); max-width: 540px; }
-.card-back { border-top: 5px solid var(--navy); max-width: 540px; }
-.card-overview { border-top: 5px solid var(--blue); max-width: 680px; flex: 2; }
+.card { --role: var(--navy); }
+.card.role-field { --role: var(--role-field); } .card.role-ham { --role: var(--role-ham); } .card.role-eoc { --role: var(--role-eoc); }
+.card.role-leader { --role: var(--role-leader); } .card.role-drill { --role: var(--role-drill); }
+.card-front { border-top: 5px solid var(--role); max-width: 540px; }
+.card-back { border-top: 5px solid var(--role); max-width: 540px; }
 
 .card-role {
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
@@ -110,13 +116,13 @@ h1 {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  background: var(--red);
+  background: var(--role);
   color: #fff;
   padding: 2px 10px;
   border-radius: 4px;
   margin-bottom: 2px;
 }
-.card-side.back { background: var(--navy); }
+.card-side.back { background: #fff; color: var(--role); box-shadow: inset 0 0 0 2px var(--role); }   /* front filled, back outlined: same hue */
 .card-head { display: flex; gap: 12px; align-items: flex-start; }
 .card-head > div:first-child { flex: 1; min-width: 0; }
 .card-qr { flex: none; width: 100px; text-align: center; font-size: 13.5px; line-height: 1.15; color: var(--muted); }
@@ -129,14 +135,14 @@ h1 {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--red);
+  color: var(--role);
   border-bottom: 1px solid #D5DCE5;
   padding-bottom: 2px;
 }
 .card-part span { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--muted); font-size: 13.5px; }
 .step { display: flex; gap: 12px; align-items: flex-start; }
 .step-num {
-  background: var(--red);
+  background: var(--role);
   color: #fff;
   border-radius: 50%;
   width: 28px;
@@ -193,11 +199,6 @@ h1 {
 .tier-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
 .tier-table tr:nth-child(even) td { background: #F7F9FC; }
 .tier-label { font-weight: 600; white-space: nowrap; }
-.tier-t1 { color: #2D8B69; }
-.tier-t2 { color: var(--blue); }
-.tier-t3 { color: #5A44A8; }
-.tier-t4 { color: var(--amber); }
-.tier-t5 { color: var(--red); }
 
 .phrase-box {
   background: var(--navy);
@@ -239,7 +240,10 @@ h1 {
 .pace-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
 .pace-table td:first-child { width: 34px; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 20px; font-weight: 700; text-align: center; }
 .pace-table td:nth-child(2) { width: 26%; font-weight: 600; color: var(--navy); }
-.pace-table .p { color: #2D8B69; } .pace-table .a { color: var(--blue); } .pace-table .c { color: var(--amber); } .pace-table .e { color: var(--red); }
+.pace-table td.p, .pace-table td.a, .pace-table td.c, .pace-table td.e, .pace-l { color: #fff; }
+.pace-table td.p, .pace-l.p { background: var(--pace-p); } .pace-table td.a, .pace-l.a { background: var(--pace-a); }
+.pace-table td.c, .pace-l.c { background: var(--pace-c); } .pace-table td.e, .pace-l.e { background: var(--pace-e); }
+.pace-l { display: inline-block; min-width: 26px; text-align: center; border-radius: 5px; padding: 1px 6px; font-weight: 700; }
 .box-title { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 6px; text-transform: uppercase; }
 .turn-over { margin-top: auto; text-align: right; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); }
 .card-disclaimer { margin-top: auto; padding-top: 6px; border-top: 1px solid #e2e8f0; font-size: 13.5px; line-height: 1.35; color: var(--muted); }
@@ -306,7 +310,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
 <body>
 <div class="card-row">
 
-  <div style="zoom:1" class="card card-front">
+  <div style="zoom:1" class="card card-front role-ham">
     <div class="card-head"><div>
       <p class="card-role">EMCOMM (emergency communications) HAM (amateur radio) Operator</p>
       <span class="card-side">Card 2 &#183; Front &#183; side 1 of 2</span>
@@ -324,7 +328,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
       </div>
       <div class="step">
         <div class="step-num">3</div>
-        <div class="step-text"><b>Submit &#8594; address it to <i>your</i> EOC (Emergency Operations Center) &#8594; Open Session &#8594; Telnet</b>, or VARA FM / VARA HF (VARA: the radio modem Winlink uses) when the internet is down (back)<small>Your Satellite or Stake Center EOC&#8217;s Winlink address is on the stake Comms Sheet.</small></div>
+        <div class="step-text"><b>Submit &#8594; address it to <i>your</i> EOC (Emergency Operations Center) &#8594; Open Session &#8594; Telnet</b>; no internet: <b>Vara FM Winlink</b> (back)<small>VARA: the radio modem Winlink uses. Your EOC&#8217;s Winlink address is on the stake Comms Sheet.</small></div>
       </div>
       <div class="step">
         <div class="step-num">4</div>
@@ -339,7 +343,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
       </div>
       <div class="step">
         <div class="step-num">6</div>
-        <div class="step-text"><b>Step 1, then Load Data</b> &#8594; select the file &#8594; every field fills in. Review, then send as in steps 3&#8211;4<small>Your callsign and station are never overwritten. No GPS (Global Positioning System) position in the file? Your station&#8217;s fills in.</small></div>
+        <div class="step-text"><b>Open the form as in step 1 &#8594; Load Data</b> &#8594; pick the file; every field fills in. Review, then steps 3&#8211;4<small>Your callsign and station are never overwritten. No GPS (Global Positioning System) position in the file? Your station&#8217;s fills in.</small></div>
       </div>
     </div>
     <div class="phrase-box">
@@ -354,7 +358,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
     <p class="turn-over">Turn over &#8594; Card 2, side 2: PACE Levels: Which Path, When to Step Down</p>
   </div>
 
-  <div style="zoom:1" class="card card-back">
+  <div style="zoom:1" class="card card-back role-ham">
     <div>
       <p class="card-role">EMCOMM HAM Operator</p>
       <span class="card-side back">Card 2 &#183; Back &#183; side 2 of 2</span>
@@ -367,27 +371,27 @@ html, body { background: #fff; padding: 0; margin: 0; }
         <th>Winlink Connection</th>
       </tr>
       <tr>
-        <td><b style="color:#2D8B69">P</b></td>
+        <td><span class="pace-l p">P</span></td>
         <td>Cell + internet up</td>
         <td>Volunteers text/email files to the EOC. You: Open Session &#8594; <b>Telnet</b></td>
       </tr>
       <tr>
-        <td><b style="color:var(--blue)">A</b></td>
+        <td><span class="pace-l a">A</span></td>
         <td>Cell down, any internet anywhere</td>
         <td>Any connection that still reaches the internet. Files arrive by email or USB drive. Open Session &#8594; <b>Telnet</b></td>
       </tr>
       <tr>
-        <td><b style="color:var(--amber)">C</b></td>
+        <td><span class="pace-l c">C</span></td>
         <td>No internet; a gateway answers</td>
-        <td><b>Data:</b> Open Session &#8594; <b>Vara FM Winlink</b> &#8594; [pre-programmed VHF/UHF gateway freq] (very/ultra high frequency). Send as <b>Winlink Message</b>. A gateway with no internet may hold it for the CMS (Common Message Servers).<br><b>Voice:</b> stake VHF/UHF net (repeater, then simplex); volunteers on FRS/GMRS (Family Radio Service / General Mobile Radio Service) to Team Leaders.</td>
+        <td><b>Data, 1. RMS Gateway:</b> Open Session &#8594; <b>Vara FM Winlink</b> &#8594; the VHF/UHF (very/ultra high frequency) gateway on the Comms Sheet. Send as <b>Winlink Message</b>. No internet there? It may be <b>held at the gateway</b> for the CMS (Common Message Servers).<br><b>Voice:</b> stake VHF/UHF net (repeater, then simplex); volunteers on FRS/GMRS (Family Radio Service / General Mobile Radio Service) to Team Leaders.</td>
       </tr>
       <tr>
-        <td><b style="color:var(--amber)">C</b></td>
+        <td><span class="pace-l c">C</span></td>
         <td>&#8220;No CMS available&#8221; or no gateway</td>
-        <td>Wrong Send as stays in the Outbox. <b>1. Vara FM RMS Post Office</b>: Send as Post Office. <b>2. Vara FM P2P</b> (peer-to-peer): Send as Peer-to-Peer. Not forwarded: the recipient must connect. <b>3. Vara HF Winlink</b> (high frequency), 40m or 80m: only what must go. <b>iPhone reports:</b> a USB-C/Lightning thumb drive in the go-kit, or the EOC Wi-Fi <b>Send to EOC</b>.</td>
+        <td><b>2. Vara FM RMS Post Office</b>: Send as Post Office. <b>3. Vara FM P2P</b> (peer-to-peer): Send as Peer-to-Peer; the recipient must connect. <b>4. Winlink Message over VARA HF</b> (high frequency), 40m or 80m: only what must go. A wrong Send as stays in the Outbox. <b>iPhone files:</b> a USB-C/Lightning drive, or <b>Send to EOC</b>.</td>
       </tr>
       <tr>
-        <td><b style="color:var(--red)">E</b></td>
+        <td><span class="pace-l e">E</span></td>
         <td>Nothing connects, no one answers the net</td>
         <td><b>Runner:</b> the printed form, or a blank form filled by hand, to the EOC; the operator types it in. Hold saved files; send when any path returns.</td>
       </tr>
@@ -396,7 +400,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
       <b>Addresses, gateways, Post Office, P2P frequency, nets:</b> from the stake <b>Comms Sheet</b> &#8212; printed copy in the go-bag, or load the sheet file on your phone at <code style="font-size:13.5px">…/forms/comms.html</code>.
     </div>
     <div class="note-box">
-      <b>PACE rule:</b> step down a level after two failed attempts in 15 minutes, or when the Stake President decides it. Do not go back to a path that failed until a test message gets through. The stake Welfare and Self-Reliance Specialist (emergency communications) recommends the level, the Stake President decides, and the Emergency Response Director (ERD) or specialist announces it. The county may call ARES (Amateur Radio Emergency Service) operators to county duty at its Emergency level; agree beforehand who stays with the stake.
+      <b>PACE rule:</b> step down a level after two failed attempts in 15 minutes, or when the Stake President decides it. Step back up only after a test message round-trips. The stake Welfare and Self-Reliance Specialist (emergency communications) recommends the level, the Stake President decides, and the Emergency Response Director (ERD) or specialist announces it. The county may call ARES (Amateur Radio Emergency Service) operators to county duty at its Emergency level; agree beforehand who stays with the stake.
     </div>
     <p class="card-disclaimer">Church of Jesus Christ EMCOMM is an independent volunteer project created by Travis Hilton (W9TLH), not an official product of The Church of Jesus Christ of Latter-day Saints.</p>
   <p class="pdf-foot pdf-url">travislhilton.github.io/church-emcomm-wnlk-forms/forms/</p></div>
