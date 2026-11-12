@@ -36,7 +36,17 @@
 1. **W9TLH-8 (Area EOC) runs 2026-11-12.2** since 2026-11-12, **W9TLH-7 (Stake EOC)** too, with the 2026-11-12.3 Message Center copied in for the drill (see the Run Log); reinstall both from the next release. **W9TLH-7** runs from `C:\Church of Jesus Christ EMCOMM`, installed from the release download; its EOC server and simulator are running, and Travis set up the simulator's organization pack on 2026-11-10 (details in `secure data/handoff/machines.md`). Before a drill there: choose the scenario, start a DRILL event in the Message Center, point the Map data folder at the pack. A locked, stale `eoc_data.db-shm` stayed in the old OneDrive folder: delete that folder once Windows lets go of it.
 2. **The station side of the read-out** is in the sibling repository `ham-net-speech-to-text` (its `contracts/emcomm-readout/` is the source of the contract; the copy here must stay identical, line endings aside).
 
-## Offline basemap under the map views (2026-11-12, branch from no-sim-ux, not yet released)
+## Two EOCs with no simulator, the UX and color pass, the pseudonymized pack (2026-11-12, version 2026-11-12.4 on branch `no-sim-ux`, not yet released)
+
+- **Travis (2026-11-12):** fully validate the two EOCs when no simulator is used and exercise everything that way; put on a UX designer's hat and edit the whole UX, every card, README and instruction; colors that work for each user role; every supported browser; keep this file and everything committed. Then: a full simulation with the pseudonymized organization pack; then a real street and topo map under the map views (see the next section).
+- **No simulator (J12, 51/51):** fresh role-3 scratch installs on W9TLH-7 and W9TLH-8 (only the EOC servers, discovery off, a scratch Winlink Express store each). A driver plays every person from the cards (first-run setup, Comms Sheet by email, phone on the EOC Wi-Fi, paper typed in, Drop Folder, Load Data → Winlink messages, a HAM typing a voice report into the Work Crew Log template, a partner agency's ICS 213RR, the same report by two paths, the EOC's own sent copy, badges, work items, `/m`, SITREP, wall, Backup Now) and a carrier moves roll-ups and the reply by email (P), Winlink message (C) and USB (E).
+- **Fixed from it:**
+  - *The same report by two paths was filed twice* (the HAM's Winlink message and the volunteer's file in the Drop Folder), and counted again at the Area. A report key from the fields every path carries (unit, place, sender, date, type, the numbers, normalized) is now checked on every way in (`_report_key`, F40).
+  - *Choosing a new Winlink folder kept a callsign picked for another folder* (the one auto-picked from the real Winlink install at start), so nothing was read; step 2 of the chooser now ticks only the folder's callsigns (F37).
+- **UX and colors (H14, F37–F39):** three reviews (app screens, cards, README / install text / practice forms) applied by hand; one name per bar and button everywhere (*WINLINK AUTO-INGEST ON*, *Open a Saved Report File*); a first-run **Get set up** checklist and a **Jump to:** bar on Setup; units typed on the identity go on the roster; missionary status says *no Disaster Report has answered yet* until one does; every color meets WCAG AA in light and dark (`testing/test_contrast.py`, in the suite); PACE colors and one color per audience (field green, HAM amber, EOC navy, leaders teal, drill purple) on every page and card; card PDFs rebuilt on Windows (each side 2 pages).
+- **The pseudonymized pack (J13):** the maintainer's private pack on W9TLH-7 (copied to W9TLH-8 for the drill and removed after): Stake on W9TLH-7, Council / Area EOC on W9TLH-8 with its other stakes played by the simulator, 20 minutes at 10×: 7 roll-ups (19 reports) each filed once at the Area, the 2 Stake items set Up answered and closed, no page error. Nothing from the pack is in this repository.
+
+## Offline basemap under the map views (2026-11-12, merged into no-sim-ux, not yet released)
 
 - **Maintainer decision (2026-11-12):** the basemap is USGS (United States Geological Survey) The National Map, saved offline on the EOC laptop; Google Maps is ruled out (terms); OpenStreetMap is allowed only as a live online layer, drawn by the page, never downloaded or saved (the rule 7 exception in CLAUDE.md).
 - **Server** (`eoc/eoc_server.py`, section "Basemap"): `POST /api/basemap/fetch` (EOC laptop only; default area = the map data's units, else 15 km round the EOC location; zoom 8 to 15; refused above 25,000 tiles or 1.5 GB; three workers with a pause, skips saved tiles, retries a little, stops after 25 failures in a row with nothing saved), `GET /api/basemap/status`, `GET /basemap/<layer>/<z>/<y>/<x>`. Tiles in `%LOCALAPPDATA%\Church of Jesus Christ EMCOMM\basemap\`. `EMCOMM_BASEMAP_URL` and `EMCOMM_STREETS_URL` (or `off`) point the sources elsewhere; every test points them at a local fake server.
@@ -75,9 +85,15 @@
 
 ## Decisions waiting for Travis
 
-- None at the moment. (The Comms Sheet structured fields asked on 2026-11-07 were decided on 2026-11-12: built, see *Comms Sheet gateways* below.)
+- **Release 2026-11-12.4** (merge `no-sim-ux` to main is done by Claude when asked; the tag, assets and the live installs on W9TLH-7 and W9TLH-8 are Travis's call).
+- **Who fills a Supply Order?** Card review: the cards disagree (Team Leader / Emergency Response Director on one, any volunteer on another); left as it was until Travis decides.
+- **The 1-801-240-0450 number** was taken out of the missionary alert (it is the Area welfare number printed on the Supply Order form, not a missionary line); put a real mission-office line in the Comms Sheet if one is wanted there.
+- **Basemap defaults:** zoom 8–15, both layers, hard caps 25,000 tiles / 1.5 GB; should the simulator get the live street map too; should card 3 mention the basemap.
+- **The Church-style wordmark** question from the UX pass (keep the plain text name, or match the Church's typeset wordmark style).
 
 ## Open work, in the order it is worth doing
+
+0. **UX items the reviews raised, not done:** one status line for the server / Winlink / Drop Folder bars; shorter intros on the Setup cards; longer toasts for errors; ASSGN → ASSIGNED on the badges; cards 6–8 have nearly the same back. F36 (basemap with real internet on a scratch install).
 
 The checklist's *Still open* section lists every row that still needs a person or a device; 50 rows do, nearly all of them below.
 
