@@ -74,7 +74,8 @@ class QuietServer(http.server.ThreadingHTTPServer):
 
 
 tmp = pathlib.Path(tempfile.mkdtemp(prefix='emcomm_browsers_'))
-env = dict(os.environ, PYTHONIOENCODING='utf-8', LOCALAPPDATA=str(tmp / 'appdata'), USERPROFILE=str(tmp / 'home'), EMCOMM_DOCUMENTS=str(tmp / 'documents'))
+env = dict(os.environ, PYTHONIOENCODING='utf-8', LOCALAPPDATA=str(tmp / 'appdata'), USERPROFILE=str(tmp / 'home'), EMCOMM_DOCUMENTS=str(tmp / 'documents'),
+           EMCOMM_STREETS_URL='http://127.0.0.1:9/{z}/{x}/{y}.png')   # the online street map: never the internet from a test
 if os.name != 'nt':      # macOS and Linux take the home folder from HOME, not USERPROFILE: keep the servers off the real one
     (tmp / 'home').mkdir()
     env['HOME'] = str(tmp / 'home')

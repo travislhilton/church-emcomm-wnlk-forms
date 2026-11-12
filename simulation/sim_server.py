@@ -623,8 +623,44 @@ RESULTS_EMPTY = """<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><m
 <body><h1>Drill results</h1><p>No drill has started on this simulator yet. This page refreshes by itself.</p>
 <p style="font-size:12px">Church of Jesus Christ EMCOMM: an independent volunteer project, not an official Church product.</p></body></html>"""
 
+# The offline basemap (USGS, United States Geological Survey, The National Map) is downloaded by the EOC server on its
+# Setup tab into the same settings folder; the simulator only reads it (eoc/eoc_server.py, "Basemap").
+BASEMAP_DIR = SETTINGS_DIR / 'basemap'
+BASEMAP_TILE_RE = re.compile(r'^/basemap/(topo|imagery)/(\d{1,2})/(\d{1,7})/(\d{1,7})$')
+_basemap_seen = {'ts': 0.0, 'data': None}
+
+
+def basemap_saved() -> dict:
+    """{layers: {topo: {zooms, ranges}}}: the zoom levels and tile ranges saved (read at most once a minute)."""
+    if _basemap_seen['data'] is not None and time.time() - _basemap_seen['ts'] < 60:
+        return _basemap_seen['data']
+    layers = {}
+    for layer in ('topo', 'imagery'):
+        ranges = {}
+        root = BASEMAP_DIR / layer
+        for zd in (root.iterdir() if root.is_dir() else []):
+            if not (zd.is_dir() and zd.name.isdigit()):
+                continue
+            r = None
+            for yd in zd.iterdir():
+                if not (yd.is_dir() and yd.name.isdigit()):
+                    continue
+                y = int(yd.name)
+                for f in yd.iterdir():
+                    stem = f.name.split('.')[0]
+                    if stem.isdigit():
+                        x = int(stem)
+                        r = [x, y, x, y] if r is None else [min(r[0], x), min(r[1], y), max(r[2], x), max(r[3], y)]
+            if r:
+                ranges[zd.name] = r
+        zs = sorted(int(z) for z in ranges)
+        layers[layer] = {'tiles': 1 if zs else 0, 'zooms': [zs[0], zs[-1]] if zs else None, 'ranges': ranges}
+    _basemap_seen.update(ts=time.time(), data={'ok': True, 'layers': layers, 'streetsUrl': ''})
+    return _basemap_seen['data']
+
+
 class Handler(SimpleHTTPRequestHandler):
-    def log_message(self, fmt, *args):                       # quiet: one line per request is noise during drills
+    def log_message(self, fmt, *args):                      # quiet: one line per request is noise during drills
         a = str(args[0]) if args else ''          # send_error logs the status code, not the request line
         if '/data/' not in a and '/api/run ' not in a and '/api/info' not in a and '/api/run/needs' not in a:
             super().log_message(fmt, *args)
@@ -669,6 +705,17 @@ class Handler(SimpleHTTPRequestHandler):
                 return self.send_file(HERE / 'index.html', 'no-cache')
             if path == '/api/info':
                 return self.send_json(STATE.info())
+            if path == '/api/basemap/status':    # the USGS maps the EOC server saved on this laptop (Setup tab there)
+                return self.send_json(basemap_saved())
+            if path.startswith('/basemap/'):
+                m = BASEMAP_TILE_RE.match(path)
+                f = None
+                if m:
+                    d = BASEMAP_DIR / m.group(1) / m.group(2) / m.group(3)
+                    f = next((d / f'{m.group(4)}.{e}' for e in ('png', 'jpg') if (d / f'{m.group(4)}.{e}').is_file()), None)
+                if not f:
+                    return self.send_json({'error': 'no such basemap tile'}, HTTPStatus.NOT_FOUND)
+                return self.send_bytes(f.read_bytes(), 'image/png' if f.suffix == '.png' else 'image/jpeg', 'max-age=2592000')
             if path == '/api/browse':            # the laptop's folders: for the person at the laptop, never for a phone on the Wi-Fi
                 if not is_controller(self.client_address[0]):
                     return self.send_json({'error': 'Browse works only on the laptop that runs the simulator.'}, HTTPStatus.FORBIDDEN)

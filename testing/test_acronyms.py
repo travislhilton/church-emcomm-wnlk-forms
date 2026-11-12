@@ -134,6 +134,7 @@ ACRONYMS = {
     'UHF': r'ultra[ -]high',
     'UPS': r'uninterruptible power supply',
     'URL': r'web address',
+    'USGS': r'United States Geological Survey',
     'USB': r'Universal Serial Bus',
     'UTF': r'Unicode',
     'UX': r'user experience',

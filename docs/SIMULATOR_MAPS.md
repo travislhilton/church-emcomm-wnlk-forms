@@ -6,7 +6,26 @@ A community's map dataset sits in its export folder, on the EOC (Emergency Opera
 
 ## The EOC Message Center and the wall
 
-The EOC server serves the same dataset to its Map tab and the wall display's map tile: on the Message Center's Setup tab set **Map data folder** to the export root (or its `simulator` folder). The server then answers `/api/map/status` and `/map/<file>` from that folder only. No folder, no map; nothing else changes. The renderer is `templates/_shared/emcomm-map.js` (vector boundaries and buildings only; the Map tab can lay one map image over a ward on request, the wall never does).
+The EOC server serves the same dataset to its Map tab and the wall display's map tile: on the Message Center's Setup tab set **Map data folder** to the export root (or its `simulator` folder). The server then answers `/api/map/status` and `/map/<file>` from that folder only. No folder, no map; nothing else changes. The renderer is `templates/_shared/emcomm-map.js` (vector boundaries and buildings over the basemap below; the Map tab can lay one map image over a ward on request, the wall never does).
+
+## Basemap: the map's background
+
+Under the boundaries, the EOC map views (Map tab and wall, `templates/_shared/emcomm-map.js`) and the simulator console can draw a basemap. All of them are Web Mercator tiles on the standard zoom/column/row grid, the same projection as the boundaries, so they line up with no transform.
+
+| Layer | Source | Where it comes from |
+|---|---|---|
+| **Streets (online)** | OpenStreetMap standard tiles, `https://tile.openstreetmap.org/{z}/{x}/{y}.png` | Drawn live by the browser while it has internet. Never downloaded in bulk and never saved by a server (the OpenStreetMap tile usage policy forbids bulk and offline prefetch). EOC map views only |
+| **Topo (offline)** | USGS (United States Geological Survey) The National Map, `USGSTopo` | Saved on the EOC laptop ahead of time, served by the EOC server (and read by the simulator) from `/basemap/<layer>/<z>/<y>/<x>` |
+| **Imagery (offline)** | USGS The National Map, `USGSImageryTopo` (aerial imagery with topographic labels) | The same |
+| **None** | the plain background | |
+
+The Map tab's **Map background** list sets the layer for that browser. With nothing chosen, Streets shows when its tiles load; when they fail (no internet: the radio and runner levels of the PACE plan, Primary, Alternate, Contingency, Emergency) the map backs off, shows the saved Topo map and the note *Street map needs internet*, and tries the street map again after a pause. The attribution shows whenever a basemap does: "© OpenStreetMap contributors" or "Basemap: USGS The National Map".
+
+**Saving the USGS maps:** Message Center → Setup tab → This EOC → **Download basemap now (needs internet)**, on the EOC laptop only. The default area is the map data's units (with a small margin), else 15 km round the EOC location; zoom 8 to 15; at most 25,000 tiles and 1.5 GB in one download, estimated before it starts. A few tiles at a time, with a pause; tiles already saved are skipped; a failed tile is retried a little and counted. The tiles go to `%LOCALAPPDATA%\Church of Jesus Christ EMCOMM\basemap\<layer>\<z>\<y>\<x>.png` (or `.jpg`), outside the repository and the install folder. `POST /api/basemap/fetch` takes `{layers, bounds: [west, south, east, north], zmin, zmax}`; `GET /api/basemap/status` reports what is saved and the running download. For tests, `EMCOMM_BASEMAP_URL` and `EMCOMM_STREETS_URL` point both sources at a local server.
+
+**Licensing:** USGS The National Map tiles are public domain (a United States Government work); credit them as above. OpenStreetMap data is © OpenStreetMap contributors under the Open Database License, and its tiles may be used live with attribution, not prefetched.
+
+**Privacy:** downloading the USGS maps tells USGS the bounding box of the area (the tile numbers), and nothing else: no name, call sign or report; the request names a generic program. Showing the street map makes the browser ask openstreetmap.org for the tiles of the area being viewed. The approval of that one external request (maintainer, 2026-11-12) is recorded in the repository rules (CLAUDE.md rule 7).
 
 ## Which images can be placed on a map?
 
@@ -37,7 +56,7 @@ The images are north-up in Web Mercator, European Petroleum Survey Group (EPSG) 
 
 Resolve `image_path` relative to the export root. In a browser, serve the selected assets from an application-accessible location; a local filesystem path is not an image web address. If assets are served from another origin, configure cross-origin access as required by the chosen library. The geographic bounds, dimensions and opacity belong to the selected image record, not to the uncropped page or organization-wide bounding box.
 
-No mapping-library dependency is part of the forms or the EOC application (repository rule 7): the simulator and the EOC draw with their own canvas renderers.
+No mapping-library dependency is part of the forms or the EOC application (repository rule 7): the simulator and the EOC draw with their own canvas renderers, basemap tiles included.
 
 ## Metadata and scale
 
