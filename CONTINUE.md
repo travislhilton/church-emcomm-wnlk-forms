@@ -36,9 +36,14 @@
 1. **W9TLH-7 and W9TLH-8 still run 2026-11-10.1**: install 2026-11-12.1 from the release download on each (role 3; stop the EOC server and simulator first, start them again after). **W9TLH-7** runs 2026-11-10.1 from `C:\Church of Jesus Christ EMCOMM`, installed from the release download; its EOC server and simulator are running, and Travis set up the simulator's organization pack on 2026-11-10 (details in `secure data/handoff/machines.md`). Before a drill there: choose the scenario, start a DRILL event in the Message Center, point the Map data folder at the pack. A locked, stale `eoc_data.db-shm` stayed in the old OneDrive folder: delete that folder once Windows lets go of it.
 2. **The station side of the read-out** is in the sibling repository `ham-net-speech-to-text` (its `contracts/emcomm-readout/` is the source of the contract; the copy here must stay identical, line endings aside).
 
+## Comms Sheet gateways (2026-11-12, version 2026-11-12.2)
+
+- **Travis (2026-11-12): "Do recs"**, the three Comms Sheet fields recommended for the question of 2026-11-07. The gateways table has **Use** (RMS Gateway, VARA FM RMS Post Office, VARA FM P2P, VARA HF; the list sorts itself in that order) and **Holds mail when its internet is down** (Yes / No / Ask the sysop). The stake's P2P frequency is a VARA FM P2P row per listening EOC station. The wall's Nets & contacts panel shows the first gateway and the P2P frequency. A sheet from before has only a free-text mode: every page reads the step from it, and a save also writes a mode for pages that are not updated yet. Checklist K8; PACE plan §6a, README *EMCOMM Comms Sheet*, card 2.
+- **Wall fix found on the way:** a panel that sizes itself to its rows (Nets & contacts, Needs) always hid its last row behind "+ 1 more", even with room to spare. Fixed in `fitList`; a crowded wall still trims and does not scroll (checked at 1920×1080).
+
 ## Decisions waiting for Travis
 
-- **Comms Sheet structured fields:** a *Use* column on the gateways table (RMS Gateway, VARA FM RMS Post Office, VARA FM P2P, VARA HF), a *Holds mail when internet is down* column, and the P2P frequency on the sheet and the wall. Asked on 2026-11-07, not answered.
+- None at the moment. (The Comms Sheet structured fields asked on 2026-11-07 were decided on 2026-11-12: built, see *Comms Sheet gateways* below.)
 
 ## Open work, in the order it is worth doing
 

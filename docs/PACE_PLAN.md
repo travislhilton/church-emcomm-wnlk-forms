@@ -149,7 +149,7 @@ Every level must be **exercised before it is needed**. A path that has never bee
 | 5. **VARA HF** | VARA FM has failed in every mode above | Vara HF Winlink | Winlink Message | A special case, done by hand by a HAM operator with an HF station. HF (high frequency) reaches an RMS Gateway anywhere in the country, and from there the CMS, so the welfare line can pick it up. It is slow, so send only what must go: life safety first, then the SITREP, then Supply Orders. Keep each message short. |
 
 - **Match Send as to the session.** A message of the wrong type stays in the Outbox with no error. When you change step, open the queued message and check Send as.
-- **Only a gateway set up for it holds mail.** RMS Relay is optional, and the sysop chooses its mode before an outage. In its Normal mode a gateway with no internet rejects you with "No CMS available". Ask the sysops of your gateways which mode they run, and write it on the Comms Sheet.
+- **Only a gateway set up for it holds mail.** RMS Relay is optional, and the sysop chooses its mode before an outage. In its Normal mode a gateway with no internet rejects you with "No CMS available". Ask the sysops of your gateways which mode they run, and choose the answer in the gateway's *Holds mail* column on the Comms Sheet.
 - **Steps 3 and 4 reach only the station you planned with.** Neither reaches the CMS, so the welfare line sees nothing unless it connects to that same Post Office. To go further, the receiving operator sends it on as a new message.
 - **Receiving stations must act too.** At step 3 the receiving EOC opens a Vara FM RMS Post Office session to collect its mail. At step 4 it keeps a Vara FM P2P session open on the stake's P2P frequency (§6a, §6d).
 - **VARA HF is not part of the local gateways.** The local RMS Gateway is not set up to pass traffic over HF, so nothing reaches HF on its own. A HAM operator chooses to send by VARA HF, message by message.
@@ -215,6 +215,8 @@ Modeled on the ICS-205 Incident Radio Communications Plan that public-safety PAC
 | County liaison — county amateur repeater(s) | |
 | Stake HAMs who are ARES members (may be tasked by the county) | |
 | Level in force (update during activation) | P / A / C / E — recommended by ______, decided by the stake president at ______ |
+
+In the EOC Message Center the **C** gateway rows above are the Comms Sheet's gateways table (Setup tab → Comms Sheet). Each row's **Use** is its Contingency step (RMS Gateway, VARA FM RMS Post Office, VARA FM P2P, VARA HF), and the list sorts itself in that order. **Holds mail when its internet is down** records the sysop's answer. Add one **VARA FM P2P** row for each EOC station that listens, with its call sign and the stake's P2P frequency: the wall display shows the first gateway and that frequency.
 
 ### 6b. Resources by site
 

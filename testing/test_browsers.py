@@ -95,7 +95,7 @@ threading.Thread(target=web.serve_forever, daemon=True).start()
 
 
 def open_page(browser, size, url):
-    w, h = SIZES[size]
+    w, h = SIZES[size] if size in SIZES else (1920, 1080)      # 'tv': the wall's own size
     ctx = browser.new_context(viewport={'width': w, 'height': h})
     pg = ctx.new_page()
     errs = []
@@ -273,6 +273,50 @@ try:
                     break
                 time.sleep(0.25)
             check(f'{name}: the Winlink Express folder is chosen with the folder browser and saved', ok and not errs, (call(f'{EOC}/api/watcher/status').get('watch_path'), errs[:2]))
+            # Comms Sheet gateways (K8): a sheet from before 2026-11-12.2 (free-text mode, out of order) opens with each row's
+            # Contingency step chosen and sorted; Holds mail saves; fields this page does not know ride along
+            stamp = int(time.time() * 1000) + len(name)
+            old = {'org': 'Juniper Plains Stake', 'gateways': [
+                {'call': 'W7HFX', 'freq': '7.102', 'mode': 'VARA HF', 'loc': 'Regional'},
+                {'call': 'K7EOC-3', 'freq': '145.050', 'mode': 'VARA FM P2P', 'loc': 'Stake EOC', 'future': 'kept'},
+                {'call': 'W7PO-10', 'freq': '145.070', 'mode': 'VARA FM RMS Post Office'},
+                {'call': 'W7GW-10', 'freq': '145.030', 'mode': 'VARA FM', 'notes': 'wide'}]}
+            pg.evaluate("([s, t]) => fetch('/api/comms', {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({sheet: s, updatedMs: t})})", [old, stamp])
+            pg.evaluate("loadCommsFromServer()")
+            pg.wait_for_function(f"comms.updatedMs === {stamp}", timeout=8000)
+            pg.evaluate("_commsEditorStamp = -1; renderCommsEditor()")
+            uses = pg.evaluate("[...document.querySelectorAll('table.comms-edit[data-t=gateways] select[data-k=use]')].map(x => x.value)")
+            check(f'{name}: an older Comms Sheet opens with each gateway\'s Contingency step chosen, in the order to try them', uses == ['RMS Gateway', 'VARA FM RMS Post Office', 'VARA FM P2P', 'VARA HF'], uses)
+            pg.evaluate("document.querySelector('table.comms-edit[data-t=gateways] tbody tr select[data-k=holds]').value = 'Yes'")   # Setup tab, not open
+            pg.evaluate("saveComms()")
+            gw = []
+            for _ in range(20):
+                gw = call(f'{EOC}/api/comms').get('sheet', {}).get('gateways') or []
+                if gw and gw[0].get('holds') == 'Yes':
+                    break
+                time.sleep(0.25)
+            first, p2p = (gw + [{}, {}])[0], ([g for g in gw if g.get('use') == 'VARA FM P2P'] + [{}])[0]
+            check(f'{name}: the Comms Sheet saves Use and Holds mail, a mode older pages read, and a field it does not show',
+                  first.get('use') == 'RMS Gateway' and first.get('holds') == 'Yes' and first.get('mode') == 'VARA FM' and first.get('notes') == 'wide'
+                  and p2p.get('future') == 'kept' and p2p.get('freq') == '145.050' and not errs, (gw, errs[:2]))
+            view = pg.inner_text('#comms-view')
+            check(f'{name}: the Comms tab lists the gateways in the order to try them', 0 <= view.find('W7GW-10') < view.find('W7PO-10') < view.find('K7EOC-3') < view.find('W7HFX'), view[:300])
+            ctx.close()
+            ctx, pg, errs = open_page(b, 'tv', f'{EOC}/wall')      # the wall is laid out for a TV
+            try:
+                pg.wait_for_function("document.getElementById('nets').textContent.includes('P2P')", timeout=10000)
+            except Exception:
+                pass
+            nets = pg.inner_text('#nets')
+            check(f'{name}: the wall shows the first gateway (holds mail) and the stake P2P frequency', 'RMS W7GW-10' in nets and 'holds mail' in nets and 'P2P K7EOC-3' in nets and '145.050' in nets and not errs, (nets[:300], errs[:2]))
+            ctx.close()
+            ctx, pg, errs = open_page(b, 'phone', f'{WEB}/forms/comms.html')
+            bundle = {'kind': 'church_comms_sheet', 'v': 1, 'updatedMs': stamp, 'sheet': call(f'{EOC}/api/comms')['sheet']}
+            pg.evaluate("d => { localStorage.setItem('church_comms_sheet', JSON.stringify(d)); location.reload(); }", bundle)
+            pg.wait_for_selector('#view .card', timeout=8000)
+            pv = pg.inner_text('#view')
+            check(f'{name}: the portal Comms Sheet shows each gateway\'s step, in order, and whether it holds mail',
+                  0 <= pv.find('RMS Gateway W7GW-10') < pv.find('VARA FM P2P K7EOC-3') < pv.find('VARA HF W7HFX') and 'Holds mail: Yes' in pv and not errs, (pv[:300], errs[:2]))
             ctx.close()
             # no signal: the report saved from the portal's form is still in the Outbox after the portal reloads
             ctx, pg, errs = open_page(b, 'phone', f'{WEB}/templates/disaster-report/Church_of_Jesus_Christ_Disaster_Report_Worker.html')

@@ -15,7 +15,7 @@ This file is the single source of truth for what has and has not been verified.
 
 | State | Rows |
 |---|---|
-| Passed | 194 |
+| Passed | 195 |
 | Passed by Claude, a real device or a person still to confirm | 21 |
 | Not run yet, or failed and waiting for a real device | 30 |
 | Skipped by decision | 1 |
@@ -231,6 +231,7 @@ Fixture script: `python -X utf8 -I <scratch>\rollup_test.py <tmpdir>` (writes a 
 | K5 | Print sheet / Copy as text | Comms tab → Print sheet, Copy as text | print window with one-page Letter layout (event box, four tables, PACE footer); text block has FOR THIS EVENT, each section, PACE line | 2026-10-29 | ✅ Claude (text checked; print window opened, dialog not driven) | [Card 3][c3] · [Comms Sheet][r-comms] |
 | K6 | Portal comms page | `forms/comms.html?stake=example` and Load sheet file | example sheet renders (contacts with tel/mailto, EOCs, gateways, nets, schedule, notes); stored in `localStorage` `church_comms_sheet`; reload without `?stake` still shows it; Share as text | 2026-10-29 | ✅ Claude | [Card 1][c1] · [Card 3][c3] · [Comms Sheet][r-comms] · [Volunteer portal][r-portal] |
 | K7 | Event close clears event-only lines | `PUT /api/comms` a standing sheet; set two event-only lines on event 1 (`PUT /api/incident`); close event 1 (`PUT /api/events/<id>` `{status:'closed'}`); `POST /api/events` event 2; switch back and forward with `{activate:true}` | new event has empty `commsEvent`; `GET /api/comms` sheet and `updatedMs` unchanged; closed event keeps its own lines (`GET /api/events`); switching back shows them again, switching forward clears again; `/api/status` names the new event | 2026-10-29 | ✅ Claude (API, scratch server copy; 8/8 checks) | [Card 3][c3] · [Comms Sheet][r-comms] |
+| K8 | Gateways: Use, Holds mail, P2P frequency | Load a sheet from before 2026-11-12.2 (gateways with a free-text mode, out of order, one with a field the page does not show); Setup → Comms Sheet; set Holds mail on the first gateway → Save; open the wall at 1920×1080 and the portal Comms Sheet page | each gateway opens with its step chosen in **Use** (RMS Gateway, VARA FM RMS Post Office, VARA FM P2P, VARA HF) and the list sorted in that order; Save keeps Use and Holds mail, writes a mode older pages read, keeps the unknown field; Comms tab in that order; wall Nets & contacts shows the first gateway ("holds mail") and the P2P row's frequency; portal shows each step, in order, and "Holds mail: Yes". `test_browsers.py`, every engine | 2026-11-12 | ✅ Claude (Chromium, Firefox, WebKit) | [Card 2][c2] · [Card 3][c3] · [Comms Sheet][r-comms] |
 
 ## L. Phones, the Church of Jesus Christ EMCOMM app and Send to EOC
 

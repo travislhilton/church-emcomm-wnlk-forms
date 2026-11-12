@@ -84,10 +84,16 @@ pre{white-space:pre-wrap;font-size:12px}
   </div>
 </div>
 <script>
+// Contingency steps for a gateways row, in the order to try them (docs/PACE_PLAN.md §5); an older sheet has only a free-text mode.
+var GW_USES = ['RMS Gateway','VARA FM RMS Post Office','VARA FM P2P','VARA HF'];
+function gwUse(g) { g=g||{}; if(GW_USES.indexOf(g.use)>=0) return g.use; var m=String(g.mode||'').toLowerCase();
+  if(/post ?office/.test(m)) return 'VARA FM RMS Post Office'; if(/p2p|peer/.test(m)) return 'VARA FM P2P'; if(/\bhf\b/.test(m)) return 'VARA HF'; if(/fm/.test(m)) return 'RMS Gateway'; return ''; }
+function gwSorted(rows) { return (rows||[]).map(function(g,i){ var u=gwUse(g), r={}; Object.keys(g).forEach(function(k){ r[k]=g[k]; }); r.use=u; return {r:r, o:u?GW_USES.indexOf(u):GW_USES.length, i:i}; })
+  .sort(function(a,b){ return a.o-b.o||a.i-b.i; }).map(function(x){ return x.r; }); }
 var TABLES=[
   {key:'contacts', title:'Points of contact', k:['role'], sub:['name'], v:['phone','winlink','email']},
   {key:'eocs', title:'Where reports go (EOCs)', k:['level'], sub:['name'], v:['winlink','email','phone']},
-  {key:'gateways', title:'Winlink gateways — try in this order', k:['call'], sub:['loc','notes'], v:['freq','mode']},
+  {key:'gateways', title:'Winlink gateways — try in this order', k:['use','call'], sub:['loc','notes'], v:['freq','holdsText']},
   {key:'nets', title:'Voice nets', k:['name'], sub:['when'], v:['freq','offset','tone','mode']}
 ];
 var data=null;
@@ -100,6 +106,7 @@ function render(){
   document.getElementById('meta').textContent=data?('Sheet dated '+fmt(data.updatedMs)+(data.from&&data.from.name?' · from '+data.from.name:'')+' · replace it when a newer one arrives'):'';
   var ev=document.getElementById('ev'); var lines=(data&&data.eventLines)||[]; ev.style.display=lines.length?'':'none'; ev.innerHTML='<b>For this event:</b> '+lines.map(esc).join(' · ');
   TABLES.forEach(function(t){ var rows=(s[t.key]||[]).filter(function(r){return Object.keys(r).some(function(k){return r[k];});}); if(!rows.length) return;
+    if(t.key==='gateways') rows=gwSorted(rows).map(function(g){ g.holdsText=g.holds?'Holds mail: '+g.holds:''; return g; });
     h+='<div class="card"><h2>'+esc(t.title)+'</h2>'+rows.map(function(r){ return '<div class="row"><div class="k">'+esc(t.k.map(function(k){return r[k];}).filter(Boolean).join(' ')||'—')+(t.sub.some(function(k){return r[k];})?'<small>'+esc(t.sub.map(function(k){return r[k];}).filter(Boolean).join(' · '))+'</small>':'')+'</div><div class="v">'+t.v.map(function(k){return val(k,r[k]);}).filter(Boolean).join('<br>')+'</div></div>'; }).join('')+'</div>'; });
   if(s.schedule) h+='<div class="card"><h2>Net schedule</h2><pre>'+esc(s.schedule)+'</pre></div>';
   if(s.notes) h+='<div class="card"><h2>Other notes</h2><pre>'+esc(s.notes)+'</pre></div>';
@@ -107,7 +114,7 @@ function render(){
 }
 function take(d, src){ if(!d||d.kind!=='church_comms_sheet'||!d.sheet){ alert('That is not a comms sheet file.'); return; } data=d; try{ localStorage.setItem('church_comms_sheet', JSON.stringify(d)); }catch(e){} render(); }
 function loadFile(e){ var f=e.target.files[0]; e.target.value=''; if(!f) return; var r=new FileReader(); r.onload=function(ev){ var d; try{ d=JSON.parse(ev.target.result); }catch(err){ alert('Could not read that file.'); return; } take(d,'file'); }; r.readAsText(f); }
-function asText(){ var s=(data&&data.sheet)||{}, out=['EMCOMM COMMS SHEET'+(s.org?' — '+s.org:''),'Sheet dated '+fmt(data&&data.updatedMs)]; TABLES.forEach(function(t){ var rows=(s[t.key]||[]); if(!rows.length) return; out.push(''); out.push(t.title.toUpperCase()); rows.forEach(function(r){ out.push('  '+Object.keys(r).filter(function(k){return r[k];}).map(function(k){return k+': '+r[k];}).join(' | ')); }); }); if(s.schedule){ out.push(''); out.push('NET SCHEDULE'); out.push(s.schedule); } if(s.notes){ out.push(''); out.push('NOTES'); out.push(s.notes); } out.push(''); out.push('PACE LEVELS'); out.push('  P Primary     - cell and internet: text or email the form file'); out.push('  A Alternate   - any surviving internet (Wi-Fi anywhere, Starlink)'); out.push('  C Contingency - radio: forms by Winlink VHF/UHF VARA FM, then VARA HF; voice on the nets above'); out.push('  E Emergency   - runner with the paper form'); out.push('  Rule: step down after two failed attempts in 15 min or when the Stake President declares it; back up only after a test message round-trips.'); return out.join('\n'); }
+function asText(){ var s=(data&&data.sheet)||{}, out=['EMCOMM COMMS SHEET'+(s.org?' — '+s.org:''),'Sheet dated '+fmt(data&&data.updatedMs)]; TABLES.forEach(function(t){ var rows=(s[t.key]||[]); if(!rows.length) return; if(t.key==='gateways') rows=gwSorted(rows).map(function(g){ delete g.mode; return g; }); out.push(''); out.push(t.title.toUpperCase()); rows.forEach(function(r){ out.push('  '+Object.keys(r).filter(function(k){return r[k];}).map(function(k){return k+': '+r[k];}).join(' | ')); }); }); if(s.schedule){ out.push(''); out.push('NET SCHEDULE'); out.push(s.schedule); } if(s.notes){ out.push(''); out.push('NOTES'); out.push(s.notes); } out.push(''); out.push('PACE LEVELS'); out.push('  P Primary     - cell and internet: text or email the form file'); out.push('  A Alternate   - any surviving internet (Wi-Fi anywhere, Starlink)'); out.push('  C Contingency - radio: forms by Winlink VHF/UHF VARA FM, then VARA HF; voice on the nets above'); out.push('  E Emergency   - runner with the paper form'); out.push('  Rule: step down after two failed attempts in 15 min or when the Stake President declares it; back up only after a test message round-trips.'); return out.join('\n'); }
 function shareText(){ if(!data){ alert('Load a sheet first.'); return; } var t=asText(); if(navigator.share){ navigator.share({title:'EMCOMM Comms Sheet', text:t}).catch(function(){}); } else if(navigator.clipboard){ navigator.clipboard.writeText(t).then(function(){ alert('Copied as text — paste it into a message.'); }); } }
 (function(){
   var q={}; location.search.replace(/^\?/,'').split('&').forEach(function(p){ var kv=p.split('='); if(kv[0]) q[decodeURIComponent(kv[0])]=decodeURIComponent(kv[1]||''); });
