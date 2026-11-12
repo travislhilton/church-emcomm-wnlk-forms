@@ -956,8 +956,18 @@ def main():
     class _SimServer(ThreadingHTTPServer):
         request_queue_size = 128      # the default 5 is refused outright on Windows when a room of phones opens /results together
     srv = _SimServer(('0.0.0.0', port), Handler)
-    print('EMCOMM simulator server')
-    print(f'  Page:     http://{STATE.lan_ip}:{port}/   (this PC: http://localhost:{port}/)')
+    bar = '=' * 72
+    print(f'  {bar}')
+    print('  Church of Jesus Christ EMCOMM - Simulator (drills)')
+    print(f'  {bar}')
+    print('  KEEP THIS WINDOW OPEN while the drill runs. To stop: press Ctrl+C, or close it.')
+    print()
+    print(f'  Open:     http://localhost:{port}/   (from another computer: http://{STATE.lan_ip}:{port}/)')
+    print('  Steps:    1. Start the EOC Server first (its own Desktop shortcut and window).')
+    print('            2. On the simulator page, Setup tab: the organization pack and a scenario.')
+    print('            3. Session tab: Reset for the session opens a DRILL event on the EOC for you.')
+    print('            Card 5 (Drill Controller) and Card 9 (Your First Drill) walk through it.')
+    print()
     if STATE.pack:
         c = orgpack.summary(STATE.pack)
         print(f'  Pack:     {pack_path}')
@@ -969,7 +979,7 @@ def main():
         print('  Pack:     none yet. Open the page and load the Church directory export on the Setup tab (step 1);')
         print('            it stays on this laptop. Add the callings the directory lacks (ERD, specialist) under it.')
     print(f'  Runs:     {STATE.runs_dir()}')
-    print('  Stop with Ctrl+C')
+    print(f'  {bar}')
     try:
         srv.serve_forever()
     except KeyboardInterrupt:
