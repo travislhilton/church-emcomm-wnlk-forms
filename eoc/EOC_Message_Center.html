@@ -1118,6 +1118,9 @@ var networkMode = false;
 var _lastPollMs = 0;
 var _pollTimer = null;
 var _serverMsgIds = {};
+// The roster as last agreed with the server: save() sends the roster only when this screen changed it, and the
+// poll adopts a roster changed elsewhere (another operator, the simulator, a roll-up), so one click never wipes it.
+var _rosterStamp = null;
 
 // ── Persistence ───────────────────────────────────────────────────────────────
 function save() {
@@ -1125,7 +1128,8 @@ function save() {
   try { localStorage.setItem('church_eoc_v2', JSON.stringify({msgs:msgs,roster:roster,incident:incident,notes:notes,actions:actions,events:events,evStore:networkMode?{}:evStore})); } catch(e){}
   if (!networkMode) return;
   msgs.forEach(function(m){ _netPostMsg(m); });
-  fetch('/api/roster',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(roster)}).catch(function(){});
+  var rs = JSON.stringify(roster);
+  if (_rosterStamp !== null && rs !== _rosterStamp) { _rosterStamp = rs; fetch('/api/roster',{method:'PUT',headers:{'Content-Type':'application/json'},body:rs}).catch(function(){}); }
   fetch('/api/incident',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(incident)}).catch(function(){});
 }
 function load() {
@@ -1208,7 +1212,7 @@ function _reloadForEvent(msg) {
     fetch('/api/actions').then(function(r){return r.json();}).catch(function(){return [];})
   ]).then(function(res){
     msgs = res[0].map(function(m){ var d=JSON.parse(m.data_json||'{}'); d.id=m.id; d.ts=m.received_ms; d.status=m.status||'new'; d.operator_note=m.operator_note||''; _normalizeServerMsg(d); _serverMsgIds[m.id]=1; return d; });
-    roster = res[1]; incident = res[2]; notes = res[3]; events = Array.isArray(res[4]) ? res[4] : events;
+    roster = res[1]; _rosterStamp = JSON.stringify(roster); incident = res[2]; notes = res[3]; events = Array.isArray(res[4]) ? res[4] : events;
     actions = Array.isArray(res[5]) ? res[5] : []; _actionsStamp = JSON.stringify(actions);
     _lastPollMs = Date.now();
     document.getElementById('sitrep-wrap').style.display='none';
@@ -1610,7 +1614,7 @@ function applyLevelLabels() {
   set('msgs-th-unit', u);
   set('act-th-unit', u);
   var badge=document.getElementById('hdr-eoc');
-  if (badge) { if (eocName()) { badge.textContent=eocLabel()+' · '+eocName(); badge.style.display='inline-block'; } else { badge.style.display='none'; } }
+  if (badge) { if (eocName()) { badge.textContent=(eocName().toLowerCase().indexOf(eocLabel().toLowerCase())===0 ? eocName() : eocLabel()+' · '+eocName()); badge.style.display='inline-block'; } else { badge.style.display='none'; } }
   var pl=document.getElementById('rollup-parent-line');
   if (pl) {
     var ups=upwardLines().map(function(l){ return l.line+' <b>'+esc(l.name)+'</b>'+(l.email?' <code>'+esc(l.email)+'</code>':'')+(l.winlink?' · Winlink <code>'+esc(l.winlink)+'</code>':''); });
@@ -1637,14 +1641,16 @@ function formKey(m) {
   return 'form:'+t+':'+fnv1a('{'+parts.join(',')+'}');
 }
 function exportRollup() {
-  if (!msgs.length) { toast('Nothing to roll up yet'); return; }
+  var waiting=actions.filter(function(a){return a.status==='up';});
+  if (!msgs.length && !waiting.length) { toast('Nothing to roll up yet'); return; }
   var onlyNew=document.getElementById('rollup-only-new').checked;
   var since=(onlyNew && incident && incident.lastRollupTs) ? incident.lastRollupTs : 0;
   var picked=msgs.filter(function(m){ return (m.ts||0) > since; }).map(function(m){
     var c=JSON.parse(JSON.stringify(m)); if(!c.origin) c.origin=eocName()||eocLabel();
     delete c.body; delete c.fields;   // roll-ups carry the summary fields only (radio airtime)
     return c; });
-  if (!picked.length) { toast('No new records since the last roll-up'); return; }
+  // a work item waiting on the EOC above goes up even when no new report came in since the last roll-up
+  if (!picked.length && !waiting.length) { toast('No new records since the last roll-up'); return; }
   var bundle={kind:'church_eoc_rollup', v:1,
     from:{name:eocName()||eocLabel(), level:eocLevel(), op:(incident&&incident.op)||'', units:(incident&&incident.eocUnits)||''},
     to:(incident&&incident.parentName)||'', incident:{name:(incident&&incident.name)||'', area:(incident&&incident.area)||'', type:(incident&&incident.type)||''},
@@ -1654,9 +1660,9 @@ function exportRollup() {
   var tag=(eocName()||eocLabel()).replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,'').slice(0,40);
   dlText(JSON.stringify(bundle,null,1),'church_eoc_rollup_'+tag+'_'+new Date().toISOString().slice(0,16).replace(/[-:]/g,'').replace('T','_')+'Z.json');
   incident.lastRollupTs=Date.now();
-  notes.unshift({id:uid(),ts:Date.now(),text:'Roll-up exported to '+((incident&&incident.parentName)||'parent EOC')+': '+picked.length+' record'+(picked.length===1?'':'s')+(since?' since '+fmtTs(since):' (everything)')});
+  notes.unshift({id:uid(),ts:Date.now(),text:'Roll-up exported to '+((incident&&incident.parentName)||'parent EOC')+': '+picked.length+' record'+(picked.length===1?'':'s')+(since?' since '+fmtTs(since):' (everything)')+(waiting.length?', '+waiting.length+' work item'+(waiting.length===1?'':'s')+' waiting on that EOC':'')});
   if(networkMode) fetch('/api/notes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(notes[0])}).catch(function(){});
-  save(); render(); toast('Roll-up exported — '+picked.length+' record'+(picked.length===1?'':'s'));
+  save(); render(); toast('Roll-up exported — '+picked.length+' record'+(picked.length===1?'':'s')+(waiting.length?', '+waiting.length+' work item'+(waiting.length===1?'':'s')+' waiting on the EOC above':''));
 }
 function applyReplyBundle(data){
   // A reply from the line above: close our items with their decision (standalone). In network mode the server does it (/api/merge).
@@ -3145,7 +3151,7 @@ function patchAction(id, changes) {
 // The bundle travels the way the roll-up came (Winlink attachment, USB, LAN /api/merge). On their Message Center it closes
 // the item with the decision written in. Items answered this way are marked replied here.
 function replyBundle(items, noteText){
-  return {kind:'church_eoc_reply', exportedAt:Date.now(), from:{name:eocName()||'EOC', level:(incident&&incident.eocLevel)||''}, to:items[0]&&items[0].from||'',
+  return {kind:'church_eoc_reply', exportedAt:Date.now(), from:{name:eocName()||eocLabel(), level:(incident&&incident.eocLevel)||''}, to:items[0]&&items[0].from||'',
     replies:items.map(function(a){ return {id:a.id, key:a.key||'', title:a.title, status:a.replyStatus||'done', decision:a.decision||'', text:a.replyText||''}; }),
     notes:noteText?[{id:uid(), ts:Date.now(), text:noteText}]:[]};
 }
@@ -3494,7 +3500,7 @@ function loadFromServer() {
       _serverMsgIds[m.id] = 1;
       return d;
     });
-    roster = res[1]; incident = res[2]; notes = res[3]; events = Array.isArray(res[4]) ? res[4] : [];
+    roster = res[1]; _rosterStamp = JSON.stringify(roster); incident = res[2]; notes = res[3]; events = Array.isArray(res[4]) ? res[4] : [];
     actions = Array.isArray(res[5]) ? res[5] : []; _actionsStamp = JSON.stringify(actions);
     _lastPollMs = Date.now();
     render(); updateSetupForm();
@@ -3530,6 +3536,12 @@ function _pollServer() {
     if(changed) render();
     if(document.getElementById('net-bar').textContent.indexOf('LOST')>=0) showNetBar(true);
   }).catch(function(){ showNetBar(false); });
+  // Roster: changed on the server by someone else (another operator, the simulator, a roll-up) -> adopt it.
+  fetch('/api/roster').then(function(r){return r.json();}).then(function(list){
+    if(!Array.isArray(list) || _rosterStamp===null) return;
+    var stamp=JSON.stringify(list);
+    if(stamp!==_rosterStamp && JSON.stringify(roster)===_rosterStamp){ _rosterStamp=stamp; roster=list; if(!(document.getElementById('modal-bg').classList.contains('open') && editingRosterId)) render(); }
+  }).catch(function(){});
   // Work items: the whole list (small), re-rendered only when something changed on the server.
   fetch('/api/actions').then(function(r){return r.json();}).then(function(list){
     if(!Array.isArray(list)) return;

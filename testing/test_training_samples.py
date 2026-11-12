@@ -16,6 +16,7 @@ Checks 3 and 4 need Playwright (python -m pip install playwright; python -m play
 without it they are skipped and the file checks still run.
 """
 import filecmp, json, os, pathlib, re, shutil, subprocess, sys, tempfile, time, urllib.request
+os.environ.setdefault('EMCOMM_DISCOVERY', 'test')   # this suite's EOC servers hear only each other; a real EOC on the LAN ignores them
 
 REPO = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO / 'simulation'))

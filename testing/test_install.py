@@ -28,6 +28,7 @@ The last line says how many checks ran. A run that stops early, or skips a stage
 import importlib.util
 import json
 import os
+os.environ.setdefault('EMCOMM_DISCOVERY', 'test')   # this suite's EOC servers hear only each other; a real EOC on the LAN ignores them
 import re
 import shutil
 import socket

@@ -207,6 +207,8 @@ function populateForm() {
       if (el.type === 'radio') {
         var rads = document.querySelectorAll('[name="' + k + '"]');
         for (var j = 0; j < rads.length; j++) rads[j].checked = (rads[j].value === o[k]);
+      } else if (el.type === 'checkbox') {   // Winlink's Save Data writes 1 / 0; the phone form writes true / false
+        el.checked = (o[k] === true || o[k] === 1 || o[k] === '1' || o[k] === 'true' || o[k] === 'YES');
       } else if (typeof o[k] === 'number') {
         el.checked = !!o[k];
       } else if (el.type === 'date') {
@@ -216,6 +218,7 @@ function populateForm() {
       }
     }
   } catch(e) {}
+  if (typeof exChanged === 'function') exChanged();   // the EXERCISE subject prefix follows the loaded box
   reconcileGPS(o);
 }
 

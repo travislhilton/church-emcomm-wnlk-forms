@@ -124,7 +124,8 @@ def worker_fields() -> dict:
     """{form: set of field names} read from the Worker forms (templates/<form>/*_Worker.html), or {} when not found."""
     dirs = {'dr': 'disaster-report', 'so': 'supply-order', 'wcl': 'work-crew-log'}
     out = {}
-    for root in (HERE.parent / 'templates', HERE.parent.parent / 'templates', HERE.parent / 'Templates'):
+    for root in (HERE.parent / 'templates', HERE.parent.parent / 'templates', HERE.parent / 'Templates',
+                 HERE.parent.parent / 'Web App (portal copy)' / 'templates'):   # an installed copy: EOC Message Center\simulation
         for form, d in dirs.items():
             if form in out:
                 continue

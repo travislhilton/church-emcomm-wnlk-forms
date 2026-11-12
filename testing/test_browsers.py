@@ -14,6 +14,7 @@ import functools
 import http.server
 import json
 import os
+os.environ.setdefault('EMCOMM_DISCOVERY', 'test')   # this suite's EOC servers hear only each other; a real EOC on the LAN ignores them
 import pathlib
 import shutil
 import subprocess
@@ -301,6 +302,20 @@ try:
                   and p2p.get('future') == 'kept' and p2p.get('freq') == '145.050' and not errs, (gw, errs[:2]))
             view = pg.inner_text('#comms-view')
             check(f'{name}: the Comms tab lists the gateways in the order to try them', 0 <= view.find('W7GW-10') < view.find('W7PO-10') < view.find('K7EOC-3') < view.find('W7HFX'), view[:300])
+            # the roster changed elsewhere (another operator, the simulator, a roll-up): this screen adopts it on its
+            # poll, and its next save (any click) does not put back the roster it had loaded
+            unit = f'Roster Test Ward {name}'
+            before = call(f'{EOC}/api/roster')
+            pg.evaluate("r => fetch('/api/roster', {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(r)})", before + [{'id': 'rt-' + name, 'name': unit}])
+            try:
+                pg.wait_for_function(f"roster.some(r => r.name === {unit!r})", timeout=12000)
+                adopted = True
+            except Exception:
+                adopted = False
+            pg.evaluate("save()"); time.sleep(1)
+            kept = any(r.get('name') == unit for r in call(f'{EOC}/api/roster'))
+            check(f'{name}: an open Message Center adopts a roster changed elsewhere and its next save keeps it', adopted and kept and not errs, (adopted, kept, errs[:2]))
+            pg.evaluate("r => fetch('/api/roster', {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(r)})", before)
             ctx.close()
             ctx, pg, errs = open_page(b, 'tv', f'{EOC}/wall')      # the wall is laid out for a TV
             try:
@@ -334,6 +349,29 @@ try:
             kept = '1 report saved on this phone' in pg.inner_text('body')
             check(f'{name}: Save to Outbox keeps the report after the portal reloads', saved and kept and not errs, (saved, kept, errs[:2]))
             ctx.close()
+            # Contingency (card 1 C, card 2 B): the file a volunteer saves on the phone, loaded into the Winlink template
+            # with Load Data, keeps THIS IS AN EXERCISE and every box (the phone writes true / false, Winlink's Save Data 1 / 0)
+            for d, worker, initial, fill, boxes, tag in (
+                    ('disaster-report', 'Church_of_Jesus_Christ_Disaster_Report_Worker.html', 'Church_of_Jesus_Christ_Disaster_Report_Initial.html', {'inc_stake': 'Larkspur Stake', 'inc_location': mark + ' radio'}, [], 'DR'),
+                    ('supply-order', 'Church_of_Jesus_Christ_Supply_Order_Worker.html', 'Church_of_Jesus_Christ_Supply_Order_Initial.html', {'req_stake': 'Larkspur Stake', 'del_addr': mark + ' radio'}, [], 'SO'),
+                    ('work-crew-log', 'Church_of_Jesus_Christ_Work_Crew_Log_Worker.html', 'Church_of_Jesus_Christ_Work_Crew_Log.html', {'chief_stake': 'Larkspur Stake', 'log_location': mark + ' radio'}, ['safety_cert'], 'WCL')):
+                ctx, pg, errs = open_page(b, 'phone', f'{WEB}/templates/{d}/{worker}')
+                pg.check('#exercise')
+                for k, v in fill.items():
+                    pg.fill('#' + k, v)
+                for k in boxes:
+                    pg.check('#' + k)
+                saved_file = pathlib.Path(tmp) / f'{name}-{tag}.txt'
+                saved_file.write_text(pg.evaluate('getFileContent()'), encoding='utf-8')
+                ctx.close()
+                ctx, pg, errs = open_page(b, 'laptop', f'{WEB}/templates/{d}/{initial}')
+                pg.set_input_files('#fileToLoad', str(saved_file)); pg.wait_for_timeout(500)
+                filled = all(pg.input_value('#' + k) == v for k, v in fill.items())
+                ticked = pg.is_checked('#exercise') and all(pg.is_checked('#' + k) for k in boxes)
+                body = pg.evaluate('buildMsg()')
+                check(f'{name}: {tag} file from the phone, loaded into the Winlink template, keeps THIS IS AN EXERCISE and its boxes',
+                      filled and ticked and f'[Church-{tag}|exercise=YES|' in body and 'THIS IS AN EXERCISE' in body and not errs, (filled, ticked, body[-160:], errs[:2]))
+                ctx.close()
             b.close()
 finally:
     web.shutdown()

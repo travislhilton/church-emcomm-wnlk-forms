@@ -845,7 +845,7 @@ async function checkEoc() {
     if (!p.ok) throw new Error(p.error || 'not reachable');
     const st = p.status, drill = /drill/i.test(st.activeEventName || '');
     $('eocinfo').innerHTML = `<span class="ok">✓</span> <b>${esc(st.eocName || 'unnamed EOC')}</b> (${esc(st.eocLevel || '?')}) · PACE ${esc(st.pace || '—')}`;
-    $('eocdetail').innerHTML = `Event: <b class="${drill ? 'ok' : 'warn'}">${esc(st.activeEventName || 'none')}</b>${drill ? '' : ' — open a drill event on the EOC before running'} · ${st.msgCount} messages · roster ${(p.roster || []).length}<br>Winlink folder: ${p.receivedDir ? '<span class="ok">watched</span> ' + esc(p.receivedDir) : '<span class="warn">not watched</span> (C-level reports become paper cards)'}<br>Drop Folder: ${p.dropDir ? esc(p.dropDir) : '<span class="warn">none</span>'}`;
+    $('eocdetail').innerHTML = `Event: <b class="${drill ? 'ok' : 'warn'}">${esc(st.activeEventName || 'none')}</b>${drill ? '' : ' — Reset for the session (Session tab, step 2) opens a drill event there'} · ${st.msgCount} messages · roster ${(p.roster || []).length}<br>Winlink folder: ${p.receivedDir ? '<span class="ok">watched</span> ' + esc(p.receivedDir) : '<span class="warn">not watched</span> (C-level reports become paper cards)'}<br>Drop Folder: ${p.dropDir ? esc(p.dropDir) : '<span class="warn">none</span>'}`;
     post('/api/settings', { eocUrl: eocUrl() }).catch(() => {});
     log(`EOC reachable: ${st.eocName || '?'}, event "${st.activeEventName || ''}"`);
   } catch (e) { $('eocinfo').innerHTML = `<span class="err">not reachable</span>`; log('EOC not reachable at ' + eocUrl() + ' (is eoc_server.py running? same network?)', 'err'); }
@@ -1198,7 +1198,7 @@ function renderSession() {
 }
 $('ss-reset').onclick = async () => {
   $('ss-reset').disabled = true; $('ss-2-msg').textContent = 'Resetting…';
-  try { const r = await post('/api/session/reset', { event: $('ss-event').value.trim() }); if (!r.ok) throw new Error(r.error); log(`Session reset: run ${r.run}${r.event ? ', fresh drill event "' + r.event + '"' : ''}`); if (r.warning) log(r.warning, 'err'); }
+  try { const r = await post('/api/session/reset', { event: $('ss-event').value.trim() }); if (!r.ok) throw new Error(r.error); log(`Session reset: run ${r.run}${r.event ? ', fresh drill event "' + r.event + '"' : ''}${r.roster_added ? `; the EOC roster was empty, so the ${r.roster_added} playing units were added` : ''}`); if (r.warning) log(r.warning, 'err'); }
   catch (e) { $('ss-2-msg').innerHTML = `<span class="err">${esc(e.message)}</span>`; }
   await loadSession(); pollRun();
 };

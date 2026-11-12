@@ -13,6 +13,7 @@ A scratch EOC server (port 8086) is seeded with invented Juniper Plains reports,
     python testing/test_readout.py
 """
 import json, os, pathlib, re, shutil, sqlite3, subprocess, sys, tempfile, time, urllib.error, urllib.request
+os.environ.setdefault('EMCOMM_DISCOVERY', 'test')   # this suite's EOC servers hear only each other; a real EOC on the LAN ignores them
 REPO = pathlib.Path(__file__).resolve().parent.parent
 CONTRACT = REPO / 'docs' / 'contracts' / 'emcomm-readout'
 PORT = int(next((a.split('=', 1)[1] for a in sys.argv[1:] if a.startswith('--port=')), '8086'))

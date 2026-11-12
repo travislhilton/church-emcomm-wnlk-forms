@@ -14,6 +14,7 @@ Needs ports 8080, 8081 (or --ports=A,B) and UDP 8089. The servers
 watch the real EOC Drop Folder, so do not drop files there while this runs.
 """
 import json, os, re, shutil, subprocess, sys, tempfile, time, urllib.error, urllib.request, pathlib
+os.environ.setdefault('EMCOMM_DISCOVERY', 'test')   # this suite's EOC servers hear only each other; a real EOC on the LAN ignores them
 REPO = pathlib.Path(__file__).resolve().parent.parent
 SP = pathlib.Path(next((a for a in sys.argv[1:] if not a.startswith('--')), '') or tempfile.mkdtemp(prefix='eoc_phone_test_'))
 keep = '--keep' in sys.argv
@@ -96,6 +97,18 @@ try:
     peer_log = [ln.strip() for n in ('srvA', 'srvB') for ln in (SP / f'{n}.log').read_text(encoding='utf-8', errors='replace').splitlines() if '[PEERS]' in ln]
     check('discovery: Alpha hears Bravo', heard, '' if heard else (peer_log or peers))
     bravo_url = next((p['url'] for p in peers if is_bravo(p)), '')
+    # a real EOC's announcement (no test mark) is ignored by this suite's servers, and theirs by a real EOC
+    import socket as _so
+    _u = _so.socket(_so.AF_INET, _so.SOCK_DGRAM); _u.setsockopt(_so.SOL_SOCKET, _so.SO_BROADCAST, 1)
+    _fake = json.dumps({'app': 'church-eoc', 'v': 1, 'url': 'http://192.0.2.7:8080', 'name': 'Real EOC (fake)', 'level': 'stake', 'event': ''}).encode()
+    for _ in range(3):
+        for _addr in ('255.255.255.255', '127.0.0.1'):
+            try: _u.sendto(_fake, (_addr, 8089))
+            except OSError: pass
+        time.sleep(0.5)
+    _u.close(); time.sleep(1)
+    check('discovery: a test server ignores an EOC that is not a test server (and a live EOC ignores the test servers)',
+          not any(p.get('url') == 'http://192.0.2.7:8080' for p in call(PA, 'GET', '/api/peers')))
     # upload
     dr = {'inc_stake': 'Alpha Stake', 'inc_ward': 'Alpha 3rd Ward', 'inc_type': 'Flood', 'inc_date': '2026-10-30', 'inc_location': 'Shelter at Alpha HS',
           'mem_injuries': '2', 'miss_safe': 'YES', 'stn_lat_d': '40.4', 'stn_lon_d': '-117.5', 'sub_name': 'Field Worker', 'exercise': True}
@@ -433,6 +446,19 @@ try:
           and ib2.get('parentName') == 'Area EOC at B2' and ib2.get('eventId') == ib.get('eventId'), (ar2.get('eventOpened'), ib2.get('parentName')))
     try: call(PB, 'POST', '/api/config/apply', {'config': dcfg, 'eoc': 'nope'}); check('drill config: an unknown EOC is refused', False)
     except urllib.error.HTTPError as e: check('drill config: an unknown EOC is refused, naming the choices', e.code == 400 and b'alpha' in e.read())
+    # A roster row id another event already holds (a reset or a handoff from an earlier drill) is kept under a new id
+    ev0 = next((e for e in call(PA, 'GET', '/api/events') if e['active']), {})
+    call(PA, 'POST', '/api/events', {'name': 'Roster id test event 1'})
+    call(PA, 'PUT', '/api/roster', [{'id': 'sim-ward-1', 'name': 'Reused Ward'}, {'id': 'sim-ward-1', 'name': 'Reused Ward twice'}])
+    call(PA, 'POST', '/api/events', {'name': 'Roster id test event 2'})
+    call(PA, 'PUT', '/api/roster', [{'id': 'sim-ward-1', 'name': 'Reused Ward'}])
+    r2 = call(PA, 'GET', '/api/roster')
+    call(PA, 'POST', '/api/merge', {'kind': 'church_eoc_rollup', 'from': {'name': 'Old EOC'}, 'msgs': [], 'roster': [{'id': 'sim-ward-1', 'name': 'Handoff Ward'}]})
+    r3 = call(PA, 'GET', '/api/roster')
+    check('roster: a row whose id another event holds is kept under a new id (PUT and roll-up); a repeat id in one list is skipped',
+          [r['name'] for r in r2] == ['Reused Ward'] and sorted(r['name'] for r in r3) == ['Handoff Ward', 'Reused Ward'] and len({r['id'] for r in r3}) == 2, (r2, r3))
+    if ev0.get('id'):
+        call(PA, 'PUT', f"/api/events/{ev0['id']}", {'activate': True})
     print('\nRESULT:', 'ALL PASS' if all(res) else 'FAILURES', f'({sum(res)}/{len(res)})')
 finally:
     if keep:

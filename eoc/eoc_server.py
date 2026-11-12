@@ -17,7 +17,7 @@ except ValueError:
 VERSION = '1.0'
 # The Worker forms / Church of Jesus Christ EMCOMM app version this server ships (APP_VERSION in templates/_shared/emcomm-app.js).
 # Phones whose app is older still send fine; the receive page just tells them to update when they have internet.
-FORMS_VERSION = '2026-11-12.2'
+FORMS_VERSION = '2026-11-12.3'
 BASE = pathlib.Path(__file__).resolve().parent   # resolve: before Python 3.9 __file__ is relative when started from this folder
 DB_FILE   = BASE / 'eoc_data.db'
 HTML_FILE = BASE / 'EOC_Message_Center.html'
@@ -74,6 +74,9 @@ def _worker_form_path(key: str):
 # pick which EOC to send to when a drill runs more than one EOC on the same network.
 DISCOVERY_PORT = 8089
 DISCOVERY_EVERY_SEC = 5
+# EMCOMM_DISCOVERY: "on" (default); "off" = neither announce nor listen (a drill that plays EOCs with no shared
+# network on one LAN); "test" = the test suites' servers: they hear only each other, and a real EOC ignores them.
+DISCOVERY_MODE = (os.environ.get('EMCOMM_DISCOVERY') or 'on').strip().lower()
 PEER_TTL_SEC = 20
 BACKUP_DIR = BASE / 'backups'
 BACKUP_INTERVAL_SEC = 15 * 60   # auto-backup every 15 minutes
@@ -888,6 +891,20 @@ def _safe_id(v) -> str:
     return s if _SAFE_ID_RE.match(s) else str(uuid.uuid4())
 
 
+def _roster_insert(conn, r: dict, eid) -> bool:
+    """File one roster row in event `eid`. Roster ids are unique across events, so a row whose id another
+    event already holds (a handoff or roll-up from an earlier drill, a reset that reused a unit id) gets a new
+    id instead of being dropped; a second row with the same id in this event is skipped."""
+    r['id'] = _safe_id(r.get('id'))
+    row = conn.execute('SELECT event_id FROM roster WHERE id=?', (r['id'],)).fetchone()
+    if row is not None:
+        if row['event_id'] == eid:
+            return False
+        r['id'] = str(uuid.uuid4())
+    conn.execute('INSERT INTO roster (id, data_json, event_id) VALUES (?,?,?)', (r['id'], json.dumps(r), eid))
+    return True
+
+
 def _ms(v, default=None) -> int:
     """A millisecond timestamp from outside: a number (or numeric text) in range, else `default` (now)."""
     try:
@@ -1303,10 +1320,9 @@ def _merge_bundle_locked(conn, data: dict, via_label: str = '') -> dict:
                 nm = str(r.get('name') or '').strip()[:120]
                 if not nm or nm.lower() in have:
                     continue
-                r = dict(r); r['name'] = nm; r['id'] = _safe_id(r.get('id')); r['via'] = via
-                conn.execute('INSERT OR IGNORE INTO roster (id, data_json, event_id) VALUES (?,?,?)',
-                             (r['id'], json.dumps(r), eid))
-                have.add(nm.lower()); roster_new += 1
+                r = dict(r); r['name'] = nm; r['via'] = via
+                if _roster_insert(conn, r, eid):
+                    have.add(nm.lower()); roster_new += 1
             # Notes: add by id, prefixed with the sending EOC
             for n in data.get('notes') or []:
                 if not isinstance(n, dict) or not n.get('text'):
@@ -1342,6 +1358,7 @@ def _merge_bundle_locked(conn, data: dict, via_label: str = '') -> dict:
                          (str(uuid.uuid4()), int(time.time() * 1000),
                           f'Roll-up received from {via} at {stamp}: {new} new, {dup} already on file'
                           + (f', {bad} not a report (skipped)' if bad else '')
+                          + (f', {actions_new} work item{"" if actions_new == 1 else "s"} waiting on this EOC' if actions_new else '')
                           + (f' (their event: {sender_ev})' if sender_ev else ''), eid))
             ev_row = conn.execute('SELECT data_json FROM events WHERE id=?', (eid,)).fetchone()
             ev = json.loads(ev_row['data_json'] or '{}') if ev_row else {}
@@ -1498,13 +1515,18 @@ def _watcher_loop():
                     if is_store and own_call and _sender_call(mime.get('from_', '')) == own_call:
                         continue  # this station's own copy of a message it sent
                     # Roll-up bundle attached by a Satellite or Stake EOC?
-                    merged_any = False
+                    merged_any, merged_kind = False, 'ROLLUP'
                     for aname, atext in mime.get('attachments') or []:
                         try:
                             bundle = json.loads(atext)
                         except Exception:
                             continue
-                        if _looks_like_bundle(bundle):
+                        if _looks_like_reply(bundle):      # the EOC above answered work items this EOC set Up
+                            res = _merge_bundle(bundle)
+                            merged_any, merged_kind = True, 'REPLY'
+                            print(f'  [WATCHER] Reply from {res["from"]} ({aname}): {res["replies_applied"]} work item(s) answered'
+                                  + (f', {len(res.get("missing") or [])} not on file' if res.get('missing') else ''))
+                        elif _looks_like_bundle(bundle):
                             res = _merge_bundle(bundle)
                             merged_any = True
                             print(f'  [WATCHER] Roll-up from {res["from"]} ({aname}): '
@@ -1547,7 +1569,7 @@ def _watcher_loop():
                         with _watcher_lock:
                             _watcher_state['ingested'] += 1
                             _watcher_state['last_file'] = fpath.name
-                        print(f'  [WATCHER] Ingested [{tag_type if result else "ROLLUP"}] {fpath.name}')
+                        print(f'  [WATCHER] Ingested [{tag_type if result else merged_kind}] {fpath.name}')
                     else:
                         print(f'  [WATCHER] Duplicate (already in EOC): {fpath.name}')
                 except Exception as exc:
@@ -1905,8 +1927,9 @@ def _discovery_announce_loop():
     while True:
         try:
             me = _eoc_identity()
-            msg = json.dumps({'app': 'church-eoc', 'v': 1, 'url': _lan_url(), 'name': me['name'],
-                              'level': me['level'], 'event': me['event']}).encode('utf-8')
+            msg = json.dumps(dict({'app': 'church-eoc', 'v': 1, 'url': _lan_url(), 'name': me['name'],
+                                   'level': me['level'], 'event': me['event']},
+                                  **({'test': True} if DISCOVERY_MODE == 'test' else {}))).encode('utf-8')
             # the subnet's own broadcast address too: macOS may refuse or misroute 255.255.255.255
             sent, error = 0, ''
             for addr in ('255.255.255.255', get_local_ip().rsplit('.', 1)[0] + '.255'):
@@ -1937,6 +1960,8 @@ def _discovery_listen_loop():
             raw, _addr = s.recvfrom(4096)
             p = json.loads(raw.decode('utf-8'))
             if p.get('app') != 'church-eoc' or not str(p.get('url', '')).startswith('http'):
+                continue
+            if bool(p.get('test')) != (DISCOVERY_MODE == 'test'):     # a test server never shows up at a real EOC
                 continue
             url = str(p['url']).rstrip('/')
             with _peers_lock:
@@ -2437,9 +2462,7 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
                     for r in (body if isinstance(body, list) else []):
                         if not isinstance(r, dict):
                             continue
-                        r['id'] = _safe_id(r.get('id'))
-                        conn.execute('INSERT OR IGNORE INTO roster (id, data_json, event_id) VALUES (?,?,?)',
-                                     (r['id'], json.dumps(r), eid))
+                        _roster_insert(conn, r, eid)
                     conn.commit()
                     self.send_json({'ok': True})
 
@@ -2841,8 +2864,11 @@ if __name__ == '__main__':
     threading.Thread(target=_drop_loop, daemon=True, name='drop-watcher').start()
 
     # Discovery: announce this EOC on the LAN and listen for others (phones pick from the list)
-    threading.Thread(target=_discovery_announce_loop, daemon=True, name='discovery-announce').start()
-    threading.Thread(target=_discovery_listen_loop, daemon=True, name='discovery-listen').start()
+    if DISCOVERY_MODE != 'off':
+        threading.Thread(target=_discovery_announce_loop, daemon=True, name='discovery-announce').start()
+        threading.Thread(target=_discovery_listen_loop, daemon=True, name='discovery-listen').start()
+    else:
+        print('  [PEERS]  Discovery off (EMCOMM_DISCOVERY=off): this EOC neither announces itself nor looks for others')
 
     class _EOCServer(http.server.ThreadingHTTPServer):
         # Connections Windows holds while the server is busy. The default is 5, and Windows refuses the next one

@@ -289,7 +289,8 @@ function populateForm() {
       if (!el) continue;
       if (LOAD_SKIP[k]) continue;
       if (el.type === 'date' && !o[k] && el.value) continue;   // keep today's default when the file has no date
-      if (el.type === 'date') { el.value = toIsoDate(o[k]); } else { el.value = o[k]; }
+      if (el.type === 'checkbox') { el.checked = (o[k] === true || o[k] === 1 || o[k] === '1' || o[k] === 'true' || o[k] === 'YES'); }   // Save Data writes 1 / 0, the phone form true / false
+      else if (el.type === 'date') { el.value = toIsoDate(o[k]); } else { el.value = o[k]; }
     }
   } catch(e) {}
   reconcileGPS(o);

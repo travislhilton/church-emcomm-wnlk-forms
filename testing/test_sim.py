@@ -19,6 +19,7 @@ import io
 import json
 import re
 import os
+os.environ.setdefault('EMCOMM_DISCOVERY', 'test')   # this suite's EOC servers hear only each other; a real EOC on the LAN ignores them
 import pathlib
 import shutil
 import subprocess
@@ -861,6 +862,12 @@ try:
           and call(SIM_PORT, 'GET', '/api/run')['clock']['status'] == 'planned', (r, st.get('activeEventName')))
     check('reset: every EOC screen is told the drill is ready (planned, session) and PACE is the scenario\'s first level',
           d.get('status') == 'planned' and d.get('session') is True and st.get('pace') == 'P', {k: d.get(k) for k in ('status', 'session')})
+    ros = call(NEED, 'GET', '/api/roster'); scope_names = sorted({u['name'] for u in plan['run']['scope']['units']})
+    check('reset: the fresh event\'s empty roster gets the units the simulator plays (the wall\'s ward board works from GO)',
+          r.get('roster_added') == len(scope_names) and sorted(x['name'] for x in ros) == scope_names, (r.get('roster_added'), len(ros)))
+    r2 = call(SIM_PORT, 'POST', '/api/session/reset', {'event': 'DRILL: session test again (THIS IS AN EXERCISE)'})
+    check('reset again: the next fresh event gets the playing units too (roster ids are unique on the EOC across events)',
+          r2.get('roster_added') == len(scope_names) and len(call(NEED, 'GET', '/api/roster')) == len(scope_names), (r2.get('roster_added'), len(call(NEED, 'GET', '/api/roster'))))
     status_mc = call(NEED, 'GET', '/', raw=True)[1]; status_wall = call(NEED, 'GET', '/wall', raw=True)[1]; status_m = call(NEED, 'GET', '/m', raw=True)[1]
     check('the Message Center, wall and phone page say "ready: waiting for the trainer\'s GO"; the wall explains a DRILL event with no run',
           b"waiting for the trainer" in status_mc and b"waiting for the trainer" in status_wall and b"waiting for the trainer" in status_m and b'No simulator run has started' in status_wall)

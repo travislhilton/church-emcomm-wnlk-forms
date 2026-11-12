@@ -15,6 +15,7 @@
    repository; a real contact left in a package is caught by the leak check.
 """
 import ast, copy, csv, importlib.util, io, json, os, re, shutil, subprocess, sys, tempfile, tokenize, zipfile
+os.environ.setdefault('EMCOMM_DISCOVERY', 'test')   # this suite's EOC servers hear only each other; a real EOC on the LAN ignores them
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent

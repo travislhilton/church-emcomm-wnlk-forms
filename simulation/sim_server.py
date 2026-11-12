@@ -507,7 +507,9 @@ def session_reset(body: dict) -> dict:
             r.save()
         url = ((req.get('eoc') or {}).get('url') or STATE.settings.get('eocUrl') or f'http://{STATE.lan_ip}:8080').rstrip('/')
         sc = scenario_for_run(req['scenario'])
-        name = str(body.get('event') or '').strip() or f"DRILL: {sc['name']} (THIS IS AN EXERCISE)"
+        dc = STATE.settings.get('drill') or {}      # the drill configuration's event name, so every EOC of the drill uses the same one
+        name = (str(body.get('event') or '').strip() or (dc.get('event') if dc.get('scenario') == req['scenario'] else '')
+                or f"DRILL: {sc['name']} (THIS IS AN EXERCISE)")
         event_ok, event_err = False, ''
         if body.get('new_event', True):
             try:
@@ -519,13 +521,38 @@ def session_reset(body: dict) -> dict:
             except Exception as e:
                 event_err = f'The EOC at {url} did not open a fresh drill event: {e}'
         run = plan_run(req)
+        roster_added = _fill_empty_roster(url, run) if event_ok else 0
         nr = STATE.runner
         nr.run['session'] = {'ready': True, 'reset_ms': int(time.time() * 1000), 'event': name if event_ok else ''}
-        nr._log('Session reset: ' + (f'fresh drill event "{name}" on the EOC; ' if event_ok else '') + 'planned at T+0, waiting for GO')
+        nr._log('Session reset: ' + (f'fresh drill event "{name}" on the EOC; ' if event_ok else '')
+                + (f'its roster was empty, so the {roster_added} playing units were added; ' if roster_added else '') + 'planned at T+0, waiting for GO')
         nr._push_pace(engine.pace_at(run['pace'], 0), 'session reset: the scenario starts here')
         nr.save()
         nr.push_drill()
-        return {'ok': True, 'run': run['id'], 'event': name if event_ok else '', 'warning': event_err, 'counts': engine.counts(run)}
+        return {'ok': True, 'run': run['id'], 'event': name if event_ok else '', 'warning': event_err, 'counts': engine.counts(run),
+                'roster_added': roster_added}
+
+
+def _fill_empty_roster(url: str, run: dict) -> int:
+    """A fresh drill event whose roster is empty gets the units this simulator plays (the stakes at a Council / Area
+    EOC), so the wall's ward board and "wards reported" count work from GO. A roster the EOC already keeps is left alone."""
+    try:
+        if engine._http(url + '/api/roster', timeout=5):
+            return 0
+        units = (run.get('scope') or {}).get('units') or []
+        if ((run.get('site') or {}).get('role') or '') == 'area':
+            names = sorted({u.get('stake_name') or u.get('stake') for u in units if u.get('stake_name') or u.get('stake')})
+        else:
+            names = sorted({u['name'] for u in units if u.get('name')})
+        # roster ids are unique across every event on the EOC: the run id keeps a second reset's rows from being dropped
+        rows = [{'id': f"sim-{run.get('id', '')}-" + re.sub(r'[^a-z0-9]+', '-', n.lower()).strip('-'), 'name': n, 'spName': '', 'spPhone': '',
+                 'expectedMinutes': 0, 'voiceContact': False, 'via': 'simulator'} for n in names]
+        if rows:
+            engine._http(url + '/api/roster', 'PUT', rows, timeout=8)
+        return len(rows)
+    except Exception as e:
+        print(f'  [ROSTER] the playing units were not added to the EOC roster: {type(e).__name__}: {e}')
+        return 0
 
 
 def session_go(body: dict) -> dict:
@@ -834,7 +861,8 @@ class Handler(SimpleHTTPRequestHandler):
                     # one simulator per EOC laptop: unless told otherwise it plays against this laptop's EOC server
                     STATE.settings['eocUrl'] = (body.get('eocUrl') or f'http://{STATE.lan_ip}:8080').rstrip('/')
                     STATE.settings['drill'] = {'name': cfg.get('name', ''), 'eoc': eoc_id, 'eocName': me.get('name', ''),
-                                               'manned': sorted(drillconfig.manned_set(cfg, manned))}
+                                               'manned': sorted(drillconfig.manned_set(cfg, manned)),
+                                               'scenario': cfg.get('scenario', ''), 'event': str((cfg.get('event') or {}).get('name') or '')}
                     save_settings(STATE.settings)
                 return self.send_json({'ok': True, 'site': site, 'scenario': cfg.get('scenario', ''), 'drill': STATE.settings['drill'], 'info': STATE.info()})
             if path == '/api/settings':
