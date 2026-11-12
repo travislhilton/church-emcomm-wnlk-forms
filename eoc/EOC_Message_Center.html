@@ -3817,7 +3817,9 @@ function configureWatcher() {
     }});
 }
 function chooseCallsigns(d) {
-  var chosen = d.callsigns || [], avail = d.available || [];
+  var avail = d.available || [];
+  // only callsigns this folder has: a callsign picked for another folder (e.g. the one auto-picked at start) is not carried over
+  var chosen = (d.callsigns || []).filter(function(c){ return avail.indexOf(c) >= 0; });
   document.getElementById('modal-title').textContent = 'Step 2 of 2: which callsign feeds this EOC?';
   document.getElementById('modal-body').innerHTML = '<p style="margin:0 0 8px">Winlink Express on this laptop has these callsigns. Tick the callsign the field sends this EOC\'s reports to. Its Church forms file themselves every 10 seconds. Mail for the other callsigns is never read.</p>'
     + avail.map(function(c){ var on = chosen.indexOf(c) >= 0 || (!chosen.length && avail.length === 1);

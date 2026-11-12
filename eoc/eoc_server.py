@@ -885,6 +885,57 @@ def _form_key(record: dict) -> str:
     return f'form:{t}:{_fnv1a(js)}'
 
 
+def _norm_val(v) -> str:
+    """One field as a person would compare it: case, spacing, '(not selected)', 11/12/2026 vs 2026-11-12, 10.0 vs 10."""
+    s = re.sub(r'\s+', ' ', str(v if v is not None else '')).strip().lower()
+    if s in ('(not selected)', 'not selected'):
+        return ''
+    m = re.match(r'^(\d{1,2})/(\d{1,2})/(\d{4})$', s)
+    if m:
+        return '%s-%02d-%02d' % (m.group(3), int(m.group(1)), int(m.group(2)))
+    if re.match(r'^-?\d+(\.\d+)?$', s):
+        return '%g' % float(s)
+    return s
+
+
+# The fields a report keeps whichever way it came (the volunteer's file, the HAM's Winlink message, a phone):
+# the same report by two paths has the same key, so it is filed once.
+_REPORT_CORE = {'dr': ('ward', 'location', 'submitter', 'date', 'type', 'mem_inj', 'mem_dead', 'homes_dmg', 'homes_dest', 'vol_count'),
+                'so': ('addr', 'contact', 'order_date'),
+                'wcl': ('location', 'chief', 'date', 'crew_count', 'total_hrs')}
+_REPORT_ANCHOR = {'dr': ('ward', 'location'), 'so': ('addr', 'contact'), 'wcl': ('location', 'chief')}   # where or who
+_REPORT_COUNTS = ('mem_inj', 'mem_dead', 'homes_dmg', 'homes_dest', 'vol_count', 'crew_count', 'total_hrs')   # blank on one path is 0 on the other
+
+
+def _report_key(mtype: str, sub) -> str:
+    core = _REPORT_CORE.get(mtype)
+    if not core or not isinstance(sub, dict):
+        return ''
+    vals = [_norm_val(sub.get(k)) or ('0' if k in _REPORT_COUNTS else '') for k in core]
+    if mtype == 'so':
+        # item codes differ by path (catalog key in the file, item number in the Winlink message); the quantities do not
+        vals.append(','.join(sorted(_norm_val(x.split(':')[-1]) for x in re.split(r'[,;|]', str(sub.get('items') or '')) if ':' in x)))
+    named = [v for k, v in zip(core, vals) if k not in _REPORT_COUNTS and v]
+    if len(named) < 3 or not any(_norm_val(sub.get(k)) for k in _REPORT_ANCHOR[mtype]):
+        return ''   # too little to tell two reports apart (no place or name): file it
+    return 'report:%s:%s' % (mtype, _fnv1a('|'.join(vals)))
+
+
+def _report_on_file(conn, eid, mtype: str, sub) -> bool:
+    """True when the event already holds this report (arrived by another path)."""
+    rk = _report_key(mtype, sub)
+    if not rk:
+        return False
+    for r in conn.execute('SELECT data_json FROM messages WHERE event_id=? AND type=?', (eid, mtype)).fetchall():
+        try:
+            d = json.loads(r['data_json'])
+        except Exception:
+            continue
+        if isinstance(d, dict) and _report_key(mtype, d.get(mtype)) == rk:
+            return True
+    return False
+
+
 def _looks_like_bundle(data) -> bool:
     return isinstance(data, dict) and (isinstance(data.get('msgs'), list) or _looks_like_reply(data))
 
@@ -1271,15 +1322,18 @@ def _merge_bundle_locked(conn, data: dict, via_label: str = '') -> dict:
         try:
             eid = _ensure_active_event(conn)   # a roll-up files under the event we are working
             rows = conn.execute('SELECT id, dup_key, data_json FROM messages WHERE event_id=?', (eid,)).fetchall()
-            ids = set(); dups = set(); forms = set()
+            ids = set(); dups = set(); forms = set(); reports = set()
             for r in rows:
                 ids.add(r['id'])
                 if r['dup_key']:
                     dups.add(r['dup_key'])
                 try:
-                    forms.add(_form_key(json.loads(r['data_json'])))
+                    rd = json.loads(r['data_json'])
+                    forms.add(_form_key(rd))
+                    reports.add(_report_key(str(rd.get('type') or '').lower(), rd.get(str(rd.get('type') or '').lower())))
                 except Exception:
                     pass
+            reports.discard('')
             for m in data.get('msgs') or []:
                 # Only a Disaster Report, Supply Order or Work Crew Log is filed, its fields an object (an older record
                 # may carry them flat, without the sub-object: the Message Center rebuilds it).
@@ -1292,7 +1346,8 @@ def _merge_bundle_locked(conn, data: dict, via_label: str = '') -> dict:
                 mid = _safe_id(m.get('id'))
                 dk  = str(m.get('dupKey') or '')[:200]
                 fk  = _form_key(m)
-                if mid in ids or (dk and dk in dups) or fk in forms:
+                rk  = _report_key(mtype, m.get(mtype))
+                if mid in ids or (dk and dk in dups) or fk in forms or (rk and rk in reports):
                     dup += 1
                     continue
                 m['id'] = mid
@@ -1314,6 +1369,8 @@ def _merge_bundle_locked(conn, data: dict, via_label: str = '') -> dict:
                     (mid, ts, m['type'], json.dumps(m), status, note, str(m.get('filename') or '')[:200], dk, eid)
                 )
                 ids.add(mid); forms.add(fk)
+                if rk:
+                    reports.add(rk)
                 if dk:
                     dups.add(dk)
                 new += 1
@@ -1428,6 +1485,8 @@ def _ingest_mime(mime: dict, tag_type: str, tag_fields: dict, filename: str) -> 
             eid = _ensure_active_event(conn)
             if conn.execute('SELECT id FROM messages WHERE dup_key=? AND event_id=?', (dup_key, eid)).fetchone():
                 return False
+            if _report_on_file(conn, eid, sub_key, tag_fields):
+                return False   # the volunteer's file (or a phone) brought it already
             conn.execute(
                 'INSERT OR IGNORE INTO messages '
                 '(id, received_ms, type, data_json, status, operator_note, filename, dup_key, event_id)'
@@ -1581,6 +1640,8 @@ def _watcher_loop():
                             _watcher_state['ingested'] += 1
                             _watcher_state['last_file'] = fpath.name
                         print(f'  [WATCHER] Ingested [{tag_type if result else merged_kind}] {fpath.name}')
+                    elif result is not None:
+                        print(f'  [WATCHER] [{tag_type}] already on file (the same report came by another path): {fpath.name}')
                     else:
                         print(f'  [WATCHER] Duplicate (already in EOC): {fpath.name}')
                 except Exception as exc:
@@ -1803,6 +1864,8 @@ def _ingest_worker(data: dict, filename: str, source: str = 'internet') -> tuple
             eid = _ensure_active_event(conn)
             if conn.execute('SELECT id FROM messages WHERE dup_key=? AND event_id=?', (dup_key, eid)).fetchone():
                 return form_type, False
+            if _report_on_file(conn, eid, sub_key, record[sub_key]):
+                return form_type, False   # the HAM's Winlink message (or a phone) brought it already
             conn.execute(
                 'INSERT OR IGNORE INTO messages '
                 '(id, received_ms, type, data_json, status, operator_note, filename, dup_key, event_id)'
@@ -2350,6 +2413,8 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
                         ).fetchone()
                         if existing:
                             self.send_json({'duplicate': True}); return
+                    if msg_type in MSG_TYPES and _report_on_file(conn, eid, msg_type, body.get(msg_type)):
+                        self.send_json({'duplicate': True}); return
                     conn.execute(
                         'INSERT OR IGNORE INTO messages (id, received_ms, type, data_json, status, operator_note, filename, dup_key, event_id)'
                         ' VALUES (?,?,?,?,?,?,?,?,?)',
@@ -2530,6 +2595,13 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
                             _watcher_state['enabled'] = True
                         if 'callsigns' in body:
                             _watcher_state['callsigns'] = _norm_calls(body.get('callsigns'))
+                        elif new_path:
+                            # a new folder alone: keep only the callsigns it has (one picked for another folder, e.g. the one
+                            # auto-picked at start, would read nothing); none left and the folder has one, take that one
+                            avail = _winlink_callsigns(new_path)
+                            if avail:
+                                calls = [c for c in _watcher_state.get('callsigns') or [] if c in avail]
+                                _watcher_state['callsigns'] = calls or (avail if len(avail) == 1 else [])
                         keep = {'winlinkFolder': _watcher_state['watch_path'], 'winlinkCallsigns': _watcher_state['callsigns'],
                                 'winlinkWatch': _watcher_state['enabled']}
                     _save_settings(keep)   # survives a restart; an unattended start reads it

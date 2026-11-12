@@ -117,6 +117,13 @@ try:
     check('upload 2 reports to Alpha', r1.get('ok') and r1.get('new') == 2 and r1['eoc']['name'] == 'Alpha Stake EOC', r1)
     r2 = call(PA, 'POST', '/api/upload', {'reports': [{'id': 'r1', 'form': 'dr', 'data': dict(reversed(list(dr.items())))}]})
     check('same report again (keys in another order) = duplicate', r2.get('dup') == 1 and r2.get('new') == 0, r2)
+    # the same report by another path (the HAM's Winlink copy of the volunteer's file): its own id and message key,
+    # the date written 10/30/2026, blanks shown as (not selected) or 0 -> still filed once
+    wl_copy = {'id': 'WLCOPY000001', 'type': 'dr', 'dupKey': 'WLCOPY000001', 'source': 'auto',
+               'dr': {'ward': 'alpha 3rd ward', 'location': 'Shelter at  Alpha HS', 'submitter': 'Field Worker', 'date': '10/30/2026', 'type': 'flood',
+                      'mem_inj': '2', 'mem_dead': '0', 'homes_dmg': '0', 'miss_safe': '(not selected)', 'op_call': 'W9TST'}}
+    check('the same report by another path (Winlink copy of the uploaded file) = duplicate, not filed twice',
+          call(PA, 'POST', '/api/messages', wl_copy).get('duplicate') is True and len(call(PA, 'GET', '/api/messages')) == 2)
     msgs = call(PA, 'GET', '/api/messages')
     m = next((json.loads(x['data_json']) for x in msgs if x['type'] == 'dr'), {})
     check('DR filed with mapped fields and source=upload', m.get('source') == 'upload' and m.get('dr', {}).get('stake') == 'Alpha Stake' and m.get('fields', {}).get('inc_type') == 'Flood', m.get('dr'))
@@ -384,6 +391,19 @@ try:
     check('Simulated Winlink inbox: read even when the drill\'s callsign has no folder here (missing callsign shown, no store scanned)',
           sim2 and wv.get('missing') == ['SIM-NONE'] and not wv.get('sources') and wv.get('drillDir'), {k: wv.get(k) for k in ('missing', 'sources', 'drillDir')})
     call(PA, 'PUT', '/api/watcher/config', {'watch_path': str(fake), 'callsigns': 'w9aaa', 'enabled': True})
+    # a new folder chosen alone (step 1 of the two-step chooser): a callsign that folder lacks is not carried over
+    # (2026-11-12 no-simulator walk: the callsign auto-picked at start from C:\RMS Express stayed, the new folder's was never read)
+    for sub, calls in (('wl_one', ('W9CCC',)), ('wl_two', ('W9AAA', 'W9DDD'))):
+        for c in calls:
+            (SP / sub / c / 'Messages').mkdir(parents=True, exist_ok=True); (SP / sub / c / 'Data').mkdir(exist_ok=True)
+    w1 = call(PA, 'PUT', '/api/watcher/config', {'watch_path': str(SP / 'wl_one')})
+    w2 = call(PA, 'PUT', '/api/watcher/config', {'watch_path': str(SP / 'wl_two')})
+    call(PA, 'PUT', '/api/watcher/config', {'watch_path': str(fake), 'callsigns': 'w9aaa'})
+    w3 = call(PA, 'PUT', '/api/watcher/config', {'watch_path': str(SP / 'wl_two')})
+    call(PA, 'PUT', '/api/watcher/config', {'watch_path': str(fake), 'callsigns': 'w9aaa', 'enabled': True})
+    check('a new Winlink folder alone: its only callsign replaces one it lacks; with two and none chosen, none; a chosen one it has stays',
+          w1.get('callsigns') == ['W9CCC'] and w2.get('callsigns') == [] and w3.get('callsigns') == ['W9AAA'] and not w1.get('missing'),
+          [w.get('callsigns') for w in (w1, w2, w3)])
     # a partner agency's ICS 213RR (a city EOC that does not run this system) arrives by Winlink: a work item named for the agency
     sys.path.insert(0, str(REPO / 'simulation'))
     import engine as _eng

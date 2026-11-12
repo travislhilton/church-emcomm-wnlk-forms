@@ -123,7 +123,7 @@ The printed page is laid out like the Church paper form it is based on (Disaster
    - **Laptop:** the form's **Print** works with any printer the laptop can reach.
 4. Give the printed form to your Crew Chief or a runner.
 5. **No printer?** Copy the report onto a blank paper form by hand.
-6. Keep the report in your **Outbox** as well: it goes in digitally when any path comes back, and the EOC files a duplicate only once.
+6. Keep the report in your **Outbox** as well: it goes in digitally when any path comes back, and the EOC files a duplicate only once. The same report by two paths (a HAM's Winlink message and your saved file, say) is filed once too.
 
 The same **Print** button is on forms served by an EOC (`http://<server-ip>:8080/forms/dr`, `so`, `wcl`), so an EOC can print blank forms for its paper stock (add `?blank=1` to the address) and type in paper that arrives by runner.
 
@@ -433,7 +433,7 @@ Volunteers and HAM operators do exactly what they do today — they are simply g
 2. Send it to the parent EOC: **P / A** attach it to an email to the parent's drop email, or to a Winlink message sent over Telnet · **C** radio only: attach it to a Winlink message to the parent's Winlink address (about 1 KB per record) · **E** carry it on a USB drive with the printed SITREP
 3. On the parent EOC nothing needs clicking: the Drop Folder watcher and the Winlink watcher both merge `.json` roll-ups automatically. From USB, drop it in the Drop Folder or click **Import Roll-up JSON (merge)**
 
-Nothing is counted twice — a merge skips any record it already has by id, Winlink Message-ID or form content, and keeps the parent's own status and notes. A roll-up carries the summary fields of each report, not the full text (radio airtime), so **Open** at the parent EOC shows the summary and says where the complete form is. The SITREP gains **Section H: Reporting EOCs** (who rolled up, how much, when), the Overview shows the same, and the Messages tab has a **Via** column. **Import Handoff JSON** is different: it *replaces* everything and is for shift change only. Full detail and the EOC assignment sheet: [docs/PACE_PLAN.md §2d and §6d](docs/PACE_PLAN.md).
+Nothing is counted twice — a merge skips any record it already has by id, Winlink Message-ID or form content (the same report by another path counts as one: same unit, place, sender, date and numbers), and keeps the parent's own status and notes. A roll-up carries the summary fields of each report, not the full text (radio airtime), so **Open** at the parent EOC shows the summary and says where the complete form is. The SITREP gains **Section H: Reporting EOCs** (who rolled up, how much, when), the Overview shows the same, and the Messages tab has a **Via** column. **Import Handoff JSON** is different: it *replaces* everything and is for shift change only. Full detail and the EOC assignment sheet: [docs/PACE_PLAN.md §2d and §6d](docs/PACE_PLAN.md).
 
 ---
 

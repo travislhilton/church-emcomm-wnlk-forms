@@ -258,7 +258,8 @@ try:
                 time.sleep(0.25)
             check(f'{name}: the Drop Folder is chosen with the folder browser and saved', ok and not errs, (call(f'{EOC}/api/drop/status').get('watch_path'), errs[:2]))
             wl = tmp / f'winlink-{name}'
-            wl.mkdir()
+            for d in ('Messages', 'Data'):   # Winlink Express keeps <folder>\\<CALLSIGN>\\Messages and Data
+                (wl / 'W7TST' / d).mkdir(parents=True)
             pg.evaluate("configureWatcher()")
             pg.wait_for_selector('#fb-bg', state='visible', timeout=5000)
             # let the first listing land: a reply arriving inside fill() (faster than any typing) runs the two paths together
@@ -267,13 +268,37 @@ try:
             pg.click('#fb-box button:has-text("Go")')
             pg.wait_for_function(f"document.getElementById('fb-path').value.endsWith('winlink-{name}')", timeout=6000)
             pg.click('#fb-use')
+            # step 2 of 2 (2026-11-12.4): tick the callsign found in that folder; the only one is ticked already
+            pg.wait_for_selector('.wl-call', timeout=6000)
+            found = pg.eval_on_selector_all('.wl-call', 'xs => xs.map(x => [x.value, x.checked])')
+            pg.click('#modal-confirm-btn')
             ok = False
             for _ in range(20):
-                if pathlib.Path(call(f'{EOC}/api/watcher/status').get('watch_path', '')) == wl:
+                ws = call(f'{EOC}/api/watcher/status')
+                if pathlib.Path(ws.get('watch_path', '')) == wl and ws.get('callsigns') == ['W7TST']:
                     ok = True
                     break
                 time.sleep(0.25)
-            check(f'{name}: the Winlink Express folder is chosen with the folder browser and saved', ok and not errs, (call(f'{EOC}/api/watcher/status').get('watch_path'), errs[:2]))
+            check(f'{name}: the Winlink Express folder is chosen with the folder browser, then its callsign is ticked (no typed prompt), and both are saved',
+                  ok and found == [['W7TST', True]] and not errs, (found, ws.get('watch_path'), ws.get('callsigns'), errs[:2]))
+            # first run (2026-11-12.4): the Overview's "Set up this EOC" list, the Setup tab's Jump to bar, and Save EOC
+            # Identity putting the units covered on the roster (each unit once, however often it is saved)
+            pg.evaluate("switchTab('overview')")
+            start = pg.inner_text('#ov-start')
+            pg.evaluate("switchTab('setup')")
+            pg.click('.setup-nav a[href="#comms-card"]')
+            pg.wait_for_timeout(400)
+            nav_top = pg.evaluate("Math.round(document.getElementById('comms-card').getBoundingClientRect().top)")
+            units = [f'Larkspur {name} A Ward', f'Larkspur {name} B Ward']
+            pg.fill('#eoc-units', ', '.join(units))
+            pg.evaluate('saveEocIdentity()')
+            pg.wait_for_timeout(600)
+            pg.evaluate('saveEocIdentity()')
+            pg.wait_for_timeout(900)
+            got = [r['name'] for r in call(f'{EOC}/api/roster') if r.get('name') in units]
+            check(f'{name}: first run: the setup list renders, Jump to scrolls its card into view, Save EOC Identity puts each unit covered on the roster once',
+                  ('steps left' in start.lower() or start.strip() == '') and nav_top < 140 and sorted(got) == sorted(units) and not errs,
+                  (start[:80], nav_top, got, errs[:2]))
             # Comms Sheet gateways (K8): a sheet from before 2026-11-12.2 (free-text mode, out of order) opens with each row's
             # Contingency step chosen and sorted; Holds mail saves; fields this page does not know ride along
             stamp = int(time.time() * 1000) + len(name)
