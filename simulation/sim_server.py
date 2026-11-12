@@ -953,7 +953,9 @@ def main():
             STATE.pack_error = f'{type(e).__name__}: {e}'
             STATE.export = Path(pack_path) if Path(pack_path).is_dir() else None
     STATE.port = port
-    srv = ThreadingHTTPServer(('0.0.0.0', port), Handler)
+    class _SimServer(ThreadingHTTPServer):
+        request_queue_size = 128      # the default 5 is refused outright on Windows when a room of phones opens /results together
+    srv = _SimServer(('0.0.0.0', port), Handler)
     print('EMCOMM simulator server')
     print(f'  Page:     http://{STATE.lan_ip}:{port}/   (this PC: http://localhost:{port}/)')
     if STATE.pack:

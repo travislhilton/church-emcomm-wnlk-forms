@@ -60,7 +60,9 @@ set CHURCH_EMCOMM_BAT=1
 powershell.exe -NoLogo -ExecutionPolicy Bypass -File "%CHURCH_PS1%"
 set "EC=%ERRORLEVEL%"
 rd /s /q "%CHURCH_TMPDIR%" 2>nul
-if "%EC%" neq "0" pause
+echo.
+echo  Press any key to close this window.
+pause >nul
 exit /b %EC%
 <#PS1START#>'''
 
@@ -134,7 +136,8 @@ def powershell_script(files: list) -> str:
         L += [f"            '{b64[i:i + 76]}'" for i in range(0, len(b64), 76)]
         L += ['        )', '    }']
     L += [')', '', '# ---- Extract to temp ---------------------------------------------------',
-          '$ExtractRoot = Join-Path $env:TEMP "ChurchEMCOMM_Install_$(Get-Random)"',
+          '# inside the folder the batch header made and removes when this script ends, however it ends (cancelled, error)',
+          '$ExtractRoot = if ($env:CHURCH_TMPDIR) { Join-Path $env:CHURCH_TMPDIR "files" } else { Join-Path $env:TEMP "ChurchEMCOMM_Install_$(Get-Random)" }',
           'New-Item -ItemType Directory -Force $ExtractRoot | Out-Null',
           'foreach ($f in $EmbeddedFiles) {',
           '    $dir  = Join-Path $ExtractRoot $f.Dir',
@@ -163,26 +166,34 @@ def check_powershell_syntax(script: str):
     print('  PowerShell syntax check passed')
 
 
-def build_bat():
+def build_bat(out: Path = None, quiet: bool = False):
+    """Write the one-file installer (to dist/, or to `out`: testing/test_install.py builds a scratch copy)."""
+    out = out or BAT
     files = shared_files()
     script = powershell_script(files)
     output = re.sub(r'\r?\n', '\r\n', BAT_HEADER + script)
-    BAT.write_bytes(output.encode('utf-8'))
-    print(f'  {BAT.relative_to(ROOT).as_posix()}: {len(files)} files, {BAT.stat().st_size // 1024} KB')
-    check_powershell_syntax(script)
+    out.write_bytes(output.encode('utf-8'))
+    if not quiet:
+        print(f'  {out.name}: {len(files)} files, {out.stat().st_size // 1024} KB')
+        check_powershell_syntax(script)
+    return files
 
 
-def build_zip():
+def build_zip(out: Path = None, quiet: bool = False):
+    """Write the ZIP (to dist/, or to `out`)."""
+    out = out or ZIP
     readme = (ROOT / 'installer' / 'dist-readme.txt').read_text(encoding='utf-8').replace('{VERSION}', VERSION)
     entries = {n: read_for_release(n) for n in shared_files() + ZIP_ONLY}
     entries['README.txt'] = re.sub(r'\r?\n', '\r\n', readme).encode('utf-8')
-    with zipfile.ZipFile(ZIP, 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as z:
+    with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as z:
         for name in sorted(entries):
             info = zipfile.ZipInfo(name, ZIP_DATE)
             info.compress_type = zipfile.ZIP_DEFLATED
             info.external_attr = 0o644 << 16
             z.writestr(info, entries[name])
-    print(f'  {ZIP.relative_to(ROOT).as_posix()}: {len(entries)} files, {ZIP.stat().st_size // 1024} KB')
+    if not quiet:
+        print(f'  {out.name}: {len(entries)} files, {out.stat().st_size // 1024} KB')
+    return sorted(entries)
 
 
 def main(argv):

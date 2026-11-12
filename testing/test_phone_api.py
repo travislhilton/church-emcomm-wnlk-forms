@@ -73,20 +73,29 @@ try:
     check('folder browser: a path that does not exist opens its nearest real parent; any folder can be chosen', pathlib.Path(br.get('path', '')) == REPO and not br.get('mark'), br.get('path'))
     own = subprocess.run([sys.executable, '-c', "import eoc_server as e; a = e._own_addresses(); print('203.0.113.5' in a, '127.0.0.1' in a)"], cwd=str(SP / 'srvA' / 'eoc'), capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60)
     check('folder browser: refused to another device on the Wi-Fi, allowed at this laptop', own.stdout.split()[-2:] == ['False', 'True'], own.stdout[-200:] + own.stderr[-200:])
+    fw = subprocess.run([sys.executable, '-c', "import eoc_server as e; f = e._firewall_blocks; print(f(['C:\\\\Program Files\\\\Python312\\\\python.exe', 'Any'], ['c:/program files/python312/PYTHON.EXE', '']), "
+                         "f(['Any', '', 'C:\\\\Other\\\\app.exe'], ['C:\\\\Program Files\\\\Python312\\\\python.exe']), f([], ['x']))"],
+                        cwd=str(SP / 'srvA' / 'eoc'), capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60)
+    check('Windows Firewall check: a Block rule for this Python is recognized (any case, either slash); other rules are not; status carries the answer',
+          fw.stdout.split()[-3:] == ['True', 'False', 'False'] and st.get('firewallBlocked') is False, fw.stdout[-200:] + fw.stderr[-200:])
     for k, marker in (('dr', b'Disaster Report'), ('so', b'Supply Order'), ('wcl', b'Work Crew Log')):
         s, b = call(PA, 'GET', '/forms/' + k, raw=True); check(f'/forms/{k} serves the Worker form with the app module', s == 200 and marker in b and b'EMCOMM-APP:BEGIN' in b and b'EMCOMM.init' in b)
     try: call(PA, 'GET', '/forms/zz', raw=True); check('/forms/zz is 404', False)
     except urllib.error.HTTPError as e: check('/forms/zz is 404', e.code == 404)
     # discovery (broadcast every 5 s)
+    # This run's own Bravo, by address: another computer on the same network may be running this test at the same
+    # moment with the same names, and its Bravo is heard too (that relay then answers "duplicate", or is refused).
+    own_bravo = (call(PA, 'GET', '/api/status').get('lanUrl') or '').rsplit(':', 1)[0] + f':{PB}'
+    is_bravo = lambda p: p.get('name') == 'Bravo Satellite EOC' and p.get('url') == own_bravo
     peers = []
     for _ in range(30):
         peers = call(PA, 'GET', '/api/peers')
-        if any(p.get('name') == 'Bravo Satellite EOC' for p in peers): break
+        if any(is_bravo(p) for p in peers): break
         time.sleep(1)
-    heard = len(peers) >= 2 and peers[0].get('self') and any(p.get('name') == 'Bravo Satellite EOC' for p in peers)
+    heard = len(peers) >= 2 and peers[0].get('self') and any(is_bravo(p) for p in peers)
     peer_log = [ln.strip() for n in ('srvA', 'srvB') for ln in (SP / f'{n}.log').read_text(encoding='utf-8', errors='replace').splitlines() if '[PEERS]' in ln]
     check('discovery: Alpha hears Bravo', heard, '' if heard else (peer_log or peers))
-    bravo_url = next((p['url'] for p in peers if p.get('name') == 'Bravo Satellite EOC'), '')
+    bravo_url = next((p['url'] for p in peers if is_bravo(p)), '')
     # upload
     dr = {'inc_stake': 'Alpha Stake', 'inc_ward': 'Alpha 3rd Ward', 'inc_type': 'Flood', 'inc_date': '2026-10-30', 'inc_location': 'Shelter at Alpha HS',
           'mem_injuries': '2', 'miss_safe': 'YES', 'stn_lat_d': '40.4', 'stn_lon_d': '-117.5', 'sub_name': 'Field Worker', 'exercise': True}
@@ -245,6 +254,16 @@ try:
     check('cross-origin POST / DELETE refused (403), nothing written; same-origin page and scripts without Origin accepted',
           (s3, s4, s5, s6, s7) == (403, 403, 403, 200, 200) and 'cors-evil' not in ids_ and 'cors-null' not in ids_ and 'cors-same' in ids_ and 'cors-none' in ids_
           and any(a['id'] == 'bravo-a1' for a in call(PA, 'GET', '/api/actions')), (s3, s4, s5, s6, s7))
+    # A refusal must still read what was sent: Windows resets a connection closed with unread data, and the sender
+    # gets WinError 10053 where the 403 should be (7 in 10 of these failed on Windows before the server read the body).
+    big, lost = {'id': 'cors-big', 'text': 'x' * 300000}, []
+    for _ in range(40):
+        try:
+            sb, _, _ = call_h(PA, 'POST', '/api/notes', big, {'Origin': 'http://evil.example'})
+            if sb != 403: lost.append(sb)
+        except Exception as e:
+            lost.append(f'{type(e).__name__}: {e}')
+    check('a refused request with a large body gets its 403 every time (40 of 40), never a dropped connection', not lost, (len(lost), lost[:2]))
     lan_host = (call(PA, 'GET', '/api/status').get('lanUrl') or '').split('//')[-1].rsplit(':', 1)[0]
     if lan_host and not lan_host.startswith('127.'):
         s8, _, _ = call_h(PA, 'PUT', '/api/drop/config', {'enabled': True}, host=lan_host)

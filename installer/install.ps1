@@ -54,6 +54,21 @@ function Write-Warn { param([string]$msg) Write-Host "  !!  $msg" -ForegroundCol
 function Write-Err  { param([string]$msg) Write-Host "  XX  $msg" -ForegroundColor Red }
 function Write-Info { param([string]$msg) Write-Host "    $msg"   -ForegroundColor Gray }
 
+# -- Test install -------------------------------------------------------------
+# testing\test_install.py sets EMCOMM_TEST_ROOT to an empty scratch folder. Documents, the Desktop, the system drive
+# and Winlink Express are then folders inside it, so an install can be checked without touching this computer's own
+# files. Never set in normal use.
+$TestRoot = $env:EMCOMM_TEST_ROOT
+function Get-UserFolder([string]$name) {
+    if (-not $TestRoot) { return [Environment]::GetFolderPath($name) }
+    $p = Join-Path $TestRoot $(if ($name -eq 'MyDocuments') { 'Documents' } else { $name })
+    if (-not (Test-Path -LiteralPath $p)) { New-Item -ItemType Directory -Force $p | Out-Null }
+    return $p
+}
+$SystemDriveRoot = if ($TestRoot) { Join-Path $TestRoot 'SystemDrive' } else { $env:SystemDrive + '\' }
+$WinlinkHome     = if ($TestRoot) { Join-Path $TestRoot 'RMS Express' } else { 'C:\RMS Express' }
+$WinlinkHomes    = if ($TestRoot) { @($WinlinkHome) } else { @('C:\RMS Express', 'C:\Winlink Express') }
+
 # PRACTICE-SYNC:BEGIN
 # Install the practice forms into one folder and retire the ones an earlier release left there. Only the generator's
 # own numbered files go; anything else a person put here stays. A private set (its README says so) is left untouched.
@@ -123,11 +138,11 @@ function Find-Browser {
 }
 
 function Find-Winlink {
-    $paths = @(
-        'C:\RMS Express\RMS Express.exe',
-        (Join-Path $env:PROGRAMFILES        "RMS Express\RMS Express.exe"),
-        (Join-Path ${env:PROGRAMFILES(X86)} "RMS Express\RMS Express.exe")
-    )
+    $paths = @((Join-Path $WinlinkHome 'RMS Express.exe'))
+    if (-not $TestRoot) {
+        $paths += (Join-Path $env:PROGRAMFILES        "RMS Express\RMS Express.exe")
+        $paths += (Join-Path ${env:PROGRAMFILES(X86)} "RMS Express\RMS Express.exe")
+    }
     foreach ($p in $paths) { if (Test-Path $p) { return (Split-Path $p) } }
     return $null
 }
@@ -223,7 +238,7 @@ $installEOC     = $choice -eq '3'
 # -- Install destination ------------------------------------------------------
 # Documents, unless OneDrive (or another sync service) holds it: a synced folder can upload, lock or conflict
 # with the EOC database while the server writes it. Then the install goes to a plain folder on the system drive.
-$docsDir     = [Environment]::GetFolderPath('MyDocuments')
+$docsDir     = (Get-UserFolder 'MyDocuments')
 $docsInstall = Join-Path $docsDir 'Church of Jesus Christ EMCOMM'
 function Test-SyncedFolder([string]$path) {
     if ($path -match '\\(OneDrive|Dropbox|Google Drive|iCloudDrive)( - [^\\]+)?(\\|$)') { return $true }
@@ -234,7 +249,7 @@ function Test-SyncedFolder([string]$path) {
 }
 $docsSynced = Test-SyncedFolder $docsDir
 if ($docsSynced) {
-    $installBase = Join-Path ($env:SystemDrive + '\') 'Church of Jesus Christ EMCOMM'
+    $installBase = Join-Path $SystemDriveRoot 'Church of Jesus Christ EMCOMM'
 } else {
     $installBase = $docsInstall
 }
@@ -291,16 +306,16 @@ function Move-OldFolder([string]$old, [string]$new) {
     Write-Warn "Copied missing files from $old into $new. The old folder was kept; delete it when you have checked."
 }
 $oldName = 'Church EMCOMM'
-Move-OldFolder (Join-Path ([Environment]::GetFolderPath('MyDocuments')) $oldName) $installBase
+Move-OldFolder (Join-Path ((Get-UserFolder 'MyDocuments')) $oldName) $installBase
 if ($env:LOCALAPPDATA) { Move-OldFolder (Join-Path $env:LOCALAPPDATA $oldName) (Join-Path $env:LOCALAPPDATA 'Church of Jesus Christ EMCOMM') }
-$oldDesk = [Environment]::GetFolderPath('Desktop')
+$oldDesk = (Get-UserFolder 'Desktop')
 foreach ($n in @("$oldName Forms", "$oldName Quick Reference Cards.lnk", "$oldName Simulator.lnk",
                  "$oldName EOC Message Center.lnk", "$oldName EOC Server.lnk", "$oldName EOC Drop Folder.lnk",
                  'Church of Jesus Christ EOC Message Center.lnk', 'Church of Jesus Christ EOC Server.lnk', 'Church of Jesus Christ EOC Drop Folder.lnk')) {
     $p = Join-Path $oldDesk $n
     if (Test-Path $p) { Remove-Item -LiteralPath $p -Recurse -Force -ErrorAction SilentlyContinue; Write-OK "Removed old shortcut: $n" }
 }
-foreach ($t in @('C:\RMS Express\Global Folders\Templates', 'C:\Winlink Express\Global Folders\Templates')) {
+foreach ($t in @($WinlinkHomes | ForEach-Object { Join-Path $_ 'Global Folders\Templates' })) {
     foreach ($n in @("$oldName Forms", "$oldName Practice")) {
         $p = Join-Path $t $n
         if (Test-Path $p) { Remove-Item -LiteralPath $p -Recurse -Force -ErrorAction SilentlyContinue; Write-OK "Removed old Winlink template folder: $p" }
@@ -431,7 +446,7 @@ if ($installWorker) {
     }
 
     # Desktop shortcut folder
-    $desktopPath = [Environment]::GetFolderPath('Desktop')
+    $desktopPath = (Get-UserFolder 'Desktop')
     $shortcutDir  = Join-Path $desktopPath 'Church of Jesus Christ EMCOMM Forms'
     if (-not (Test-Path $shortcutDir)) {
         New-Item -ItemType Directory -Force $shortcutDir | Out-Null
@@ -582,7 +597,7 @@ if ($installEOC) {
     # Desktop shortcut for the EOC Message Center: a small launcher that opens the EOC Server's page when the
     # server runs on this laptop (records shared with every operator), and the standalone file only when it does not
     # (records kept in this browser alone). Opening the file while the server runs would split the records.
-    $desktopPath = [Environment]::GetFolderPath('Desktop')
+    $desktopPath = (Get-UserFolder 'Desktop')
     $lnkPath = Join-Path $desktopPath 'Church of Jesus Christ EMCOMM EOC Message Center.lnk'
     $launcher = Join-Path $eocDest 'Open EOC Message Center.cmd'
     $launcherText = @(
@@ -637,7 +652,7 @@ if ($installWinlink) {
     Write-Host ""
     Write-Step "Installing Winlink templates..."
 
-    $winlinkTemplatePaths = @('C:\RMS Express\Global Folders\Templates')
+    $winlinkTemplatePaths = @((Join-Path $WinlinkHome 'Global Folders\Templates'))
     if ($winlinkDir) {
         $winlinkTemplatePaths = @((Join-Path $winlinkDir 'Global Folders\Templates')) + $winlinkTemplatePaths
     }
@@ -695,7 +710,7 @@ if ($installWinlink) {
         $trainingDest = Join-Path $installBase 'Training\Winlink Practice Forms'
         $n = Sync-PracticeForms $practiceSrc $trainingDest
         if ($n -ge 0) { Write-OK "Practice forms: training copy -> $trainingDest" }
-        $trainingLnkDir = Join-Path ([Environment]::GetFolderPath('Desktop')) 'Church of Jesus Christ EMCOMM Forms'
+        $trainingLnkDir = Join-Path ((Get-UserFolder 'Desktop')) 'Church of Jesus Christ EMCOMM Forms'
         if (Test-Path $trainingLnkDir) {
             Create-Shortcut -ShortcutPath (Join-Path $trainingLnkDir 'Training - Winlink Practice Forms.lnk') `
                             -TargetPath   $trainingDest `
@@ -711,7 +726,7 @@ if ($installWinlink) {
     $sampleRoot = Join-Path $RepoRoot 'training\scenario-samples'
     if (Test-Path $sampleRoot) {
         $stdIcs = $null
-        foreach ($cand in @($winlinkDir, 'C:\RMS Express')) {
+        foreach ($cand in @($winlinkDir, $WinlinkHome)) {
             if (-not $cand) { continue }
             $p = Join-Path $cand 'Standard Templates\ICS USA Forms'
             if (Test-Path (Join-Path $p 'ICS213RR_Initial.html')) { $stdIcs = $p; break }

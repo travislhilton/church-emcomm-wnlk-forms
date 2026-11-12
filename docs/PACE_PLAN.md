@@ -85,8 +85,8 @@ Each EOC runs its own server and database, has its own **drop email address** (f
 
 | Level | How the roll-up travels |
 |---|---|
-| **P / A** | Setup tab → **Export Roll-up JSON** (keep "only new since last roll-up" ticked) → attach the `.json` to an email to the parent EOC's drop email. The parent's Drop Folder watcher merges it automatically, zero-touch, within 10 s. |
-| **C** | The same file attached to a **Winlink** message to the parent's Winlink address (the Contingency steps in §5, in order). The parent's Winlink watcher finds the `.json` attachment and merges it. About 1 KB per record — a 30-record roll-up is still a short message on HF. Alternatively **Forward** the original Church form messages in Winlink; the parent ingests them as if they had arrived directly. |
+| **P / A** | Setup tab → **Export Roll-up JSON** (keep "only new since last roll-up" ticked) → attach the `.json` to an email to the parent EOC's drop email. The parent's Drop Folder watcher merges it automatically, zero-touch, within 10 s. Or attach it to a **Winlink** message sent over **Telnet** to the parent's Winlink address: the parent's Winlink watcher merges it the same way. The two EOCs are never on the same local network, so nothing here depends on one reaching the other's server. |
+| **C** | Radio only: the same file attached to a **Winlink** message to the parent's Winlink address (the Contingency steps in §5, in order). The parent's Winlink watcher finds the `.json` attachment and merges it. About 1 KB per record — a 30-record roll-up is still a short message on HF. Alternatively **Forward** the original Church form messages in Winlink; the parent ingests them as if they had arrived directly. |
 | **E** | The `.json` on a USB drive with the printed SITREP, by runner or courier. The parent drops it in its Drop Folder or clicks **Import Roll-up JSON (merge)**. |
 
 The SITREP itself still goes up as text at every level (§2c); the roll-up carries the structured records behind it. Send the roll-up with every SITREP (on the event's SITREP interval) or whenever the parent asks.

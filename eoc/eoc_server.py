@@ -2048,6 +2048,19 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _drain_body(self, limit=1 << 20):
+        """Read and drop a request body nobody will use. Windows resets a connection that is closed with unread
+        data in it, and the sender then gets a connection error (WinError 10053) where the answer should be."""
+        try:
+            left = min(int(self.headers.get('Content-Length') or 0), limit)
+            while left > 0:
+                chunk = self.rfile.read(min(left, 65536))
+                if not chunk:
+                    break
+                left -= len(chunk)
+        except Exception:
+            pass
+
     def read_body(self):
         length = int(self.headers.get('Content-Length', 0))
         if length == 0:
@@ -2091,6 +2104,7 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
         if self._same_origin():
             return False
         print(f'  [SECURITY] Refused {self.command} {self.path} from page {self.headers.get("Origin")!r}')
+        self._drain_body()
         self.send_json({'ok': False, 'error': 'Refused: this request came from a page that is not this EOC server'}, 403)
         return True
 
@@ -2184,6 +2198,7 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
                                     'eocLat': inc.get('eocLat') or '', 'eocLon': inc.get('eocLon') or '',
                                     'pace': ev.get('pace') or '', 'formsVersion': FORMS_VERSION,
                                     'map': bool(_map_dir(inc.get('mapPath') or '')),
+                                    'firewallBlocked': _FIREWALL['blocked'],   # Windows Firewall keeps other devices out
                                     'drill': _drill_view()})
 
                 elif path == '/api/readout':
@@ -2547,6 +2562,7 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
         if self._refuse_cross_origin():
             return
         path = urllib.parse.urlparse(self.path).path
+        self._drain_body()      # no DELETE uses a body
 
         if path == '/api/drill':
             with _drill_lock:
@@ -2720,6 +2736,47 @@ def _warn_loopback_only():
     print()
 
 
+# Windows Firewall. The first time Python listens on the network, Windows asks whether to allow it. Close that
+# window, or answer it without administrator rights, and Windows keeps an inbound Block rule for this python.exe:
+# this laptop still opens the Message Center, and no phone or other operator can. Nothing on the screen says why.
+# So the server reads the rules once at start (reading needs no rights) and says so.
+_FIREWALL = {'blocked': False}
+def _firewall_blocks(programs, exes) -> bool:
+    """True when a blocked program path is one of this Python's own paths (compared as Windows does: any case, either slash)."""
+    def norm(p):
+        return os.path.expandvars(str(p or '').strip()).replace('/', '\\').lower()
+    mine = {norm(e) for e in exes if e}
+    return any(norm(p) in mine for p in programs)
+
+
+def _check_firewall():
+    if sys.platform != 'win32':
+        return
+    try:
+        import subprocess
+        cmd = ('Get-NetFirewallRule -Direction Inbound -Enabled True -Action Block -ErrorAction SilentlyContinue | '
+               'Get-NetFirewallApplicationFilter | ForEach-Object { $_.Program }')
+        r = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive', '-Command', cmd], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                           stdin=subprocess.DEVNULL, timeout=90, creationflags=0x08000000)   # no console window of its own
+        programs = r.stdout.decode('utf-8', 'replace').splitlines()
+        _FIREWALL['blocked'] = _firewall_blocks(programs, [sys.executable, getattr(sys, '_base_executable', '')])
+    except Exception as e:      # no PowerShell, or the firewall service is off: nothing to report
+        print(f'  [FIREWALL] not checked: {type(e).__name__}: {e}')
+        return
+    if _FIREWALL['blocked']:
+        print()
+        print('  ' + '!' * 72)
+        print('  !!  WINDOWS FIREWALL IS BLOCKING PYTHON. Phones and other operators cannot')
+        print('  !!  open this EOC. Only this computer can.')
+        print('  !!  To fix it (an administrator of this computer):')
+        print('  !!    1. Press Start and type: Allow an app through Windows Firewall')
+        print('  !!    2. Press "Change settings".')
+        print('  !!    3. Tick every "Python" line, and its "Private" box. Press OK.')
+        print('  !!  The server does not need a restart.')
+        print('  ' + '!' * 72)
+        print()
+
+
 if __name__ == '__main__':
     init_db()
     net_url  = _lan_url()   # warns loudly when only loopback is found
@@ -2782,7 +2839,11 @@ if __name__ == '__main__':
     threading.Thread(target=_discovery_announce_loop, daemon=True, name='discovery-announce').start()
     threading.Thread(target=_discovery_listen_loop, daemon=True, name='discovery-listen').start()
 
-    server = http.server.ThreadingHTTPServer(('0.0.0.0', PORT), EOCHandler)
+    class _EOCServer(http.server.ThreadingHTTPServer):
+        # Connections Windows holds while the server is busy. The default is 5, and Windows refuses the next one
+        # outright (WinError 10061): a room of phones pressing Send together, the wall and every operator's page.
+        request_queue_size = 128
+    server = _EOCServer(('0.0.0.0', PORT), EOCHandler)
 
     width = max(len(net_url), len(loc_url)) + 14
     bar = '=' * width
@@ -2863,6 +2924,7 @@ if __name__ == '__main__':
     print(row('Press Ctrl+C to stop.'))
     print(f'  +{bar}+')
     print()
+    threading.Thread(target=_check_firewall, daemon=True).start()   # in the background: PowerShell takes a few seconds to start
 
     try:
         server.serve_forever()
