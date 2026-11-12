@@ -1944,7 +1944,7 @@ def _discovery_listen_loop():
                 _peers[url] = {'name': str(p.get('name', ''))[:80], 'level': str(p.get('level', ''))[:20],
                                'event': str(p.get('event', ''))[:80], 'seen': time.time()}
             if new and url != _lan_url():
-                print(f'  [PEERS]  Found another EOC: {p.get("name") or url} ({url})')
+                print(f'  [PEERS]  Found another EOC: ' + (f'{p["name"]} ({url})' if p.get('name') else f'{url} (not named yet)'))
         except Exception:
             pass
 
