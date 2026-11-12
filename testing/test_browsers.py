@@ -243,6 +243,8 @@ try:
             drop.mkdir()
             pg.evaluate("configureDrop()")
             pg.wait_for_selector('#fb-bg', state='visible', timeout=5000)
+            # let the first listing land: a reply arriving inside fill() (faster than any typing) runs the two paths together
+            pg.wait_for_selector('#fb-list:not(.busy)', timeout=6000)
             pg.fill('#fb-path', str(drop))
             pg.click('#fb-box button:has-text("Go")')
             pg.wait_for_function(f"document.getElementById('fb-path').value.endsWith('drop-{name}')", timeout=6000)
@@ -258,6 +260,8 @@ try:
             wl.mkdir()
             pg.evaluate("configureWatcher()")
             pg.wait_for_selector('#fb-bg', state='visible', timeout=5000)
+            # let the first listing land: a reply arriving inside fill() (faster than any typing) runs the two paths together
+            pg.wait_for_selector('#fb-list:not(.busy)', timeout=6000)
             pg.fill('#fb-path', str(wl))
             pg.click('#fb-box button:has-text("Go")')
             pg.wait_for_function(f"document.getElementById('fb-path').value.endsWith('winlink-{name}')", timeout=6000)

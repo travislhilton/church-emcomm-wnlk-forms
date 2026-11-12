@@ -12,7 +12,7 @@ PORT = int(os.environ.get('EOC_PORT') or (sys.argv[1] if len(sys.argv) > 1 and s
 VERSION = '1.0'
 # The Worker forms / Church of Jesus Christ EMCOMM app version this server ships (APP_VERSION in templates/_shared/emcomm-app.js).
 # Phones whose app is older still send fine; the receive page just tells them to update when they have internet.
-FORMS_VERSION = '2026-11-10.1'
+FORMS_VERSION = '2026-11-12.1'
 BASE = pathlib.Path(__file__).resolve().parent   # resolve: before Python 3.9 __file__ is relative when started from this folder
 DB_FILE   = BASE / 'eoc_data.db'
 HTML_FILE = BASE / 'EOC_Message_Center.html'
