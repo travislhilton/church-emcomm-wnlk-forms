@@ -215,6 +215,14 @@
       </div>
       <div id="dc-msg" class="small" style="margin-top:4px"></div>
     </details>
+    <div id="su-box" class="box small" style="margin:0 0 8px">
+      <b>Share this setup with another drill controller</b>
+      <p class="small muted" style="margin:2px 0 4px"><b>Save simulator setup</b> writes a small file: the scenario, speed and seed, what this simulator plays and which EOCs have people, and which organization pack it needs. It holds no contacts and none of the pack. On the other laptop: load the same pack on step 1, then press <b>Load simulator setup&#8230;</b>. <b>Save drill configuration</b> writes the drill configuration file instead: every EOC's Message Center and every simulator of the drill load it.</p>
+      <div class="btns small" style="margin:0"><button class="b" id="su-save">Save simulator setup</button><button class="b" id="su-load">Load simulator setup&#8230;</button><button class="b" id="dc-save">Save drill configuration</button>
+        <input type="file" id="su-file" accept=".json,application/json" style="display:none" aria-label="Load a simulator setup file"></div>
+      <div id="su-preview" class="box small" style="display:none;margin:6px 0 0"></div>
+      <div id="su-msg" class="small" role="status" style="margin-top:4px"></div>
+    </div>
     <h3 id="setup-1">1. Organization pack</h3>
     <p class="small" style="margin:2px 0 6px">The folder with your community's wards, leaders and maps. From a participant package: unzip it, then choose its <b>2 Organization pack</b> folder.</p>
     <div class="btns"><button class="b" id="b-browse">Browse for the pack&#8230;</button><span id="packinfo" class="small muted"></span></div>
@@ -455,6 +463,9 @@ async function loadInfo() {
   $('packpath').value = S.info.packPath || '';
   showDrillNow();
   if (!$('eocurl').value) $('eocurl').value = S.info.eocUrl || '';
+  if (S.info.speed) $('speed').value = String(S.info.speed);
+  if (S.info.seed) $('seed').value = S.info.seed;
+  if (!$('ss-event').value && S.info.sessionEvent) $('ss-event').value = S.info.sessionEvent;
   showPackInfo();
   offerPackDrillConfig();
   if (S.info.pack) await loadPack();
@@ -986,6 +997,72 @@ function showDrillNow() {
   const d = S.info && S.info.drill;
   $('dc-now').textContent = d ? `— now: ${d.eocName} (with people: ${d.manned.join(', ')})` : '';
 }
+// ── Save simulator setup / Load simulator setup… / Save drill configuration (sim_server.py: /api/sim-setup/*, /api/drillconfig/save) ──
+function saveJSONFile(obj, name) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(obj, null, 1)], { type: 'application/json' }));
+  a.download = name; a.style.display = 'none'; document.body.appendChild(a); a.click(); a.remove();
+}
+const suMsg = (html, bad) => { $('su-msg').innerHTML = bad ? `<span class="err">${html}</span>` : html; };
+const fileTag = () => (($('scen').value || 'drill').replace(/[^A-Za-z0-9-]+/g, '-').slice(0, 40)) + '_' + new Date().toISOString().slice(0, 10);
+const screenSetup = () => ({ scenario: $('scen').value, speed: +$('speed').value, seed: +$('seed').value || 1, site: S.pack ? siteSpec() : undefined, sessionEvent: $('ss-event').value.trim() });
+$('su-save').onclick = async () => {
+  try {
+    const r = await post('/api/sim-setup/save', screenSetup());
+    if (!r.ok) throw new Error(r.error);
+    saveJSONFile(r.setup, `church_emcomm_sim_setup_${fileTag()}.json`);
+    suMsg(`<span class="ok">✓</span> Saved. It names the pack <b>${esc(r.setup.pack.name || '')}</b> (${r.setup.pack.counts.stakes} stakes, ${r.setup.pack.counts.units} units) and holds no contacts. Send it to the other drill controller.`);
+    log('Simulator setup saved');
+  } catch (e) { suMsg(esc(e.message), true); }
+};
+$('dc-save').onclick = async () => {
+  try {
+    const r = await post('/api/drillconfig/save', Object.assign(screenSetup(), { winlink: $('eoc-winlink').value.trim() }));
+    if (!r.ok) throw new Error(r.error);
+    saveJSONFile(r.config, `drill-config_${fileTag()}.json`);
+    suMsg(`<span class="ok">✓</span> Drill configuration saved: ${r.config.eocs.length} EOC${r.config.eocs.length > 1 ? 's' : ''} (${r.config.eocs.map(e => esc(e.name)).join(', ')}), scenario ${esc(r.config.scenario)}. It holds organization names and pseudonymized contacts: share it only with the drill's EOC operators and simulators. The Message Center loads it with <b>Load a drill configuration</b>; a simulator with <b>Drill configuration</b> above.`);
+    log('Drill configuration saved');
+  } catch (e) { suMsg(esc(e.message), true); }
+};
+let SU = null;
+$('su-load').onclick = () => $('su-file').click();
+$('su-file').onchange = () => {
+  const f = $('su-file').files[0]; $('su-file').value = ''; if (!f) return;
+  const rd = new FileReader();
+  rd.onload = async () => {
+    let s; try { s = JSON.parse(rd.result); } catch (e) { suMsg('That file could not be read. Choose the .json file made by Save simulator setup.', true); return; }
+    try {
+      const d = await post('/api/sim-setup/apply', { setup: s, dry: true });
+      if (!d.ok) throw new Error(d.error);
+      SU = s;
+      const other = d.fileEocUrl && d.fileEocUrl !== (d.eocUrl || '').replace(/\/+$/, '');
+      $('su-preview').innerHTML = `<b>Load simulator setup: what will change</b><ul style="margin:4px 0;padding-left:18px">${d.changes.map(c => `<li>${esc(c)}</li>`).join('')}</ul>`
+        + (d.notes.length ? `<ul style="margin:4px 0;padding-left:18px">${d.notes.map(n => `<li class="warn">${esc(n)}</li>`).join('')}</ul>` : '')
+        + (other ? `<label class="row small"><input type="checkbox" id="su-eocurl"> Use the file's EOC address <code>${esc(d.fileEocUrl)}</code> instead of this laptop's (only if that EOC server is on this network)</label>` : '')
+        + '<div class="btns small" style="margin:4px 0 0"><button class="b p" id="su-apply">Apply this setup</button><button class="b" id="su-cancel">Cancel</button></div>';
+      $('su-preview').style.display = ''; suMsg('');
+      $('su-cancel').onclick = () => { $('su-preview').style.display = 'none'; SU = null; };
+      $('su-apply').onclick = applySimSetup;
+      $('su-apply').focus();
+    } catch (e) { $('su-preview').style.display = 'none'; suMsg(esc(e.message), true); }
+  };
+  rd.readAsText(f);
+};
+async function applySimSetup() {
+  if (!SU) return;
+  try {
+    const r = await post('/api/sim-setup/apply', { setup: SU, useEocUrl: !!($('su-eocurl') && $('su-eocurl').checked) });
+    if (!r.ok) throw new Error(r.error);
+    SU = null; $('su-preview').style.display = 'none';
+    S.info = r.info;
+    $('speed').value = String(S.info.speed); $('seed').value = S.info.seed; $('ss-event').value = S.info.sessionEvent || ''; $('eocurl').value = S.info.eocUrl || '';
+    showDrillNow(); if (S.pack) buildSite(); await loadScenarios(); updateHeader();
+    suMsg(`<span class="ok">✓ Setup loaded.</span> ${r.changes.map(esc).join(' · ')}` + (r.notes.length ? `<br><span class="warn">${r.notes.map(esc).join(' ')}</span>` : '') + '<br>Check the EOC on step 3, then Plan the run.');
+    log('Simulator setup loaded: ' + r.changes.join('; '));
+  } catch (e) { suMsg(esc(e.message), true); }
+}
+['speed', 'seed'].forEach(id => $(id).addEventListener('change', () => post('/api/settings', { [id]: +$(id).value }).catch(() => {})));
+$('ss-event').addEventListener('change', () => post('/api/settings', { sessionEvent: $('ss-event').value.trim() }).catch(() => {}));
 async function showScenario() {
   const s = S.scenarios.find(x => x.id === $('scen').value); if (!s) return;
   $('scendesc').innerHTML = `<b>${esc(s.hazard)}</b> · ${s.duration_min} min · ${s.status === 'developed' ? 'fully developed' : 'outline only (no injects yet)'}${s.local_binding ? ' · local binding found' : ''}<br>${esc(s.summary)}<br><span class="muted">PACE: ${esc(s.pace)}<br>Severity: ${esc(s.severity)}</span>`;

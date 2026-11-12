@@ -479,6 +479,14 @@ try:
           [r['name'] for r in r2] == ['Reused Ward'] and sorted(r['name'] for r in r3) == ['Handoff Ward', 'Reused Ward'] and len({r['id'] for r in r3}) == 2, (r2, r3))
     if ev0.get('id'):
         call(PA, 'PUT', f"/api/events/{ev0['id']}", {'activate': True})
+    # Load a setup... (Setup tab): which folders an EOC setup file names exist on this computer (yes or no, a Winlink folder's
+    # callsigns), never a listing; another site's page is refused like every other POST
+    sc = call(PA, 'POST', '/api/setup/check', {'winlink': str(fake), 'drop': str(SP / 'no such drop folder'), 'map': str(REPO / 'simulation' / 'example' / 'juniper-plains')})
+    sc2 = call(PA, 'POST', '/api/setup/check', {'map': str(SP), 'winlink': ''})
+    s_ev, _, _ = call_h(PA, 'POST', '/api/setup/check', {'winlink': str(fake)}, {'Origin': 'http://evil.example'})
+    check('setup check: a Winlink folder here (with its callsigns), a Drop Folder not here, a map data folder here; a folder without map data is no map folder; another site refused',
+          sc['winlink'] == {'path': str(fake), 'exists': True, 'callsigns': ['W9AAA', 'W9BBB']} and sc['drop']['exists'] is False and sc['map']['exists'] is True
+          and sc2['map']['exists'] is False and sc2['winlink']['exists'] is False and set(sc) == {'winlink', 'drop', 'map'} and s_ev == 403, (sc, sc2, s_ev))
     print('\nRESULT:', 'ALL PASS' if all(res) else 'FAILURES', f'({sum(res)}/{len(res)})')
 finally:
     if keep:

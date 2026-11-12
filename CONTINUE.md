@@ -55,6 +55,14 @@
 - **Tests:** `testing/test_basemap.py` (in `dev/check-dev-setup.py --tests`, ports 8190, 8191 and 8192); `test_contrast.py` now includes the Map tab.
 - **Open:** F36 (a real download on W9TLH-7 with internet, the offline view and alignment); card 3 does not mention the basemap yet (its sides must stay at 2 printed pages, measured on Windows); the main session bumps the versions and rebuilds `dist/` when it merges.
 
+## Share a setup with another operator (2026-11-12, branch `setup-share` from no-sim-ux, not yet released)
+
+- **Travis (2026-11-12):** "save a configuration both for the server and for the simulator and send it to another operator to run the exact same setup … nicely for a user, flows nicely, well documented and on an appropriate ref card."
+- **Message Center (F41):** Setup tab → *Share this EOC's setup* card (Jump to: *Share setup*): **Save this EOC's setup** writes `church_eoc_setup_<EOC>_<date>.json` (kind `church_eoc_setup`, built in the page: identity, must-have roles, roster names and leader lines, Comms Sheet, Winlink call sign, the Winlink / Drop / map folders as hints, the current event's name, type, PACE and SITREP interval when ticked; no reports, notes or roster status). **Load a setup…** checks the file's folders on that computer (`POST /api/setup/check`, yes or no only), lists what will change with a tick box each, and **Apply this setup** uses the server's own endpoints (incident, roster, comms, watcher, drop). A folder not there is kept; for Winlink the two-step chooser opens after Apply. Another kind of file is refused with the button that takes it. Works standalone (folders are then left alone).
+- **Simulator (N42):** Setup tab, box under *Drill configuration*: **Save simulator setup** (`church_emcomm_sim_setup`: scenario, speed, seed, site, drill choice, event name, privacy it was saved in, EOC address, and a pack reference with a 16-hex fingerprint of the organization list; no contacts), **Load simulator setup…** (preview, then apply; another pack refused, privacy never changed, the EOC address kept unless ticked), **Save drill configuration** (the existing `church_emcomm_drill_config` via `drillconfig.build()`; pseudonymized packs only; every EOC in it is *always* staffed, a Satellite EOC's own wards are not in the format). Speed, seed and the drill event name now persist in `simulator-settings.json`.
+- **Cards:** card 3 back (Shift Handoff box) and card 5 back (the note above the disclaimer); a few words trimmed on both backs to keep one page per side.
+- **Open:** the two-laptop check with people (a Windows host sending the file to a second Windows host and loading it there).
+
 ## Comms Sheet gateways (2026-11-12, version 2026-11-12.2)
 
 - **Travis (2026-11-12): "Do recs"**, the three Comms Sheet fields recommended for the question of 2026-11-07. The gateways table has **Use** (RMS Gateway, VARA FM RMS Post Office, VARA FM P2P, VARA HF; the list sorts itself in that order) and **Holds mail when its internet is down** (Yes / No / Ask the sysop). The stake's P2P frequency is a VARA FM P2P row per listening EOC station. The wall's Nets & contacts panel shows the first gateway and the P2P frequency. A sheet from before has only a free-text mode: every page reads the step from it, and a save also writes a mode for pages that are not updated yet. Checklist K8; PACE plan §6a, README *EMCOMM Comms Sheet*, card 2.
@@ -85,6 +93,7 @@
 
 ## Decisions waiting for Travis
 
+- **Setup sharing (branch `setup-share`):** the EOC setup file includes the Wi-Fi password and the must-have roles' phones (the Save dialog says it can hold real contacts); say if either should stay out. *Save drill configuration* marks every EOC *always* staffed; optional EOCs still need a hand-written drill spec.
 - **Release 2026-11-12.4** (merge `no-sim-ux` to main is done by Claude when asked; the tag, assets and the live installs on W9TLH-7 and W9TLH-8 are Travis's call).
 - **Who fills a Supply Order?** Card review: the cards disagree (Team Leader / Emergency Response Director on one, any volunteer on another); left as it was until Travis decides.
 - **The 1-801-240-0450 number** was taken out of the missionary alert (it is the Area welfare number printed on the Supply Order form, not a missionary line); put a real mission-office line in the Comms Sheet if one is wanted there.

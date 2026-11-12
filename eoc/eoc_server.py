@@ -893,6 +893,28 @@ def _apply_drill_config(cfg: dict, eoc_id: str, manned=None, new_event: bool = T
             'winlink': calls, 'mapPath': ident.get('mapPath', '')}
 
 
+SETUP_KIND = 'church_eoc_setup'   # Setup tab -> Save this EOC's setup / Load a setup... (the page writes and applies it)
+
+
+def _setup_folder_check(body: dict) -> dict:
+    """POST /api/setup/check: for the folders an EOC setup file names (made on another computer), whether each is here.
+    {winlink, drop, map} -> {winlink: {path, exists, callsigns}, drop: {path, exists}, map: {path, exists}}."""
+    def here(p):
+        p = str(p or '').strip()
+        try:
+            return bool(p) and pathlib.Path(p).expanduser().is_dir()
+        except (OSError, ValueError):
+            return False
+    out = {}
+    w = str(body.get('winlink') or '').strip()
+    out['winlink'] = {'path': w, 'exists': here(w), 'callsigns': _winlink_callsigns(w) if here(w) else []}
+    d = str(body.get('drop') or '').strip()
+    out['drop'] = {'path': d, 'exists': here(d)}
+    m = str(body.get('map') or '').strip()
+    out['map'] = {'path': m, 'exists': bool(m) and _map_dir(m) is not None}
+    return out
+
+
 def _save_incident_view(conn, body):
     """PUT /api/incident: identity fields go to the singleton, event fields to the event
     the page was looking at (its eventId), which is normally the active one."""
@@ -2760,6 +2782,14 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
             except Exception as ex:
                 self.send_json({'error': str(ex)}, 400)
             return
+
+        if path == '/api/setup/check':
+            # Load a setup... (Message Center, Setup tab): which folders named in an EOC setup file exist on THIS computer.
+            # Answers only yes or no (and the callsigns of a Winlink folder), never a listing; like the watched folders,
+            # only from this computer or from the Message Center page itself.
+            if not (self._is_local() or self.headers.get('Origin')):
+                self.send_json({'ok': False, 'error': 'Check folders from the Message Center or on the EOC computer'}, 403); return
+            self.send_json(_setup_folder_check(body if isinstance(body, dict) else {})); return
 
         if path == '/api/basemap/fetch':   # takes _db_lock itself (the default area): before the lock below
             code, ans = _basemap_fetch_request(body, self._is_this_laptop())

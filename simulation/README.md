@@ -128,8 +128,32 @@ The run is saved beside the pack every 30 seconds; **Resume** on the Session tab
    the stakes nobody is playing.
 4. **Scenario**, speed and seed. *Plan the run* expands it; the Run tab shows every item.
 
-The settings (pack path, mode, EOC address) persist in the user's local app-data folder
+The settings (pack path, mode, EOC address, what it plays, scenario, speed, seed, drill event name) persist in the user's local app-data folder
 (`%LOCALAPPDATA%\Church of Jesus Christ EMCOMM\simulator-settings.json`).
+
+### Share the setup with another drill controller
+
+The box under *Drill configuration* at the top of the Setup tab has three buttons:
+
+- **Save simulator setup** (`POST /api/sim-setup/save`) writes `church_emcomm_sim_setup_<scenario>_<date>.json`
+  (kind `church_emcomm_sim_setup`): scenario, speed, seed, what this simulator plays (`site`: role, stake or councils, the
+  wards a Satellite EOC covers, the stakes with their own EOC laptop, whether people play the line above), the drill
+  configuration choice if one was applied, the drill event name, the privacy mode it was saved in, this laptop's EOC
+  address, and a **pack reference**: the pack folder's name, its counts, and `fingerprint`, the first 16 hex digits of a
+  SHA-256 (Secure Hash Algorithm, 256 bits) hash of the sorted `id|name|type` lines of the pack's organizations (`orgpack.organizations`: councils, stakes,
+  units, the welfare offices). No contact, address or person is in it.
+- **Load simulator setup…** (`POST /api/sim-setup/apply`, first with `dry: true` for the preview) refuses a file whose
+  fingerprint is not the loaded pack's ("Load the same organization pack first"), never changes the privacy mode (a file
+  saved with real contacts leaves this laptop pseudonymized unless its own consent is recorded on step 1), keeps this
+  laptop's EOC address unless the person ticks the file's, and refuses a drill configuration or an EOC setup with where
+  each one loads. It is refused while a run is running.
+- **Save drill configuration** (`POST /api/drillconfig/save`) writes the established `church_emcomm_drill_config`:
+  `drill_config_from_screen()` turns what this simulator plays into a drill spec (this EOC with the call sign from the
+  step 3 Winlink address; at a Stake EOC whose line above is played by people, the Council / Area EOC of its council;
+  at a Council / Area EOC, the stakes with their own EOC laptop) and calls `drillconfig.validate_spec()` and
+  `drillconfig.build()` exactly as the command line does. Every EOC in it is staffed *always*; optional EOCs and partner
+  agencies need a hand-written spec. A Satellite EOC's own wards are not part of the drill configuration format, so the
+  other simulator ticks them on step 2. Refused while real contacts are loaded: the file carries the leaders' pseudonyms.
 
 ## How simulated traffic arrives at the EOC
 

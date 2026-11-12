@@ -32,9 +32,11 @@ except ImportError:
 
 REPO = pathlib.Path(__file__).resolve().parent.parent
 PE, PS, PW = 8480, 8490, 8481
+PE2 = 8483        # a second, fresh EOC server: another operator's computer (Load a setup...)
 SIZES = {'phone': (390, 844), 'tablet': (820, 1180), 'laptop': (1366, 768)}
 # page -> the sizes at which it must fit with no sideways scroll. The wall is a big screen; it must only load.
 EOC = f'http://127.0.0.1:{PE}'
+EOC2 = f'http://127.0.0.1:{PE2}'
 SIM = f'http://127.0.0.1:{PS}'
 WEB = f'http://127.0.0.1:{PW}'
 PAGES = {
@@ -92,6 +94,14 @@ drills = tmp / 'Copied here' / 'Drills'
 shutil.copytree(REPO / 'simulation' / 'example' / 'juniper-plains', drills / 'BRF-1 participant package' / '2 Organization pack', ignore=shutil.ignore_patterns('runs', 'local-roles.json'))
 (drills / 'BRF-1 participant package' / '1 Reference cards').mkdir()
 (drills / 'BRF-1 participant package 2026-11-04.zip').write_bytes(b'PK')
+work2 = tmp / 'site2'        # the second operator's computer: its own copy, database, settings and Documents
+(work2 / 'eoc').mkdir(parents=True)
+for f in ('eoc_server.py', 'EOC_Message_Center.html', 'EOC_Wall_Display.html', 'EOC_Phone.html', 'readout.py'):
+    shutil.copy2(REPO / 'eoc' / f, work2 / 'eoc' / f)
+shutil.copytree(REPO / 'templates', work2 / 'templates')
+env2 = dict(env, LOCALAPPDATA=str(tmp / 'appdata2'), EMCOMM_DOCUMENTS=str(tmp / 'documents2'))
+log3 = open(tmp / 'eoc2.log', 'w', encoding='utf-8')
+procs.append(subprocess.Popen([sys.executable, '-u', 'eoc_server.py', str(PE2)], cwd=str(work2 / 'eoc'), stdout=log3, stderr=subprocess.STDOUT, env=env2))
 web = QuietServer(('127.0.0.1', PW), functools.partial(Quiet, directory=str(REPO)))
 threading.Thread(target=web.serve_forever, daemon=True).start()
 
@@ -109,7 +119,7 @@ def open_page(browser, size, url):
 
 
 try:
-    for port, path in ((PE, '/api/status'), (PS, '/api/info')):
+    for port, path in ((PE, '/api/status'), (PS, '/api/info'), (PE2, '/api/status')):
         for _ in range(60):
             try:
                 call(f'http://127.0.0.1:{port}{path}')
@@ -208,6 +218,22 @@ try:
             pg.click('#dc-from-pack')
             pg.wait_for_function("document.getElementById('dc-eoc').options.length > 0", timeout=8000)
             check(f'{name}: the drill settings in the pack are offered and open with the EOC choices', pg.evaluate("document.getElementById('dc-box').open") and pg.locator('#dc-eoc option').count() > 1 and not errs, (pg.inner_text('#dc-msg')[:120], errs[:2]))
+            # Save simulator setup, then Load simulator setup... with that file (N42): the buttons, the preview, Apply
+            pg.select_option('#speed', '10')
+            with pg.expect_download(timeout=10000) as sdl:
+                pg.click('#su-save')
+            sim_file = tmp / f'sim-setup-{name}.json'
+            sdl.value.save_as(str(sim_file))
+            simset = json.loads(sim_file.read_text(encoding='utf-8'))
+            pg.select_option('#speed', '1')
+            pg.set_input_files('#su-file', str(sim_file))
+            pg.wait_for_selector('#su-apply', timeout=8000)
+            prev = pg.inner_text('#su-preview')
+            pg.click('#su-apply')
+            pg.wait_for_function("document.getElementById('su-msg').textContent.includes('Setup loaded')", timeout=8000)
+            check(f'{name}: Save simulator setup downloads the file (no contacts), Load simulator setup... previews it and Apply this setup puts the speed back',
+                  simset.get('kind') == 'church_emcomm_sim_setup' and simset.get('speed') == 10 and 'contacts' not in simset and 'what will change' in prev
+                  and pg.input_value('#speed') == '10' and not errs, (simset.get('speed'), prev[:120], pg.input_value('#speed'), errs[:2]))
             ctx.close()
             # the Message Center: every folder it asks for opens the folder browser, never a typed-path prompt
             ctx = b.new_context(viewport={'width': SIZES['laptop'][0], 'height': SIZES['laptop'][1]})
@@ -342,6 +368,75 @@ try:
             kept = any(r.get('name') == unit for r in call(f'{EOC}/api/roster'))
             check(f'{name}: an open Message Center adopts a roster changed elsewhere and its next save keeps it', adopted and kept and not errs, (adopted, kept, errs[:2]))
             pg.evaluate("r => fetch('/api/roster', {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(r)})", before)
+            # Share this EOC's setup (F41): Save this EOC's setup here, Load a setup... on a second, fresh EOC server; the same
+            # setup afterwards. A file of another kind is refused with where it loads; a folder not on that computer is kept
+            pg.evaluate("switchTab('setup')")
+            pg.fill('#eoc-name', f'Larkspur Stake EOC {name}')
+            pg.fill('#eoc-parent-email', 'parent@example.org')
+            pg.fill('#eoc-welfare-winlink', 'W7WSR')
+            pg.evaluate('saveEocIdentity()')
+            pg.fill('#inc-name', f'{name} share test event')
+            pg.select_option('#inc-pace', 'C')
+            pg.select_option('#inc-sitrep-hrs', '4')
+            pg.evaluate('saveIncident()')
+            pg.wait_for_timeout(1200)
+            pg.click('#setup-save-btn')
+            pg.wait_for_selector('#modal-bg.open', timeout=5000)
+            dialog_txt = pg.inner_text('#modal-body')
+            pg.check('#setup-with-event')
+            with pg.expect_download(timeout=10000) as dl:
+                pg.click('#modal-confirm-btn')
+            setup_file = tmp / f'setup-{name}.json'
+            dl.value.save_as(str(setup_file))
+            sdata = json.loads(setup_file.read_text(encoding='utf-8'))
+            check(f'{name}: Save this EOC\'s setup writes a church_eoc_setup file (identity, roster names, Comms Sheet, Winlink call sign, folders as hints, the event when ticked; no messages or notes) and says it can hold real contacts',
+                  sdata.get('kind') == 'church_eoc_setup' and sdata['identity'].get('eocName') == f'Larkspur Stake EOC {name}' and sdata['winlink']['callsigns'] == ['W7TST']
+                  and pathlib.Path(sdata['folders']['winlink']) == wl and sdata['event'].get('pace') == 'C' and sdata.get('comms') and 'msgs' not in sdata and 'notes' not in sdata
+                  and 'real contacts' in dialog_txt and dl.value.suggested_filename.startswith('church_eoc_setup_') and not errs, (list(sdata), dialog_txt[-120:], errs[:2]))
+            inc1, comms1, roster1 = call(f'{EOC}/api/incident'), call(f'{EOC}/api/comms'), call(f'{EOC}/api/roster')
+            ctx2 = b.new_context(viewport={'width': SIZES['laptop'][0], 'height': SIZES['laptop'][1]})
+            pg2 = ctx2.new_page()
+            errs2 = []
+            pg2.on('pageerror', lambda e: errs2.append(str(e)))
+            pg2.goto(f'{EOC2}/', wait_until='load')
+            pg2.wait_for_function('networkMode === true', timeout=10000)
+            pg2.wait_for_timeout(700)
+            pg2.evaluate("switchTab('setup')")
+            wrong = tmp / f'wrong-{name}.json'
+            wrong.write_text(json.dumps({'kind': 'church_emcomm_drill_config', 'eocs': []}), encoding='utf-8')
+            pg2.set_input_files('#setup-file', str(wrong))
+            pg2.wait_for_function("document.getElementById('setup-msg').textContent.length > 0", timeout=5000)
+            refused = pg2.inner_text('#setup-msg')
+            check(f'{name}: Load a setup... refuses a drill configuration and points to Load a drill configuration', 'drill configuration' in refused and 'Load a drill configuration' in refused
+                  and not pg2.evaluate("document.getElementById('modal-bg').classList.contains('open')"), refused)
+            sdata['folders']['map'] = str(tmp / 'not on this computer' / 'map data')
+            moved = tmp / f'setup-{name}-moved.json'
+            moved.write_text(json.dumps(sdata), encoding='utf-8')
+            pg2.set_input_files('#setup-file', str(moved))
+            pg2.wait_for_selector('#modal-bg.open', timeout=8000)
+            preview = pg2.inner_text('#modal-body')
+            pg2.click('#modal-confirm-btn')
+            same, inc2 = {}, {}
+            for _ in range(40):
+                inc2, comms2, roster2, ws2 = call(f'{EOC2}/api/incident'), call(f'{EOC2}/api/comms'), call(f'{EOC2}/api/roster'), call(f'{EOC2}/api/watcher/status')
+                same = {k: (v, inc2.get(k)) for k, v in sdata['identity'].items() if inc2.get(k) != v}
+                same.update({k: (inc1.get(k), inc2.get(k)) for k in ('name', 'pace', 'sitrepHrs') if inc1.get(k) != inc2.get(k)})
+                if comms2.get('sheet') != comms1.get('sheet'):
+                    same['comms'] = 'differs'
+                if not {r['name'] for r in roster1} <= {r['name'] for r in roster2}:
+                    same['roster'] = 'missing units'
+                if pathlib.Path(ws2.get('watch_path') or '.') != wl or ws2.get('callsigns') != ['W7TST']:
+                    same['winlink'] = (ws2.get('watch_path'), ws2.get('callsigns'))
+                if pathlib.Path(call(f'{EOC2}/api/drop/status').get('watch_path') or '.') != drop:
+                    same['drop'] = 'not set'
+                if not same:
+                    break
+                time.sleep(0.25)
+            check(f'{name}: Load a setup... on a second, fresh EOC server gives the same setup: identity, must-have roles, event PACE and SITREP interval, Comms Sheet, roster units, Winlink folder and call sign, Drop Folder',
+                  not same and not errs2, (same, errs2[:2]))
+            check(f'{name}: Load a setup... says what will change, and a folder not on this computer is kept as it was',
+                  'not on this computer' in preview and 'Comms Sheet' in preview and (inc2.get('mapPath') or '') == '' and 'EOC setup loaded from' in json.dumps(call(f'{EOC2}/api/notes')), (preview[:300], inc2.get('mapPath')))
+            ctx2.close()
             ctx.close()
             ctx, pg, errs = open_page(b, 'tv', f'{EOC}/wall')      # the wall is laid out for a TV
             try:
@@ -410,6 +505,7 @@ finally:
             pr.kill()
     log1.close()
     log2.close()
+    log3.close()
     shutil.rmtree(tmp, ignore_errors=True)
 
 print(f"\nRESULT: {'ALL PASS' if all(res) else 'FAILURES'} ({sum(res)}/{len(res)})")

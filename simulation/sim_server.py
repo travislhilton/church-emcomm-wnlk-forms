@@ -30,6 +30,7 @@ Settings (pack path, privacy mode, EOC address) persist in the user's local app-
 folder, outside the repository. Generated runs go to ``<export root>/simulation/runs/``.
 """
 import datetime
+import hashlib
 import json
 import time
 import re
@@ -285,6 +286,9 @@ class State:
             d['eocUrl'] = self.settings.get('eocUrl') or f'http://{self.lan_ip}:8080'
             d['site'] = self.settings.get('site') or {}
             d['scenario'] = self.settings.get('scenario', '')
+            d['speed'] = self.settings.get('speed') or 2
+            d['seed'] = self.settings.get('seed') or 1
+            d['sessionEvent'] = self.settings.get('sessionEvent', '')
             d['drill'] = self.settings.get('drill') or None
             d['controllerUrl'] = f'http://{self.lan_ip}:{self.port}'
             d['settingsFile'] = str(SETTINGS_FILE)
@@ -301,6 +305,180 @@ class State:
 
 
 STATE = State()
+
+
+# ── Save simulator setup / Load simulator setup (Setup tab): one small file (church_emcomm_sim_setup) another drill
+# controller loads to run the exact same simulator. It names the pack (name, counts and a fingerprint of its organization
+# list) but holds none of its data and no contacts. Loading it never switches to real contacts. ──
+SIM_SETUP_KIND = 'church_emcomm_sim_setup'
+SPEEDS = (1, 2, 4, 10, 60)
+SITE_KEYS = ('role', 'stake', 'satellite_units', 'units', 'councils', 'played_stakes', 'played_parent', 'parent')
+
+
+def pack_reference(pack: dict, pack_path: str = '') -> dict:
+    """The pack a setup was made with: its folder name, counts, and a fingerprint of its organization list (ids, names
+    and types of every council, stake, unit and welfare office). Two copies of the same pack match; another pack does not.
+    No contact, address or person is in it."""
+    lines = sorted(f"{o['id']}|{o['name']}|{o['type']}" for o in orgpack.organizations(pack))
+    s = orgpack.summary(pack)
+    p = Path(pack_path) if pack_path else None
+    name = ''
+    if p:
+        name = p.name if not re.match(r'^\d+\s', p.name) else f'{p.parent.name} / {p.name}'   # "2 Organization pack": say whose
+    return {'name': name, 'fingerprint': hashlib.sha256('\n'.join(lines).encode('utf-8')).hexdigest()[:16],
+            'counts': {k: s[k] for k in ('councils', 'stakes', 'units', 'wards', 'branches', 'buildings')}}
+
+
+def _clean_site(site) -> dict:
+    site = site if isinstance(site, dict) else {}
+    out = {k: site[k] for k in SITE_KEYS if k in site}
+    for k in ('satellite_units', 'units', 'councils', 'played_stakes'):
+        if k in out:
+            out[k] = [str(x) for x in (out[k] or []) if str(x)]
+    return out
+
+
+def _speed(v):
+    try:
+        v = float(v)
+    except (TypeError, ValueError):
+        return 2
+    return int(v) if int(v) in SPEEDS else 2
+
+
+def _seed(v):
+    try:
+        return min(max(int(v), 1), 9999)
+    except (TypeError, ValueError):
+        return 1
+
+
+def sim_setup_save(body: dict) -> dict:
+    """The simulator setup as it is on the screen (the page sends what it shows; it is kept in the settings too)."""
+    with STATE.lock:
+        if not STATE.pack_real:
+            return {'ok': False, 'error': 'Load an organization pack first (step 1), then save the setup.'}
+        st = STATE.settings
+        for k, v in (('scenario', str(body.get('scenario') or st.get('scenario') or '')), ('speed', _speed(body.get('speed', st.get('speed')))),
+                     ('seed', _seed(body.get('seed', st.get('seed')))), ('sessionEvent', str(body.get('sessionEvent', st.get('sessionEvent', '')) or '').strip())):
+            st[k] = v
+        if isinstance(body.get('site'), dict):
+            st['site'] = _clean_site(body['site'])
+        save_settings(st)
+        drill = st.get('drill') or None
+        setup = {'kind': SIM_SETUP_KIND, 'v': 1, 'savedAt': datetime.datetime.now().isoformat(timespec='seconds'),
+                 'note': 'A simulator setup: load it on the simulator Setup tab (Load simulator setup) after loading the same organization pack. '
+                         'It names the pack but holds none of its data and no contacts.',
+                 'pack': pack_reference(STATE.pack_real, st.get('packPath', '')), 'privacy': STATE.privacy,
+                 'scenario': st['scenario'], 'speed': st['speed'], 'seed': st['seed'], 'sessionEvent': st['sessionEvent'],
+                 'site': _clean_site(st.get('site') or {}),
+                 'drill': {k: drill[k] for k in ('name', 'eoc', 'eocName', 'manned', 'scenario', 'event') if k in drill} if isinstance(drill, dict) else None,
+                 'eocUrl': st.get('eocUrl') or f'http://{STATE.lan_ip}:8080'}
+        return {'ok': True, 'setup': setup}
+
+
+def sim_setup_apply(body: dict) -> dict:
+    """Load simulator setup. dry=True only checks and says what would change. The pack must be the same one (fingerprint);
+    the privacy mode never changes (real contacts need this laptop's own recorded consent); the EOC address stays this
+    laptop's unless useEocUrl is true."""
+    s = body.get('setup') if isinstance(body.get('setup'), dict) else {}
+    if s.get('kind') != SIM_SETUP_KIND:
+        if s.get('kind') == 'church_emcomm_drill_config':
+            return {'ok': False, 'error': 'That is a drill configuration. Load it under Drill configuration at the top of this tab.'}
+        if s.get('kind') == 'church_eoc_setup':
+            return {'ok': False, 'error': "That is an EOC setup. Load it in the Message Center: Setup tab, Load a setup…"}
+        return {'ok': False, 'error': 'That is not a simulator setup. Choose the file made by Save simulator setup.'}
+    with STATE.lock:
+        if not STATE.pack_real:
+            return {'ok': False, 'error': 'Load the organization pack first (step 1), then load this setup.'}
+        want, here = s.get('pack') or {}, pack_reference(STATE.pack_real, STATE.settings.get('packPath', ''))
+        if want.get('fingerprint') != here['fingerprint']:
+            c = want.get('counts') or {}
+            return {'ok': False, 'mismatch': True,
+                    'error': f"This setup was made with another organization pack ({want.get('name') or 'unnamed'}: {c.get('stakes', '?')} stakes, "
+                             f"{c.get('units', '?')} units). The pack loaded here is {here['name'] or 'unnamed'} ({here['counts']['stakes']} stakes, "
+                             f"{here['counts']['units']} units). Load the same organization pack first (step 1), then load this setup again."}
+        notes = []
+        if s.get('privacy') == 'real' and STATE.privacy != 'real':
+            notes.append('The file was saved with real contacts. This simulator stays pseudonymized: real contacts need the consent '
+                         'recorded on this laptop (step 1, Contacts: Real contacts).')
+        elif s.get('privacy') != 'real' and STATE.privacy == 'real':
+            notes.append('Real contacts stay loaded here, with the consent recorded on this laptop.')
+        cat = {x['id']: x for x in engine.catalog(extra_dirs=STATE.scenario_dirs())['scenarios']}
+        sid = str(s.get('scenario') or '')
+        if sid and sid not in cat:
+            notes.append(f'Scenario {sid!r} is not on this laptop: copy it into the pack\'s simulation\\scenarios folder, or choose another on step 4.')
+        site = _clean_site(s.get('site'))
+        mine = STATE.settings.get('eocUrl') or f'http://{STATE.lan_ip}:8080'
+        theirs = str(s.get('eocUrl') or '').rstrip('/')
+        use_theirs = bool(body.get('useEocUrl')) and bool(theirs)
+        role = {'stake': 'a Stake EOC', 'satellite': 'a Satellite EOC', 'area': 'a Council / Area EOC'}.get(site.get('role', ''), 'nothing yet')
+        changes = [f"Scenario: {cat[sid]['name'] if sid in cat else sid or '(none)'}", f"Speed: {_speed(s.get('speed'))}×, seed {_seed(s.get('seed'))}",
+                   f'Plays {role}' + (f" ({len(site.get('played_stakes') or [])} stakes with their own EOC laptop)" if site.get('role') == 'area' else ''),
+                   'Contacts: ' + STATE.privacy + ' (unchanged)', 'EOC address: ' + (theirs if use_theirs else mine.rstrip('/') + ' (this laptop\'s, unchanged)')]
+        if s.get('sessionEvent'):
+            changes.append(f"Drill event name: {s['sessionEvent']}")
+        if body.get('dry'):
+            return {'ok': True, 'dry': True, 'changes': changes, 'notes': notes, 'eocUrl': mine, 'fileEocUrl': theirs, 'pack': here}
+        if STATE.runner and STATE.runner.run['clock']['status'] == 'running':
+            return {'ok': False, 'error': 'A run is in progress. Stop it first, then load the setup.'}
+        st = STATE.settings
+        st.update({'scenario': sid if sid in cat else st.get('scenario', ''), 'speed': _speed(s.get('speed')), 'seed': _seed(s.get('seed')),
+                   'sessionEvent': str(s.get('sessionEvent') or ''), 'site': site})
+        if isinstance(s.get('drill'), dict):
+            st['drill'] = s['drill']
+        if use_theirs:
+            st['eocUrl'] = theirs
+        save_settings(st)
+        return {'ok': True, 'changes': changes, 'notes': notes, 'info': STATE.info()}
+
+
+def drill_config_from_screen(body: dict) -> dict:
+    """Save drill configuration: the established church_emcomm_drill_config, built by drillconfig.build() from a spec made
+    of what this simulator plays (its EOC, and the EOCs that have people), its scenario and the drill event. Pseudonymized
+    packs only: the file carries the leaders' pseudonyms, like every drill configuration."""
+    import drillconfig
+    with STATE.lock:
+        if not STATE.pack:
+            return {'ok': False, 'error': 'Load an organization pack first (step 1).'}
+        if STATE.privacy == 'real':
+            return {'ok': False, 'error': 'Real contacts are loaded. A drill configuration is shared with every EOC, so it is made only '
+                                          'from a pseudonymized pack: load the pack pseudonymized, then save it.'}
+        pack = STATE.pack
+        site = _clean_site(body.get('site') or STATE.settings.get('site') or {})
+        sid = str(body.get('scenario') or STATE.settings.get('scenario') or '')
+        call = str(body.get('winlink') or '').split('@')[0].strip().upper()
+        calls = [call] if call and drillconfig.CALL_RE.match(call) else []
+        stakes = {x['id']: x for x in pack['stakes']}
+        role = site.get('role') or 'stake'
+        if role in ('stake', 'satellite'):
+            st = stakes.get(site.get('stake'))
+            if not st:
+                return {'ok': False, 'error': 'Choose the stake on step 2 first.'}
+            me = {'id': drillconfig._slug(st['name'] + ('-satellite' if role == 'satellite' else '')), 'level': role, 'stake': st['id'], 'manned': 'always', 'winlink': calls}
+            eocs = [me]
+            if role == 'stake' and site.get('played_parent') and st.get('council'):
+                eocs.append({'id': 'area', 'level': 'area', 'councils': [st['council']], 'manned': 'always'})
+        else:
+            if not site.get('councils'):
+                return {'ok': False, 'error': 'Choose at least one coordinating council on step 2 first.'}
+            eocs = [{'id': 'area', 'level': 'area', 'councils': site['councils'], 'manned': 'always', 'winlink': calls}]
+            eocs += [{'id': drillconfig._slug(stakes[x]['name']), 'level': 'stake', 'stake': x, 'manned': 'always'} for x in site.get('played_stakes') or [] if x in stakes]
+        cat = {x['id']: x for x in engine.catalog(extra_dirs=STATE.scenario_dirs())['scenarios']}
+        sname = cat[sid]['name'] if sid in cat else sid
+        ev = str(body.get('sessionEvent') or STATE.settings.get('sessionEvent') or '').strip() or f'DRILL: {sname} (THIS IS AN EXERCISE)'
+        spec = {'kind': drillconfig.SPEC_KIND, 'v': 1, 'name': f'{sname} drill', 'scenario': sid, 'privacy': 'pseudonymized',
+                'event': {'name': ev}, 'eocs': eocs}
+        errs = drillconfig.validate_spec(spec, pack)
+        if errs:
+            return {'ok': False, 'error': 'The drill configuration cannot be made: ' + '; '.join(errs)}
+        try:
+            cfg = drillconfig.build(pack, spec, STATE.settings.get('packPath') or str(STATE.export or ''))
+        except ValueError as e:
+            return {'ok': False, 'error': str(e)}
+        cfg['note'] = ('Saved by the simulator (Setup, Save drill configuration). Holds organization names and pseudonymized contacts: '
+                       'share it only with the drill\'s EOC operators and simulators, never publicly.')
+        return {'ok': True, 'config': cfg}
 
 
 def eoc_probe(url: str) -> dict:
@@ -912,8 +1090,20 @@ class Handler(SimpleHTTPRequestHandler):
                                                'scenario': cfg.get('scenario', ''), 'event': str((cfg.get('event') or {}).get('name') or '')}
                     save_settings(STATE.settings)
                 return self.send_json({'ok': True, 'site': site, 'scenario': cfg.get('scenario', ''), 'drill': STATE.settings['drill'], 'info': STATE.info()})
+            if path == '/api/sim-setup/save':        # Save simulator setup: the file's content (the page downloads it)
+                return self.send_json(sim_setup_save(body))
+            if path == '/api/sim-setup/apply':       # Load simulator setup: {setup, dry, useEocUrl}
+                return self.send_json(sim_setup_apply(body))
+            if path == '/api/drillconfig/save':      # Save drill configuration: church_emcomm_drill_config from this screen
+                return self.send_json(drill_config_from_screen(body))
             if path == '/api/settings':
                 with STATE.lock:
+                    if 'speed' in body:
+                        STATE.settings['speed'] = _speed(body['speed'])
+                    if 'seed' in body:
+                        STATE.settings['seed'] = _seed(body['seed'])
+                    if 'sessionEvent' in body:
+                        STATE.settings['sessionEvent'] = str(body['sessionEvent'] or '').strip()
                     for k in ('eocUrl', 'site'):
                         if k in body:
                             STATE.settings[k] = body[k]

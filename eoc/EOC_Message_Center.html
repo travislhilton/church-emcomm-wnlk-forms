@@ -582,7 +582,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
 
   <!-- SETUP -->
   <div id="tab-setup" class="tab-panel">
-    <nav class="setup-nav" aria-label="Setup sections">Jump to: <a href="#sec-identity">This EOC</a> <a href="#drillcfg-card">Drill setup</a> <a href="#must-card">Must-have roles</a> <a href="#event-card">Emergency Event</a> <a href="#sec-details">PACE &amp; SITREP</a> <a href="#sec-rollup">Roll-up</a> <a href="#sec-handoff">Shift handoff</a> <a href="#comms-card">Comms Sheet</a> <a href="#phone-card">Phone page</a> <a href="#wall-card">Wall display</a> <a href="#sec-help">Help &amp; feedback</a></nav>
+    <nav class="setup-nav" aria-label="Setup sections">Jump to: <a href="#sec-identity">This EOC</a> <a href="#setupshare-card">Share setup</a> <a href="#drillcfg-card">Drill setup</a> <a href="#must-card">Must-have roles</a> <a href="#event-card">Emergency Event</a> <a href="#sec-details">PACE &amp; SITREP</a> <a href="#sec-rollup">Roll-up</a> <a href="#sec-handoff">Shift handoff</a> <a href="#comms-card">Comms Sheet</a> <a href="#phone-card">Phone page</a> <a href="#wall-card">Wall display</a> <a href="#sec-help">Help &amp; feedback</a></nav>
     <div class="card" id="sec-identity">
       <h2>This EOC — who we are and who we report to</h2>
       <p style="font-size:11px;color:var(--muted);margin:0 0 10px">The same Message Center runs at every EOC. A <b>Satellite EOC</b> (in a ward building) covers part of a stake and rolls up to the <b>Stake EOC</b>. Above the Stake EOC the Church structure has <b>two lines</b>: the <b>council line</b> (the coordinating council, that is the Area Seventy: decisions) and the <b>welfare line</b> (the local Welfare and Self-Reliance Manager (WSRM), then the Area Welfare and Self-Reliance Manager (AWSRM): supplies, approvals, reporting). The SITREP goes to both; forms go to the welfare line. A <b>Council / Area EOC</b> exists only when the council or the welfare region opens one (the Area Welfare and Self-Reliance Specialist's station); then the stakes report to it and their roll-ups merge there. The level sets the roster vocabulary (wards or stakes) and the SITREP header.</p>
@@ -638,6 +638,17 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
       </div>
       <p style="font-size:11px;color:var(--muted);margin:0 0 10px">Phones on the EOC Wi-Fi open forms from this server, and a plain-http page cannot read a phone's GPS, so those forms are filled in with the <b>EOC location</b> (the worker can change it). The <b>Wi-Fi name and password</b> put a "join the EOC Wi-Fi" QR code on the wall display, next to the "send reports" code; leave them blank to keep the password off the wall.</p>
       <button class="btn" onclick="saveEocIdentity()">Save EOC Identity</button>
+    </div>
+
+    <div class="card" id="setupshare-card">
+      <h2>Share this EOC's setup with another operator</h2>
+      <p style="font-size:12px;color:var(--muted);margin:0 0 8px">One file holds how this EOC is set up: who we are and who we report to, the must-have roles, the units on the roster, the Comms Sheet, the Winlink call sign and, if you tick it, the current event's details. It holds no reports, notes or roster status: those go in the <b>shift handoff</b>. Another operator presses <b>Load a setup&#8230;</b>, sees what will change, and gets the same setup. Folders are checked on that computer: one that is not there is kept as it was.</p>
+      <div class="toolbar" style="flex-wrap:wrap;gap:10px;margin:0">
+        <button class="btn" type="button" id="setup-save-btn" onclick="setupSaveDialog()">Save this EOC's setup</button>
+        <button class="btn secondary" type="button" id="setup-load-btn" onclick="document.getElementById('setup-file').click()">Load a setup&#8230;</button>
+        <input type="file" id="setup-file" accept=".json,application/json" onchange="readEocSetup(this)" style="display:none" aria-label="Load a setup file">
+      </div>
+      <div id="setup-msg" role="status" style="font-size:12px;margin-top:6px"></div>
     </div>
 
     <div class="card" id="drillcfg-card">
@@ -2718,6 +2729,184 @@ function saveEocIdentity() {
 }
 // EOC location for phone forms served by this server (a plain-http page cannot read the phone's GPS).
 // This page on the server laptop (localhost) is a secure context, so the browser can share its location.
+// ── Share this EOC's setup (kind church_eoc_setup): Save this EOC's setup writes one file; Load a setup… shows what
+// will change, checks its folders on this computer (POST /api/setup/check) and applies it. No reports, notes or roster
+// status: those are the shift handoff. ──
+var SETUP_KIND = 'church_eoc_setup';
+var SETUP_EVENT_KEYS = ['name','type','area','startTs','ic','opPeriodHrs','pace','sitrepHrs','sitrepBy','commsEvent'];
+var SETUP_OTHER_KINDS = {
+  church_emcomm_drill_config: 'That is a drill configuration. Load it with Load a drill configuration (the Drill setup card, below).',
+  church_emcomm_sim_setup: 'That is a simulator setup. Load it in the simulator: Setup tab, Load simulator setup.',
+  church_eoc_handoff: 'That is a shift handoff. Use Import Handoff JSON (Shift Handoff card).',
+  church_eoc_rollup: 'That is a roll-up from another EOC. Use Import Roll-up JSON (merge).',
+  church_comms_sheet: 'That is a Comms Sheet. Use Import sheet JSON (Comms Sheet card).'
+};
+function setupMsg(text, bad) { var m = document.getElementById('setup-msg'); if (!m) return; m.style.color = bad ? 'var(--danger)' : ''; m.textContent = text; }
+function setupSaveDialog() {
+  document.getElementById('modal-title').textContent = "Save this EOC's setup";
+  document.getElementById('modal-body').innerHTML = '<p style="margin:0 0 8px">One file with this EOC\'s identity, must-have roles, units and roster names, the Comms Sheet, the Winlink call sign and this computer\'s folders (as hints). No reports, notes or roster status.</p>'
+    + '<label style="display:flex;gap:8px;align-items:flex-start;font-size:13px;margin:0 0 8px"><input type="checkbox" id="setup-with-event"> <span>Include the current event: name, type, PACE level and SITREP interval (' + esc(eventTitle(activeEvent())) + ')</span></label>'
+    + '<p style="margin:0;font-size:12px;color:var(--danger)"><b>It can hold real contacts</b> (Comms Sheet, line emails, phones, the Wi-Fi password): send it only to your EOC operators, never post it publicly.</p>';
+  document.getElementById('modal-confirm-btn').textContent = 'Save the file';
+  document.getElementById('modal-confirm-btn').className = 'btn';
+  pendingConfirm = function(){ var w = document.getElementById('setup-with-event').checked; closeModal(); saveEocSetup(w); };
+  document.getElementById('modal-bg').classList.add('open');
+  document.getElementById('setup-with-event').focus();
+}
+function buildEocSetup(withEvent) {
+  var ident = identityOf(incident);
+  delete ident.mapPath; delete ident.drillConfig;
+  var ws = (networkMode && watcherState) || {}, ds = (networkMode && dropState) || {};
+  var d = {kind: SETUP_KIND, v: 1, savedAt: new Date().toISOString(), from: {name: eocName() || eocLabel(), level: eocLevel()},
+    note: 'An EOC setup: load it with Setup, Load a setup... in the Message Center. It can hold real contacts: share it only with your EOC operators.',
+    identity: ident,
+    roster: roster.filter(function(r){ return String(r.name || '').trim(); }).map(function(r){ return {name: r.name, spName: r.spName || '', spPhone: r.spPhone || '', expectedMinutes: r.expectedMinutes || 0}; }),
+    comms: Object.keys(comms.sheet || {}).length ? {sheet: comms.sheet, updatedMs: comms.updatedMs || 0} : null,
+    winlink: {callsigns: (ws.callsigns || []).slice()},
+    folders: {winlink: ws.enabled ? (ws.watch_path || '') : '', drop: ds.enabled ? (ds.watch_path || '') : '', map: (incident && incident.mapPath) || ''}};
+  if (withEvent) { d.event = {}; SETUP_EVENT_KEYS.forEach(function(k){ if (incident && incident[k] !== undefined && incident[k] !== null && incident[k] !== '') d.event[k] = incident[k]; }); }
+  return d;
+}
+function saveEocSetup(withEvent) {
+  var d = buildEocSetup(withEvent);
+  var tag = (eocName() || eocLabel()).replace(/[^A-Za-z0-9]+/g, '_').replace(/^_|_$/g, '').slice(0, 40) || 'EOC';
+  dlText(JSON.stringify(d, null, 1), 'church_eoc_setup_' + tag + '_' + new Date().toISOString().slice(0, 10) + '.json');
+  setupMsg('Saved. Send the file to the other operator (email, USB drive or Winlink attachment). They press Load a setup… on their Setup tab.');
+  toast("EOC setup saved" + (withEvent ? ' with the current event' : ''));
+}
+var _setupFile = null;
+function readEocSetup(inp) {
+  var f = inp.files && inp.files[0]; inp.value = ''; if (!f) return;
+  var r = new FileReader();
+  r.onload = function() {
+    var d; try { d = JSON.parse(r.result); } catch (e) { setupMsg('That file could not be read. Choose the .json file made by Save this EOC\'s setup.', true); toast('Not an EOC setup file'); return; }
+    if (!d || d.kind !== SETUP_KIND || typeof d.identity !== 'object' || !d.identity) {
+      var why = (d && SETUP_OTHER_KINDS[d.kind]) || 'That is not an EOC setup. Choose the file made by Save this EOC\'s setup.';
+      setupMsg(why, true); toast(why); return;
+    }
+    _setupFile = d;
+    if (!networkMode) { setupPreview(d, null); return; }
+    var fo = d.folders || {};
+    fetch('/api/setup/check', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({winlink: fo.winlink || '', drop: fo.drop || '', map: fo.map || ''})})
+      .then(function(x){ return x.json(); }).then(function(chk){ setupPreview(d, chk); })
+      .catch(function(){ setupPreview(d, null); });
+  };
+  r.readAsText(f);
+}
+function _setupRow(part, checked, title, detail, disabled) {
+  return '<label style="display:flex;gap:8px;align-items:flex-start;margin:0 0 8px;font-size:13px"><input type="checkbox" class="setup-part" data-part="' + part + '"' + (checked ? ' checked' : '') + (disabled ? ' disabled' : '') + '> <span><b>' + title + '</b><br><span style="color:var(--muted);font-size:12px">' + detail + '</span></span></label>';
+}
+function setupPreview(d, chk) {
+  var id = d.identity || {}, units = String(id.eocUnits || '').split(/[,;\n]/).filter(function(u){ return u.trim(); }).length;
+  var roles = Object.keys(id.roles || {}).filter(function(k){ return id.roles[k] && id.roles[k].name; }).length;
+  var have = {}; roster.forEach(function(r){ have[String(r.name || '').trim().toLowerCase()] = 1; });
+  var fileUnits = (d.roster || []).filter(function(r){ return r && String(r.name || '').trim(); });
+  var newUnits = fileUnits.filter(function(r){ return !have[String(r.name).trim().toLowerCase()]; }).length;
+  var h = '<p style="margin:0 0 10px;font-size:13px">From <b>' + esc((d.from && d.from.name) || 'another EOC') + '</b>' + (d.savedAt ? ', saved ' + esc(fmtTs(Date.parse(d.savedAt))) : '') + '. Untick anything you want to keep as it is here.</p>';
+  h += _setupRow('identity', true, 'This EOC: ' + esc(id.eocName || '(no name)') + ' (' + esc(_LEVEL_LABEL[id.eocLevel] || 'Stake EOC') + ')',
+    'Replaces the fields under This EOC and the must-have roles: ' + units + ' units covered, the EOC above, the council and welfare lines, ' + roles + ' must-have roles named.');
+  if (fileUnits.length) h += _setupRow('roster', true, 'Units on the roster: ' + fileUnits.length, newUnits ? 'Adds the ' + newUnits + ' not on this roster and their leader lines. Reports and statuses here are kept.' : 'All are on this roster already: their leader lines are updated. Reports and statuses are kept.');
+  if (d.comms && d.comms.sheet) {
+    var older = comms.updatedMs && d.comms.updatedMs && d.comms.updatedMs < comms.updatedMs;
+    h += _setupRow('comms', !older, 'Comms Sheet' + (d.comms.sheet.org ? ': ' + esc(d.comms.sheet.org) : '') + (d.comms.updatedMs ? ', dated ' + esc(fmtTs(d.comms.updatedMs)) : ''),
+      'Replaces the whole standing sheet.' + (older ? ' <b style="color:var(--danger)">It is older than the sheet here (' + esc(fmtTs(comms.updatedMs)) + '), so it is not ticked.</b>' : ''));
+  }
+  if (d.event && Object.keys(d.event).length) {
+    var e = d.event;
+    h += _setupRow('event', true, 'Event details: ' + esc(e.name || '(unnamed)'),
+      'Updates the active event here (' + esc(eventTitle(activeEvent())) + '): name, type' + (e.pace ? ', PACE level ' + esc(e.pace) : '') + (e.sitrepHrs ? ', SITREP every ' + esc(e.sitrepHrs) + ' hours' : '') + '. To keep this event as it is, open a new event first.');
+  }
+  var fo = d.folders || {}, calls = (d.winlink && d.winlink.callsigns) || [];
+  h += '<div style="border-top:1px solid var(--border);margin:6px 0 8px;padding-top:8px;font-size:13px"><b>Folders on this computer</b></div>';
+  if (!networkMode) {
+    h += '<p style="font-size:12px;color:var(--muted);margin:0 0 6px">Folders and the Winlink call sign apply only on the laptop that runs the EOC server. Nothing changes here.</p>';
+  } else {
+    var cur = (watcherState && watcherState.enabled && watcherState.watch_path) || '', w = (chk && chk.winlink) || {};
+    if (fo.winlink && w.exists) {
+      var notThere = calls.filter(function(c){ return (w.callsigns || []).length && w.callsigns.indexOf(c) < 0; });
+      h += _setupRow('winlink', true, 'Winlink: ' + esc(fo.winlink) + (calls.length ? ', call sign ' + esc(calls.join(', ')) : ''),
+        notThere.length ? 'This folder has no ' + esc(notThere.join(', ')) + ' here: after Apply you tick the call sign that feeds this EOC.' : 'Auto-ingest reads that call sign\'s mail.');
+    } else if (fo.winlink || calls.length) {
+      h += _setupRow('winlink-choose', true, 'Winlink: choose the folder and call sign after Apply',
+        (fo.winlink ? esc(fo.winlink) + ' is not on this computer. ' : '') + 'Keeps ' + (cur ? esc(cur) : 'auto-ingest off') + ' until you choose: step 1 the Winlink Express folder, step 2 the call sign' + (calls.length ? ' (' + esc(calls.join(', ')) + ' in the file)' : '') + '.');
+    }
+    var dr = (chk && chk.drop) || {};
+    if (fo.drop) h += dr.exists ? _setupRow('drop', true, 'Drop Folder: ' + esc(fo.drop), 'Reports saved in that folder file themselves.')
+      : '<p style="font-size:12px;margin:0 0 8px"><b>Drop Folder:</b> ' + esc(fo.drop) + ' is not on this computer. Keeps ' + esc((dropState && dropState.watch_path) || 'the one here') + '.</p>';
+    var mp = (chk && chk.map) || {};
+    if (fo.map) h += mp.exists ? _setupRow('map', true, 'Map data folder: ' + esc(fo.map), 'The Map tab and the wall show this area.')
+      : '<p style="font-size:12px;margin:0 0 8px"><b>Map data folder:</b> ' + esc(fo.map) + ' is not on this computer. Keeps ' + esc((incident && incident.mapPath) || 'none') + '. Choose it later: This EOC, Map data folder, Browse&#8230;</p>';
+    if (!fo.winlink && !calls.length && !fo.drop && !fo.map) h += '<p style="font-size:12px;color:var(--muted);margin:0 0 6px">The file names no folders. Nothing changes here.</p>';
+  }
+  document.getElementById('modal-title').textContent = 'Load a setup: what will change';
+  document.getElementById('modal-body').innerHTML = h;
+  document.getElementById('modal-confirm-btn').textContent = 'Apply this setup';
+  document.getElementById('modal-confirm-btn').className = 'btn';
+  pendingConfirm = function(){
+    var parts = {}; document.querySelectorAll('#modal-body .setup-part').forEach(function(c){ parts[c.dataset.part] = c.checked; });
+    closeModal(); applyEocSetup(d, parts);
+  };
+  document.getElementById('modal-bg').classList.add('open');
+  var first = document.querySelector('#modal-body .setup-part'); (first || document.getElementById('modal-confirm-btn')).focus();
+}
+function applyEocSetup(d, parts) {
+  var done = [], fo = d.folders || {}, calls = (d.winlink && d.winlink.callsigns) || [];
+  if (!incident) incident = {};
+  if (parts.identity) {
+    var keep = eventFieldsOf(incident); _VIEW_ONLY.forEach(function(k){ if (incident[k] !== undefined) keep[k] = incident[k]; });
+    var mp = incident.mapPath || '';
+    var ident = JSON.parse(JSON.stringify(d.identity || {})); delete ident.mapPath; delete ident.drillConfig;
+    EVENT_FIELDS.concat(_VIEW_ONLY).forEach(function(k){ delete ident[k]; });
+    incident = Object.assign(keep, ident); if (mp) incident.mapPath = mp;
+    done.push('this EOC');
+  }
+  if (parts.map && fo.map && fo.map !== incident.mapPath) { incident.mapPath = fo.map; MAP_LOADED = false; done.push('map folder'); }
+  if (parts.roster) {
+    var byName = {}; roster.forEach(function(r){ byName[String(r.name || '').trim().toLowerCase()] = r; });
+    var added = 0;
+    (d.roster || []).forEach(function(u){
+      var n = String((u && u.name) || '').trim(); if (!n) return;
+      var r = byName[n.toLowerCase()];
+      if (!r) { r = {id: uid(), name: n, spName: '', spPhone: '', expectedMinutes: 0, voiceContact: false, voiceContactTs: null}; roster.push(r); byName[n.toLowerCase()] = r; added++; }
+      if (u.spName) r.spName = u.spName; if (u.spPhone) r.spPhone = u.spPhone; if (u.expectedMinutes) r.expectedMinutes = u.expectedMinutes;
+    });
+    done.push(added ? added + ' units added to the roster' : 'roster leader lines');
+  }
+  if (parts.event && d.event) {
+    var paceWas = incident.pace || '';
+    SETUP_EVENT_KEYS.forEach(function(k){ if (d.event[k] !== undefined) incident[k] = d.event[k]; });
+    if ((incident.pace || '') !== paceWas) incident.paceTs = Date.now();
+    var ev = activeEvent(); if (ev) Object.assign(ev, eventFieldsOf(incident));
+    done.push('event details');
+  }
+  if (parts.comms && d.comms && d.comms.sheet) {
+    comms = {sheet: d.comms.sheet, updatedMs: d.comms.updatedMs || Date.now()};
+    try { localStorage.setItem('church_eoc_comms', JSON.stringify(comms)); } catch (e) {}
+    if (networkMode) fetch('/api/comms', {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(comms)}).catch(function(){ toast('The server did not take the Comms Sheet'); });
+    _commsEditorStamp = -1; done.push('Comms Sheet');
+  }
+  var from = (d.from && d.from.name) || 'another EOC';
+  notes.unshift({id: uid(), ts: Date.now(), text: 'EOC setup loaded from ' + from + ': ' + (done.join(', ') || 'nothing changed')});
+  if (networkMode) fetch('/api/notes', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(notes[0])}).catch(function(){});
+  _identitySavedMs = Date.now();
+  save(); render(); updateSetupForm(); renderComms();
+  var after = null;
+  if (networkMode && parts.winlink && fo.winlink) {
+    fetch('/api/watcher/config', {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({enabled: true, watch_path: fo.winlink, callsigns: calls.join(',')})})
+      .then(function(x){ return x.json(); }).then(function(w){
+        watcherState = w; showWatcherBar(); updateDropZone();
+        var avail = w.available || [];
+        if (avail.length && !(w.callsigns || []).some(function(c){ return avail.indexOf(c) >= 0; })) chooseCallsigns(w);   // step 2 of 2: the call sign is not here
+      }).catch(function(){ toast('Could not reach the EOC server to set the Winlink folder'); });
+    done.push('Winlink');
+  }
+  if (networkMode && parts['winlink-choose']) after = configureWatcher;
+  if (networkMode && parts.drop && fo.drop) { saveDropFolder(fo.drop); done.push('Drop Folder'); }
+  var text = done.length ? 'Setup loaded from ' + from + ': ' + done.join(', ') + '.' : 'Nothing was ticked, so nothing changed.';
+  setupMsg(text + (after ? ' Now choose the Winlink folder (step 1 of 2).' : ''));
+  toast(text);
+  if (after) setTimeout(after, 300);
+}
 // ── Drill configuration (simulation/drillconfig.py writes it; the server applies it: POST /api/config/apply) ──
 var _drillCfg = null;
 function readDrillConfig(inp) {

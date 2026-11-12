@@ -913,6 +913,64 @@ try:
     call(SIM_PORT, 'POST', '/api/run/stop')
     bad = call(SIM_PORT, 'POST', '/api/session/resume', {'id': '../../etc'})
     check('resume refuses a run id that is not a saved run', bad.get('ok') is False)
+
+    # ── 9. Save simulator setup -> Load simulator setup on a second simulator (another drill controller's laptop) ──
+    call(SIM_PORT, 'POST', '/api/pack', {'path': str(FIX), 'privacy': 'pseudonymized'})
+    site1 = {'role': 'stake', 'stake': 'S1', 'satellite_units': ['U3'], 'units': [], 'councils': [], 'played_stakes': [], 'played_parent': True}
+    sv = call(SIM_PORT, 'POST', '/api/sim-setup/save', {'scenario': 'copper-creek-dam', 'speed': 10, 'seed': 7, 'site': site1, 'sessionEvent': 'DRILL: setup share (THIS IS AN EXERCISE)'})
+    setup = sv.get('setup') or {}
+    blob = json.dumps(setup)
+    real_pack, served_pack = orgpack.load(FIX), call(SIM_PORT, 'GET', '/api/pack')
+    leaks = [v for pk in (real_pack, served_pack) for c in pk['contacts'] for k in ('name', 'first', 'mobile', 'phone', 'email') for v in [str(c.get(k) or '')] if len(v) > 3 and v in blob]
+    check('Save simulator setup: kind, pack reference (name, counts, fingerprint), scenario, speed, seed, site, event name; no contact of the pack (real or pseudonymized)',
+          sv.get('ok') and setup.get('kind') == 'church_emcomm_sim_setup' and len(setup['pack']['fingerprint']) == 16 and setup['pack']['counts']['units'] == 6
+          and setup['scenario'] == 'copper-creek-dam' and setup['speed'] == 10 and setup['seed'] == 7 and setup['site']['satellite_units'] == ['U3']
+          and setup['site']['played_parent'] is True and 'contacts' not in setup and not leaks, (leaks[:3], {k: setup.get(k) for k in ('scenario', 'speed', 'seed')}))
+    SIM2 = 8096
+    slog2 = open(SP / 'sim2.log', 'w', encoding='utf-8')
+    procs.append(subprocess.Popen([sys.executable, '-u', str(REPO / 'simulation' / 'sim_server.py'), str(SIM2), '--data', str(FIX)], stdout=slog2, stderr=subprocess.STDOUT,
+                                  env=dict(os.environ, PYTHONIOENCODING='utf-8', LOCALAPPDATA=str(SP / 'appdata_sim2'), EMCOMM_DOCUMENTS=str(SP / 'documents_sim2'))))
+    for _ in range(80):
+        try:
+            call(SIM2, 'GET', '/api/info'); break
+        except Exception:
+            time.sleep(0.25)
+    dry = call(SIM2, 'POST', '/api/sim-setup/apply', {'setup': setup, 'dry': True})
+    info_dry = call(SIM2, 'GET', '/api/info')
+    check('Load simulator setup (preview): says what will change and changes nothing yet', dry.get('ok') and dry.get('dry') and any('Copper Creek' in c or 'copper' in c.lower() for c in dry['changes'])
+          and info_dry.get('scenario') != 'copper-creek-dam', dry)
+    ap = call(SIM2, 'POST', '/api/sim-setup/apply', {'setup': setup})
+    i1, i2 = call(SIM_PORT, 'GET', '/api/info'), call(SIM2, 'GET', '/api/info')
+    same = {k: (i1.get(k), i2.get(k)) for k in ('scenario', 'speed', 'seed', 'site', 'sessionEvent') if i1.get(k) != i2.get(k)}
+    check('Load simulator setup on a second simulator with the same pack: identical scenario, speed, seed, site and drill event name; its own EOC address kept',
+          ap.get('ok') and not same and i2['eocUrl'] != setup['eocUrl'], (ap.get('error'), same, i2.get('eocUrl'), setup.get('eocUrl')))
+    ap_url = call(SIM2, 'POST', '/api/sim-setup/apply', {'setup': dict(setup, eocUrl='http://127.0.0.1:8085'), 'useEocUrl': True})
+    check('Load simulator setup: the file\'s EOC address only when the person ticks it', ap_url.get('ok') and call(SIM2, 'GET', '/api/info')['eocUrl'] == 'http://127.0.0.1:8085')
+    ap_real = call(SIM2, 'POST', '/api/sim-setup/apply', {'setup': dict(setup, privacy='real')})
+    i2r = call(SIM2, 'GET', '/api/info')
+    check('a setup saved with real contacts does not switch this simulator to real contacts (it needs this laptop\'s own consent)',
+          ap_real.get('ok') and i2r['privacy'] == 'pseudonymized' and not i2r.get('consent') and any('consent' in n for n in ap_real.get('notes', [])) and '000-000-0105' not in json.dumps(call(SIM2, 'GET', '/api/pack')), ap_real)
+    wrong = call(SIM2, 'POST', '/api/sim-setup/apply', {'setup': {'kind': 'church_emcomm_drill_config', 'eocs': []}})
+    wrong2 = call(SIM2, 'POST', '/api/sim-setup/apply', {'setup': {'kind': 'church_eoc_setup'}})
+    check('Load simulator setup refuses a drill configuration and an EOC setup, saying where each one loads', not wrong['ok'] and 'Drill configuration' in wrong['error'] and not wrong2['ok'] and 'Message Center' in wrong2['error'], (wrong, wrong2))
+    call(SIM2, 'POST', '/api/pack', {'path': str(REPO / 'simulation' / 'example' / 'juniper-plains'), 'privacy': 'pseudonymized'})
+    other = call(SIM2, 'POST', '/api/sim-setup/apply', {'setup': setup})
+    check('Load simulator setup with another organization pack loaded is refused: load the same organization pack first', not other['ok'] and other.get('mismatch') and 'Load the same organization pack first' in other['error'], other)
+    # Save drill configuration: the established church_emcomm_drill_config, from this screen
+    dcs = call(SIM_PORT, 'POST', '/api/drillconfig/save', {'site': {'role': 'stake', 'stake': 'S1', 'played_parent': True}, 'scenario': 'copper-creek-dam', 'winlink': 'EOC-A@winlink.org', 'sessionEvent': 'DRILL: from the screen'})
+    cfg = dcs.get('config') or {}
+    check('Save drill configuration: a church_emcomm_drill_config with this stake\'s EOC (call sign) and the Council / Area EOC its people play, the scenario and the event',
+          dcs.get('ok') and cfg.get('kind') == 'church_emcomm_drill_config' and [e['level'] for e in cfg['eocs']] == ['stake', 'area'] and cfg['eocs'][0]['winlink'] == ['EOC-A']
+          and cfg['scenario'] == 'copper-creek-dam' and cfg['event']['name'] == 'DRILL: from the screen' and cfg['privacy'] == 'pseudonymized' and '000-000-0105' not in json.dumps(cfg), dcs.get('error'))
+    call(SIM2, 'POST', '/api/pack', {'path': str(FIX), 'privacy': 'pseudonymized'})
+    dca = call(SIM2, 'POST', '/api/drillconfig', {'config': cfg, 'eoc': cfg['eocs'][0]['id'] if cfg.get('eocs') else ''})
+    eca = call(EOC_PORT, 'POST', '/api/config/apply', {'config': cfg, 'eoc': cfg['eocs'][0]['id'] if cfg.get('eocs') else '', 'newEvent': False})
+    check('the saved drill configuration loads the established way: another simulator plays that stake, the Message Center takes its identity and call sign',
+          dca.get('ok') and dca['site']['stake'] == 'S1' and dca['site']['played_parent'] is True and eca.get('ok') and eca['winlink'] == ['EOC-A'], (dca.get('error'), eca))
+    call(SIM_PORT, 'POST', '/api/pack', {'path': str(FIX), 'privacy': 'real', 'confirm': True, 'consent': {'by': 'President Tester', 'date': '2026-10-31', 'recordedBy': 'Pat', 'inRoom': True}})
+    dcr = call(SIM_PORT, 'POST', '/api/drillconfig/save', {'site': site1, 'scenario': 'copper-creek-dam'})
+    call(SIM_PORT, 'POST', '/api/pack', {'path': str(FIX), 'privacy': 'pseudonymized'})
+    check('Save drill configuration is refused while real contacts are loaded', not dcr.get('ok') and 'pseudonymized' in dcr.get('error', ''), dcr)
     print('\nRESULT:', 'ALL PASS' if all(res) else 'FAILURES', f'({sum(res)}/{len(res)})')
 finally:
     if keep:
