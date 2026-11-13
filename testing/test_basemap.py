@@ -163,6 +163,20 @@ try:
     st = call(PA, 'GET', '/api/basemap/status')[1]
     a = st['area']
     check('status: the default area is the map data, with an estimate of tiles and size', a['source'] == 'map data' and a['bounds'] and a['tiles'] > 0 and a['bytes'] > 0 and a['zmin'] == 8 and a['zmax'] == 15, a)
+    # an Area-wide boundary (hundreds of km) and a region with no shape must not widen the area: only the units count
+    wide = tmp / 'wide-map'
+    (wide / 'simulator').mkdir(parents=True, exist_ok=True)
+    gj = json.loads((EXAMPLE / 'simulator' / 'organization_boundaries.geojson').read_text(encoding='utf-8'))
+    gj['features'] = [f for f in gj['features'] if (f.get('properties') or {}).get('org_type') in ('Stake', 'Ward', 'Branch')] + [
+        {'type': 'Feature', 'properties': {'org_type': 'Area'}, 'geometry': {'type': 'Polygon', 'coordinates': [[[-121, 37], [-113, 37], [-113, 44], [-121, 44], [-121, 37]]]}},
+        {'type': 'Feature', 'properties': {'org_type': 'Welfare and Self-Reliance Region'}, 'geometry': None}]
+    (wide / 'simulator' / 'organization_boundaries.geojson').write_text(json.dumps(gj), encoding='utf-8')
+    # (on PA: a server keeps its own tile index from its first status read, so PB is not asked before the download)
+    incb = call(PA, 'GET', '/api/incident')[1]
+    call(PA, 'PUT', '/api/incident', dict(incb, mapPath=str(wide)))
+    aw = call(PA, 'GET', '/api/basemap/status')[1]['area']
+    check('status: the area covers the units only, not an Area-wide boundary in the same data', aw['source'] == 'map data' and aw['bounds'] == a['bounds'] and aw['tiles'] == a['tiles'], (a['bounds'], aw['bounds']))
+    call(PA, 'PUT', '/api/incident', dict(incb, mapPath=str(EXAMPLE)))
     check('status: hands the page the street map address from EMCOMM_STREETS_URL', st['streetsUrl'].startswith(f'http://127.0.0.1:{FP}/streets/'), st['streetsUrl'])
     code, ans = call(PA, 'POST', '/api/basemap/fetch', {'zmin': 0, 'zmax': 18, 'bounds': [-125, 30, -100, 45]})
     check('a too-big area is refused with the count, before anything is fetched', code == 400 and 'too big' in ans.get('error', '') and ans.get('tiles', 0) > 25000 and sum(hits.values()) == 0, ans)

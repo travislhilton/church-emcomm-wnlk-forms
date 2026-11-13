@@ -564,8 +564,12 @@ def _basemap_layer_index(layer: str) -> dict:
 
 
 _map_bbox_cache = {}
+_MAP_UNIT_TYPES = ('Stake', 'Ward', 'Branch')
 def _map_data_bounds(path_str: str):
-    """[west, south, east, north] of the map data's organization boundaries, or None."""
+    """[west, south, east, north] of the units on the map (stakes, wards, branches), or None.
+    The Area's own boundary, a welfare region and the like span hundreds of kilometres: counting them made a
+    real export's basemap area ~600 x 900 km (1.8 million tiles) instead of its stakes' ~60 x 80 km (2026-11-12).
+    A dataset with no such units falls back to every boundary in it."""
     d = _map_dir(path_str)
     if not d:
         return None
@@ -574,6 +578,8 @@ def _map_data_bounds(path_str: str):
         st = f.stat()
         sig = (str(f), st.st_mtime, st.st_size)
         if _map_bbox_cache.get('sig') != sig:
+            feats = json.loads(f.read_text(encoding='utf-8')).get('features', [])
+            units = [ft for ft in feats if ((ft.get('properties') or {}).get('org_type') or '') in _MAP_UNIT_TYPES]
             b = [180.0, 90.0, -180.0, -90.0]
             def walk(c):
                 if c and isinstance(c[0], (int, float)):
@@ -581,7 +587,7 @@ def _map_data_bounds(path_str: str):
                 else:
                     for p in c or []:
                         walk(p)
-            for feat in json.loads(f.read_text(encoding='utf-8')).get('features', []):
+            for feat in units or feats:
                 walk((feat.get('geometry') or {}).get('coordinates') or [])
             _map_bbox_cache.update(sig=sig, bounds=b if b[0] < b[2] and b[1] < b[3] else None)
         return _map_bbox_cache.get('bounds')
