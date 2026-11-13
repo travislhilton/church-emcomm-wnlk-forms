@@ -428,6 +428,7 @@ Automated: `python testing/test_phone_api.py` (two scratch EOC servers, 17 check
 
 | Date | Who | Sections | Notes |
 |---|---|---|---|
+| 2026-11-13 (release: installer with [U] Uninstall) | Claude | H2, H3 | Travis: "Yes, release". Installer BAT and Forms ZIP uploaded with `--clobber`; 14 assets listed afterwards, both equal to `dist/` by size, the installer by SHA-256 (dd633da4…); tag `v1.0` moved. |
 | 2026-11-13 (installer [U] Uninstall) | Claude | A15, A19 | Travis: "Add uninstall to the install." New menu choice U in `install.ps1` (one-file installer and ZIP). `test_install.py` gained the *uninstall* stage: 78/78 on W9TLH-7, PowerShell syntax check passed; the uninstall screen read through once as a person would see it. |
 | 2026-11-13 (live EOC laptops updated to 2026-11-13.2) | Claude | A18 | Travis: update both now. On W9TLH-7 (Stake) and W9TLH-8 (Area): `reinstall_eoc.ps1` backup → install (the release's installer, SHA-256 29172B4C…, run over the live install as role 3) → start; `smoke_eoc_install.ps1` 27/27 each, restart-check 3/3, cleanup 1/1; each simulator's own pack loaded again afterwards (the smoke test leaves the invented example loaded). |
 | 2026-11-13 (release 2026-11-13.2) | Claude | H2, H3 | Travis: "Release". Uploaded with `--clobber`: installer BAT, Forms ZIP, deck ZIP, card 3, 6, 7, 8 and all-cards PDFs; listed afterwards: 14 assets, each changed one equal to the local file by size, the installer also by SHA-256; tag `v1.0` moved to the commit recording it. |
