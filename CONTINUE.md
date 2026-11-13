@@ -54,7 +54,7 @@
 - **Map module** (`templates/_shared/emcomm-map.js`): tiles under the overlays with a white wash, Streets / Topo / Imagery / None per browser (`localStorage` `emcomm_basemap`), attribution, fallback to the saved Topo map with the note *Street map needs internet* and a doubling back-off (30 s to 5 min). Map tab: **Map background** list; Setup → This EOC: *Basemap for offline use* with **Download basemap now (needs internet)**. The wall uses the default.
 - **Simulator console:** Basemap list (None / Topo / Imagery, offline only) reading the same saved tiles through `sim_server.py` (`/api/basemap/status`, `/basemap/...`). The live street map is not in the simulator.
 - **Tests:** `testing/test_basemap.py` (in `dev/check-dev-setup.py --tests`, ports 8190, 8191 and 8192); `test_contrast.py` now includes the Map tab.
-- **Open:** F36 (a real download on W9TLH-7 with internet, the offline view and alignment); card 3 does not mention the basemap yet (its sides must stay at 2 printed pages, measured on Windows); the main session bumps the versions and rebuilds `dist/` when it merges.
+- **Open:** F36: the offline view and alignment, by eye; its download part passed 2026-11-12 on a scratch EOC on W9TLH-7, real internet: the invented map data's area, zoom 8–15, 3,952 of 3,952 tiles saved in 3.8 min, 0 failed, 59 MB against an estimate of 94 MB; after a restart with the tile source unreachable the tiles came from the laptop; left for Travis: Wi-Fi off and the look of the Map tab, `/wall` and alignment; card 3 does not mention the basemap yet (its sides must stay at 2 printed pages, measured on Windows); the main session bumps the versions and rebuilds `dist/` when it merges.
 
 ## Share a setup with another operator (2026-11-12, branch `setup-share` from no-sim-ux, not yet released)
 
@@ -104,7 +104,7 @@
 
 ## Open work, in the order it is worth doing
 
-0. **UX items the reviews raised, not done:** one status line for the server / Winlink / Drop Folder bars; shorter intros on the Setup cards; longer toasts for errors; ASSGN → ASSIGNED on the badges; cards 6–8 have nearly the same back. F36 (basemap with real internet on a scratch install).
+0. **UX items the reviews raised, not done:** one status line for the server / Winlink / Drop Folder bars; shorter intros on the Setup cards; longer toasts for errors; ASSGN → ASSIGNED on the badges; cards 6–8 have nearly the same back. F36: only the look offline and the alignment, by eye (the real-internet download passed on a scratch EOC).
 
 The checklist's *Still open* section lists every row that still needs a person or a device; 50 rows do, nearly all of them below.
 
