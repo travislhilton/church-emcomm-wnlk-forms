@@ -1,7 +1,7 @@
 # Smoke test of a freshly installed EOC laptop (checklist A18). Run ON the laptop after testing\reinstall_eoc.ps1 -Phase start;
 # then stop and start both servers and run -Step restart-check, then -Step cleanup.
 # Works in a test event of its own and removes it afterwards; the event the laptop had stays active.
-param([ValidateSet('stake','area')][string]$Role = 'stake', [string]$Want = '2026-11-13.2', [ValidateSet('all','restart-check','cleanup')][string]$Step = 'all')
+param([ValidateSet('stake','area')][string]$Role = 'stake', [string]$Want = '2026-11-13.3', [ValidateSet('all','restart-check','cleanup')][string]$Step = 'all')
 $ErrorActionPreference = 'Stop'
 $EOCURL = 'http://127.0.0.1:8080'; $SIM = 'http://127.0.0.1:8090'; $name = 'Church of Jesus Christ EMCOMM'
 $base = "C:\$name"; New-Item -ItemType Directory -Force "$env:USERPROFILE\emcomm-reinstall" | Out-Null

@@ -493,6 +493,62 @@ try:
                 check(f'{name}: {tag} file from the phone, loaded into the Winlink template, keeps THIS IS AN EXERCISE and its boxes',
                       filled and ticked and f'[Church-{tag}|exercise=YES|' in body and 'THIS IS AN EXERCISE' in body and not errs, (filled, ticked, body[-160:], errs[:2]))
                 ctx.close()
+            if name == 'Chromium':
+                # Work items: a poll that overlaps this page's own change must not put the older list back (card walk
+                # 2026-11-13: an item set Up showed OPEN again for up to 5 s, and a roll-up exported then left it out)
+                ctx, pg, errs = open_page(b, 'laptop', f'{EOC}/')
+                pg.evaluate("switchTab('actions')"); pg.fill('#act-new-title', f'{name} race item'); pg.click('button:has-text("+ Add")')
+                pg.wait_for_timeout(1500)
+                aid = next(a['id'] for a in call(f'{EOC}/api/actions') if a['title'] == f'{name} race item')
+                held = []
+                def hold(route):                                 # the change stays on its way while a poll runs
+                    if route.request.method == 'PATCH': held.append(route)
+                    else: route.continue_()
+                pg.route('**/api/actions/**', hold)
+                pg.evaluate(f"patchAction({json.dumps(aid)}, {{status: 'up'}})")
+                pg.wait_for_timeout(7000)                        # more than one 5 s poll
+                st = pg.evaluate(f"actions.filter(function(a){{return a.id==={json.dumps(aid)};}})[0].status")
+                for r in held: r.continue_()
+                pg.wait_for_timeout(1500)
+                pg.unroute('**/api/actions/**')
+                server = next(a['status'] for a in call(f'{EOC}/api/actions') if a['id'] == aid)
+                check(f'{name}: a work item set Up stays Up on the page while the change is on its way (a poll in between does not undo it)', held and st == 'up' and server == 'up', (held, st, server))
+                # Reports already on file: dragged onto the page again after a reload, they are not shown twice
+                mime = tmp / 'dup-check.mime'
+                mime.write_bytes(('Date: Fri, 13 Nov 2026 18:00:00 +0000\r\nFrom: W9ZZZ@winlink.org\r\nTo: EOC@winlink.org\r\nSubject: dup\r\nMessage-ID: DUPCHECK01\r\n'
+                                  'MIME-Version: 1.0\r\nContent-Type: text/plain; charset="iso-8859-1"\r\n\r\nDisaster report\r\n'
+                                  '[Church-DR|stake=Larkspur Stake|ward=Larkspur 2nd Ward|type=Flood|location=dup check 1 Elm|date=2026-11-13]\r\nCSV,DR\r\n').encode('latin-1'))
+                pg.set_input_files('#file-input', str(mime)); pg.wait_for_timeout(2500)
+                n1 = len(call(f'{EOC}/api/messages'))
+                pg.reload(); pg.wait_for_timeout(2500)
+                # as if the first copy came by phone, Drop Folder or Winlink: those carry no key this page can match
+                pg.evaluate("msgs.forEach(function(m){ delete m.dupKey; })")
+                pg.set_input_files('#file-input', str(mime)); pg.wait_for_timeout(2500)
+                shown = pg.evaluate("msgs.filter(function(m){ return m.dr && m.dr.location === 'dup check 1 Elm'; }).length")
+                t = pg.inner_text('#toast')
+                check(f'{name}: a report already on file, dragged on again after a reload, is shown once and the page says so', shown == 1 and len(call(f'{EOC}/api/messages')) == n1 and 'Already on file' in t, (shown, t))
+                # Drop Folder: a file holding only reports already on file is read, and the page says so
+                dropdir = tmp / 'dup-drop'; dropdir.mkdir(exist_ok=True)
+                call_json = lambda path, body: urllib.request.urlopen(urllib.request.Request(EOC + path, data=json.dumps(body).encode(), method='PUT', headers={'Content-Type': 'application/json'}), timeout=10).read()
+                call_json('/api/drop/config', {'watch_path': str(dropdir), 'enabled': True})
+                pg.reload(); pg.wait_for_timeout(2500)
+                c2, w2, _ = open_page(b, 'phone', f'{WEB}/templates/disaster-report/Church_of_Jesus_Christ_Disaster_Report_Worker.html')
+                w2.fill('#inc_stake', 'Larkspur Stake'); w2.fill('#inc_location', 'dup check 2 Oak')
+                txt = w2.evaluate('getFileContent()'); c2.close()
+                (dropdir / 'first.txt').write_text(txt, encoding='utf-8')
+                for _ in range(30):
+                    if not (dropdir / 'first.txt').exists(): break
+                    time.sleep(1)
+                (dropdir / 'again.txt').write_text(txt, encoding='utf-8')
+                t = ''
+                for _ in range(40):
+                    t = pg.inner_text('#toast') + ' ' + pg.inner_text('#drop-bar')
+                    if 'already on file' in t: break
+                    time.sleep(0.5)
+                ds = call(f'{EOC}/api/drop/status')
+                check(f'{name}: a Drop Folder file whose report is already on file is counted and the page says so', ds.get('dup', 0) >= 1 and ds.get('last_dup') == 'again.txt' and 'already on file' in t, (ds.get('dup'), ds.get('last_dup'), t[:200]))
+                call_json('/api/drop/config', {'enabled': False})
+                ctx.close()
             b.close()
 finally:
     web.shutdown()

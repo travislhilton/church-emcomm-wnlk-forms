@@ -17,7 +17,7 @@ except ValueError:
 VERSION = '1.0'
 # The Worker forms / Church of Jesus Christ EMCOMM app version this server ships (APP_VERSION in templates/_shared/emcomm-app.js).
 # Phones whose app is older still send fine; the receive page just tells them to update when they have internet.
-FORMS_VERSION = '2026-11-13.2'
+FORMS_VERSION = '2026-11-13.3'
 BASE = pathlib.Path(__file__).resolve().parent   # resolve: before Python 3.9 __file__ is relative when started from this folder
 DB_FILE   = BASE / 'eoc_data.db'
 HTML_FILE = BASE / 'EOC_Message_Center.html'
@@ -223,6 +223,8 @@ _drop_state = {
     'ingested':   0,
     'errors':     0,
     'last_file':  '',
+    'dup':        0,      # files read that held only reports already on file (nothing counts twice)
+    'last_dup':   '',
 }
 
 _watcher_lock = threading.Lock()
@@ -2482,6 +2484,9 @@ def _drop_loop():
                     elif form_type == 'REPLY':
                         print(f'  [DROP]   Reply named no work item on file: {fpath.name}')
                     else:
+                        with _drop_lock:
+                            _drop_state['dup'] += 1
+                            _drop_state['last_dup'] = fpath.name
                         print(f'  [DROP]   Duplicate (already in EOC): {fpath.name}')
                 except Exception as exc:
                     n = error_counts.get(sig, 0) + 1

@@ -1747,7 +1747,7 @@ function mergeBundle(data) {
   var nIds={}; notes.forEach(function(n){nIds[n.id]=1;}); var nNew=[];
   (data.notes||[]).forEach(function(n){ if(!n||!n.text||nIds[n.id]) return; var c={id:n.id||uid(),ts:n.ts||Date.now(),text:(n.text.charAt(0)==='['?n.text:'['+via+'] '+n.text)}; notes.push(c); nNew.push(c); });
   var aIds={}; actions.forEach(function(a){aIds[a.id]=1;}); var aNew=0;
-  (data.actions||[]).forEach(function(a){ if(!a||!a.title||aIds[a.id]) return; var c=Object.assign({},a,{status:'open',from:via,fromEoc:true,auto:false,log:(a.log||[]).concat([{ts:Date.now(),who:'',text:'Received from '+via+': they are waiting on this EOC'}])}); if(!c.id) c.id=uid(); actions.push(c); aIds[c.id]=1; aNew++; if(networkMode) fetch('/api/actions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(c)}).catch(function(){}); });
+  (data.actions||[]).forEach(function(a){ if(!a||!a.title||aIds[a.id]) return; var c=Object.assign({},a,{status:'open',from:via,fromEoc:true,auto:false,log:(a.log||[]).concat([{ts:Date.now(),who:'',text:'Received from '+via+': they are waiting on this EOC'}])}); if(!c.id) c.id=uid(); actions.push(c); aIds[c.id]=1; aNew++; if(networkMode) actFetch('/api/actions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(c)}).catch(function(){}); });
   var logNote={id:uid(),ts:Date.now(),text:'Roll-up received from '+via+': '+added+' new, '+dup+' already on file'+(aNew?', '+aNew+' work item'+(aNew===1?'':'s')+' waiting on this EOC':'')};
   notes.unshift(logNote); nNew.push(logNote);
   notes.sort(function(a,b){return b.ts-a.ts;});
@@ -3000,9 +3000,9 @@ function importHandoff(e) {
       // The handoff's records replace the ACTIVE event's records; the event itself
       // (its id and status on this server) stays what it is.
       var keepEv = {eventId:activeEventId(), eventStatus:(incident&&incident.eventStatus)||'open', eventCreatedMs:(incident&&incident.eventCreatedMs)||Date.now()};
-      if (networkMode) { msgs.forEach(function(m){ fetch('/api/messages/'+encodeURIComponent(m.id),{method:'DELETE'}).catch(function(){}); }); notes.forEach(function(n){ fetch('/api/notes/'+encodeURIComponent(n.id),{method:'DELETE'}).catch(function(){}); }); actions.forEach(function(a){ fetch('/api/actions/'+encodeURIComponent(a.id),{method:'DELETE'}).catch(function(){}); }); _serverMsgIds={}; }
+      if (networkMode) { msgs.forEach(function(m){ fetch('/api/messages/'+encodeURIComponent(m.id),{method:'DELETE'}).catch(function(){}); }); notes.forEach(function(n){ fetch('/api/notes/'+encodeURIComponent(n.id),{method:'DELETE'}).catch(function(){}); }); actions.forEach(function(a){ actFetch('/api/actions/'+encodeURIComponent(a.id),{method:'DELETE'}).catch(function(){}); }); _serverMsgIds={}; }
       msgs=data.msgs||[]; roster=data.roster||[]; incident=Object.assign(data.incident||{}, keepEv); notes=data.notes||[]; actions=data.actions||[];
-      if (networkMode) { notes.forEach(function(n){ fetch('/api/notes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(n)}).catch(function(){}); }); actions.forEach(function(a){ fetch('/api/actions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(a)}).catch(function(){}); }); }
+      if (networkMode) { notes.forEach(function(n){ fetch('/api/notes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(n)}).catch(function(){}); }); actions.forEach(function(a){ actFetch('/api/actions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(a)}).catch(function(){}); }); }
       var ev = activeEvent(); if (ev) Object.assign(ev, eventFieldsOf(incident));
       save(); render(); updateSetupForm(); closeModal(); toast('Handoff imported — '+msgs.length+' messages, '+roster.length+' '+unitPlural()+', '+actions.length+' work items');
     };
@@ -3022,7 +3022,7 @@ function confirmClearAll() {
   pendingConfirm = function(){
     // Clears the ACTIVE event's records (on the server too); the EOC identity and the
     // event itself (name, status) stay. For a new emergency, open a new event instead.
-    if (networkMode) { msgs.forEach(function(m){ fetch('/api/messages/'+encodeURIComponent(m.id),{method:'DELETE'}).catch(function(){}); }); notes.forEach(function(n){ fetch('/api/notes/'+encodeURIComponent(n.id),{method:'DELETE'}).catch(function(){}); }); actions.forEach(function(a){ fetch('/api/actions/'+encodeURIComponent(a.id),{method:'DELETE'}).catch(function(){}); }); _serverMsgIds={}; }
+    if (networkMode) { msgs.forEach(function(m){ fetch('/api/messages/'+encodeURIComponent(m.id),{method:'DELETE'}).catch(function(){}); }); notes.forEach(function(n){ fetch('/api/notes/'+encodeURIComponent(n.id),{method:'DELETE'}).catch(function(){}); }); actions.forEach(function(a){ actFetch('/api/actions/'+encodeURIComponent(a.id),{method:'DELETE'}).catch(function(){}); }); _serverMsgIds={}; }
     var keep = identityOf(incident); ['eventId','eventStatus','eventCreatedMs','name','area','type','startTs','ic','op','opPeriodHrs'].forEach(function(k){ if(incident && incident[k]!==undefined) keep[k]=incident[k]; });
     msgs=[]; roster=[]; incident=keep; notes=[]; actions=[];
     save(); render(); closeModal(); toast('Event data cleared — '+eventTitle(activeEvent()));
@@ -3398,7 +3398,7 @@ function addActionItem(a, quiet) {
   a=Object.assign({id:uid(), ts:Date.now(), status:'open', owner:'', decision:'', due:'', log:[{ts:Date.now(), who:(incident&&incident.op)||'', text:a.auto?'From the report as filed':'Added'}]}, a);
   if(a.key && actions.some(function(x){ return x.key===a.key; })) return null;
   actions.push(a);
-  if(networkMode) fetch('/api/actions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(a)}).then(function(r){return r.json();}).then(function(res){ if(res&&res.item){ var i=actions.indexOf(a); if(i>=0) actions[i]=res.item; _actionsStamp=''; } }).catch(function(){});
+  if(networkMode) actFetch('/api/actions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(a)}).then(function(r){return r.json();}).then(function(res){ if(res&&res.item){ var i=actions.indexOf(a); if(i>=0) actions[i]=res.item; _actionsStamp=''; } }).catch(function(){});
   if(!quiet){ save(); render(); }
   return a;
 }
@@ -3407,6 +3407,14 @@ function addAction() {
   addActionItem({title:t, cat:document.getElementById('act-new-cat').value, prio:parseInt(document.getElementById('act-new-prio').value,10)||2, owner:document.getElementById('act-new-owner').value.trim(), unit:'', auto:false});
   document.getElementById('act-new-title').value=''; document.getElementById('act-new-owner').value='';
   toast('Work item added');
+}
+// Every write to a work item goes through actFetch: while one is on its way (and for the poll that overlapped it)
+// the work-item poll does not replace this page's newer copy with the server's older list.
+var _actBusy=0, _actGen=0;
+function actFetch(url, opts) {
+  _actBusy++; _actGen++;
+  function end(){ _actBusy=Math.max(0,_actBusy-1); _actGen++; }
+  return fetch(url, opts).then(function(r){ end(); return r; }, function(e){ end(); throw e; });
 }
 function patchAction(id, changes) {
   // Apply locally (log lines like the server writes them) and send the same change to the server.
@@ -3418,7 +3426,7 @@ function patchAction(id, changes) {
   if(changes.status && _ACT_ST.indexOf(changes.status)>=0 && changes.status!==a.status){ a.status=changes.status; a.log.push({ts:Date.now(), who:who, text:'Status: '+({open:'open',progress:'in work',up:'waiting on the line above',done:'done'})[a.status]}); }
   if(changes.log && String(changes.log).trim()) a.log.push({ts:Date.now(), who:who, text:String(changes.log).trim()});
   a.updatedTs=Date.now();
-  if(networkMode) fetch('/api/actions/'+encodeURIComponent(id),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({who:who}, changes))}).then(function(r){return r.json();}).then(function(res){ if(res&&res.item){ var i=actions.indexOf(a); if(i>=0) actions[i]=res.item; _actionsStamp=''; render(); } }).catch(function(){});
+  if(networkMode) actFetch('/api/actions/'+encodeURIComponent(id),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({who:who}, changes))}).then(function(r){return r.json();}).then(function(res){ if(res&&res.item){ var i=actions.indexOf(a); if(i>=0) actions[i]=res.item; _actionsStamp=''; render(); } }).catch(function(){});
   save(); render();
 }
 // ── Reply to the EOC below: their item came up in a roll-up; the answer goes back down as a reply bundle ──
@@ -3460,7 +3468,7 @@ function cycleActStatus(id) {
 function removeAction(id) {
   pendingConfirm=function(){
     actions=actions.filter(function(a){return a.id!==id;});
-    if(networkMode) fetch('/api/actions/'+encodeURIComponent(id),{method:'DELETE'}).catch(function(){});
+    if(networkMode) actFetch('/api/actions/'+encodeURIComponent(id),{method:'DELETE'}).catch(function(){});
     save(); render(); closeModal(); toast('Work item removed');
   };
   document.getElementById('modal-title').textContent='Remove Work Item';
@@ -3779,7 +3787,15 @@ function showNetBar(ok) {
 function _netPostMsg(msg) {
   if(!networkMode || _serverMsgIds[msg.id]) return;
   _serverMsgIds[msg.id] = 1;
-  fetch('/api/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(msg)}).catch(function(){});
+  fetch('/api/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(msg)})
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      if (!res || !res.duplicate) return;
+      // the server already has this report (sent by phone, from a file or by another operator): take this copy off
+      // the screen again, or it shows twice until the page reloads
+      msgs = msgs.filter(function(x){ return x.id !== msg.id; }); render();
+      toast('Already on file at the EOC: ' + ({dr:'Disaster Report', so:'Supply Order', wcl:'Work Crew Log'}[msg.type] || 'report') + ' not added twice.');
+    }).catch(function(){});
 }
 function _normalizeServerMsg(d) {
   // Normalise messages that may be stored in old flat format (type uppercase, no sub-object).
@@ -3855,8 +3871,10 @@ function _pollServer() {
     if(stamp!==_rosterStamp && JSON.stringify(roster)===_rosterStamp){ _rosterStamp=stamp; roster=list; if(!(document.getElementById('modal-bg').classList.contains('open') && editingRosterId)) render(); }
   }).catch(function(){});
   // Work items: the whole list (small), re-rendered only when something changed on the server.
-  fetch('/api/actions').then(function(r){return r.json();}).then(function(list){
-    if(!Array.isArray(list)) return;
+  // a list fetched while this page's own change to a work item was on its way can be older than that change: skip it
+  var actGen=_actGen;
+  if(!_actBusy) fetch('/api/actions').then(function(r){return r.json();}).then(function(list){
+    if(!Array.isArray(list) || _actBusy || actGen!==_actGen) return;
     var stamp=JSON.stringify(list);
     if(stamp!==_actionsStamp){ _actionsStamp=stamp; actions=list; if(document.getElementById('modal-bg').classList.contains('open') && _actEditing) return; render(); }
   }).catch(function(){});
@@ -3920,6 +3938,7 @@ function _pollDrop() {
   }).catch(function(){});
 }
 
+var _dropDupSeen = null;
 function showDropBar() {
   var bar = document.getElementById('drop-bar');
   if (!networkMode || !dropState) { bar.style.display = 'none'; return; }
@@ -3928,6 +3947,11 @@ function showDropBar() {
   var lastCheck = dropState.last_check || '';
   var errors    = dropState.errors    || 0;
   var errTxt    = errors > 0 ? ' · ' + errors + ' error' + (errors===1?'':'s') : '';
+  var dup       = dropState.dup || 0;
+  // a file whose reports were all on file already: say so, or the operator who just copied it in sees nothing happen
+  if (_dropDupSeen !== null && dup > _dropDupSeen) toast('Drop Folder: ' + (dropState.last_dup || 'a file') + ' was read. Its reports were already on file, so nothing was added twice.');
+  _dropDupSeen = dup;
+  if (dup) errTxt = ' · ' + dup + ' already on file' + errTxt;
   var ingestedTxt = ingested === 0 ? 'no reports yet'
       : ingested + ' report' + (ingested===1?'':'s');
   bar.style.cssText = 'background:#0f2a1a;color:#6ee7b7;';
