@@ -1,10 +1,12 @@
 # Full test of a live EOC laptop with the released installer: uninstall (U) with the servers running, install
 # role 3 from the release, restore from the uninstall's own records copy, smoke test, restart, cleanup, resettle.
 # Checklist A18 / A19. Copy it with reinstall_eoc.ps1 and smoke_eoc_install.ps1 into %USERPROFILE%\emcomm-reinstall on the
-# laptop and run, in order: -Step pre, uninstall, install, smoke, resettle. Prints no record contents.
+# laptop and run, in order: -Step pre, uninstall, install, verify, smoke, simulate, cleanup, resettle.
+# verify: the installed EOC and simulator equal the GitHub release's ZIP. simulate: a whole scenario at 60x.
+# Prints no record contents.
 # -WantSha: the first characters of the release installer's SHA-256 (empty = any).
 param([Parameter(Mandatory)][ValidateSet('stake','area')][string]$Role,
-      [Parameter(Mandatory)][ValidateSet('pre','uninstall','install','smoke','resettle')][string]$Step, [string]$WantSha = '')
+      [Parameter(Mandatory)][ValidateSet('pre','uninstall','install','verify','smoke','simulate','cleanup','resettle')][string]$Step, [string]$WantSha = '')
 $ErrorActionPreference = 'Stop'
 $name = 'Church of Jesus Christ EMCOMM'; $base = "C:\$name"; $app = Join-Path $env:LOCALAPPDATA $name
 $here = "$env:USERPROFILE\emcomm-reinstall"; Set-Location $here
@@ -82,7 +84,67 @@ switch ($Step) {
    PS1 'smoke_eoc_install.ps1' @('-Role', $Role) | Select-String 'RESULT|FAIL' | ForEach-Object { 'smoke: ' + $_.Line }
    Restart-Servers
    PS1 'smoke_eoc_install.ps1' @('-Role', $Role, '-Step', 'restart-check') | Select-String 'RESULT|FAIL' | ForEach-Object { 'restart-check: ' + $_.Line }
+ }
+ 'cleanup' {   # removes every SMOKE TEST event (the smoke test's and the simulation's)
    PS1 'smoke_eoc_install.ps1' @('-Role', $Role, '-Step', 'cleanup') | Select-String 'RESULT|FAIL' | ForEach-Object { 'cleanup: ' + $_.Line }
+ }
+ 'verify' {     # the installed EOC and simulator are the GitHub release's files, byte for byte (line endings aside)
+   $dir = Join-Path $here 'fulltest'; New-Item -ItemType Directory -Force $dir | Out-Null
+   $zip = Join-Path $dir 'ChurchEMCOMM_Forms_v1.0.zip'; $ex = Join-Path $dir 'release-zip'
+   Invoke-WebRequest -UseBasicParsing 'https://github.com/travislhilton/church-emcomm-wnlk-forms/releases/download/v1.0/ChurchEMCOMM_Forms_v1.0.zip' -OutFile $zip
+   if (Test-Path $ex) { Remove-Item -Recurse -Force $ex }
+   Add-Type -AssemblyName System.IO.Compression.FileSystem; [IO.Compression.ZipFile]::ExtractToDirectory($zip, $ex)
+   $mc = "$base\EOC Message Center"; $same = 0; $diff = @(); $missing = @()
+   foreach ($pair in @(@('eoc', $mc), @('simulation', (Join-Path $mc 'simulation')))) {
+     $src = Join-Path $ex $pair[0]
+     foreach ($f in Get-ChildItem $src -Recurse -File) {
+       $rel = $f.FullName.Substring($src.Length + 1); $inst = Join-Path $pair[1] $rel
+       if (-not (Test-Path -LiteralPath $inst)) { $missing += "$($pair[0])\$rel"; continue }
+       $a = [IO.File]::ReadAllBytes($f.FullName); $b = [IO.File]::ReadAllBytes($inst)
+       $na = [Text.Encoding]::UTF8.GetString($a) -replace "`r`n", "`n"; $nb = [Text.Encoding]::UTF8.GetString($b) -replace "`r`n", "`n"
+       if ($na -ceq $nb) { $same++ } else { $diff += "$($pair[0])\$rel" }
+     }
+   }
+   C "installed EOC and simulator files equal the GitHub release's ($same files)" ($same -ge 40 -and -not $diff.Count) ($diff -join '; ')
+   C "every EOC and simulator file of the release is installed" (-not $missing.Count) (($missing | Select-Object -First 8) -join '; ')
+   $st = G "$EOC/api/status"; $si = G "$SIM/api/info"
+   C "the running EOC server is the installed one, version $($st.formsVersion)" ($st.ok -and (Get-CimInstance Win32_Process -Filter "Name='python.exe'" | Where-Object { $_.CommandLine -like "*$mc\eoc_server.py*" }))
+   C 'the running simulator is the installed one' ($si.ok -and (Get-CimInstance Win32_Process -Filter "Name='python.exe'" | Where-Object { $_.CommandLine -like "*$mc\simulation\sim_server.py*" }))
+   Remove-Item -Recurse -Force $ex
+ }
+ 'simulate' {   # a whole scenario from the installed simulator into the installed EOC, in a test event of its own
+   $orig = (G "$EOC/api/status").activeEventId
+   $null = Invoke-RestMethod -Method POST -Uri "$EOC/api/events" -ContentType 'application/json' -Body (@{ name = 'SMOKE TEST full simulation (THIS IS AN EXERCISE)'; type = 'Test' } | ConvertTo-Json)
+   $ev = (G "$EOC/api/status").activeEventId
+   C 'a test event of its own is active' ($ev -and $ev -ne $orig)
+   $ex = "$base\EOC Message Center\simulation\example\juniper-plains"
+   $p = Invoke-RestMethod -Method POST -Uri "$SIM/api/pack" -ContentType 'application/json; charset=utf-8' -Body ([Text.Encoding]::UTF8.GetBytes((@{ path = $ex; privacy = 'pseudonymized' } | ConvertTo-Json)))
+   C 'the installed simulator loads the invented example pack' ($p.ok -ne $false)
+   $raw = [IO.File]::ReadAllText("$ex\simulation\drill-config.json", [Text.Encoding]::UTF8); $cfg = $raw | ConvertFrom-Json
+   $eocId = if ($Role -eq 'area') { 'area' } else { 'larkspur' }
+   $dc = Invoke-RestMethod -Method POST -Uri "$SIM/api/drillconfig" -ContentType 'application/json; charset=utf-8' -Body ([Text.Encoding]::UTF8.GetBytes('{"config":' + $raw + ',"eoc":"' + $eocId + '","manned":["' + $eocId + '"]}'))
+   C "set up from the example drill configuration as '$eocId'" ($dc.ok -ne $false)
+   $info = G "$SIM/api/info"
+   $plan = Invoke-RestMethod -Method POST -Uri "$SIM/api/run/plan" -ContentType 'application/json' -Body (@{ scenario = $cfg.scenario; speed = 60; site = $info.site } | ConvertTo-Json -Depth 8)
+   C "scenario $($cfg.scenario) planned: $($plan.counts.items) items for $($plan.counts.units) units" ($plan.ok -and $plan.counts.items -gt 0)
+   $null = Invoke-RestMethod -Method POST -Uri "$SIM/api/run/start" -ContentType 'application/json' -Body '{}'
+   $t0 = Get-Date; $status = ''
+   while (((Get-Date) - $t0).TotalMinutes -lt 12) { Start-Sleep 10; $status = (G "$SIM/api/run").clock.status; if ($status -eq 'finished') { break } }
+   C "the whole scenario ran to the end at 60x ($([int]((Get-Date) - $t0).TotalSeconds) s)" ($status -eq 'finished') $status
+   $rep = G "$SIM/api/run/report"
+   $r = if ($rep.score) { $rep.score } else { $rep }
+   # a report the scenario holds until an operator acts (status 'waiting', e.g. the voice relay that needs a logged relay plan)
+   # is not sent in an unattended run: every other one must be
+   $waiting = @((G "$SIM/api/run").items | Where-Object { $_.kind -eq 'form' -and $_.local -ne $false -and -not $_.rollup -and $_.status -eq 'waiting' }).Count
+   C "every scheduled report was sent ($($r.reports.sent) of $($r.reports.expected); $waiting held for an operator action)" ($r.reports.expected -gt 0 -and $r.reports.sent + $waiting -eq $r.reports.expected) "status $($rep.run.status)"
+   C 'the simulator reached the EOC with no error' (-not $r.eoc_error) $r.eoc_error
+   $msgs = @((Invoke-RestMethod "$EOC/api/messages" -TimeoutSec 30) | ForEach-Object { $_ })
+   $ids = @($msgs | ForEach-Object { $_.id } | Select-Object -Unique)
+   C "the EOC filed the simulator's reports ($($msgs.Count) in the test event, each once)" ($msgs.Count -gt 0 -and $ids.Count -eq $msgs.Count)
+   $acts = @((Invoke-RestMethod "$EOC/api/actions" -TimeoutSec 30) | ForEach-Object { $_ })
+   C "work items were made from them ($($acts.Count))" ($acts.Count -gt 0)
+   $ro = G "$EOC/api/readout"
+   C 'the incident read-out answers for the test event' ($null -ne $ro)
  }
  'resettle' {   # the smoke test leaves the invented example in the simulator: put this laptop's own simulator settings back
    $rec = Get-ChildItem $env:USERPROFILE -Directory -Filter "$name records *" | Sort-Object LastWriteTime | Select-Object -Last 1

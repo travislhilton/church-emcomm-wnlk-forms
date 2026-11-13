@@ -697,6 +697,30 @@ try:
     check('roll-up without a reachable Drop Folder: merged directly (all duplicates of the first run), the Run tab says so', rr2.get('via') == 'rollup merge' and 'not reachable' in rr2.get('note', '') and rr2.get('records') == len(due_parts) and rr2.get('dup') == len(due_parts) and not list(drop_area.glob('*.json')), rr2)
     call(AREA, 'PUT', '/api/drop/config', {'enabled': True})
     call(SIM_PORT, 'POST', '/api/run/stop')
+    # an area run ends at the scenario's end: reports dated after the stake's last roll-up have no bundle left to ride
+    # in (the W9TLH-8 full test, 2026-11-13: the run stayed 'running' at drill minute 574 of 240)
+    plan = call(SIM_PORT, 'POST', '/api/run/plan', {'scenario': 'copper-creek-dam', 'seed': 5, 'speed': 60, 'eoc': {'url': f'http://127.0.0.1:{AREA}'},
+                                                     'site': {'role': 'area', 'councils': ['C1'], 'played_stakes': ['S1']}})
+    for i in plan['run']['items']:
+        if i['status'] == 'pending' and not i.get('rollup') and i['kind'] != 'rollup':
+            call(SIM_PORT, 'POST', '/api/run/item', {'id': i['id'], 'action': 'skip'})
+    last_roll = max(i['t'] for i in plan['run']['items'] if i['kind'] == 'rollup')
+    late = [i['id'] for i in plan['run']['items'] if i.get('rollup') and i['t'] > last_roll]
+    call(SIM_PORT, 'POST', '/api/run/jump', {'minute': last_roll + 1})      # each roll-up fires on time, as in a real run
+    for i in plan['run']['items']:
+        if i['kind'] == 'rollup':
+            call(SIM_PORT, 'POST', '/api/run/item', {'id': i['id'], 'action': 'fire'})
+    call(SIM_PORT, 'POST', '/api/run/jump', {'minute': plan['run']['clock']['duration_min'] + 1})
+    call(SIM_PORT, 'POST', '/api/run/start')
+    for _ in range(60):
+        s5 = call(SIM_PORT, 'GET', '/api/run')
+        if s5['clock']['status'] == 'finished':
+            break
+        time.sleep(0.5)
+    check('area run past its end: finishes; reports dated after the last roll-up are skipped, none left pending',
+          s5['clock']['status'] == 'finished' and late and all(i['status'] == 'skipped' for i in s5['items'] if i['id'] in late)
+          and not any(i['status'] == 'pending' for i in s5['items']), (s5['clock']['status'], len(late), [i['id'] for i in s5['items'] if i['status'] == 'pending'][:5]))
+    call(SIM_PORT, 'POST', '/api/run/stop')
 
     # ── 6. evaluation: the needs ledger, consequences, replies from the line above, scoreboard, after-action report ──
     NEED = 8088

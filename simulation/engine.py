@@ -1870,6 +1870,14 @@ class Runner:
                         self._log(f'needs check failed: {type(e).__name__}: {e}')
                 if now >= self.run['clock']['duration_min'] and not due:
                     with self.lock:
+                        # a simulated stake's report travels only inside its next roll-up; one dated after the stake's
+                        # last roll-up of the scenario has none left once every roll-up has fired: it is not sent in
+                        # this drill (a Council / Area run used to wait for it forever and never finished)
+                        if all(it['status'] != 'pending' or it.get('rollup') for it in self.run['items']):
+                            for it in self.run['items']:
+                                if it.get('rollup') and it['status'] == 'pending':
+                                    it['status'] = 'skipped'
+                                    it['result'] = {'ok': False, 'note': 'no roll-up from its stake after it before the end of the drill'}
                         if all(it['status'] != 'pending' for it in self.run['items']):
                             self.run['clock']['elapsed_min'] = now
                             self.run['clock']['started_wall'] = None
