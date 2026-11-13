@@ -54,6 +54,8 @@ AFTER INSTALLING: EOC LAPTOP ([3])
    "Church of Jesus Christ EMCOMM Quick Reference Cards".
    For a drill: the Simulator shortcut, Card 5 (Drill Controller) and Card 9 (Your First Drill).
 Run the installer again at any time to update: reports and settings are kept.
+To remove it: run the installer and choose U (Uninstall). It copies the EOC records to
+your user folder first unless you say no; Python, the browser and Winlink Express stay.
 
 WHAT GETS INSTALLED
 -------------------

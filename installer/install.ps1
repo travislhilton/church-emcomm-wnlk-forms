@@ -7,6 +7,7 @@
       [1] Field Volunteer (non-HAM, no amateur radio license) -- browser Worker Forms + Quick Reference Cards
       [2] HAM Field Operator        -- browser Worker Forms + Winlink Templates + Quick Reference Cards
       [3] EOC Operator (Satellite, Stake or Council / Area EOC) -- EOC (Emergency Operations Center) Message Center + Winlink Templates
+      [U] Uninstall -- removes what the installer put here; copies the EOC records first unless told not to
     Self-contained -- all files are copied from this repo.
 #>
 
@@ -220,16 +221,141 @@ Write-Host "       Browser Worker Forms + Winlink Templates + EOC Message Center
 Write-Host "       Complete package for any Emergency Operations Center (EOC): a Satellite EOC in a ward"
 Write-Host "       building, the Stake Center EOC, or a Council / Area EOC -- same software, rolls up to the EOC above"
 Write-Host ""
+Write-Host "  [U]  Uninstall" -ForegroundColor Cyan
+Write-Host "       Remove Church of Jesus Christ EMCOMM from this computer (a copy of the EOC records is kept)"
+Write-Host ""
 Write-Host "  [X]  Exit" -ForegroundColor DarkGray
 Write-Host ""
 
 do {
-    $choice = Read-Host "  Enter choice [1/2/3/X]"
+    $choice = Read-Host "  Enter choice [1/2/3/U/X]"
     if ($null -eq $choice) { Write-Host "  No input -- cancelled." -ForegroundColor Gray; exit 0 }
     $choice = $choice.Trim()
-} while ($choice -notmatch '^[123Xx]$')
+} while ($choice -notmatch '^[123UuXx]$')
 
 if ($choice -match '^[Xx]$') { Write-Host "  Cancelled." -ForegroundColor Gray; exit 0 }
+
+# -- Uninstall ([U]) ------------------------------------------------------------
+# Removes what this installer puts on a computer: the install folder (in Documents, or on the system drive when
+# Documents syncs to the cloud), the app's settings and saved maps in %LOCALAPPDATA%, its Desktop items and its
+# Winlink template folders. Python, the browser and Winlink Express stay. A private training set someone copied into
+# Winlink (its README says PRIVATE BUILD) stays. The EOC's records are copied to the user folder first unless the
+# person says no; nothing is removed if that copy is not complete.
+function Invoke-Uninstall {
+    $name     = 'Church of Jesus Christ EMCOMM'
+    $desk     = Get-UserFolder 'Desktop'
+    $userHome = if ($TestRoot) { Join-Path $TestRoot 'home' } else { $env:USERPROFILE }
+    $appData  = if ($env:LOCALAPPDATA) { Join-Path $env:LOCALAPPDATA $name } else { $null }
+    $bases    = @(@((Join-Path (Get-UserFolder 'MyDocuments') $name), (Join-Path $SystemDriveRoot $name)) | Select-Object -Unique)
+    $wlDirs   = @($WinlinkHomes); $wd = Find-Winlink; if ($wd) { $wlDirs = @($wd) + $wlDirs }
+    $tplRoots = @($wlDirs | ForEach-Object { Join-Path $_ 'Global Folders\Templates' } | Select-Object -Unique)
+
+    $targets = @(); $keptPrivate = @()
+    foreach ($b in $bases) { if (Test-Path -LiteralPath $b) { $targets += $b } }
+    if ($appData -and (Test-Path -LiteralPath $appData)) { $targets += $appData }
+    $targets += @(Get-ChildItem -LiteralPath $desk -Filter "$name*" -Force -ErrorAction SilentlyContinue | ForEach-Object { $_.FullName })
+    foreach ($t in $tplRoots) {
+        if (-not (Test-Path -LiteralPath $t)) { continue }
+        foreach ($d in @(Get-ChildItem -LiteralPath $t -Directory -Filter "$name*" -ErrorAction SilentlyContinue)) {
+            $rd = Join-Path $d.FullName 'README.txt'
+            if ((Test-Path -LiteralPath $rd) -and (Select-String -LiteralPath $rd -Pattern 'PRIVATE BUILD' -SimpleMatch -Quiet)) { $keptPrivate += $d.FullName }
+            else { $targets += $d.FullName }
+        }
+    }
+    $targets = @($targets | Select-Object -Unique)
+
+    Write-Host ""
+    if (-not $targets.Count) {
+        Write-OK "Nothing to remove: Church of Jesus Christ EMCOMM is not installed for this user."
+        return
+    }
+    Write-Host "  This removes:" -ForegroundColor White
+    $targets | ForEach-Object { Write-Info "  $_" }
+    Write-Host ""
+    Write-Info "Python, your browser and Winlink Express are not touched."
+    if ($keptPrivate.Count) { Write-Info "Kept (a private training set): $($keptPrivate -join '; ')" }
+
+    # the EOC's records: the database, its backups, the Drop Folder, the settings (not the saved maps: download again)
+    $records = @()
+    foreach ($b in $bases) {
+        $label = if ($b -eq (Join-Path $SystemDriveRoot $name)) { 'install folder (system drive)' } else { 'install folder (Documents)' }
+        $mc = Join-Path $b 'EOC Message Center'
+        foreach ($f in @(Get-ChildItem -LiteralPath $mc -Filter 'eoc_data.db*' -File -Force -ErrorAction SilentlyContinue | Where-Object { $_.Name -notlike '*.db-shm' })) {
+            $records += ,@($f.FullName, (Join-Path $label 'EOC Message Center'))
+        }
+        foreach ($rel in @('EOC Message Center\backups', 'EOC Drop Folder')) {
+            $p = Join-Path $b $rel
+            if ((Test-Path -LiteralPath $p) -and (Get-ChildItem -LiteralPath $p -Recurse -File -Force -ErrorAction SilentlyContinue | Select-Object -First 1)) { $records += ,@($p, (Join-Path $label $rel)) }
+        }
+    }
+    if ($appData -and (Get-ChildItem -LiteralPath $appData -File -Force -ErrorAction SilentlyContinue | Select-Object -First 1)) { $records += ,@($appData, 'settings (AppData)') }
+
+    Write-Host ""
+    $ans = Read-Host "  Remove all of this? Type Y to uninstall, anything else cancels"
+    if ($null -eq $ans -or $ans.Trim() -notmatch '^[Yy]') { Write-Host "  Cancelled. Nothing was removed." -ForegroundColor Gray; return }
+    $keep = $false
+    if ($records.Count) {
+        $ans = Read-Host "  Keep a copy of the EOC records (reports, backups, Drop Folder, settings) first? [Y/n]"
+        $keep = -not ($ans -and $ans.Trim() -match '^[Nn]')
+    }
+
+    # stop this install's EOC Server and Simulator, and the windows that started them (they hold the folders open)
+    $roots = @($bases | Where-Object { Test-Path -LiteralPath $_ })
+    $procs = @(Get-CimInstance Win32_Process -Filter "Name='python.exe' or Name='pythonw.exe' or Name='py.exe' or Name='cmd.exe'" -ErrorAction SilentlyContinue | Where-Object {
+        $cl = [string]$_.CommandLine
+        ($cl -match 'eoc_server\.py|sim_server\.py|start_eoc_server\.bat|start_simulator\.bat') -and @($roots | Where-Object { $cl.IndexOf($_, [StringComparison]::OrdinalIgnoreCase) -ge 0 }).Count })
+    foreach ($p in $procs) { Stop-Process -Id $p.ProcessId -Force -ErrorAction SilentlyContinue }
+    if ($procs.Count) { Write-OK "Stopped the EOC Server / Simulator ($($procs.Count) process(es))"; Start-Sleep 2 }
+
+    $copyDir = $null
+    if ($keep) {
+        $copyDir = Join-Path $userHome ("$name records " + (Get-Date -Format 'yyyy-MM-dd HHmm'))
+        Write-Step "Copying the EOC records to $copyDir ..."
+        $short = @()
+        foreach ($r in $records) {
+            $dst = Join-Path $copyDir $r[1]
+            New-Item -ItemType Directory -Force $dst | Out-Null
+            if (Test-Path -LiteralPath $r[0] -PathType Leaf) {
+                Copy-Item -LiteralPath $r[0] -Destination $dst -Force -ErrorAction SilentlyContinue
+                if (-not (Test-Path -LiteralPath (Join-Path $dst (Split-Path $r[0] -Leaf)))) { $short += $r[0] }
+            } else {
+                $null = robocopy $r[0] $dst /E /XD basemap /R:1 /W:1 /NFL /NDL /NJH /NJS /NP
+                $want = @(Get-ChildItem -LiteralPath $r[0] -Recurse -File -Force -ErrorAction SilentlyContinue | Where-Object { $_.FullName -notmatch '\\basemap\\' -and $_.Name -notlike '*.db-shm' }).Count
+                $got  = @(Get-ChildItem -LiteralPath $dst -Recurse -File -Force -ErrorAction SilentlyContinue).Count
+                if ($got -lt $want) { $short += $r[0] }
+            }
+        }
+        if ($short.Count) {
+            Write-Err "Not every record could be copied, so nothing was removed:"
+            $short | ForEach-Object { Write-Info "  $_" }
+            Write-Warn "Close every EMCOMM window (EOC Server, Simulator), then run the installer again and choose U."
+            return
+        }
+        Write-OK "Records copied: $copyDir"
+    }
+
+    Write-Step "Removing..."
+    foreach ($t in $targets) { Remove-Item -LiteralPath $t -Recurse -Force -ErrorAction SilentlyContinue }
+    $left = @($targets | Where-Object { Test-Path -LiteralPath $_ })
+    Write-Host ""
+    if ($left.Count) {
+        Write-Warn "Some items are still there (a file is open):"
+        $left | ForEach-Object { Write-Info "  $_" }
+        Write-Warn "Close every EMCOMM window and File Explorer windows showing these folders, then run the installer again and choose U."
+    } else {
+        Write-Host "  Church of Jesus Christ EMCOMM is uninstalled." -ForegroundColor Green
+    }
+    if ($copyDir) { Write-Info "Your EOC records are in: $copyDir" }
+    elseif ($records.Count) { Write-Info "No copy of the EOC records was kept." }
+    Write-Info "Python, your browser and Winlink Express are still installed. Run this installer again to reinstall."
+}
+
+if ($choice -match '^[Uu]$') {
+    Invoke-Uninstall
+    Write-Host ""
+    if (-not $env:CHURCH_EMCOMM_BAT) { Read-Host "  Press Enter to close" }
+    exit 0
+}
 
 $installWorker  = $choice -in @('1','2','3')
 $installWinlink = $choice -in @('2','3')
@@ -899,6 +1025,7 @@ if ($installEOC) {
     Write-Info "     For a drill: the Simulator shortcut, and Card 9 (Your First Drill)."
     Write-Host ""
     Write-Info "  Run this installer again at any time to update: your reports and settings are kept."
+    Write-Info "  To remove it, run the installer and choose U (Uninstall)."
     Write-Host ""
 }
 

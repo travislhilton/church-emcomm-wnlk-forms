@@ -431,6 +431,38 @@ def main():
         left = [p.name for p in Path(os.environ.get('TEMP', str(scratch))).glob('ChurchEMCOMM_*') if p.stat().st_mtime > START]
         check('the installer leaves no working files in TEMP', not left, left)
         stages.append('cancelled')
+
+        # ── Uninstall (U) on the role 3 install: a no keeps everything; a yes copies the records, then removes it all ──
+        tpl3 = r3 / 'RMS Express' / 'Global Folders' / 'Templates'
+        private = tpl3 / (NAME + ' Training PRIV-1')
+        private.mkdir(parents=True, exist_ok=True)
+        (private / 'README.txt').write_text('Church of Jesus Christ EMCOMM Winlink training set PRIV-1\nPRIVATE BUILD\n', encoding='utf-8')
+        mine = [base3, r3 / 'AppData' / NAME, r3 / 'Desktop' / (NAME + ' Forms'), r3 / 'Desktop' / (NAME + ' EOC Server.lnk'),
+                tpl3 / (NAME + ' Forms'), tpl3 / (NAME + ' Practice')]
+        check('uninstall: the role 3 install is there to remove', all(p.exists() for p in mine), [str(p) for p in mine if not p.exists()])
+        db_before = db.read_bytes() if db.is_file() else None
+        drop_before = sorted(p.name for p in files_under(base3 / 'EOC Drop Folder'))
+        rc, out, secs = run_installer(['cmd', '/c', str(bat)], r3, 'u\nn\n')
+        check('uninstall, then no at the prompt: nothing is removed', rc == 0 and 'Nothing was removed' in out and all(p.exists() for p in mine), (rc, out[-300:]))
+        rc, out, secs = run_installer(['cmd', '/c', str(bat)], r3, 'u\ny\n\n')     # Y, then Enter = keep a copy of the records
+        (scratch / 'uninstall.out.txt').write_text(out, encoding='utf-8')
+        check('uninstall: it says what it removes and that Python, the browser and Winlink Express stay',
+              rc == 0 and 'This removes:' in out and 'not touched' in out and 'is uninstalled' in out, (rc, out[-400:]))
+        left = [str(p) for p in mine if p.exists()] + [p.name for p in (r3 / 'Desktop').glob(NAME + '*')] \
+            + [p.name for p in tpl3.glob(NAME + '*') if p != private]
+        check('uninstall: the install folder, settings, Desktop items and Winlink template folders are gone', not left, left)
+        check('uninstall: a private training set in Winlink stays, and the output says so', (private / 'README.txt').is_file() and 'private training set' in out)
+        check('uninstall: Winlink Express itself stays', (r3 / 'RMS Express' / 'RMS Express.exe').is_file())
+        copies = sorted((r3 / 'home').glob(NAME + ' records *'))
+        cdb = copies[0] / 'install folder (Documents)' / 'EOC Message Center' / 'eoc_data.db' if copies else None
+        check('uninstall: the EOC records were copied first (database byte for byte, Drop Folder, settings)',
+              len(copies) == 1 and db_before is not None and cdb.is_file() and cdb.read_bytes() == db_before
+              and sorted(p.name for p in files_under(copies[0] / 'install folder (Documents)' / 'EOC Drop Folder')) == drop_before
+              and (copies[0] / 'settings (AppData)').is_dir() and 'Your EOC records are in:' in out,
+              [str(p) for p in files_under(copies[0])][:6] if copies else 'no copy')
+        rc, out, secs = run_installer(['cmd', '/c', str(bat)], r3, 'u\n')
+        check('uninstall again: nothing to remove, nothing fails', rc == 0 and 'Nothing to remove' in out, (rc, out[-300:]))
+        stages.append('uninstall')
     finally:
         if KEEP:
             print('scratch folder kept:', scratch)
@@ -445,7 +477,7 @@ except Exception as e:      # a stage that stops is a failure with a name, not a
     import traceback
     traceback.print_exc()
     check('the test ran to the end', False, '%s: %s' % (type(e).__name__, e))
-need = ['release files'] + (['role 3', 'servers', 'role 3 again', 'role 2', 'role 1', 'synced Documents', 'cancelled'] if WINDOWS else [])
+need = ['release files'] + (['role 3', 'servers', 'role 3 again', 'role 2', 'role 1', 'synced Documents', 'cancelled', 'uninstall'] if WINDOWS else [])
 check('every stage ran: ' + ', '.join(need), stages == need, stages)
 print('\nRESULT:', 'ALL PASS' if all(res) else 'FAILURES', '(%d/%d)' % (sum(res), len(res)),
       '' if WINDOWS else '· SKIP the install runs: the installer runs on Windows only')

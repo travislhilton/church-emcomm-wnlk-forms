@@ -195,6 +195,10 @@ These links serve the files from the project's GitHub Pages site. The same files
 
 The installer puts everything in `Documents\Church of Jesus Christ EMCOMM\`. When Documents syncs to OneDrive (or another cloud service), it uses `C:\Church of Jesus Christ EMCOMM\` instead, so the EOC database never sits in a synced folder, and moves an earlier install there. The paths below say Documents; read them as that folder.
 
+### Update or uninstall
+- **Update:** run the installer again and choose the same role. Reports and settings are kept.
+- **Uninstall:** run the installer and choose **[U] Uninstall**. It lists what it will remove (the install folder, the settings and saved maps in `%LOCALAPPDATA%\Church of Jesus Christ EMCOMM`, the Desktop items, the Winlink template folders) and asks you to type **Y**. It then asks whether to keep a copy of the EOC records: press Enter for yes. The copy (the database, its backups, the Drop Folder and the settings) goes to `C:\Users\<you>\Church of Jesus Christ EMCOMM records <date>`; if any of it cannot be copied, nothing is removed. It stops the EOC Server and the Simulator first. Python, your browser and Winlink Express stay, and so does a private training set someone copied into Winlink.
+
 ### Mac, Linux, Chromebook, Android and iPhone
 There is nothing to install. Open the [portal](https://travislhilton.github.io/church-emcomm-wnlk-forms/forms/) in any browser, or, on the EOC Wi-Fi, the address the EOC host shows.
 
