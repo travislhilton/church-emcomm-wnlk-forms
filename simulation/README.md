@@ -216,7 +216,8 @@ One simulator per EOC. On the Setup tab each drill director says **what this sim
 a **Stake EOC** (and which wards a Satellite EOC covers in this drill), a **Satellite EOC** (which
 wards), or a **Council / Area EOC** (which coordinating councils, and which of their stakes have
 their own EOC laptop; the rest are played by the Area simulator and arrive as roll-up files in
-the Area EOC's Drop Folder at the SITREP times, merged by its watcher like an emailed roll-up).
+the Area EOC's Drop Folder at the SITREP times, merged by its watcher like an emailed roll-up; reports dated after a stake's last roll-up are
+marked *skipped* when the rest is done, so the run ends).
 The stakes people play must send their own roll-ups by the real path. Reports go to the EOC that covers the ward; items another EOC's simulator plays
 are listed as *elsewhere* and never fired here. Every simulator uses the same scenario and seed.
 

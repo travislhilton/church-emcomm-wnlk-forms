@@ -334,6 +334,7 @@ When a volunteer sends their `.txt` form file by text or email, the EOC operator
 2. EOC operator receives it on their phone or email
 3. Operator saves the `.txt` file to the **EOC Drop Folder** (Desktop shortcut: *Church of Jesus Christ EMCOMM EOC Drop Folder*)
 4. The EOC server ingests it automatically within 10 seconds — a green **🌐 DROP FOLDER ON** bar appears when it's watching
+5. A report that is already on file is not added twice. The Message Center says so ("Already on file at the EOC"; the green bar counts "· N already on file"), so a volunteer who sends the same file again, or a file that also came by Winlink, causes no extra work
 
 Processed files move to `EOC Drop Folder\Ingested\` automatically.
 
