@@ -6,7 +6,8 @@
 # Prints no record contents.
 # -WantSha: the first characters of the release installer's SHA-256 (empty = any).
 param([Parameter(Mandatory)][ValidateSet('stake','area')][string]$Role,
-      [Parameter(Mandatory)][ValidateSet('pre','uninstall','install','verify','smoke','simulate','cleanup','resettle')][string]$Step, [string]$WantSha = '')
+      [Parameter(Mandatory)][ValidateSet('pre','uninstall','install','verify','smoke','simulate','cleanup','resettle')][string]$Step, [string]$WantSha = '',
+      [ValidateSet('example','own')][string]$Pack = 'example', [string]$PackPath = '', [string]$DrillConfig = '')
 $ErrorActionPreference = 'Stop'
 $name = 'Church of Jesus Christ EMCOMM'; $base = "C:\$name"; $app = Join-Path $env:LOCALAPPDATA $name
 $here = "$env:USERPROFILE\emcomm-reinstall"; Set-Location $here
@@ -74,7 +75,7 @@ switch ($Step) {
    "restored from the records copy: " + (Copy-Back)
    PS1 'reinstall_eoc.ps1' @('-Phase', 'start')
    $pre = Get-Content -Raw $preFile | ConvertFrom-Json; $now = State
-   C "new install answers, forms version $($now.forms) (as before)" ($now.forms -eq $pre.forms)
+   C "new install answers, forms version $($now.forms) (was $($pre.forms))" ($now.forms -and $now.forms -ge $pre.forms)
    foreach ($k in 'event', 'level', 'wPath', 'wCalls', 'wOn', 'dPath', 'pack', 'privacy', 'scenario', 'site') {
      C "restored from the uninstall's copy: $k" ("$($pre.$k)" -eq "$($now.$k)") "was set $([bool]"$($pre.$k)"), now differs"
    }
@@ -114,9 +115,36 @@ switch ($Step) {
  }
  'simulate' {   # a whole scenario from the installed simulator into the installed EOC, in a test event of its own
    $orig = (G "$EOC/api/status").activeEventId
-   $null = Invoke-RestMethod -Method POST -Uri "$EOC/api/events" -ContentType 'application/json' -Body (@{ name = 'SMOKE TEST full simulation (THIS IS AN EXERCISE)'; type = 'Test' } | ConvertTo-Json)
+   $null = Invoke-RestMethod -Method POST -Uri "$EOC/api/events" -ContentType 'application/json' -Body (@{ name = "SMOKE TEST full simulation, $Pack pack (THIS IS AN EXERCISE)"; type = 'Test' } | ConvertTo-Json)
    $ev = (G "$EOC/api/status").activeEventId
    C 'a test event of its own is active' ($ev -and $ev -ne $orig)
+   if ($Pack -eq 'own') {
+     # this laptop's own organization pack, scenario and site, as the reinstall restored them; contacts pseudonymized only.
+     # Prints counts only: the pack, its scenario and its units are private.
+     # As the drill controller does (card 5): the pack, then its own drill configuration as this laptop's level.
+     # -PackPath: a copy of another laptop's pack (W9TLH-8 has none of its own); resettle puts the settings back.
+     $info = G "$SIM/api/info"
+     $pp = if ($PackPath) { $PackPath } else { [string]$info.packPath }
+     if ($pp -and $pp -notlike '*\simulation\example\*') {
+       $null = Invoke-RestMethod -Method POST -Uri "$SIM/api/pack" -ContentType 'application/json; charset=utf-8' -Body ([Text.Encoding]::UTF8.GetBytes((@{ path = $pp; privacy = 'pseudonymized' } | ConvertTo-Json)))
+       # a pack with no drill configuration of its own (a full export): the drill configuration given, whose pack
+       # path is empty, so the simulator keeps the pack just loaded (as on Setup step 1)
+       $dcf = if ($DrillConfig) { $DrillConfig } else { Join-Path $pp 'simulation\drill-config.json' }
+       if (Test-Path $dcf) {
+         $raw = [IO.File]::ReadAllText($dcf, [Text.Encoding]::UTF8); $dcc = $raw | ConvertFrom-Json
+         $eocId = @($dcc.eocs | Where-Object { $_.level -eq $Role })[0].id
+         $dc = Invoke-RestMethod -Method POST -Uri "$SIM/api/drillconfig" -ContentType 'application/json; charset=utf-8' -Body ([Text.Encoding]::UTF8.GetBytes('{"config":' + $raw + ',"eoc":"' + $eocId + '","manned":["' + $eocId + '"]}'))
+         C "set up from the pack's own drill configuration as its $Role EOC" ([bool]$eocId -and $dc.ok -ne $false)
+       }
+       $info = G "$SIM/api/info"
+     }
+     $own = $info.pack -and $info.packPath -and $info.packPath -notlike '*\simulation\example\*' -and (-not $PackPath -or $info.packPath -eq $PackPath)
+     C 'the simulator holds this laptop''s own organization pack (not the invented example)' $own
+     C 'its contacts are pseudonymized (invented names)' ($info.privacy -eq 'pseudonymized') "privacy $($info.privacy)"
+     C 'a scenario and what this simulator plays are set' ([bool]$info.scenario -and [bool]$info.site.role)
+     if (-not ($own -and $info.privacy -eq 'pseudonymized' -and $info.scenario)) { break }
+     $cfg = @{ scenario = $info.scenario }; $label = 'its own scenario'
+   } else {
    $ex = "$base\EOC Message Center\simulation\example\juniper-plains"
    $p = Invoke-RestMethod -Method POST -Uri "$SIM/api/pack" -ContentType 'application/json; charset=utf-8' -Body ([Text.Encoding]::UTF8.GetBytes((@{ path = $ex; privacy = 'pseudonymized' } | ConvertTo-Json)))
    C 'the installed simulator loads the invented example pack' ($p.ok -ne $false)
@@ -124,9 +152,10 @@ switch ($Step) {
    $eocId = if ($Role -eq 'area') { 'area' } else { 'larkspur' }
    $dc = Invoke-RestMethod -Method POST -Uri "$SIM/api/drillconfig" -ContentType 'application/json; charset=utf-8' -Body ([Text.Encoding]::UTF8.GetBytes('{"config":' + $raw + ',"eoc":"' + $eocId + '","manned":["' + $eocId + '"]}'))
    C "set up from the example drill configuration as '$eocId'" ($dc.ok -ne $false)
-   $info = G "$SIM/api/info"
+   $info = G "$SIM/api/info"; $label = "scenario $($cfg.scenario)"
+   }
    $plan = Invoke-RestMethod -Method POST -Uri "$SIM/api/run/plan" -ContentType 'application/json' -Body (@{ scenario = $cfg.scenario; speed = 60; site = $info.site } | ConvertTo-Json -Depth 8)
-   C "scenario $($cfg.scenario) planned: $($plan.counts.items) items for $($plan.counts.units) units" ($plan.ok -and $plan.counts.items -gt 0)
+   C "$label planned: $($plan.counts.items) items for $($plan.counts.units) units" ($plan.ok -and $plan.counts.items -gt 0 -and $plan.counts.units -gt 0)
    $null = Invoke-RestMethod -Method POST -Uri "$SIM/api/run/start" -ContentType 'application/json' -Body '{}'
    $t0 = Get-Date; $status = ''
    while (((Get-Date) - $t0).TotalMinutes -lt 12) { Start-Sleep 10; $status = (G "$SIM/api/run").clock.status; if ($status -eq 'finished') { break } }
@@ -136,7 +165,16 @@ switch ($Step) {
    # a report the scenario holds until an operator acts (status 'waiting', e.g. the voice relay that needs a logged relay plan)
    # is not sent in an unattended run: every other one must be
    $waiting = @((G "$SIM/api/run").items | Where-Object { $_.kind -eq 'form' -and $_.local -ne $false -and -not $_.rollup -and $_.status -eq 'waiting' }).Count
+   if ($Role -eq 'area') {
+     # a Council / Area EOC gets the simulated stakes' reports only inside their roll-ups (card 8): every roll-up goes,
+     # each report rides in one, except those dated after the stake's last roll-up (skipped when the drill ends)
+     $its = @((G "$SIM/api/run").items)
+     $rolls = @($its | Where-Object { $_.kind -eq 'rollup' }); $bund = @($its | Where-Object { $_.rollup })
+     $rf = @($rolls | Where-Object { $_.status -eq 'fired' }).Count; $bf = @($bund | Where-Object { $_.status -eq 'fired' }).Count; $bs = @($bund | Where-Object { $_.status -eq 'skipped' }).Count; $bw = @($bund | Where-Object { $_.status -eq 'waiting' }).Count
+     C "every roll-up from the simulated stakes was sent ($rf of $($rolls.Count)), carrying $bf reports; $bs dated after the last roll-up not sent; $bw waiting on a need that never came" ($rolls.Count -gt 0 -and $rf -eq $rolls.Count -and $bf -gt 0 -and $bf + $bs + $bw -eq $bund.Count) (($bund | Group-Object status | ForEach-Object { $_.Name + '=' + $_.Count }) -join ', ')
+   } else {
    C "every scheduled report was sent ($($r.reports.sent) of $($r.reports.expected); $waiting held for an operator action)" ($r.reports.expected -gt 0 -and $r.reports.sent + $waiting -eq $r.reports.expected) "status $($rep.run.status)"
+   }
    C 'the simulator reached the EOC with no error' (-not $r.eoc_error) $r.eoc_error
    $msgs = @((Invoke-RestMethod "$EOC/api/messages" -TimeoutSec 30) | ForEach-Object { $_ })
    $ids = @($msgs | ForEach-Object { $_.id } | Select-Object -Unique)
