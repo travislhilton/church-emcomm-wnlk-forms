@@ -57,6 +57,17 @@ body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,sa
 #miss-bar.ok{background:var(--ok-bg);color:var(--ok);}
 #miss-bar.alert{background:var(--danger);color:var(--on-accent);}
 #miss-bar.unknown{background:var(--warn-bg);color:var(--warn);}
+/* Status line: three parts side by side, wrapping on a narrow window */
+#status-line{display:flex;flex-wrap:wrap;}
+#status-line .sl-part{flex:1 1 260px;padding:5px 12px;font-size:12px;font-weight:600;text-align:center;line-height:1.35;}
+#status-line .sl-part[onclick],#status-line .sl-part.click{cursor:pointer;}
+#status-line .sl-part.lost{flex-basis:100%;}
+#status-line #net-bar:not(.lost){flex:0 1 auto;padding:5px 18px;}
+#status-line .sl-more{font-weight:400;text-decoration:underline;white-space:nowrap;}
+/* Toasts: an error or warning is red and stays longer */
+#toast.err{background:#991b1b;color:#fff;}
+/* Setup intros fold after their first sentence */
+.intro-more{color:var(--accent);font-weight:600;white-space:nowrap;text-decoration:underline;}
 /* Drop zone */
 #drop-wrap{padding:0 16px 4px;}
 .drop-zone{border:2px dashed var(--border);border-radius:10px;padding:20px;text-align:center;cursor:pointer;background:var(--surface);transition:border-color .15s,background .15s;margin-bottom:12px;}
@@ -198,7 +209,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
   details.fv-raw{display:none;}
 }
 /* Toast */
-#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:#1e293b;color:#f1f5f9;padding:8px 20px;border-radius:20px;font-size:12px;font-weight:600;opacity:0;transition:transform .25s,opacity .25s;z-index:200;pointer-events:none;}
+#toast{position:fixed;max-width:min(90vw,640px);text-align:center;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:#1e293b;color:#f1f5f9;padding:8px 20px;border-radius:20px;font-size:12px;font-weight:600;opacity:0;transition:transform .25s,opacity .25s;z-index:200;pointer-events:none;}
 #toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
 /* Toolbar */
 .toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
@@ -330,15 +341,14 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
 <!-- ── Missionary Status Bar ── -->
 <div id="miss-bar" class="unknown">MISSIONARY STATUS: no report has answered yet</div>
 
-<!-- ── Network Status Bar ── -->
-<div id="net-bar" style="display:none"></div>
+<!-- ── Status line: EOC server · Winlink auto-ingest · Drop Folder, one row (networked mode only).
+     Each part keeps its own color and opens its own settings; the full detail is in its tooltip. ── -->
+<div id="status-line">
+  <div id="net-bar" class="sl-part" style="display:none"></div>
+  <div id="watcher-bar" class="sl-part" style="display:none"></div>
+  <div id="drop-bar" class="sl-part" style="display:none"></div>
+</div>
 <div id="drill-bar" style="display:none"></div>
-
-<!-- ── Watcher Status Bar (networked mode only) ── -->
-<div id="watcher-bar" style="display:none"></div>
-
-<!-- ── Internet Drop Folder Status Bar (networked mode only) ── -->
-<div id="drop-bar" style="display:none"></div>
 
 <!-- ── Drop Zone ── -->
 <div id="drop-wrap">
@@ -1007,7 +1017,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
       <section class="help-sec" id="help-work">
         <h2>5. Working the reports</h2>
         <ul>
-          <li><b>Status:</b> click a row's status badge to move it from NEW to ACK to ASSGN to DONE. Every screen updates.</li>
+          <li><b>Status:</b> click a row's status badge to move it from NEW to ACK to ASSIGNED to DONE. Every screen updates.</li>
           <li><b>&#128196; Open</b> shows the whole form as the volunteer filled it, with Print, Copy text and Save .txt.</li>
           <li><b>Missionaries not accounted for:</b> the red bar and Overview alert need immediate action. Tell the Stake President.</li>
           <li><b>OVERDUE on the Roster</b> means a unit has passed its expected window with nothing received. Call the bishop or Team Leader. If they report by voice, mark &#9742;.</li>
@@ -3569,11 +3579,16 @@ function sitrepActions(intervalHrs) {
 
 // ── Toast ─────────────────────────────────────────────────────────────────────
 var toastTimer;
-function toast(msg) {
-  var el=document.getElementById('toast');
-  el.textContent=msg; el.classList.add('show');
+// A message that reports a failure or asks for something is red and stays at least 7 s;
+// every toast stays long enough to read (about 70 ms a character, 2.4 s at least).
+var _TOAST_ERR = /\b(could not|cannot|can't|failed|did not|does not|not found|not available|refused|blocked|is required|needs the|not a |not an |no map data|nothing to|first)\b|^(no |give |type |write |that file|that is a|pop-up)/i;
+function toast(msg, kind) {
+  var el=document.getElementById('toast'), err = kind ? kind === 'err' : _TOAST_ERR.test(String(msg));
+  el.textContent=msg; el.classList.toggle('err', err); el.classList.add('show');
+  el.setAttribute('role', err ? 'alert' : 'status');
   clearTimeout(toastTimer);
-  toastTimer=setTimeout(function(){el.classList.remove('show');},2400);
+  var ms = Math.max(err ? 7000 : 2400, String(msg).length * 70);
+  toastTimer=setTimeout(function(){el.classList.remove('show');}, ms);
 }
 
 // ── Help: EOC Operator Guide (tab-help) ───────────────────────────────────────
@@ -3701,7 +3716,7 @@ function renderWCLAgg(wcls) {
 
 // ── Message Status Badges ─────────────────────────────────────────────────────
 var _STATUSES = ['new','ack','assigned','complete'];
-var _ST_LABEL = {new:'NEW',ack:'ACK',assigned:'ASSGN',complete:'DONE'};
+var _ST_LABEL = {new:'NEW',ack:'ACK',assigned:'ASSIGNED',complete:'DONE'};
 var _ST_STYLE = {
   new:      'background:#dbeafe;color:#1e40af',
   ack:      'background:#fef3c7;color:#92400e',
@@ -3742,15 +3757,22 @@ function initNetwork() {
 function showNetBar(ok) {
   var el = document.getElementById('net-bar');
   if(ok){
-    el.style.cssText='background:#065f46;color:#d1fae5;padding:5px 16px;font-size:12px;font-weight:600;text-align:center;';
-    el.textContent='⚡ Connected to the EOC server — every operator on this network sees the same data';
+    el.style.cssText='background:#065f46;color:#d1fae5;';
+    el.className='sl-part';
+    if(watcherState) showWatcherBar(); if(dropState) showDropBar();
+    el.textContent='⚡ EOC SERVER CONNECTED';
+    el.title='Connected to the EOC server: every operator on this network sees the same data.';
     var hw=document.getElementById('hdr-wall'); if(hw) hw.style.display='';
     var wt=document.getElementById('wall-url-txt'); if(wt) wt.textContent=location.origin+'/wall';
     var pt=document.getElementById('phone-url-txt'); if(pt) pt.textContent=location.origin+'/m';
     if(!window._srvVer) fetch('/api/status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){ window._srvVer=j.version||''; window._lanUrl=j.lanUrl||''; var wt2=document.getElementById('wall-url-txt'); if(wt2&&window._lanUrl) wt2.textContent=window._lanUrl+'/wall'; var pt2=document.getElementById('phone-url-txt'); if(pt2&&window._lanUrl) pt2.textContent=window._lanUrl+'/m'; }).catch(function(){});
   } else {
-    el.style.cssText='background:#92400e;color:#fef3c7;padding:5px 16px;font-size:12px;font-weight:600;text-align:center;';
+    el.style.cssText='background:#92400e;color:#fef3c7;';
+    el.className='sl-part lost';
+    // Winlink and Drop Folder states come from the server: hide them until it answers again.
+    ['watcher-bar','drop-bar'].forEach(function(id){ var b=document.getElementById(id); if(b) b.style.display='none'; });
     el.textContent='⚠ CONNECTION LOST — the EOC server is not answering. Check its window on the EOC laptop. This page tries again every 5 seconds.';
+    el.title='';
   }
   el.style.display='';
 }
@@ -3905,15 +3927,16 @@ function showDropBar() {
   var lastFile  = dropState.last_file || '';
   var lastCheck = dropState.last_check || '';
   var errors    = dropState.errors    || 0;
-  var errTxt    = errors > 0 ? '  ·  ' + errors + ' error(s)' : '';
-  var ingestedTxt = ingested === 0
-      ? 'Watching — no internet reports yet'
-      : ingested + ' report' + (ingested===1?'':'s') + ' ingested'
-        + (lastFile ? ' · Last: ' + lastFile : '');
-  var lastTxt = lastCheck ? '  ·  Last check: ' + lastCheck : '';
-  bar.style.cssText = 'background:#0f2a1a;color:#6ee7b7;padding:5px 16px;font-size:12px;font-weight:600;text-align:center;cursor:pointer;';
-  bar.innerHTML = '&#127760; DROP FOLDER ON — ' + ingestedTxt + lastTxt + errTxt
-      + '  &nbsp;<span style="font-weight:400;text-decoration:underline">(click to configure)</span>';
+  var errTxt    = errors > 0 ? ' · ' + errors + ' error' + (errors===1?'':'s') : '';
+  var ingestedTxt = ingested === 0 ? 'no reports yet'
+      : ingested + ' report' + (ingested===1?'':'s');
+  bar.style.cssText = 'background:#0f2a1a;color:#6ee7b7;';
+  bar.className = 'sl-part click';
+  bar.innerHTML = '&#127760; DROP FOLDER ON · ' + esc(ingestedTxt + errTxt)
+      + ' &nbsp;<span class="sl-more">(set up)</span>';
+  bar.title = 'Drop Folder: ' + (dropState.watch_path || '(not set)')
+      + (lastFile ? '\nLast report: ' + lastFile : '') + (lastCheck ? '\nLast check: ' + lastCheck : '')
+      + '\nClick to choose another folder.';
   bar.style.display = '';
   bar.onclick = function(){ configureDrop(); };
 }
@@ -4005,25 +4028,29 @@ function showWatcherBar() {
   var lastFile = watcherState.last_file || '';
   var lastCheck = watcherState.last_check || '';
   var errors = watcherState.errors || 0;
-  var errTxt = errors > 0 ? '  ·  ' + errors + ' error(s)' : '';
+  var errTxt = errors > 0 ? ' · ' + errors + ' error' + (errors===1?'':'s') : '';
+  bar.className = 'sl-part click';
 
   if (enabled) {
-    var ingestedTxt = ingested === 0 ? 'Watching — no Church messages yet'
-        : ingested + ' message' + (ingested===1?'':'s') + ' auto-ingested'
-          + (lastFile ? ' · Last: ' + lastFile : '');
-    var lastTxt = lastCheck ? '  ·  Last check: ' + lastCheck : '';
-    bar.style.cssText = 'background:#1e3a5f;color:#90c8f8;padding:5px 16px;font-size:12px;font-weight:600;text-align:center;cursor:pointer;';
+    var ingestedTxt = ingested === 0 ? 'no messages yet'
+        : ingested + ' message' + (ingested===1?'':'s');
+    bar.style.cssText = 'background:#1e3a5f;color:#90c8f8;';
     var chosen = watcherState.callsigns || [], avail = watcherState.available || [], missing = watcherState.missing || [];
+    // What the operator must act on goes on the line; the rest goes in the tooltip.
     var whereTxt = watcherState.mode === 'winlink'
-        ? '  ·  Winlink: ' + (chosen.length ? chosen.join(', ') : 'NO CALLSIGN CHOSEN (' + (avail.join(', ') || 'all') + ') — click to choose')
-          + (missing.length ? '  ·  not found: ' + missing.join(', ') : '')
-        : watcherState.mode === 'none' ? '  ·  folder not found: ' + (watcherState.watch_path || '') : '';
-    bar.innerHTML = '&#128225; WINLINK AUTO-INGEST ON — ' + ingestedTxt + whereTxt + lastTxt + errTxt
-        + '  &nbsp;<span style="font-weight:400;text-decoration:underline">(click to configure)</span>';
+        ? ' · ' + (chosen.length ? chosen.join(', ') : 'NO CALLSIGN CHOSEN — click to choose')
+          + (missing.length ? ' · not found: ' + missing.join(', ') : '')
+        : watcherState.mode === 'none' ? ' · FOLDER NOT FOUND — click to choose' : '';
+    bar.innerHTML = '&#128225; WINLINK AUTO-INGEST ON · ' + esc(ingestedTxt + whereTxt + errTxt)
+        + ' &nbsp;<span class="sl-more">(set up)</span>';
+    bar.title = 'Winlink folder: ' + (watcherState.watch_path || '(not set)')
+        + (watcherState.mode === 'winlink' && !chosen.length && avail.length ? '\nCallsigns found: ' + avail.join(', ') : '')
+        + (lastFile ? '\nLast message: ' + lastFile : '') + (lastCheck ? '\nLast check: ' + lastCheck : '')
+        + '\nClick to choose the folder or the callsign.';
   } else {
-    bar.style.cssText = 'background:#374151;color:#e5e7eb;padding:5px 16px;font-size:12px;font-weight:600;text-align:center;cursor:pointer;';
-    bar.innerHTML = '&#9634; WINLINK AUTO-INGEST OFF — click this bar to choose the Winlink Express folder, or drag .mime files onto the page'
-        + '  &nbsp;<span style="font-weight:400;text-decoration:underline">(click to configure)</span>';
+    bar.style.cssText = 'background:#374151;color:#e5e7eb;';
+    bar.innerHTML = '&#9634; WINLINK AUTO-INGEST OFF · click to choose the Winlink folder';
+    bar.title = 'Or drag .mime files onto the page.';
   }
   bar.style.display = '';
   bar.onclick = function(){ configureWatcher(); };
@@ -4085,6 +4112,29 @@ load();
 loadCommsLocal();
 render();
 initNetwork();
+// Setup cards open on a short intro: a long intro shows its first sentence and folds the rest
+// behind "more" (one click, remembered for the visit). Paragraphs the page rewrites (with an id) stay whole.
+(function foldSetupIntros() {
+  var ps = document.querySelectorAll('#tab-setup p');
+  Array.prototype.forEach.call(ps, function (p) {
+    if (p.id || p.querySelector('[id]') || p.textContent.length < 220) return;
+    var kids = p.childNodes, i, at = -1, node = null;
+    for (i = 0; i < kids.length; i++) {
+      if (kids[i].nodeType !== 3) continue;
+      var m = /[.?!](\s)/.exec(kids[i].nodeValue);
+      if (m) { node = kids[i]; at = m.index + 1; break; }
+    }
+    if (!node || p.textContent.indexOf(node.nodeValue) + at > 240) return;   // first sentence too long or inside a tag: leave whole
+    var rest = node.splitText(at), span = document.createElement('span');
+    span.className = 'intro-rest'; span.hidden = true;
+    while (rest) { var nx = rest.nextSibling; span.appendChild(rest); rest = nx; }
+    if (span.textContent.trim().length < 60) { while (span.firstChild) p.appendChild(span.firstChild); return; }
+    var more = document.createElement('a');
+    more.href = '#'; more.className = 'intro-more'; more.textContent = ' more ›';
+    more.onclick = function (e) { e.preventDefault(); span.hidden = false; more.remove(); };
+    p.appendChild(span); p.appendChild(more);
+  });
+})();
 // /#actions (or any tab name) opens that tab: bookmark the worklist on a second screen.
 if (location.hash.length > 1 && document.getElementById('tab-' + location.hash.slice(1))) switchTab(location.hash.slice(1));
 </script>

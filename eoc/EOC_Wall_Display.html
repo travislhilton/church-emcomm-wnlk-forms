@@ -396,7 +396,7 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
       if(isEx(m)) sum='EXERCISE · '+sum;
       var fresh = !firstLoad && !seen[m.id];
       var stale = m.status==='new' && (now-m.ts)>30*60000;   // unacknowledged for 30 min
-      return '<div class="row'+(fresh?' fresh':'')+'"><div class="t">'+hm(m.ts)+'</div><div class="b '+esc(m.type)+'">'+esc(m.type.toUpperCase())+'</div><div class="u">'+esc(unitOf(m)||'?')+(m.via?' <small>via '+esc(m.via)+'</small>':'')+'<br><small>'+esc(sum)+'</small></div><div class="st '+esc(m.status)+(stale?' stale':'')+'" title="'+(stale?'NEW for '+ago(m.ts):'')+'">'+({new:'NEW',ack:'ACK',assigned:'ASSGN',complete:'DONE'}[m.status]||esc(String(m.status).toUpperCase()))+'</div></div>';
+      return '<div class="row'+(fresh?' fresh':'')+'"><div class="t">'+hm(m.ts)+'</div><div class="b '+esc(m.type)+'">'+esc(m.type.toUpperCase())+'</div><div class="u">'+esc(unitOf(m)||'?')+(m.via?' <small>via '+esc(m.via)+'</small>':'')+'<br><small>'+esc(sum)+'</small></div><div class="st '+esc(m.status)+(stale?' stale':'')+'" title="'+(stale?'NEW for '+ago(m.ts):'')+'">'+({new:'NEW',ack:'ACK',assigned:'ASSIGNED',complete:'DONE'}[m.status]||esc(String(m.status).toUpperCase()))+'</div></div>';
     }).join('');
     msgs.forEach(function(m){ seen[m.id]=1; }); firstLoad=false;
     le.style.display=msgs.length?'none':''; document.getElementById('latest-sum').textContent=msgs.length?'last '+ago(Math.max.apply(null,msgs.map(function(m){return m.ts;}))):'';
