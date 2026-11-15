@@ -246,6 +246,11 @@ area is not offered it.
 `python testing/test_sim.py` (synthetic pack, scratch EOC on port 8085, simulator on 8095):
 pack and privacy, planning, Winlink bodies against the EOC's own parser, delivery over every
 channel, PACE push, the run API, the session flow and the room pages. `--keep` leaves both servers
-running for browser checks. `python testing/test_example.py` checks the invented example community
+running for browser checks. `python testing/test_sim_consistency.py` (scratch EOC on port 8084; `--shots=<folder>`
+saves each role's view) checks that every simulated report tells one story (missionaries: one story per unit, in
+time order) and that every screen shows what the simulator sent: the EOC's records, the read-out, the Message
+Center (Overview, missionary bar, SITREP, Decisions to make, Group by ward, NEW, missionary status by ward, the
+welfare line's Supply Order board, net control's call list), the wall and the debrief's per-role scores.
+`python testing/test_example.py` checks the invented example community
 and its participant package; `python testing/test_public_files.py` checks that no real community
 reached a public file.

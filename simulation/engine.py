@@ -72,6 +72,28 @@ NEED_DEFAULTS = {
 NEED_ROLE = {'missionaries': 'EOC operator and Stake President', 'life': 'EOC operator', 'upward': 'EOC operator',
              'supply': 'Emergency Response Director and the welfare line', 'facilities': 'Emergency Response Director',
              'assist': 'EOC operator', 'roster': 'EOC operator', 'report': 'EOC operator and HAM operator', 'other': 'EOC operator'}
+# The people a need's role names ("ERD and the Stake President", "Specialist, Stake President, ERD"), one name each,
+# so each role's score credits every person who shares a need
+_PERSON = {'erd': 'Emergency Response Director', 'emergency response director': 'Emergency Response Director',
+           'specialist': 'Welfare and Self-Reliance Specialist (emergency communications)', 'stake_president': 'Stake President', 'stake president': 'Stake President',
+           'eoc': 'EOC operator', 'eoc operator': 'EOC operator', 'ham': 'HAM operator', 'ham operator': 'HAM operator', 'ham at the eoc': 'HAM operator',
+           'net control': 'Net control', 'welfare line': 'Welfare line', 'team_leader': 'Team leader', 'county_liaison': 'Stake liaison to the county',
+           'stake liaison': 'Stake liaison to the county', 'stake liaison to the county': 'Stake liaison to the county', 'controller': 'Controller'}
+
+
+def role_people(role: str) -> list:
+    """'ERD and the Stake President' -> ['Emergency Response Director', 'Stake President'] (each once, in order)."""
+    out = []
+    for part in re.split(r',\s*|\s+and\s+', str(role or '').strip()):
+        part = re.sub(r'^the\s+', '', part.strip(), flags=re.I)
+        if not part:
+            continue
+        name = _PERSON.get(part.lower(), part[:1].upper() + part[1:])
+        if name not in out:
+            out.append(name)
+    return out or ['EOC operator']
+
+
 # One coaching line per category and failure, for the after-action report's "do better" list
 NEED_COACH = {
     ('missionaries', 'owner'): 'A missionaries alert is owned the minute it appears: say a name out loud and write it on the item.',
@@ -509,7 +531,8 @@ def plan(pack: dict, scenario: dict, options: dict = None) -> dict:
            'created': _dt.datetime.now().isoformat(timespec='seconds'), 'today': today,
            'scenario': {'id': scenario['id'], 'name': scenario['name'], 'hazard': scenario.get('hazard', ''),
                         'local_binding': scenario.get('local_binding', ''), 'summary': scenario.get('summary', '')},
-           'pack': {'source': pack.get('source', ''), 'privacy': pack.get('privacy', 'real'), 'consent': pack.get('consent') or None},
+           'pack': {'source': pack.get('source', ''), 'privacy': pack.get('privacy', 'real'), 'consent': pack.get('consent') or None,
+                    'invented': bool(pack.get('invented'))},
            'eoc': eoc, 'seed': options.get('seed') or 1, 'site': site, 'board': [],
            'scope': {'units': [{'id': u['id'], 'name': u['name'], 'type': u['type'], 'stake': u['stake'], 'stake_name': u.get('stake_name', ''),
                                 'severity': u['severity'], 'lat': u.get('lat'), 'lon': u.get('lon'), 'flags': u.get('flags', [])} for u in units],
@@ -655,6 +678,7 @@ def plan(pack: dict, scenario: dict, options: dict = None) -> dict:
                 item['need_spec'] = dict(inj['need'])          # the inject's own need (a card to act on) or overrides for its derived needs
             run['items'].append(item)
     run['items'].sort(key=lambda i: (i['t'], i['id']))
+    _settle_missionaries(run, scenario, ctxs)
     for it in run['items']:
         if it.get('status') == 'elsewhere' or not it.get('local', True):
             continue
@@ -671,6 +695,43 @@ def plan(pack: dict, scenario: dict, options: dict = None) -> dict:
                 need['rule']['label'] = f(str(need['rule']['label']))
             _register_need(run, it, need)
     return run
+
+
+# What a report drawn at random says about missionaries once a scripted report (a literal miss_safe in its template)
+# has said they are missing, and what a random NO says (kept only when a scripted report finds them later).
+MISS_STILL = 'Still not accounted for (see the earlier report); the bishop and the mission office are still looking.'
+MISS_NOT_YET = 'Not yet accounted for: the bishop is still trying to reach the missionaries assigned to {unit}.'
+
+
+def _settle_missionaries(run: dict, scenario: dict, ctxs: dict):
+    """One missionary story per unit, in time order. Templates draw miss_safe at random by severity and pick
+    miss_details separately, so a unit could report missing missionaries and, minutes later, report them safe
+    before the scripted 'found' report (clearing the EOC's alert early), or say NO with an 'accounted for' note.
+    After a scripted NO, random reports from that unit stay NO until a scripted YES; a random NO stays only when
+    a scripted YES follows (else it becomes YES, so no alert is left that the scenario never answers); a NO always
+    carries a NO note. testing/test_sim.py checks every scenario for this with many seeds."""
+    templates = scenario.get('templates', {})
+    tpl_of = {i.get('id'): i.get('template', '') for i in scenario.get('injects', [])}
+    by_unit = {}
+    for it in run['items']:
+        if it['kind'] == 'form' and it.get('form') == 'dr' and it.get('unit_id') in ctxs and 'miss_safe' in (it.get('payload') or {}):
+            by_unit.setdefault(it['unit_id'], []).append(it)
+    for uid, its in by_unit.items():
+        fill = ctxs[uid].fill
+        scripted = [isinstance((templates.get(tpl_of.get(i['inject'], '')) or {}).get('miss_safe'), str) for i in its]
+        state = None
+        for n, it in enumerate(its):
+            pl = it['payload']
+            if scripted[n]:
+                state = str(pl['miss_safe']).upper()
+                continue
+            if state == 'NO':
+                pl['miss_safe'], pl['miss_details'] = 'NO', fill(MISS_STILL)
+            elif str(pl['miss_safe']).upper() == 'NO':
+                if any(scripted[j] and str(its[j]['payload']['miss_safe']).upper() == 'YES' for j in range(n + 1, len(its))):
+                    pl['miss_details'], state = fill(MISS_NOT_YET), 'NO'
+                else:
+                    pl['miss_safe'] = 'YES'
 
 
 def _parent_played(site: dict) -> bool:
@@ -1792,6 +1853,17 @@ class Runner:
         by_role = {}
         for b in better:
             by_role.setdefault(b['role'], []).append(b)
+        # each person's own score (a need two roles share counts for both), the overall rule per role: met on time,
+        # half for late, open needs inside their time not counted
+        roles_score = {}
+        for n in needs:
+            for person in role_people(n.get('role') or NEED_ROLE.get(n['cat'], '')):
+                d = roles_score.setdefault(person, {'total': 0, 'met': 0, 'late': 0, 'open': 0, 'overdue': 0, 'missed': 0})
+                d['total'] += 1
+                d[n['state']] = d.get(n['state'], 0) + 1
+        for d in roles_score.values():
+            counted = d['total'] - d['open']
+            d['pct'] = round(100 * (d['met'] + 0.5 * d['late']) / counted) if counted else None
         # why it matters: the real-disaster lesson behind each need's inject (need id = need:<item id>[#part])
         items_by_id = {it['id']: it for it in run['items']}
         why, seen_lessons = [], set()
@@ -1804,11 +1876,11 @@ class Runner:
         segs = run['clock'].get('segments') or []
         speeds = sorted({s['speed'] for s in segs if s['speed']})
         return {'run': {'id': run['id'], 'created': run['created'], 'scenario': run['scenario'], 'eoc': run['eoc'], 'site': run.get('site', {}), 'privacy': run['pack']['privacy'],
-                        'consent': run['pack'].get('consent') or None,
-                        'status': run['clock']['status'], 'elapsed_min': round(self.elapsed(), 1), 'duration_min': run['clock']['duration_min'], 'speeds': speeds,
+                        'consent': run['pack'].get('consent') or None, 'invented': bool(run['pack'].get('invented')),
+                        'status': run['clock']['status'], 'elapsed_min': round(min(self.elapsed(), float(run['clock']['duration_min'] or 1e9)), 1), 'duration_min': run['clock']['duration_min'], 'speeds': speeds,
                         'units': len(run['scope']['units']), 'seed': run['seed'], 'generated': _dt.datetime.now().isoformat(timespec='seconds')},
                 'score': sc, 'timeline': timeline, 'needs': needs, 'hotwash': hw, 'better': better, 'better_by_role': by_role, 'well': well,
-                'why': why, 'phases': run.get('phases', []), 'pace': run['pace'], 'items': counts(run)}
+                'roles_score': roles_score, 'why': why, 'phases': run.get('phases', []), 'pace': run['pace'], 'items': counts(run)}
 
     def _fire_rollup(self, it: dict) -> dict:
         """Bundle the reports of one simulated stake that are due by now into a church_eoc_rollup
@@ -2196,6 +2268,11 @@ def report_text(rep: dict) -> str:
         L.append(f"  {cat:13s} {d.get('met', 0) + d.get('late', 0)} of {d['total']} met" + (f" ({d.get('late', 0)} late)" if d.get('late') else '') + (f", {d.get('overdue', 0) + d.get('missed', 0)} overdue or missed" if d.get('overdue') or d.get('missed') else ''))
     if sc['checks']:
         L += ['', 'DONE WHEN'] + [f"  [{'x' if c['ok'] else '-' if c['ok'] is None else ' '}] {c['label']} - {c['why']}" for c in sc['checks']]
+    if rep.get('roles_score'):
+        L += ['', 'EACH ROLE\'S SCORE']
+        for role, d in sorted(rep['roles_score'].items(), key=lambda kv: -kv[1]['total']):
+            L.append(f"  {role}: {d['met'] + d['late']} of {d['total']} met ({d['late']} late), {d['overdue'] + d['missed']} overdue or missed"
+                     + (f" - {d['pct']}%" if d.get('pct') is not None else ''))
     L += ['', 'DO BETTER (by role)']
     if not rep['better']:
         L.append('  Nothing missed: every need that arose was met on time.')
@@ -2247,6 +2324,11 @@ def report_html(rep: dict) -> str:
                  + ''.join(f"<tr><td>{e(cat)}</td><td>{d['total']}</td><td>{d.get('met', 0)}</td><td>{d.get('late', 0)}</td><td>{d.get('overdue', 0) + d.get('missed', 0)}</td><td class='sub'>{e(NEED_ROLE.get(cat, ''))}</td></tr>" for cat, d in sorted(sc['by_cat'].items())) + '</table>')
     if sc['checks']:
         H.append('<h2>Done when</h2><ul class="chk">' + ''.join(f"<li><span class='st' style='background:{'#1f8a4c' if c['ok'] else '#9aa5b1' if c['ok'] is None else '#b03a2e'}'>{'met' if c['ok'] else 'not reached' if c['ok'] is None else 'not met'}</span> {e(c['label'])} <span class='sub'>· {e(c['why'])}</span></li>" for c in sc['checks']) + '</ul>')
+    if rep.get('roles_score'):
+        H.append("<h2>Each role's score</h2><table><tr><th>Role</th><th>Needs</th><th>Met on time</th><th>Late</th><th>Overdue or missed</th><th>Still open</th><th>Score</th></tr>"
+                 + ''.join(f"<tr><td>{e(role)}</td><td>{d['total']}</td><td>{d['met']}</td><td>{d['late']}</td><td>{d['overdue'] + d['missed']}</td><td>{d['open']}</td>"
+                           f"<td>{'' if d.get('pct') is None else str(d['pct']) + '%'}</td></tr>"
+                           for role, d in sorted(rep['roles_score'].items(), key=lambda kv: -kv[1]['total'])) + '</table>')
     H.append('<h2>Do better, by role</h2>')
     if not rep['better']:
         H.append("<div class='well'>Nothing missed: every need that arose was met on time.</div>")
@@ -2284,6 +2366,8 @@ def debrief_html(rep: dict, history: list = None, next_scenarios: list = None, r
     site = (r.get('site') or {}).get('label', '')
     when = (r.get('created') or '')[:10]
     fmt_t = lambda t: f"T+{int(round(float(t or 0)))}"
+    dur = r.get('duration_min', 240)
+    elapsed = min(float(r.get('elapsed_min') or 0), float(dur))      # a finished run stops a few seconds past its end: never 'T+241 of 240'
 
     def trim(s, n=110):        # cut at a word, never mid-word
         s = ' '.join(str(s or '').split())
@@ -2293,10 +2377,13 @@ def debrief_html(rep: dict, history: list = None, next_scenarios: list = None, r
         return re.sub(r'\bERD\b', 'Emergency Response Director', str(s or '').strip()) or 'EOC team'
     pace_word = {'P': 'Primary (cellular)', 'A': 'Alternate (any internet)', 'C': 'Contingency (radio and runners)', 'E': 'Emergency (runners with paper)'}
     slides = []
+    names_note = ('The community, its units, buildings and people are all invented.' if r.get('invented')
+                  else 'Contacts are real, used with the recorded consent.' if r.get('privacy') == 'real'
+                  else "People's names and phones are invented; unit and building names are real.")
     # 1 cover
     slides.append(f"""<section class="cover"><p class="kick">Drill debrief · THIS WAS AN EXERCISE</p><h1>{e(r['scenario'].get('name', ''))}</h1>
-<p class="lead">{e(site)}{' · ' + e(when) if when else ''} · {r.get('units', 0)} units · {fmt_t(r.get('elapsed_min'))} of {r.get('duration_min', 240)} drill minutes</p>
-<p class="note">Every report in this drill said SIMULATED. {'Contacts are real, used with the recorded consent.' if r.get('privacy') == 'real' else "People's names and phones are invented; unit and building names are real."}</p></section>""")
+<p class="lead">{e(site)}{' · ' + e(when) if when else ''} · {r.get('units', 0)} units · {fmt_t(elapsed)} of {dur} drill minutes</p>
+<p class="note">Every report in this drill said SIMULATED. {names_note}</p></section>""")
     # 2 what you faced
     phases = ''.join(f"<li><b>{fmt_t(p.get('from'))}</b> {e(p.get('title', ''))}</li>" for p in rep.get('phases') or [])
     pace = ' → '.join(f"<span class='chip pace-{e(p.get('level', 'P'))}'>{e(p.get('level', 'P'))} <small>{fmt_t(p.get('t'))}</small></span>" for p in rep.get('pace') or [])
@@ -2322,6 +2409,19 @@ def debrief_html(rep: dict, history: list = None, next_scenarios: list = None, r
 <span class="small">needs met on time, half credit for late; open needs still inside their time are not counted</span></div>
 <div><div class="tiles">{''.join(f"<div class='tile'><span class='t'>{t}</span><span class='v'>{v}</span><span class='s'>{s}</span></div>" for t, v, s in tiles)}</div>
 <div class="cats">{cats}</div><p class="legend"><i class='s-met'></i>met <i class='s-late'></i>late <i class='s-open'></i>open <i class='s-overdue'></i>overdue <i class='s-missed'></i>missed</p></div></div></section>""")
+    # 3b each role's score: every role in the room sees its own line (the do-better slide names at most four)
+    rs = rep.get('roles_score') or {}
+    if rs:
+        rows = ''
+        for role, d in sorted(rs.items(), key=lambda kv: (-kv[1]['total'], kv[0]))[:10]:
+            tot, counted = max(1, d['total']), d['total'] - d['open']
+            p = round(100 * (d['met'] + 0.5 * d['late']) / counted) if counted else None
+            segs = ''.join(f"<i class='s-{k}' style='width:{100 * d.get(k, 0) / tot:.1f}%'></i>" for k in ('met', 'late', 'open', 'overdue', 'missed'))
+            rows += (f"<div class='cat'><span>{e(role)}</span><div class='bar'>{segs}</div><b>{d['met'] + d['late']}/{d['total']}"
+                     f"{'' if p is None else f' · {p}%'}</b></div>")
+        slides.append(f"<section><h2>Each role's score</h2><p class='sub'>The needs each person owns (a shared need counts for each): met on time, late, still open, overdue, missed.</p>"
+                      f"<div class='cats roles-score'>{rows}</div><p class='legend'><i class='s-met'></i>met <i class='s-late'></i>late <i class='s-open'></i>open "
+                      f"<i class='s-overdue'></i>overdue <i class='s-missed'></i>missed</p></section>")
     # 4 done when (the internal inject ids in the reasons mean nothing to the room)
     checks = sc.get('checks') or []
     if checks:
@@ -2427,7 +2527,7 @@ ol.phases,ol.tl{{margin:0;padding-left:1.2em;line-height:1.7}}ol.tl{{font-size:1
 .big .word{{font-size:2em;font-weight:700;margin:.1em 0 .3em}}.good .num,.good .word{{color:var(--good)}}.warn .num,.warn .word{{color:var(--warn)}}.bad .num,.bad .word{{color:var(--bad)}}.muted .num{{color:var(--muted)}}
 .tiles{{display:grid;grid-template-columns:1fr 1fr;gap:.6em;margin-bottom:.8em}}.tile{{border:1px solid var(--line);border-radius:.5em;padding:.5em .7em;display:flex;flex-direction:column}}
 .tile .t{{font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}}.tile .v{{font-size:1.9em;font-weight:800}}.tile .v small{{font-size:.5em;color:var(--muted)}}.tile .s{{font-size:.75em;color:var(--muted)}}
-.cat{{display:grid;grid-template-columns:7em 1fr 3em;gap:.5em;align-items:center;font-size:.85em;margin:.2em 0}}.bar{{display:flex;height:.8em;border-radius:.4em;overflow:hidden;background:var(--line)}}
+.cat{{display:grid;grid-template-columns:7em 1fr 3em;gap:.5em;align-items:center;font-size:.85em;margin:.2em 0}}.roles-score .cat{{grid-template-columns:15em 1fr 6.5em;font-size:.78em;margin:.4em 0}}.bar{{display:flex;height:.8em;border-radius:.4em;overflow:hidden;background:var(--line)}}
 .s-met{{background:var(--good)}}.s-late{{background:var(--warn)}}.s-open{{background:var(--open)}}.s-overdue{{background:var(--bad)}}.s-missed{{background:var(--miss)}}
 .legend{{font-size:.7em;color:var(--muted)}}.legend i{{display:inline-block;width:.8em;height:.8em;border-radius:.2em;margin:0 .2em 0 .7em;vertical-align:middle}}
 ul.checks{{list-style:none;margin:0;padding:0;columns:2;column-gap:3em}}ul.checks li{{display:flex;gap:.6em;break-inside:avoid;margin:0 0 .7em}}.mark{{font-size:1.4em;font-weight:800;width:1.2em}}

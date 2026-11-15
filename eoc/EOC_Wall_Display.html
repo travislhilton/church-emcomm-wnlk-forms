@@ -97,6 +97,7 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
 .act{display:grid;grid-template-columns:auto 1fr;gap:.5vw;align-items:center;font-size:1.08rem;padding:.3vh 0;border-bottom:1px solid var(--line);line-height:1.3;min-width:0}
 .act .p{font-weight:800;font-size:.85rem;border-radius:.3rem;padding:.1rem .4rem;white-space:nowrap;margin-top:.1rem}
 .act .p.p1{background:var(--red);color:#fff} .act .p.p2{background:var(--amber);color:#111} .act .p.p3{background:var(--panel2);color:var(--muted)} .act .p.up{background:#5b21b6;color:#fff}
+.act .dec{background:#0f766e;color:#fff;font-size:.8rem;border-radius:.3rem;padding:0 .35rem;font-weight:800}
 .act .x{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap} .act .x small{color:var(--muted);font-size:.95rem}
 .left .panel{min-height:0}
 .kv{display:flex;justify-content:space-between;gap:.5vw;font-size:1.08rem;padding:.22vh 0;border-bottom:1px solid var(--line)}
@@ -351,7 +352,14 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
     document.getElementById('t-reports').className='tile'+(nNew?' hot':'');
     var inj=0,dead=0,dmg=0,dest=0,vol=0,hrs=0,missNo=[],needL=[],needN=[],needH=[];
     drs.forEach(function(m){ var r=m.dr, u=unitOf(m)||'?'; inj+=ni(r.mem_inj); dead+=ni(r.mem_dead); dmg+=ni(r.homes_dmg); dest+=ni(r.homes_dest); vol+=ni(r.vol_count); hrs+=ni(r.vol_hrs);
-      if(isNo(r.miss_safe)) missNo.push(u); if(isYes(r.need_local)) needL.push(u); if(isYes(r.need_neighbor)) needN.push(u); if(isYes(r.need_hq)) needH.push(u); });
+      if(isYes(r.need_local)) needL.push(u); if(isYes(r.need_neighbor)) needN.push(u); if(isYes(r.need_hq)) needH.push(u); });
+    // each unit once; missionaries: the LATEST report from each ward that answered decides (a "found safe" report clears an earlier NO)
+    var once=function(a){ var seen={}; return a.filter(function(u){ var k=String(u).toLowerCase(); if(seen[k]) return false; seen[k]=1; return true; }); };
+    needL=once(needL); needN=once(needN); needH=once(needH);
+    var lastAns={}, ansOrder=[]; drs.forEach(function(m,i){ var r=m.dr; if(!isNo(r.miss_safe)&&!isYes(r.miss_safe)) return;
+      var k=((r.stake||'')+'|'+(r.ward||'')).toLowerCase(); if(k==='|') k='#'+i;
+      if(!lastAns[k]){ ansOrder.push(k); lastAns[k]=m; } else if((m.ts||0)>=(lastAns[k].ts||0)) lastAns[k]=m; });
+    missNo=once(ansOrder.filter(function(k){ return isNo(lastAns[k].dr.miss_safe); }).map(function(k){ return unitOf(lastAns[k])||'?'; }));
     var wcrew=0,whrs=0; wcls.forEach(function(m){ wcrew+=ni(m.wcl.crew_count); whrs+=nf(m.wcl.total_hrs); });
     document.getElementById('homes-v').innerHTML=dmg+' <small>/</small> '+dest;
     document.getElementById('life-v').innerHTML=inj+' <small>/</small> '+dead;
@@ -454,8 +462,12 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
     var pa=document.getElementById('p-actions'), ab2=document.getElementById('actions');
     if(acts.length){
       var hi=acts.filter(function(a){return a.prio===1;}).length, upN=acts.filter(function(a){return a.status==='up';}).length, nobody=acts.filter(function(a){return !(a.owner||'').trim();}).length;
-      document.getElementById('act-sum').textContent=acts.length+' open'+(hi?' · '+hi+' high':'')+(upN?' · '+upN+' waiting above':'')+(nobody?' · '+nobody+' no owner':'');
-      ab2.innerHTML=acts.slice(0,8).map(function(a){ return '<div class="act"><span class="p '+(a.status==='up'?'up':'p'+(a.prio||2))+'">'+(a.status==='up'?'UP':a.prio===1?'HIGH':a.prio===3?'low':'')+'</span><span class="x" title="'+esc(a.next||'')+'">'+esc(a.title)+' <small>'+(a.from?'from '+esc(a.from)+' · ':'')+esc(a.owner?a.owner:'no owner')+'</small></span></div>'; }).join('');
+      // decisions for the Stake President (or the Area Seventy): the same rule as the Message Center's Decisions to make
+      var decRe=/\b(decide[sd]?|decision|approve[sd]?|approval|recommend(s|ed|ation)?)\b/i;
+      var isDec=function(a){ return a.status!=='up' && !String(a.decision||'').trim() && decRe.test(String(a.title||'')+' '+String(a.next||'')); };
+      var nDec=acts.filter(isDec).length;
+      document.getElementById('act-sum').textContent=acts.length+' open'+(nDec?' · '+nDec+' to decide':'')+(hi?' · '+hi+' high':'')+(upN?' · '+upN+' waiting above':'')+(nobody?' · '+nobody+' no owner':'');
+      ab2.innerHTML=acts.slice(0,8).map(function(a){ return '<div class="act"><span class="p '+(a.status==='up'?'up':'p'+(a.prio||2))+'">'+(a.status==='up'?'UP':a.prio===1?'HIGH':a.prio===3?'low':'')+'</span><span class="x" title="'+esc(a.next||'')+'">'+(isDec(a)?'<b class="dec">DECIDE</b> ':'')+esc(a.title)+' <small>'+(a.from?'from '+esc(a.from)+' · ':'')+esc(a.owner?a.owner:'no owner')+'</small></span></div>'; }).join('');
       pa.style.display=''; fits.push([ab2, acts.length, 'the Work Items tab', ab2]);
     } else { pa.style.display='none'; ab2.innerHTML=''; }
 

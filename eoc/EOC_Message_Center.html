@@ -11,6 +11,7 @@
   --warn:#92400e; --warn-bg:#fffbeb; --ok:#065f46; --ok-bg:#ecfdf5;
   --hdr:#1e3a8a; --hdr-fg:#e0e7ff; --tab-act:#ffffff; --tab-in:#e2e8f0;
   --overdue:#c2410c; --overdue-bg:#fff7ed; --on-accent:#ffffff;
+  --lead:#0f766e; --lead-bg:#f0fdfa;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -20,6 +21,7 @@
     --danger:#fb7185; --danger-bg:#1c0014; --warn:#fbbf24; --warn-bg:#1c1400;
     --ok:#4ade80; --ok-bg:#052e16; --hdr:#0f2a6e; --hdr-fg:#c7d2fe;
     --tab-act:#1e293b; --tab-in:#0f172a; --overdue:#fb923c; --overdue-bg:#1c0a00; --on-accent:#0b1220;
+    --lead:#2dd4bf; --lead-bg:#042f2e;
     color-scheme: dark;
   }
 }
@@ -29,6 +31,7 @@
   --danger:#fb7185; --danger-bg:#1c0014; --warn:#fbbf24; --warn-bg:#1c1400;
   --ok:#4ade80; --ok-bg:#052e16; --hdr:#0f2a6e; --hdr-fg:#c7d2fe;
   --tab-act:#1e293b; --tab-in:#0f172a; --overdue:#fb923c; --overdue-bg:#1c0a00; --on-accent:#0b1220;
+    --lead:#2dd4bf; --lead-bg:#042f2e;
   color-scheme: dark;
 }
 *,*::before,*::after{box-sizing:border-box;}
@@ -75,7 +78,8 @@ body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,sa
 .drop-zone input{display:none;}
 .drop-zone p{margin:4px 0 0;color:var(--muted);font-size:12px;}
 .drop-zone .ico{font-size:26px;}
-#drop-mini{display:none;padding:8px 0 4px;text-align:center;}
+#drop-mini{display:none;padding:6px 8px;text-align:center;border:1px dashed transparent;border-radius:8px;margin-bottom:8px;}
+#drop-mini.drag-over{border-color:var(--accent);background:var(--accent-lt);}
 /* Main content */
 #main{padding:0 16px;}
 .tab-panel{display:none;}
@@ -106,6 +110,9 @@ body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,sa
 /* Alerts */
 .alert-box{background:var(--danger-bg);border:1px solid var(--danger);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;}
 .alert-box.warn{background:var(--warn-bg);border-color:var(--warn);}
+.chip.so-danger{background:var(--danger-bg);color:var(--danger);} .chip.so-warn{background:var(--warn-bg);color:var(--warn);} .chip.so-ok{background:var(--ok-bg);color:var(--ok);} .chip.so-up{background:#ede9fe;color:#5b21b6;}
+.miss-card summary{cursor:pointer;list-style-position:inside;} .miss-card summary h2{font-size:14px;margin:0;}
+.alert-box.decide{background:var(--lead-bg);border-color:var(--lead);} .alert-box.decide h3{color:var(--lead);}
 .alert-box.overdue{background:var(--overdue-bg);border-color:var(--overdue);}
 .alert-box h3{font-size:12px;margin:0 0 4px;font-weight:700;}
 /* Tables */
@@ -127,6 +134,9 @@ tr:hover td{background:var(--bg);}
 .chip.ex{background:#991b1b;color:#fff;margin-left:4px;}
 .pri{display:inline-block;min-width:18px;text-align:center;border-radius:4px;font-size:10px;font-weight:800;padding:1px 5px;}
 .pri.p1{background:var(--danger);color:var(--on-accent);} .pri.p2{background:var(--warn-bg);color:var(--warn);} .pri.p3{background:var(--bg);color:var(--muted);border:1px solid var(--border);}
+.act-new{display:inline-block;background:var(--accent);color:var(--on-accent);border-radius:4px;font-size:10px;font-weight:700;padding:1px 5px;margin-right:4px;vertical-align:1px;}
+.act-decide{display:inline-block;background:var(--lead);color:var(--lead-bg);border-radius:4px;font-size:10px;font-weight:700;padding:1px 5px;margin-left:4px;vertical-align:1px;}
+tr.act-group td{background:var(--tab-in);font-weight:700;font-size:12px;padding:6px 10px;}
 tr.act-done td{color:var(--muted);} tr.act-done .act-title{text-decoration:line-through;}
 .act-title{font-weight:600;cursor:pointer;} .act-title:hover{color:var(--accent);text-decoration:underline;}
 .act-from{display:inline-block;background:#ede9fe;color:#5b21b6;border-radius:4px;font-size:10px;font-weight:700;padding:1px 6px;margin-left:4px;}
@@ -358,8 +368,9 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
     <strong id="drop-label">Drop Winlink .mime files here</strong> <span id="drop-or">or click to browse</span>
     <p id="drop-hint">Winlink messages (.mime, .msg, .eml), form files saved on a phone (.txt), roll-ups and Comms Sheets (.json). Only the three Church forms are filed; anything else is skipped.</p>
   </div>
-  <div id="drop-mini">
+  <div id="drop-mini" ondragover="doDragOver(event)" ondragleave="doDragLeave(event)" ondrop="doDrop(event)">
     <button class="btn secondary sm" onclick="document.getElementById('file-input').click()">&#128229; Drop / Add More Files</button>
+    <span style="font-size:11px;color:var(--muted)">or drop Winlink messages, phone files or roll-ups on this line</span>
   </div>
 </div>
 
@@ -371,6 +382,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
     <div id="ov-alerts"></div>
     <div id="ov-start"></div>
     <div class="stat-row" id="ov-stats"></div>
+    <div id="ov-miss"></div>
     <div class="card">
       <h2 id="tracker-title">Unit Tracker</h2>
       <div id="tracker-grid" class="tracker-grid"></div>
@@ -386,6 +398,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
   <div id="tab-actions" class="tab-panel">
     <div class="filter-bar" style="flex-wrap:wrap" id="act-filters">
       <button class="filter-btn active" onclick="setActFilter('open',this)">All open</button>
+      <button class="filter-btn" onclick="setActFilter('decide',this)" title="Open items that ask for a decision, an approval or a recommendation, with no decision written yet: the Stake President's (or the Area Seventy's) list">Decisions to make <span class="cnt empty" id="cnt-decide">0</span></button>
       <button class="filter-btn" onclick="setActFilter('life',this)">Life safety</button>
       <button class="filter-btn" onclick="setActFilter('missionaries',this)">Missionaries</button>
       <button class="filter-btn" onclick="setActFilter('supply',this)">Supplies</button>
@@ -403,10 +416,11 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
       <input type="text" id="act-new-owner" placeholder="Owner (who)" style="width:140px">
       <button class="btn" onclick="addAction()">+ Add</button>
       <span class="spacer"></span>
+      <label style="font-size:12px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap"><input type="checkbox" id="act-group" onchange="actGroupChanged()"> Group by <span id="act-group-unit">ward</span></label>
       <button class="btn secondary sm" onclick="copyText(actionsText())">Copy list as text</button>
       <button class="btn secondary sm" onclick="copyActionsTsv()">Copy as TSV (tab-separated)</button>
     </div>
-    <p style="font-size:11px;color:var(--muted);margin:0 0 10px">Items appear here on their own from every report filed (missionaries, injuries, each assistance request, every Supply Order, overdue units). Click an item to set its owner, status, next action and the decision. <b>UP</b> means it waits on the line above you and goes with the next roll-up.</p>
+    <p style="font-size:11px;color:var(--muted);margin:0 0 10px">Items appear here on their own from every report filed (missionaries, injuries, each assistance request, every Supply Order, overdue units). Click an item to set its owner, status, next action and the decision. <b>UP</b> means it waits on the line above you and goes with the next roll-up. <b>NEW</b> marks items added since you last opened this tab on this computer. <b>Decisions to make</b> is the leaders' list: show it to the Stake President, and write each decision on its item.</p>
     <div class="card" style="padding:0">
       <div class="tbl-wrap">
         <table>
@@ -477,6 +491,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
       <span class="spacer"></span>
       <button class="btn secondary sm" onclick="copyTableSO()">Copy Items as TSV</button>
     </div>
+    <div id="so-board"></div>
     <div id="so-script-wrap" style="display:none" class="rollup-wrap">
       <pre class="rollup-pre" id="so-script-pre"></pre>
       <button class="btn sm rollup-copy" onclick="copyEl('so-script-pre')">Copy</button>
@@ -586,6 +601,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
       <button class="btn secondary sm" onclick="exportComms()">Export sheet JSON (JavaScript Object Notation)</button>
       <label class="btn secondary sm" style="cursor:pointer">Import sheet JSON<input type="file" accept=".json" style="display:none" onchange="importComms(event)"></label>
     </div>
+    <div id="comms-net"></div>
     <div id="comms-event-banner" style="display:none;background:#FEF3C7;border:1px solid #F59E0B;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:13px"></div>
     <div id="comms-view"></div>
   </div>
@@ -1019,10 +1035,10 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
         <ul>
           <li><b>Status:</b> click a row's status badge to move it from NEW to ACK to ASSIGNED to DONE. Every screen updates.</li>
           <li><b>&#128196; Open</b> shows the whole form as the volunteer filled it, with Print, Copy text and Save .txt.</li>
-          <li><b>Missionaries not accounted for:</b> the red bar and Overview alert need immediate action. Tell the Stake President.</li>
+          <li><b>Missionaries not accounted for:</b> the red bar and Overview alert need immediate action. Tell the Stake President. Each ward's status comes from its <b>latest</b> report that answered: a later report that finds them safe clears the alert. The Overview's <b>Missionary status by ward</b> is the mission office's list; <b>Copy for the mission office</b> gives it as text.</li>
           <li><b>OVERDUE on the Roster</b> means a unit has passed its expected window with nothing received. Call the bishop or Team Leader. If they report by voice, mark &#9742;.</li>
-          <li><b>Supply Orders:</b> items from every unit are added together. <b>Generate Phone Script</b> reads them out for a call.</li>
-          <li><b>Work Items:</b> the worklist. Every report filed adds the items it calls for on its own: missionaries not accounted for, injuries or deaths, each <i>assistance needed</i> answer, every Supply Order awaiting approval, a crew without its safety briefing, and a roster unit that goes overdue. Add your own with the box at the top (a phone call to return, a shelter to confirm, a decision the Stake President must make). Click an item to set <b>who owns it</b>, its <b>status</b> (OPEN, IN WORK, UP, DONE), the <b>next action</b>, a due time and the <b>decision</b> when it is made; each change is logged with the operator's name. The filter buttons are the worklists: Life safety, Missionaries, Supplies, Facilities, Assistance, Overdue units, No owner. <b>UP</b> means the item waits on the line above you: it goes with the next roll-up and lands open on that EOC's list, naming yours. <b>No Council / Area EOC open?</b> UP items go up only as SITREP Section I. Phone or email the welfare line for anything urgent and write their answer on the item. The SITREP carries every open item and the decisions recorded in the period (section I); the wall shows the open count and the high-priority items.</li>
+          <li><b>Supply Orders:</b> items from every unit are added together. <b>Generate Phone Script</b> reads them out for a call. <b>Supply Orders for the welfare line</b> lists each order with its approval and how long it has waited; <b>Approval</b> opens its work item.</li>
+          <li><b>Work Items:</b> the worklist. Every report filed adds the items it calls for on its own: missionaries not accounted for, injuries or deaths, each <i>assistance needed</i> answer, every Supply Order awaiting approval, a crew without its safety briefing, and a roster unit that goes overdue. Add your own with the box at the top (a phone call to return, a shelter to confirm, a decision the Stake President must make). Click an item to set <b>who owns it</b>, its <b>status</b> (OPEN, IN WORK, UP, DONE), the <b>next action</b>, a due time and the <b>decision</b> when it is made; each change is logged with the operator's name. The filter buttons are the worklists: Decisions to make, Life safety, Missionaries, Supplies, Facilities, Assistance, Overdue units, No owner. <b>Decisions to make</b> is the Stake President's list (each marked DECIDE; the Overview counts them): write the decision on the item and it leaves the list. <b>Group by ward</b> puts each unit's items together; <b>NEW</b> marks items added since you last opened the tab. <b>UP</b> means the item waits on the line above you: it goes with the next roll-up and lands open on that EOC's list, naming yours. <b>No Council / Area EOC open?</b> UP items go up only as SITREP Section I. Phone or email the welfare line for anything urgent and write their answer on the item. The SITREP carries every open item and the decisions recorded in the period (section I); the wall shows the open count and the high-priority items.</li>
           <li><b>Notes:</b> log every decision, every PACE change and every message you send up. Use <b>Export as TXT</b> to save the log.</li>
           <li><b>Copy as TSV</b> pastes any table into a spreadsheet.</li>
         </ul>
@@ -1074,6 +1090,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
           <li><b>Export sheet JSON</b> and send it to the other EOCs. Their servers take it on board automatically, and the newer sheet wins.</li>
           <li>Volunteers and HAMs can open the same file on the portal's Comms sheet page.</li>
           <li>Use <i>this event only</i> for temporary changes, such as a net moved to simplex or the current PACE instructions.</li>
+          <li><b>Net control: call list</b> (Comms tab, on top): each ward to call now, once, with its reasons, and what goes up with the next roll-up. <b>Copy for net control</b> gives it as text.</li>
         </ul>
       </section>
 
@@ -1081,7 +1098,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
         <h2>10. Wall display</h2>
         <ul>
           <li>The wall display needs the server. Open it with the &#128250; link in the header, or from Setup, Wall Display. Put it on a TV or projector and press <b>F</b> for full screen.</li>
-          <li>It shows the event, the PACE level, units reported and waiting, totals, open supply orders, latest arrivals, comms and notes. It refreshes every 10 seconds, and nothing on it can be clicked.</li>
+          <li>It shows the event, the PACE level, units reported and waiting, totals, open supply orders, open work items and the decisions to make, latest arrivals, comms and notes. It refreshes every 10 seconds, and nothing on it can be clicked.</li>
           <li>A phone with no app can add an <b>EMCOMM EOC</b> home-screen icon from the phone page. It works only on this Wi-Fi.</li>
           <li>Its main QR code opens this EOC's <b>phone page</b>: new reports with Send to EOC, and the address the Church of Jesus Christ EMCOMM app scans to send its Outbox. If the EOC Wi-Fi name and password are on Setup, a second QR code joins the phone to the Wi-Fi (the password is shown on the wall; leave it blank on Setup to keep it off).</li>
         </ul>
@@ -1414,7 +1431,51 @@ function commsSections(s) {
   COMMS_TABLES.forEach(function(t){ var rows=(s[t.key]||[]).filter(function(r){ return Object.keys(r).some(function(k){return r[k];}); }); if(t.key==='gateways') rows=gwSorted(rows); if(rows.length) out.push({title:t.title, cols:t.cols, rows:rows}); });
   return out;
 }
+// Net control's call list: who to call on the net now, what goes up with the next roll-up, what to tell the net.
+function netCallList() {
+  var drs = msgs.filter(function(m){ return m.type==='dr'; }), now = Date.now(), lead = leaderLabel().toLowerCase();
+  var heard = {}; drs.forEach(function(m){ heard[(unitOf(m)||'').toLowerCase()] = 1; });
+  var call = [];
+  roster.forEach(function(r){ var nm = (r.name||'').trim(); if (!nm || r.voiceContact || heard[nm.toLowerCase()]) return;
+    var due = r.expectedMinutes && incident && incident.startTs ? incident.startTs + r.expectedMinutes*60000 : 0;
+    if (due && now > due) call.push({unit:nm, why:'overdue: no report since '+hhmm(due)+'. Ask the '+lead+' for a voice report; mark voice contact on the Roster'});
+    else if (!due) call.push({unit:nm, why:'not heard from yet. Ask for a report'}); });
+  missByUnit(drs).no.forEach(function(u){ call.push({unit:u, why:'missionaries not accounted for. Ask the '+lead+' for news; tell the EOC at once'}); });
+  var life = {}; openActions().filter(function(a){ return a.cat==='life' && a.status!=='up'; }).forEach(function(a){ var u = a.unit||'?'; life[u] = (life[u]||0) + 1; });
+  Object.keys(life).forEach(function(u){ call.push({unit:u, why:life[u]+' open life-safety item'+(life[u]===1?'':'s')+' (injuries, deaths or an unbriefed crew). Confirm care with the '+lead}); });
+  // one line per ward, its reasons together, the wards with missionaries not accounted for first
+  var by = {}, order = [];
+  call.forEach(function(c){ var k = c.unit.toLowerCase(); if (!by[k]) { by[k] = {unit:c.unit, why:[]}; order.push(k); } by[k].why.push(c.why); });
+  call = order.map(function(k){ return {unit:by[k].unit, why:by[k].why.join('; ')}; })
+    .sort(function(x,y){ return (/missionaries/.test(y.why)?1:0) - (/missionaries/.test(x.why)?1:0); });
+  var up = openActions().filter(function(a){ return a.status==='up'; });
+  var p = String((incident&&incident.pace)||'').toUpperCase().charAt(0), due = sitrepDue();
+  return {call:call, up:up, pace:p, sitrepDue:due, lastRollup:(incident&&incident.lastRollupTs)||0};
+}
+function renderNetList() {
+  var el = document.getElementById('comms-net'); if (!el) return;
+  var n = netCallList();
+  if (!n.call.length && !n.up.length && !msgs.length) { el.innerHTML = ''; return; }
+  var PN = {P:'Primary (cellular)', A:'Alternate (any internet)', C:'Contingency (radio)', E:'Emergency (runners)'};
+  el.innerHTML = '<div class="card net-card"><h2>Net control: call list <button class="btn secondary sm" style="margin-left:8px;vertical-align:middle" onclick="copyText(netCallText())">Copy for net control</button></h2>'
+    + '<p style="font-size:12px;margin:0 0 6px">PACE level in force: <b>'+esc(n.pace ? n.pace+' — '+PN[n.pace] : 'not set')+'</b> · next SITREP (situation report) '+(n.sitrepDue ? 'due <b>'+esc(hhmm(n.sitrepDue))+'</b>' : 'interval not set')+' · last roll-up sent '+(n.lastRollup ? esc(hhmm(n.lastRollup)) : 'none')+'</p>'
+    + '<h3 style="font-size:12px;margin:8px 0 4px">Call on the net now ('+n.call.length+')</h3>'
+    + (n.call.length ? '<ul style="margin:0 0 6px 18px;font-size:12px">'+n.call.map(function(c){ return '<li><b>'+esc(c.unit)+'</b>: '+esc(c.why)+'</li>'; }).join('')+'</ul>' : '<p style="font-size:12px;color:var(--muted);margin:0">Nobody to call: every '+esc(unitLabel().toLowerCase())+' on the roster has reported.</p>')
+    + '<h3 style="font-size:12px;margin:8px 0 4px">Goes up with the next roll-up ('+n.up.length+')</h3>'
+    + (n.up.length ? '<ul style="margin:0 0 0 18px;font-size:12px">'+n.up.map(function(a){ return '<li>'+esc(a.title)+(a.unit && a.title.indexOf(a.unit)<0 ? ' ('+esc(a.unit)+')' : '')+'</li>'; }).join('')+'</ul>' : '<p style="font-size:12px;color:var(--muted);margin:0">Nothing marked UP.</p>')
+    + '</div>';
+}
+function netCallText() {
+  var n = netCallList(), out = ['NET CONTROL CALL LIST — '+(eocName()||eocLabel())+' — '+fmtTs(Date.now())];
+  if (msgs.some(function(m){ return isEx(m); })) out.unshift('THIS IS AN EXERCISE');
+  out.push('PACE level: '+(n.pace||'not set')+' · next SITREP due '+(n.sitrepDue ? hhmm(n.sitrepDue) : 'not set')+' · last roll-up '+(n.lastRollup ? hhmm(n.lastRollup) : 'none'), '', 'CALL ON THE NET NOW:');
+  if (n.call.length) n.call.forEach(function(c){ out.push('  '+c.unit+': '+c.why); }); else out.push('  nobody');
+  out.push('', 'GOES UP WITH THE NEXT ROLL-UP:');
+  if (n.up.length) n.up.forEach(function(a){ out.push('  '+a.title); }); else out.push('  nothing');
+  return out.join('\n');
+}
 function renderComms() { if (typeof renderStart === 'function') renderStart();
+  renderNetList();
   var s=comms.sheet||{}, secs=commsSections(s), lines=commsEventLines();
   var stamp=document.getElementById('comms-stamp'); if(stamp) stamp.textContent=comms.updatedMs?((s.org?s.org+' · ':'')+'sheet dated '+fmtTs(comms.updatedMs)):'No comms sheet yet — fill it in on the Setup tab';
   var ban=document.getElementById('comms-event-banner'); if(ban){ ban.style.display=lines.length?'':'none'; ban.innerHTML='<b>For this event'+(incident&&incident.name?' — '+esc(incident.name):'')+':</b><ul style="margin:4px 0 0 18px">'+lines.map(function(l){return '<li>'+esc(l)+'</li>';}).join('')+'</ul>'; }
@@ -1649,10 +1710,71 @@ function unitOf(m) {
   if (m.type==='wcl') return eocLevel()==='area' ? (m.wcl.chief_stake||'') : (m.wcl.chief_ward||m.wcl.chief_stake||'');
   return '';
 }
+// Unit names once each (first spelling, compared without case); a report with no unit is '?'.
+function unitsOnce(list) {
+  var seen = {}; return list.filter(function(u){ var k = String(u||'?').toLowerCase(); if (seen[k]) return false; seen[k] = 1; return true; });
+}
+// Missionary status by unit: the LATEST Disaster Report from each ward that answered the question decides, so a later
+// "found safe" report clears an earlier NO. A report with no ward stands alone. Returns {no: [units], yes: [units]}.
+function missByUnit(drs) {
+  var last = {}, order = [];
+  drs.forEach(function(m, i){
+    if (!isNo(m.dr.miss_safe) && !isYes(m.dr.miss_safe)) return;
+    var k = ((m.dr.stake||'')+'|'+(m.dr.ward||'')).toLowerCase(); if (k === '|') k = '#'+i;
+    if (!last[k]) { order.push(k); last[k] = m; } else if ((m.ts||0) >= (last[k].ts||0)) last[k] = m;
+  });
+  var no = [], yes = [];
+  order.forEach(function(k){ var m = last[k]; (isNo(m.dr.miss_safe) ? no : yes).push(unitOf(m)||'?'); });
+  return {no: unitsOnce(no), yes: unitsOnce(yes)};
+}
+// The mission office's view: each ward's missionary answer from its LATEST report that answered, when, how it came,
+// the report's own note, and since when a NO has stood. One line per ward (stake at a Council / Area EOC).
+function missRows(drs) {
+  var by = {}, order = [];
+  drs.slice().sort(function(a,b){ return (a.ts||0)-(b.ts||0); }).forEach(function(m, i){
+    var k = ((m.dr.stake||'')+'|'+(m.dr.ward||'')).toLowerCase(); if (k === '|') k = '#'+i;
+    var r = by[k]; if (!r) { r = by[k] = {unit: unitOf(m)||'?', last: null, answer: '', since: 0, reports: 0}; order.push(k); }
+    r.reports++;
+    var a = isNo(m.dr.miss_safe) ? 'NO' : isYes(m.dr.miss_safe) ? 'YES' : '';
+    if (!a) { if (!r.last) r.last = m; return; }
+    if (a === 'NO' && r.answer !== 'NO') r.since = m.ts||0;
+    r.answer = a; r.last = m;
+  });
+  var rows = order.map(function(k){ return by[k]; });
+  var rank = {NO:0, '':1, YES:2};
+  return rows.sort(function(x,y){ return rank[x.answer]-rank[y.answer] || x.unit.localeCompare(y.unit); });
+}
+function hhmm(ts) { var d = new Date(ts); return pad2(d.getHours())+':'+pad2(d.getMinutes()); }
+function missSource(m) { return m.via ? m.via : m.source==='auto' ? 'Winlink' : m.source==='internet' ? 'Drop Folder' : m.source==='upload' ? 'phone / browser' : m.source==='paper' ? 'typed in' : ''; }
+function missNote(m) { return String(((m.fields||{}).miss_details) || (m.dr||{}).miss_details || '').trim(); }
+function renderMissTable(drs) {
+  var el = document.getElementById('ov-miss'); if (!el) return;
+  if (!drs.length) { el.innerHTML = ''; return; }
+  var rows = missRows(drs), nNo = rows.filter(function(r){ return r.answer==='NO'; }).length, nNone = rows.filter(function(r){ return !r.answer; }).length;
+  var label = function(r){ return r.answer==='NO' ? '<span class="chip miss-no">NOT ACCOUNTED FOR</span>' : r.answer==='YES' ? '<span class="chip miss-yes">Accounted for</span>' : '<span class="chip">No answer: call and ask</span>'; };
+  var open = nNo ? ' open' : '';
+  try { var keep = localStorage.getItem('emcomm_miss_open'); if (keep === '1') open = ' open'; } catch(e){}
+  el.innerHTML = '<details class="card miss-card"'+open+' ontoggle="try{localStorage.setItem(\'emcomm_miss_open\', this.open?\'1\':\'\')}catch(e){}"><summary><h2 style="display:inline">Missionary status by '+esc(unitLabel().toLowerCase())+'</h2> <span style="font-size:12px;color:var(--muted)">'
+    + (nNo ? '<b style="color:var(--danger)">'+nNo+' not accounted for</b> · ' : '') + (rows.length-nNo-nNone)+' accounted for'+(nNone ? ' · '+nNone+' no answer' : '')+' · for the mission office</span></summary>'
+    + '<div class="toolbar" style="margin:8px 0"><span style="font-size:11px;color:var(--muted)">Each line is the '+esc(unitLabel().toLowerCase())+'\'s latest report that answered. A later "found safe" report clears an earlier NO.</span><span class="spacer"></span><button class="btn secondary sm" onclick="copyText(missText())">Copy for the mission office</button></div>'
+    + '<div class="tbl-wrap"><table><thead><tr><th>'+esc(unitLabel())+'</th><th>Missionaries</th><th>Since</th><th>Latest report</th><th>Note on that report</th></tr></thead><tbody>'
+    + rows.map(function(r){ var m = r.last; return '<tr><td>'+esc(r.unit)+'</td><td>'+label(r)+'</td><td>'+(r.answer==='NO' && r.since ? esc(hhmm(r.since)) : '')+'</td><td style="white-space:nowrap">'+(m ? esc(fmtTs(m.ts))+(missSource(m) ? '<br><span style="font-size:10px;color:var(--muted)">'+esc(missSource(m))+'</span>' : '') : '')+'</td><td style="font-size:12px">'+esc(m ? missNote(m) : '')+'</td></tr>'; }).join('')
+    + '</tbody></table></div></details>';
+}
+function missText() {
+  var drs = msgs.filter(function(m){ return m.type==='dr'; }), rows = missRows(drs);
+  var out = ['MISSIONARY STATUS BY '+unitLabel().toUpperCase()+' — '+(eocName()||eocLabel())+' — '+fmtTs(Date.now()), (incident&&incident.name ? 'Event: '+incident.name : ''), ''];
+  rows.forEach(function(r){ var m = r.last;
+    out.push(r.unit+': '+(r.answer==='NO' ? 'NOT ACCOUNTED FOR'+(r.since ? ' since '+hhmm(r.since) : '') : r.answer==='YES' ? 'accounted for' : 'no answer yet')+(m ? ' (report '+fmtTs(m.ts)+(missSource(m) ? ', '+missSource(m) : '')+')' : ''));
+    if (m && missNote(m)) out.push('    '+missNote(m)); });
+  if (drs.some(function(m){ return isEx(m); })) out.unshift('THIS IS AN EXERCISE');
+  return out.filter(function(l, i){ return l || i > 1; }).join('\n');
+}
 function applyLevelLabels() {
   var u=unitLabel(), up=unitPlural();
   var set=function(id,t){var e=document.getElementById(id); if(e) e.textContent=t;};
   set('tracker-title', u+' Tracker');
+  set('act-group-unit', u.toLowerCase());
   set('tracker-empty-txt', 'No '+up+' in roster. Add them in the Roster tab.');
   set('btn-add-unit', '+ Add '+u);
   set('roster-th-unit', u);
@@ -1810,6 +1932,7 @@ function switchTab(t) {
     p.classList.toggle('active', p.id==='tab-'+t);
   });
   if (t==='map') renderMap();
+  if (t==='actions') { actTabOpened(); renderActions(); }
 }
 
 // ── Map tab: the status map (module between the EMCOMM-MAP markers; data served by this EOC from /map/) ──
@@ -2147,6 +2270,7 @@ function updateDropZone() {
   var hasData = msgs.length > 0;
   document.getElementById('drop-zone').style.display = hasData ? 'none' : '';
   document.getElementById('drop-mini').style.display = hasData ? 'block' : 'none';
+  updateDropLabel();
 }
 
 // ── Main Render ───────────────────────────────────────────────────────────────
@@ -2168,6 +2292,7 @@ function render() {
   setCount('cnt-notes', notes.length);
   deriveActions();
   setCount('cnt-actions', openActions().length);
+  setCount('cnt-decide', actions.filter(needsDecision).length);
   applyLevelLabels();
   if (curTab==='map') renderMap();
   document.getElementById('roster-count').textContent = roster.length+' '+(roster.length===1?unitLabel().toLowerCase():unitPlural());
@@ -2188,7 +2313,7 @@ function render() {
   renderComms();
 
   // Miss bar
-  var missNo = drs.filter(function(m){return isNo(m.dr.miss_safe);}).map(function(m){return unitOf(m)||'?';});
+  var missNow = missByUnit(drs), missNo = missNow.no;
   var missBar = document.getElementById('miss-bar');
   if (missNo.length) {
     missBar.className='alert';
@@ -2198,7 +2323,7 @@ function render() {
     missBar.className='unknown';
     missBar.innerHTML='MISSIONARIES: no Disaster Report has answered yet'+(drs.length?' ('+drs.length+' left the question blank: call the sender and ask)':'');
   } else {
-    var yesUnits = drs.filter(function(m){ return isYes(m.dr.miss_safe); }).map(function(m){ return unitOf(m)||''; }).filter(function(u,i,a){ return u && a.indexOf(u)===i; });
+    var yesUnits = missNow.yes.filter(function(u){ return u && u !== '?'; });
     missBar.className='ok';
     missBar.innerHTML='MISSIONARY STATUS: accounted for in every report that answered &#10003; ('+yesUnits.length+' '+esc(yesUnits.length===1?unitLabel().toLowerCase():unitPlural())+')';
   }
@@ -2220,14 +2345,15 @@ function render() {
 // ── Overview ──────────────────────────────────────────────────────────────────
 function renderOverview(drs, sos, wcls) {
   wcls = wcls||[];
+  renderMissTable(drs);
   var totInj=0,totDead=0,totDmg=0,totDest=0,totVol=0;
   drs.forEach(function(m){ totInj+=ni(m.dr.mem_inj); totDead+=ni(m.dr.mem_dead); totDmg+=ni(m.dr.homes_dmg); totDest+=ni(m.dr.homes_dest); totVol+=ni(m.dr.vol_count); });
   var totWclHrs=0, totCrewCount=0;
   wcls.forEach(function(m){ totWclHrs+=parseFloat(m.wcl.total_hrs)||0; totCrewCount+=ni(m.wcl.crew_count); });
 
   var now = Date.now();
-  var missNoList = drs.filter(function(m){return isNo(m.dr.miss_safe);}).map(function(m){return unitOf(m)||'?';});
-  var hqList = drs.filter(function(m){return isYes(m.dr.need_hq);}).map(function(m){return unitOf(m)||'?';});
+  var missNoList = missByUnit(drs).no;
+  var hqList = unitsOnce(drs.filter(function(m){return isYes(m.dr.need_hq);}).map(function(m){return unitOf(m)||'?';}));
   var overdueList = roster.filter(function(r){
     if (r.voiceContact) return false;
     var hasDR = drs.some(function(m){return (unitOf(m)||'').toLowerCase()===(r.name||'').toLowerCase();});
@@ -2245,6 +2371,8 @@ function renderOverview(drs, sos, wcls) {
   var openAct = openActions();
   if (openAct.length) {
     var hi = openAct.filter(function(a){return a.prio===1;}).length, up = openAct.filter(function(a){return a.status==='up';}).length, nobody = openAct.filter(function(a){return !(a.owner||'').trim();}).length;
+    var nDecide = openAct.filter(needsDecision).length;
+    if (nDecide) html += '<div class="alert-box decide" style="cursor:pointer" onclick="showDecisions()"><h3>&#9878; '+nDecide+' decision'+(nDecide===1?'':'s')+' for the Stake President'+(eocLevel()==='area'?' or the Area Seventy':'')+'</h3>Items asking for a decision, an approval or a recommendation, with none written yet · <em>Work Items &rarr; Decisions to make</em></div>';
     html += '<div class="alert-box'+(hi?'':' warn')+'" style="cursor:pointer" onclick="switchTab(\'actions\')"><h3>&#9745; '+openAct.length+' open work item'+(openAct.length===1?'':'s')+(hi?' — '+hi+' high priority':'')+'</h3>'+nobody+' with no owner'+(up?' · '+up+' waiting on the line above':'')+' · <em>Work Items tab</em></div>';
   }
   alerts.innerHTML = html;
@@ -2432,11 +2560,12 @@ function buildSitrep() {
   var needLocal=[],needNbr=[],needHQ=[],missNo=[],missYes=[];
   drs.forEach(function(m){ var r=m.dr; var u=unitOf(m)||'?';
     totInj+=ni(r.mem_inj); totDead+=ni(r.mem_dead); totDmg+=ni(r.homes_dmg); totDest+=ni(r.homes_dest); totVol+=ni(r.vol_count); totHrs+=ni(r.vol_hrs);
-    if(isNo(r.miss_safe)) missNo.push(u); else if(isYes(r.miss_safe)) missYes.push(u);
     if(isYes(r.need_local)) needLocal.push(u);
     if(isYes(r.need_neighbor)) needNbr.push(u);
     if(isYes(r.need_hq)) needHQ.push(u);
   });
+  needLocal = unitsOnce(needLocal); needNbr = unitsOnce(needNbr); needHQ = unitsOnce(needHQ);
+  var missNow = missByUnit(drs); missNo = missNow.no; missYes = missNow.yes;
   var sos = msgs.filter(function(m){return m.type==='so';});
 
   var line = '============================================================';
@@ -2512,6 +2641,7 @@ function buildSitrep() {
 function renderSO(sos) {
   var emptyEl = document.getElementById('so-empty');
   var tbody = document.getElementById('so-items-tbody');
+  renderSOBoard(sos);
   if (sos.length===0) { tbody.innerHTML=''; emptyEl.style.display=''; document.getElementById('so-stake-detail').innerHTML=''; return; }
   emptyEl.style.display='none';
 
@@ -2532,6 +2662,36 @@ function renderSO(sos) {
   document.getElementById('so-stake-detail').innerHTML=detail;
 }
 
+// The welfare line's board: one line per Supply Order with its approval (the order's own work item, key so:approve:<id>),
+// the order's status, when it is needed and how long it has waited. Summary first: what needs approving, what is above.
+function soApproval(m) { return actions.filter(function(a){ return a.key==='so:approve:'+m.id; })[0] || null; }
+function soState(m) {
+  var a = soApproval(m);
+  if (m.status==='complete') return {k:'done', label:'Complete', cls:'ok'};
+  if (a && a.status==='done') return {k:'approved', label:'Approved'+(a.decision ? ': '+a.decision : ''), cls:'ok'};
+  if (a && a.status==='up') return {k:'up', label:'Waiting on the line above', cls:'up'};
+  if (a && a.status==='progress') return {k:'work', label:'Approval in work'+(a.owner ? ' ('+a.owner+')' : ''), cls:'warn'};
+  return {k:'wait', label:'Needs approval', cls:'danger'};
+}
+function renderSOBoard(sos) {
+  var el = document.getElementById('so-board'); if (!el) return;
+  if (!sos.length) { el.innerHTML = ''; return; }
+  var now = Date.now(), list = sos.slice().sort(function(a,b){ return (a.ts||0)-(b.ts||0); });
+  var st = list.map(soState), n = function(k){ return st.filter(function(x){ return x.k===k; }).length; };
+  var waiting = list.filter(function(m, i){ return st[i].k==='wait' || st[i].k==='work'; });
+  var oldest = waiting.length ? Math.round((now-(waiting[0].ts||now))/60000) : 0;
+  var age = function(ts){ var m = Math.round((now-(ts||now))/60000); return m < 60 ? m+' min' : Math.floor(m/60)+' h '+pad2(m%60)+'m'; };
+  var count = function(m){ return String(m.so.items||'').split(';').filter(function(p){ return p.trim(); }).length; };
+  el.innerHTML = '<div class="card so-board" style="margin-top:12px"><h2>Supply Orders for the welfare line</h2>'
+    + '<p style="font-size:12px;margin:0 0 8px"><b>'+list.length+'</b> order'+(list.length===1?'':'s')+' · <b style="color:var(--danger)">'+(n('wait')+n('work'))+' to approve</b>'+(oldest ? ' (oldest '+oldest+' min)' : '')+' · '+n('up')+' waiting on the line above · '+n('approved')+' approved · '+n('done')+' complete</p>'
+    + '<p style="font-size:11px;color:var(--muted);margin:0 0 8px">The Stake President approves; the welfare line supplies. Approval is the order\'s work item: open it to record who approved and when, or set it UP to send it with the next roll-up. Mark the order complete once it is delivered.</p>'
+    + '<div class="tbl-wrap"><table><thead><tr><th>From</th><th>Items</th><th>Needed by</th><th>Waiting</th><th>Approval</th><th>Order</th><th></th></tr></thead><tbody>'
+    + list.map(function(m, i){ var a = soApproval(m), s2 = st[i];
+        return '<tr><td>'+esc(m.so.stake||'?')+exChip(m)+'</td><td>'+count(m)+' type'+(count(m)===1?'':'s')+'</td><td>'+esc(m.so.del_date||'?')+'</td><td style="white-space:nowrap">'+(s2.k==='done' ? '' : age(m.ts))+'</td>'
+          +'<td><span class="chip so-'+s2.cls+'">'+esc(s2.label)+'</span></td><td>'+stBadge(m)+'</td>'
+          +'<td style="white-space:nowrap">'+(a ? '<button class="btn secondary sm" onclick="openAction(\''+jsq(a.id)+'\')">Approval</button> ' : '')+'<button class="btn secondary sm" onclick="openForm(\''+jsq(m.id)+'\')">Open form</button></td></tr>'; }).join('')
+    + '</tbody></table></div></div>';
+}
 function buildPhoneScript() {
   var sos = msgs.filter(function(m){return m.type==='so';});
   if (!sos.length) { toast('No supply orders loaded'); return; }
@@ -3353,6 +3513,18 @@ var _ACT_ST_TITLE = {open:'Open: nobody has started it', progress:'In work: some
 var _ACT_ST_STYLE = {open:'background:#dbeafe;color:#1e40af', progress:'background:#fef3c7;color:#92400e', up:'background:#ede9fe;color:#5b21b6', done:'background:#ecfdf5;color:#065f46'};
 var actFilter = 'open', _actionsStamp = '', _actEditing = null;
 function openActions() { return actions.filter(function(a){ return a.status!=='done'; }); }
+// The leaders' list: an open item that asks for a decision, an approval or a recommendation (in its title or next action)
+// and has no decision written yet. Items waiting on the line above are theirs to decide, not this EOC's.
+var _DECIDE_RE = /\b(decide[sd]?|decision|approve[sd]?|approval|recommend(s|ed|ation)?)\b/i;
+function needsDecision(a) {
+  return a.status!=='done' && a.status!=='up' && !String(a.decision||'').trim() && _DECIDE_RE.test(String(a.title||'')+' '+String(a.next||''));
+}
+// NEW: items added since this computer last opened the Work Items tab (kept in this browser only)
+var _actSeenPrev = 0;
+function actSeenLoad() { try { return parseInt(localStorage.getItem('emcomm_act_seen')||'0',10)||0; } catch(e){ return 0; } }
+function actTabOpened() { _actSeenPrev = actSeenLoad(); try { localStorage.setItem('emcomm_act_seen', String(Date.now())); } catch(e){} }
+function showDecisions() { switchTab('actions'); var b=document.querySelector('#act-filters .filter-btn[onclick*="decide"]'); setActFilter('decide', b); }
+function actGroupChanged() { try { localStorage.setItem('emcomm_act_group', document.getElementById('act-group').checked?'1':''); } catch(e){} renderActions(); }
 function actionsFromMsg(m) {
   // Same rules and keys as _derive_actions() in eoc_server.py (keep in step).
   var t=m.type, sub=m[t]||{}, f=m.fields||{}, out=[], unit;
@@ -3500,6 +3672,7 @@ function actFiltered() {
     if(actFilter==='done') return !open;
     if(actFilter==='up') return a.status==='up';
     if(actFilter==='unowned') return open && !(a.owner||'').trim();
+    if(actFilter==='decide') return needsDecision(a);
     return open && a.cat===actFilter;
   });
 }
@@ -3508,10 +3681,20 @@ function renderActions() {
   var list=actSorted(actFiltered());
   if(!list.length){ tbody.innerHTML=''; emptyEl.style.display=''; document.getElementById('act-empty-txt').textContent = actions.length ? 'Nothing in this list.' : 'Nothing to do yet. Items are added as reports arrive, or type one above.'; return; }
   emptyEl.style.display='none';
+  var grp=document.getElementById('act-group'), byUnit=grp&&grp.checked;
+  if(byUnit){
+    // one block per ward (stake at a Council / Area EOC), the ones with high-priority items first, then by name
+    var groups={}, order=[];
+    list.forEach(function(a){ var k=(a.unit||'').trim()||'(no '+unitLabel().toLowerCase()+' named)'; if(!groups[k]){ groups[k]=[]; order.push(k); } groups[k].push(a); });
+    order.sort(function(x,y){ var hx=groups[x].some(function(a){return a.prio===1;})?0:1, hy=groups[y].some(function(a){return a.prio===1;})?0:1; return hx-hy || x.localeCompare(y); });
+    list=[]; order.forEach(function(k){ list.push({_group:k, n:groups[k].length}); list=list.concat(groups[k]); });
+  }
   tbody.innerHTML=list.map(function(a){
+    if(a._group) return '<tr class="act-group"><td colspan="9">'+esc(a._group)+' &middot; '+a.n+' item'+(a.n===1?'':'s')+'</td></tr>';
+    var isNew = _actSeenPrev && (a.ts||0) > _actSeenPrev && a.status!=='done';
     var src = a.src && a.src.id && msgs.some(function(m){return m.id===a.src.id;}) ? '<button class="btn-ghost open" title="Open the report" onclick="openForm(\''+jsq(a.src.id)+'\')">&#128196;</button>' : '';
     return '<tr'+(a.status==='done'?' class="act-done"':'')+'><td><span class="pri p'+(a.prio||2)+'" title="'+(a.prio===1?'High':a.prio===3?'Low':'Normal')+'">'+(a.prio===1?'HIGH':a.prio===3?'low':'')+'&#8203;</span></td>'
-      +'<td><span class="act-title" onclick="openAction(\''+jsq(a.id)+'\')">'+esc(a.title)+'</span>'+(a.from?'<span class="act-from" title="'+(a.replied?'Answered: the reply went back down':'Waiting on this EOC')+'">'+(a.replied?'replied to ':'from ')+esc(a.from)+'</span>':'')+(a.detail?'<div style="font-size:11px;color:var(--muted);white-space:pre-wrap">'+esc(String(a.detail).slice(0,160))+(a.detail.length>160?'…':'')+'</div>':'')+(a.decision?'<div style="font-size:11px;color:var(--ok)">Decision: '+esc(a.decision)+'</div>':'')+'</td>'
+      +'<td>'+(isNew?'<span class="act-new" title="Added since you last opened this tab">NEW</span>':'')+'<span class="act-title" onclick="openAction(\''+jsq(a.id)+'\')">'+esc(a.title)+'</span>'+(needsDecision(a)?'<span class="act-decide" title="Asks for a decision: write it on the item">DECIDE</span>':'')+(a.from?'<span class="act-from" title="'+(a.replied?'Answered: the reply went back down':'Waiting on this EOC')+'">'+(a.replied?'replied to ':'from ')+esc(a.from)+'</span>':'')+(a.detail?'<div style="font-size:11px;color:var(--muted);white-space:pre-wrap">'+esc(String(a.detail).slice(0,160))+(a.detail.length>160?'…':'')+'</div>':'')+(a.decision?'<div style="font-size:11px;color:var(--ok)">Decision: '+esc(a.decision)+'</div>':'')+'</td>'
       +'<td>'+esc(a.unit||'')+'</td><td style="font-size:11px">'+esc(_ACT_CAT[a.cat]||a.cat||'')+'</td><td>'+(a.owner?esc(a.owner):'<span style="color:var(--danger);font-size:11px">nobody</span>')+'</td>'
       +'<td>'+actStBadge(a)+'</td><td style="font-size:11px;color:var(--muted)">'+esc(a.next||'')+(a.due?'<br><b>Due '+esc(a.due)+'</b>':'')+'</td><td style="font-size:11px;white-space:nowrap;color:var(--muted)">'+actAge(a)+'</td>'
       +'<td style="white-space:nowrap">'+src+'<button class="btn-ghost" title="Edit" onclick="openAction(\''+jsq(a.id)+'\')">&#9998;</button><button class="btn-ghost" title="Remove" onclick="removeAction(\''+jsq(a.id)+'\')">&#10005;</button></td></tr>';
@@ -4081,7 +4264,9 @@ function showWatcherBar() {
   renderStart();
 }
 
-function updateDropZone() {
+// The big box's wording when Winlink auto-ingest is on (a second function of the same name once replaced the one above,
+// so the box never folded to its one-line button once reports were on file).
+function updateDropLabel() {
   if (!watcherState || !watcherState.enabled) return;
   var lbl = document.getElementById('drop-label');
   var hint = document.getElementById('drop-hint');
@@ -4132,6 +4317,7 @@ function saveWatcher(callsigns, p) {
 }
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
+try { var _g=document.getElementById('act-group'); if(_g) _g.checked = localStorage.getItem('emcomm_act_group')==='1'; } catch(e){}
 load();
 loadCommsLocal();
 render();

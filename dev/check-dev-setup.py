@@ -120,7 +120,7 @@ def _ssh_hosts():
 def run_tests():
     print()
     env = dict(__import__('os').environ, PYTHONIOENCODING='utf-8')
-    suites = [['test_acronyms.py'], ['test_public_files.py'], ['test_example.py'], ['test_sim.py'], ['test_training_samples.py'],
+    suites = [['test_acronyms.py'], ['test_public_files.py'], ['test_example.py'], ['test_sim.py'], ['test_sim_consistency.py', '--port=8084'], ['test_training_samples.py'],
               ['test_phone_api.py', '--ports=8180,8181'], ['test_readout.py', '--port=8186'], ['test_offline_webkit.py'], ['test_browsers.py'], ['test_basemap.py', '--ports=8190,8191'], ['test_contrast.py', '--ports=8580,8581'],
               ['test_install.py', '--ports=8187,8188']]
     for s in suites:

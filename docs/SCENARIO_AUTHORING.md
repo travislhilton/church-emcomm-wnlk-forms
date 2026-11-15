@@ -104,6 +104,8 @@ The engine fills `inc_stake` and `inc_ward` (Disaster Report), `req_stake` (Supp
 | Pick | `{"pick": {"1": ["…", "…"], "3": ["…"]}}` | One text at random, placeholders filled |
 | Yes | `{"yes": {"0": 1.0, "3": 0.9}}` | `YES` with that probability, else `NO` |
 
+**Missionaries tell one story per unit.** Give `miss_safe` a literal (`"NO"`, `"YES"`) in a scripted template (the missing missionaries, their *found* report) and a `yes` probability in the everyday ones. After planning, the engine settles each unit's Disaster Reports in time order: once a scripted report says NO, the unit's random reports say NO too ("Still not accounted for…") until a scripted YES finds them; a random NO is kept only when a scripted YES follows it, with a "not yet accounted for" note, and otherwise becomes YES. So a scenario never clears the EOC's missionary alert before its own *found* report, never says NO beside an "accounted for" note, and never leaves an alert it does not answer. Write `miss_details` picks as *accounted for* texts; the engine writes the NO notes.
+
 A band missing from the map uses the nearest **lower** band given, then the lowest. So `{"range": {"2": [1, 3]}}` gives band 3 the band-2 range, and bands 0 and 1 the band-2 range too (the lowest given): give band 0 its own entry when it should be zero. A bare band map without `range`, `pick` or `yes` resolves to an empty value: always wrap it.
 
 **Supply Order items** use the Church catalog ids of the Supply Order form (two letters and two digits, for example `wa01` bottled water, `kb01` cleaning kits, `gs10`, `pi02`; the full list is in `templates/supply-order/…_Worker.html`):
@@ -307,7 +309,9 @@ python simulation/scenario_check.py "<export root>/simulation/scenarios/<id>.jso
 python simulation/scenario_check.py "<file>" --pack "<export root>" --local "<export root>/simulation/<id>.local.json" --catalog "<export root>/simulation/scenarios/catalog.json"
 ```
 
-It reports unknown keys (typos the engine would silently ignore), missing ids, wrong value shapes, template fields that are not on the Worker form, `same_as` and `after` targets that do not exist, times outside the run, overlapping phases, per-unit placeholders in once-filled texts, and the done checks. With `--pack` it plans the scenario once: injects that reach no unit, units per band, placeholders left after planning, local-binding unit names not in the pack. Fix every error; read every warning. The Setup tab runs the same check before *Plan the run*.
+**Run the consistency test** too (`python testing/test_sim_consistency.py`, about a minute): it plans every developed scenario with many seeds and fails when a Disaster Report contradicts itself or a unit's missionary story does not end; then it runs Copper Creek Dam for one invented stake against a scratch EOC and checks that every screen (records, read-out, Message Center, SITREP, wall, each role's view, the debrief) shows what the simulator sent.
+
+The validator reports unknown keys (typos the engine would silently ignore), missing ids, wrong value shapes, template fields that are not on the Worker form, `same_as` and `after` targets that do not exist, times outside the run, overlapping phases, per-unit placeholders in once-filled texts, and the done checks. With `--pack` it plans the scenario once: injects that reach no unit, units per band, placeholders left after planning, local-binding unit names not in the pack. Fix every error; read every warning. The Setup tab runs the same check before *Plan the run*.
 
 **A test plan at 60×.** Before anyone plays it:
 

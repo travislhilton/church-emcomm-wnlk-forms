@@ -541,7 +541,7 @@ try:
                     time.sleep(1)
                 (dropdir / 'again.txt').write_text(txt, encoding='utf-8')
                 t = ''
-                for _ in range(40):
+                for _ in range(60):                              # the server scans every 10 s, the page reads its status every 15 s: up to 25 s
                     t = pg.inner_text('#toast') + ' ' + pg.inner_text('#drop-bar')
                     if 'already on file' in t: break
                     time.sleep(0.5)

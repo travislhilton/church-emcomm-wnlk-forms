@@ -373,9 +373,23 @@ Reports pile up faster than anyone can read them twice. The **Work Items** tab t
 - **Added on their own** when a report is filed by any path (Winlink, Drop Folder, phone, roll-up): *missionaries not accounted for* and *injuries or deaths* (high priority), *Church headquarters assistance requested*, *neighboring unit assistance needed*, *local Church facilities needed*, *homes destroyed: shelter check*, *Church building damage*, one item per **Supply Order** awaiting ERD and welfare-line approval, a **crew without its safety briefing**, and a roster unit that goes **overdue**. Each one keeps its source: 📄 opens the report.
 - **Added by operators**: a call to return, a shelter to confirm, a decision the Stake President must make. Type it in the box, pick a category and priority, name an owner.
 - **Each item** carries the unit, category, priority, **owner**, **status**, **next action**, a due time, the **decision** when it is made, and a log of every change with the operator's name.
-- **Worklists** are the filter buttons: *Life safety*, *Missionaries*, *Supplies*, *Facilities*, *Assistance*, *Overdue units*, *Waiting on the line above*, *No owner*, *Done*. Leadership looks at the counts; operators work the list. **Copy list as text** goes into an email or Winlink message; **Copy as TSV** (tab-separated values) into a spreadsheet.
+- **Worklists** are the filter buttons: *Decisions to make*, *Life safety*, *Missionaries*, *Supplies*, *Facilities*, *Assistance*, *Overdue units*, *Waiting on the line above*, *No owner*, *Done*. Leadership looks at the counts; operators work the list.
+- **Decisions to make** is the Stake President's list (the Area Seventy's at a Council / Area EOC): every open item that asks for a decision, an approval or a recommendation and has no decision written yet, each marked **DECIDE**. The Overview says how many wait (click it to open the list), and the wall counts them. Write the decision on the item and it leaves the list.
+- **Group by ward** (by stake at a Council / Area EOC) puts each unit's items together, units with high-priority items first. **NEW** marks the items added since you last opened the tab on this computer. **Copy list as text** goes into an email or Winlink message; **Copy as TSV** (tab-separated values) into a spreadsheet.
 - **UP = waiting on the line above you.** The item goes with the next **Export Roll-up JSON** and lands *open* on the EOC above, naming your EOC, so the decision is on their list until they close it.
-- **The SITREP** gains **Section I: Open decisions and actions** (what waits on the line above, what is being worked here, the decisions recorded in the period). The **Overview** shows the open count and the **wall display** lists the high-priority items and flags any with no owner.
+- **The SITREP** gains **Section I: Open decisions and actions** (what waits on the line above, what is being worked here, the decisions recorded in the period). The **Overview** shows the open count and the decisions waiting; the **wall display** lists the high-priority items, marks the ones to decide and flags any with no owner.
+
+**Views for each role** (all on the operators' screen, nothing to install):
+
+| Who | Where | What it shows |
+|---|---|---|
+| Stake President, Area Seventy | Work Items → **Decisions to make**; Overview | The decisions, approvals and recommendations waiting, with no decision written yet |
+| Mission office | Overview → **Missionary status by ward** | Each ward's missionary answer from its latest report that answered, since when a NO has stood, how the report came, its note. **Copy for the mission office** gives the same as text |
+| Welfare line (WSRM, AWSRM) | Supply Orders → **Supply Orders for the welfare line** | One line per order: needed by, how long it has waited, its approval (the order's work item), its status; how many wait for approval |
+| Net control | Comms → **Net control: call list** | The PACE level and next SITREP due; each ward to call now, once, with its reasons (overdue, missionaries not accounted for, injuries to confirm); what goes up with the next roll-up. **Copy for net control** |
+| EOC operator | Work Items, Overview | Group by ward, NEW items; the drop box folds to one line once reports are on file (files can still be dropped on that line) |
+
+**Missionary status** on every screen (the red bar, the Overview, the SITREP, the wall) comes from each ward's **latest** report that answered the question: a later report that finds the missionaries safe clears the earlier NO, and each ward is named once.
 - Standalone (no server) works too: items are derived in the browser and kept with the event; **Export Handoff JSON** carries them to the next shift.
 
 ### Phones on the EOC Wi-Fi — new reports and Send to EOC
@@ -400,7 +414,7 @@ With the Church directory export on the EOC laptop (the same folder the simulato
 
 ### Wall display
 
-A read-only **big board** for a TV, projector or spare monitor so everyone in the EOC sees the same picture without crowding an operator's screen: the event and the **PACE level in force**, reports received (and how many are still NEW), which wards (or stakes, at a Council / Area EOC) have reported and which are overdue, homes damaged / destroyed, injured / deaths, volunteers and hours, open Supply Orders and the top items, the next SITREP due, the last 12 arrivals, a red alert strip (missionaries not accounted for, injuries, Church HQ (headquarters) support requested, overdue units) and the comms status (Winlink watcher, Drop Folder, last arrival, last roll-up). It refreshes every 10 seconds from the EOC server. Nothing on it can be clicked.
+A read-only **big board** for a TV, projector or spare monitor so everyone in the EOC sees the same picture without crowding an operator's screen: the event and the **PACE level in force**, reports received (and how many are still NEW), which wards (or stakes, at a Council / Area EOC) have reported and which are overdue, homes damaged / destroyed, injured / deaths, volunteers and hours, open Supply Orders and the top items, the next SITREP due, the last 12 arrivals, a red alert strip (missionaries not accounted for, by each ward's latest report; injuries, Church HQ (headquarters) support requested, overdue units), the open work items with the decisions to make counted and the comms status (Winlink watcher, Drop Folder, last arrival, last roll-up). It refreshes every 10 seconds from the EOC server. Nothing on it can be clicked.
 
 1. **Plug the TV in** as a second screen on any PC on the EOC Wi-Fi (an HDMI, High-Definition Multimedia Interface, cable), or use a laptop, Chromecast or smart-TV browser
 2. Open **`http://<server-ip>:8080/wall`** in any browser on that screen (the server window prints the exact URL; the Message Center header has a **📺 Wall display** link and the Setup tab a *Wall Display* card with **Copy wall URL**), then press **F**, or click **Full screen (F)** in the bottom-right corner, for full screen (the same button or F leaves it)
@@ -498,7 +512,7 @@ You do not need to run any of this. The decisions that are yours:
 - **Drill it.** A monthly 15-minute net, one two-hour tabletop a year, and one full field-to-Area test a year. A path that has never been tested is not a path.
 - **Read the Leaders' Overview card (card 4)** — one sheet, the whole system, no technical detail: [Quick_Reference_Card_4_Leaders_Overview.pdf](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/pdf/Quick_Reference_Card_4_Leaders_Overview.pdf) (Letter, double-sided) or the [web page](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/quick-ref-cards.html). The [Overview deck](https://travislhilton.github.io/church-emcomm-wnlk-forms/dist/ChurchEMCOMM_Deck_v1.0.zip) is the stake planning and training presentation.
 
-During an activation the Stake EOC gives you accurate totals for your reports to the Stake President and the Area, and sends every Supply Order up the welfare line (WSRM, then AWSRM) for approval.
+During an activation the Stake EOC gives you accurate totals for your reports to the Stake President and the Area, and sends every Supply Order up the welfare line (WSRM, then AWSRM) for approval. Ask the operator for **Decisions to make** (Work Items tab, or the count on the Overview and the wall): it lists what waits on you, and the decision you give is written on the item.
 
 ---
 
@@ -540,11 +554,12 @@ When the run ends, the simulator builds a short slide show for the projector fro
 - What went well comes first.
 - Then the score, told honestly.
 - Why it matters: the real-disaster lessons behind the injects the room missed.
+- Each role's score: the needs each person owned (a need two roles share counts for both), met on time, late, open, overdue or missed.
 - One or two things to do better, per role.
 - Progress over the group's runs of the same scenario.
 - The next drill date.
 
-Keys: ← → to move, **F** full screen, **P** print (one slide per page). Names on the slides are invented unless real contacts were loaded with recorded consent.
+Keys: ← → to move, **F** full screen, **P** print (one slide per page). Names on the slides are invented unless real contacts were loaded with recorded consent; with the invented example community the cover says everything is invented. The after-action report (text and page) has the same per-role scores.
 
 The deck's *Training Path by Role*, *Church of Jesus Christ EMCOMM Simulator*, *Pre-Event Deployment Checklist* and *Next Steps* slides are the presenter's version of this section.
 

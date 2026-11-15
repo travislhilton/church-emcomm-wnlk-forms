@@ -665,12 +665,19 @@ function draw() {
   if (showSev && sc.geo && sc.geo.epicenter) { const m = merc(sc.geo.epicenter[1], sc.geo.epicenter[0]), [sx, sy] = toScr(m[0], m[1]); ctx.beginPath(); for (let i = 0; i < 10; i++) { const a = i * Math.PI / 5 - Math.PI / 2, rr = i % 2 ? 6 : 14; ctx.lineTo(sx + rr * Math.cos(a), sy + rr * Math.sin(a)); } ctx.closePath(); ctx.fillStyle = '#b03a2e'; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke(); }
   if (l.labels) {
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
-    for (const o of S.orgs) {
-      if (!o.labelXY) continue;
+    // a label that would cover one already drawn is left out (the selected and hovered units first, then councils,
+    // stakes, wards): two stakes side by side no longer print over each other; zoom in to see the rest
+    const inDrill = new Set(((S.run || S.planned || {}).scope || {}).stakes || []);   // the stakes this drill plays keep their names
+    const rank = o => (o === S.sel || o === S.hover) ? 0 : isCouncil(o) ? 1 : o.type === 'Stake' ? (inDrill.has(o.id) ? 1.5 : 2) : 3;
+    const placed = [];
+    for (const o of S.orgs.filter(x => x.labelXY).sort((a, b) => rank(a) - rank(b))) {
       const stake = o.type === 'Stake', ward = isWardish(o);
       if (!((stake && l.stakes && res > 3) || (ward && l.wards && res < 40) || (isCouncil(o) && l.councils && res > 200))) continue;
       const [sx, sy] = toScr(o.labelXY[0], o.labelXY[1]); if (sx < -200 || sx > W + 200 || sy < -50 || sy > H + 50) continue;
       ctx.font = stake ? 'bold 13px sans-serif' : ward ? '11px sans-serif' : 'italic 13px sans-serif';
+      const w = ctx.measureText(o.name).width + 6, h = stake || isCouncil(o) ? 17 : 15, box = [sx - w / 2, sy - h / 2, sx + w / 2, sy + h / 2];
+      if (rank(o) && placed.some(b => box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1])) continue;
+      placed.push(box);
       ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.strokeText(o.name, sx, sy); ctx.fillStyle = stake ? '#1b4f8a' : ward ? '#2c3e50' : '#555'; ctx.fillText(o.name, sx, sy);
     }
   }

@@ -49,3 +49,6 @@ building-names.json
 *.set.json
 !simulation/example/**
 !testing/fixtures/**
+# Runtime files beside the invented example: listed again AFTER the !simulation/example/** line above, which would otherwise un-ignore them
+simulation/example/juniper-plains/simulation/runs/
+simulation/example/juniper-plains/simulation/local-roles.json

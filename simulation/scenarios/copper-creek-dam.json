@@ -5845,7 +5845,7 @@
    },
    {
     "id": "missionaries",
-    "label": "Every missionaries need met (owned, mission office answered, closed when found)",
+    "label": "All missionary needs met (owned, mission office answered, closed when found)",
     "cat_met": "missionaries"
    },
    {

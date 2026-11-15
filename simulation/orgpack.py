@@ -251,7 +251,10 @@ def read_export(root) -> dict:
             welfare['area_office'] = {'id': o['org_id'], 'name': o['org_name'], 'leaders': leaders_of.get(o['org_id'], [])}
         elif o['org_type'] == 'Area':
             welfare['area'] = {'id': o['org_id'], 'name': o['org_name']}
-    return {'kind': PACK_KIND, 'v': 1, 'source': root.name, 'privacy': 'real',
+    # an invented community (simulation/example) marks every organization row map_status=invented: the debrief then
+    # says so instead of calling its unit and building names real
+    invented = bool(orgs) and all((o.get('map_status') or '') == 'invented' for o in orgs)
+    return {'kind': PACK_KIND, 'v': 1, 'source': root.name, 'privacy': 'real', 'invented': invented,
             'councils': councils, 'stakes': stakes, 'units': units, 'buildings': list(buildings.values()),
             'welfare': welfare, 'contacts': pack_contacts}
 
