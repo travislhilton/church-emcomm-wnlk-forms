@@ -297,6 +297,22 @@ check('build(): as_of is the newest counted record', b['as_of'] == readout.iso_l
 check('build(): a drill simulator feeding the EOC also makes it an exercise', readout.build(conn, 'e1', drill_active=True)['source']['event']['exercise'] is True)
 check('build(): the Supply Order catalog is read from the page (65 items)', len(readout.catalog()['items']) == 65, len(readout.catalog()['items']))
 
+# totals follow the event's choice (totalsBy): a ward's follow-up report replaces its first when 'latest'
+conn.execute("INSERT INTO events VALUES ('e2', 0, 'open', 0, ?)", (json.dumps({'name': 'Larkspur wind drill'}),))
+for i, ms, d in [('t1', 1762822620000, {'stake': 'Larkspur Stake', 'ward': 'Larkspur 2nd Ward', 'homes_dmg': '4', 'vol_count': '6', 'vol_hrs': '12'}),
+                 ('t2', 1762822680000, {'stake': 'Larkspur Stake', 'ward': 'Larkspur 1st Ward', 'homes_dmg': '2', 'homes_dest': '1'}),
+                 ('t3', 1762822740000, {'stake': 'larkspur stake', 'ward': 'LARKSPUR 2ND WARD', 'homes_dmg': '5', 'vol_count': '8', 'vol_hrs': '20'})]:
+    conn.execute('INSERT INTO messages VALUES (?,?,?,?,?)', (i, ms, 'dr', json.dumps({'type': 'dr', 'dr': d}), 'e2'))
+ba = readout.build(conn, 'e2', generated_at='2026-11-16T19:02:11-07:00')
+check('build(): by default every report is added and the document has no totals_by (earlier fingerprints unchanged)',
+      ba['property'] == {'homes_damaged': 11, 'homes_destroyed': 1} and ba['volunteers'] == {'count': 14, 'hours': 32} and 'totals_by' not in ba, (ba['property'], ba['volunteers']))
+conn.execute("UPDATE events SET data_json=? WHERE id='e2'", (json.dumps({'name': 'Larkspur wind drill', 'totalsBy': 'latest'}),))
+bl = readout.build(conn, 'e2', generated_at='2026-11-16T19:02:11-07:00')
+contract_checks(bl, 'build() counting each ward\'s latest report')
+check('build(): totalsBy latest counts each ward\'s latest report (same ward in other letters), says so, and changes the fingerprint',
+      bl['property'] == {'homes_damaged': 7, 'homes_destroyed': 1} and bl['volunteers'] == {'count': 8, 'hours': 20} and bl.get('totals_by') == 'latest'
+      and bl['reporting']['reports']['dr'] == 3 and bl['fingerprint'] != ba['fingerprint'], (bl['property'], bl['volunteers'], bl.get('totals_by')))
+
 shutil.rmtree(SP, ignore_errors=True)
 print('\nRESULT:', 'ALL PASS' if all(res) else 'FAILURES', f'({sum(res)}/{len(res)})')
 sys.exit(0 if res and all(res) else 1)

@@ -195,6 +195,23 @@ def _sum(values, parse):
     return sum(got) if got else None
 
 
+def latest_per_ward(drs: list) -> list:
+    """latestPerWard(drs) in the page: each ward's latest Disaster Report (key stake|ward without case; a report with
+    neither stands alone), in the order the wards first reported. drs are in received order."""
+    last, order = {}, []
+    for i, m in enumerate(drs):
+        d = m.get('dr') or {}
+        k = (str(d.get('stake') or '') + '|' + str(d.get('ward') or '')).lower()
+        if k == '|':
+            k = '#' + str(i)
+        if k not in last:
+            order.append(k)
+            last[k] = m
+        elif (m.get('ts') or 0) >= (last[k].get('ts') or 0):
+            last[k] = m
+    return [last[k] for k in order]
+
+
 def _names(units) -> list:
     """Unit names once each (first spelling, compared without case), sorted."""
     seen = {}
@@ -274,10 +291,14 @@ def build(conn, event_id: str, forms_version=None, drill_active: bool = False, g
     base = max(_ms(ev.get('lastSitrepTs')), _ms(ev.get('lastRollupTs'))) or _ms(ev.get('startTs'))
     pace = ev.get('pace') if ev.get('pace') in PACE_LEVELS else None
 
-    homes_dmg = _sum((s.get('homes_dmg') for s in dr_sub), parse_int)
-    homes_dest = _sum((s.get('homes_dest') for s in dr_sub), parse_int)
-    vol_count = _sum((s.get('vol_count') for s in dr_sub), parse_int)
-    vol_hrs = _sum((s.get('vol_hrs') for s in dr_sub), parse_int)
+    # The totals follow the event's choice in the Message Center (totalsBy): every report added (the default), or each
+    # ward's latest report, so the net hears the numbers the wall and the SITREP lead with
+    totals_by = 'latest' if ev.get('totalsBy') == 'latest' else 'all'
+    counted = [m['dr'] for m in (latest_per_ward(drs) if totals_by == 'latest' else drs)]
+    homes_dmg = _sum((s.get('homes_dmg') for s in counted), parse_int)
+    homes_dest = _sum((s.get('homes_dest') for s in counted), parse_int)
+    vol_count = _sum((s.get('vol_count') for s in counted), parse_int)
+    vol_hrs = _sum((s.get('vol_hrs') for s in counted), parse_int)
 
     doc = {
         'schema': SCHEMA,
@@ -317,6 +338,10 @@ def build(conn, event_id: str, forms_version=None, drill_active: bool = False, g
         'volunteers': {'count': vol_count, 'hours': vol_hrs},
         'notes': [],
     }
+    if totals_by == 'latest':
+        # optional (a minor addition to emcomm-readout/1): left out when every report is added, so earlier documents and
+        # fingerprints stay the same
+        doc['totals_by'] = 'latest'
     doc['fingerprint'] = fingerprint(doc)
     return doc
 

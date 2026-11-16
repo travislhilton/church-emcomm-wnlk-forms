@@ -318,6 +318,10 @@ try:
         shot('totals-latest', '#tab-overview')
         ev = call('GET', '/api/incident')
         check('totals: the choice is kept with the event on the server', ev.get('totalsBy') == 'latest', ev.get('totalsBy'))
+        r = call('GET', '/api/readout')
+        check('totals: the voice-net read-out follows the choice (homes and volunteers of each ward\'s latest report, totals_by latest)',
+              r.get('totals_by') == 'latest' and r['property']['homes_damaged'] == L['dmg'] and r['property']['homes_destroyed'] == L['dest']
+              and r['volunteers']['count'] == L['vol'], (r.get('totals_by'), r['property'], r['volunteers'], L))
         check('totals: the choice is written in the EOC log', any('Totals now lead with' in (n.get('text') or '') for n in call('GET', '/api/notes')))
         pg.evaluate("switchTab('dr')"); pg.wait_for_timeout(300)
         drt = pg.inner_text('#dr-agg-stats')
@@ -344,6 +348,9 @@ try:
         pg.click('#ov-totals-by >> text=Add every report'); pg.wait_for_timeout(800)
         check('totals: back to "Add every report" on the page and the server', tiles() == want_tiles(A, L) and call('GET', '/api/incident').get('totalsBy') == 'all',
               call('GET', '/api/incident').get('totalsBy'))
+        r = call('GET', '/api/readout')
+        check('totals: back to every report added, the read-out adds every report and has no totals_by',
+              'totals_by' not in r and r['property']['homes_damaged'] == A['dmg'] and r['volunteers']['count'] == A['vol'], (r.get('totals_by'), r['property'], r['volunteers'], A))
 
     def verify(expect_missing):
         drs = [it['payload'] for it, _ in sent if it['form'] == 'dr']
