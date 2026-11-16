@@ -141,7 +141,7 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
   <div class="tile pace none" id="t-pace"><div class="k">PACE level in force<span class="kx">Primary · Alternate · Contingency · Emergency</span></div><div class="v" id="pace-v">—</div><div class="sub" id="pace-sub">not set</div></div>
   <div class="tile" id="t-reports"><div class="k">Reports received</div><div class="v" id="rep-v">0</div><div class="sub" id="rep-sub">0 new · 0 in work</div></div>
   <div class="tile" id="t-units"><div class="k" id="units-k">Wards reported</div><div class="v" id="units-v">0<small>/0</small></div><div class="sub" id="units-sub">—</div></div>
-  <div class="tile" id="t-homes"><div class="k">Homes damaged / destroyed</div><div class="v pair" id="homes-v">0 <small>/</small> 0</div><div class="sub">from Disaster Reports</div></div>
+  <div class="tile" id="t-homes"><div class="k">Homes damaged / destroyed</div><div class="v pair" id="homes-v">0 <small>/</small> 0</div><div class="sub" id="homes-sub">from Disaster Reports</div></div>
   <div class="tile" id="t-life"><div class="k">Injured / deaths</div><div class="v pair" id="life-v">0 <small>/</small> 0</div><div class="sub" id="life-sub">members</div></div>
   <div class="tile" id="t-vol"><div class="k">Volunteers · hours</div><div class="v pair" id="vol-v">0 <small>·</small> 0</div><div class="sub" id="vol-sub">Disaster Reports + Work Crew Logs</div></div>
   <div class="tile" id="t-so"><div class="k">Supply orders open</div><div class="v" id="so-v">0</div><div class="sub" id="so-sub">0 received · 0 done</div></div>
@@ -361,10 +361,21 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
       if(!lastAns[k]){ ansOrder.push(k); lastAns[k]=m; } else if((m.ts||0)>=(lastAns[k].ts||0)) lastAns[k]=m; });
     missNo=once(ansOrder.filter(function(k){ return isNo(lastAns[k].dr.miss_safe); }).map(function(k){ return unitOf(lastAns[k])||'?'; }));
     var wcrew=0,whrs=0; wcls.forEach(function(m){ wcrew+=ni(m.wcl.crew_count); whrs+=nf(m.wcl.total_hrs); });
-    document.getElementById('homes-v').innerHTML=dmg+' <small>/</small> '+dest;
-    document.getElementById('life-v').innerHTML=inj+' <small>/</small> '+dead;
-    document.getElementById('t-life').className='tile'+((inj||dead)?' hot':'');
-    document.getElementById('vol-v').innerHTML=(vol+wcrew)+' <small>·</small> '+Math.round(hrs+whrs);
+    // totals two ways, as the Message Center (totalsBoth): every report added, or each ward's latest report only;
+    // the event's choice (inc.totalsBy) leads, the other is in the line under the number when they differ
+    var lastK={}, lastOrder=[]; drs.forEach(function(m,i){ var r=m.dr, k=((r.stake||'')+'|'+(r.ward||'')).toLowerCase(); if(k==='|') k='#'+i;
+      if(!lastK[k]){ lastOrder.push(k); lastK[k]=m; } else if((m.ts||0)>=(lastK[k].ts||0)) lastK[k]=m; });
+    var L={inj:0,dead:0,dmg:0,dest:0,vol:0,hrs:0}; lastOrder.forEach(function(k){ var r=lastK[k].dr; L.inj+=ni(r.mem_inj); L.dead+=ni(r.mem_dead); L.dmg+=ni(r.homes_dmg); L.dest+=ni(r.homes_dest); L.vol+=ni(r.vol_count); L.hrs+=ni(r.vol_hrs); });
+    var A={inj:inj,dead:dead,dmg:dmg,dest:dest,vol:vol,hrs:hrs}, byLatest=(inc&&inc.totalsBy==='latest'), M=byLatest?L:A, O=byLatest?A:L;
+    var oName=byLatest?'every report added':'each ward\u2019s latest';
+    var diff=function(ks){ return ks.some(function(k){ return M[k]!==O[k]; }); };
+    document.getElementById('homes-v').innerHTML=M.dmg+' <small>/</small> '+M.dest;
+    document.getElementById('homes-sub').textContent=diff(['dmg','dest']) ? oName+': '+O.dmg+' / '+O.dest : (byLatest?'each ward\u2019s latest Disaster Report':'from Disaster Reports');
+    document.getElementById('life-v').innerHTML=M.inj+' <small>/</small> '+M.dead;
+    document.getElementById('life-sub').textContent=diff(['inj','dead']) ? 'members · '+oName+': '+O.inj+' / '+O.dead : 'members';
+    document.getElementById('t-life').className='tile'+((M.inj||M.dead)?' hot':'');
+    document.getElementById('vol-v').innerHTML=(M.vol+wcrew)+' <small>·</small> '+Math.round(M.hrs+whrs);
+    document.getElementById('vol-sub').textContent=diff(['vol','hrs']) ? oName+': '+(O.vol+wcrew)+' · '+Math.round(O.hrs+whrs) : 'Disaster Reports + Work Crew Logs';
     var soOpen=sos.filter(function(m){return m.status!=='complete';}).length;
     document.getElementById('so-v').textContent=soOpen; document.getElementById('so-sub').textContent=sos.length+' received · '+(sos.length-soOpen)+' done';
     document.getElementById('t-so').className='tile'+(soOpen?' hot':'');
@@ -478,11 +489,11 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
 
     // alerts
     var al=[]; if(missNo.length) al.push('MISSIONARIES NOT ACCOUNTED FOR: '+missNo.join(', ')+' — contact '+(lv==='area'?'stake presidents':'bishops')+' now');
-    if(dead) al.push(dead+' member death'+(dead>1?'s':'')+' reported'); if(inj) al.push(inj+' member'+(inj>1?'s':'')+' injured');
+    if(M.dead) al.push(M.dead+' member death'+(M.dead>1?'s':'')+' reported'); if(M.inj) al.push(M.inj+' member'+(M.inj>1?'s':'')+' injured');   // the count the tiles lead with
     if(needH.length) al.push('Church headquarters help requested by '+needH.join(', '));
     if(overdue.length) al.push('Overdue: '+overdue.join(', '));
     var hiNo=acts.filter(function(a){return a.prio===1 && !(a.owner||'').trim();}).length; if(hiNo) al.push(hiNo+' high-priority work item'+(hiNo>1?'s':'')+' with no owner');
-    var ab=document.getElementById('alerts'); var warnOnly = !missNo.length && !dead && !inj && !needH.length;
+    var ab=document.getElementById('alerts'); var warnOnly = !missNo.length && !M.dead && !M.inj && !needH.length;
     if(inc.eventStatus==='closed') al.push('This event is CLOSED — open a new event on the Setup tab for a new emergency');
     ab.className = al.length ? ('show'+(warnOnly?' warn':'')) : ''; ab.innerHTML = al.map(function(a){ return '<span class="al">'+esc(a)+'</span>'; }).join('');
 

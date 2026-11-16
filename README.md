@@ -390,6 +390,8 @@ Reports pile up faster than anyone can read them twice. The **Work Items** tab t
 | EOC operator | Work Items, Overview | Group by ward, NEW items; the drop box folds to one line once reports are on file (files can still be dropped on that line) |
 
 **Missionary status** on every screen (the red bar, the Overview, the SITREP, the wall) comes from each ward's **latest** report that answered the question: a later report that finds the missionaries safe clears the earlier NO, and each ward is named once.
+
+**Totals, two ways.** A Disaster Report can be a ward's update that repeats its numbers, so adding every report counts them twice, or the report of one home or household, so the numbers add up. The Overview and the Disaster Reports tab offer both: **Add every report** (the default) or **Each ward's latest report**. The chosen count leads; the other is shown in small type under each number where they differ. The choice is kept with the event, so every operator, the SITREP (the other count in brackets, now with homes damaged and destroyed) and the wall follow it, and the Notes log records who changed it. The read-out for a voice net always adds every report.
 - Standalone (no server) works too: items are derived in the browser and kept with the event; **Export Handoff JSON** carries them to the next shift.
 
 ### Phones on the EOC Wi-Fi — new reports and Send to EOC

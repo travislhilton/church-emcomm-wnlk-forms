@@ -17,7 +17,7 @@ except ValueError:
 VERSION = '1.0'
 # The Worker forms / Church of Jesus Christ EMCOMM app version this server ships (APP_VERSION in templates/_shared/emcomm-app.js).
 # Phones whose app is older still send fine; the receive page just tells them to update when they have internet.
-FORMS_VERSION = '2026-11-14.1'
+FORMS_VERSION = '2026-11-16.1'
 BASE = pathlib.Path(__file__).resolve().parent   # resolve: before Python 3.9 __file__ is relative when started from this folder
 DB_FILE   = BASE / 'eoc_data.db'
 HTML_FILE = BASE / 'EOC_Message_Center.html'
@@ -315,8 +315,10 @@ def init_db():
 # units covered, parent EOC, the council and welfare lines above a stake); the event's own fields live in `events`.
 # sitrepHrs / sitrepBy: the SITREP interval EOC leadership sets for the event (2, 4, 8, 12 or 24 h)
 # and who directed it; lastSitrepTs: when a SITREP was last generated (the wall counts from it).
+# totalsBy: which count of the Disaster Reports leads on every screen, 'all' (every report added, the default) or
+# 'latest' (each ward's latest report only); the other is shown beside it where they differ.
 EVENT_FIELDS = ('name', 'area', 'type', 'startTs', 'ic', 'op', 'opPeriodHrs', 'pace', 'paceTs', 'commsEvent',
-                'sitrepHrs', 'sitrepBy', 'lastSitrepTs',
+                'sitrepHrs', 'sitrepBy', 'lastSitrepTs', 'totalsBy',
                 'rollups', 'lastRollupTs', 'closedTs')
 _VIEW_ONLY = ('eventId', 'eventStatus', 'eventCreatedMs')
 

@@ -97,6 +97,8 @@ body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,sa
 .stat.warn .n{color:var(--warn);}
 .stat.ok{border-color:var(--ok);background:var(--ok-bg);}
 .stat.ok .n{color:var(--ok);}
+.stat .alt{font-size:10.5px;color:var(--muted);margin-top:3px;}
+.totals-by{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0 0 8px;font-size:11px;color:var(--muted);}
 /* Stake tracker grid */
 .tracker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;}
 .tracker-card{background:var(--surface);border:2px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px;}
@@ -381,6 +383,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
   <div id="tab-overview" class="tab-panel active">
     <div id="ov-alerts"></div>
     <div id="ov-start"></div>
+    <div class="totals-by" id="ov-totals-by"></div>
     <div class="stat-row" id="ov-stats"></div>
     <div id="ov-miss"></div>
     <div class="card">
@@ -455,6 +458,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
 
   <!-- DISASTER REPORTS -->
   <div id="tab-dr" class="tab-panel">
+    <div class="totals-by" id="dr-totals-by"></div>
     <div class="stat-row" id="dr-agg-stats"></div>
     <div class="toolbar">
       <span style="font-size:12px;font-weight:600">ICS-209 (Incident Command System form 209) SITREP (situation report)</span>
@@ -997,13 +1001,14 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
         <h2>3. Reading the screen</h2>
         <ul>
           <li><b>Header:</b> event name, PACE level, clock and time left in the operational period. The <b>PACE</b> button shows the level in force and opens section 1. <b>Help</b> opens this guide. You can also press <b>?</b> on the keyboard.</li>
-          <li><b>Missionary bar:</b> yellow until a Disaster Report answers the missionary question. Green when every report that answered says yes. Red when any report says no: tell the Stake President at once.</li>
+          <li><b>Missionary bar:</b> yellow until a Disaster Report answers the missionary question. Green when every ward's latest report that answered says yes. Red when a ward's latest report says no: tell the Stake President at once. A later report that finds them clears it.</li>
           <li><b>Server bar:</b> green (connected) means every operator on the server shares the data. Amber (connection lost) means the server stopped answering: check its window. No bar means standalone: this browser only, no Winlink auto-ingest, no wall display.</li>
           <li><b>Blue bar:</b> Winlink auto-ingest. <b>Green bar:</b> internet Drop Folder; it also counts files whose reports were already on file ("· 2 already on file"). Click either bar to check or change its folder.</li>
         </ul>
         <p>What each tab is for:</p>
         <ul>
           <li><b>Overview:</b> alerts, totals, the unit tracker, and roll-ups received from other EOCs.</li>
+          <li><b>Totals, two ways:</b> a Disaster Report can be a ward's update that repeats its numbers (adding every report then counts them twice) or the report of one home or household (then they add up). Above the totals, choose <b>Add every report</b> (the default) or <b>Each ward's latest report</b>. The other count is shown in small type under each number where the two differ. The choice belongs to the event: the Disaster Reports tab, the SITREP (the other count in brackets) and the wall all follow it, and the Notes log records the change. Ask the wards which way they report.</li>
           <li><b>Work Items:</b> everything the reports ask somebody here to do or decide, with an owner, a status, the next action and the decision. See section 5. An item that came up in a roll-up from a lower EOC shows <b>from &lt;that EOC&gt;</b>: open it and press <b>Reply to &lt;EOC&gt;</b> when you have the decision; the reply downloads as a <code>.json</code> file to send back the way their roll-up came, and their Message Center closes the item with your decision. A reply that reaches this EOC (Drop Folder, Winlink attachment, dragged onto this page, or the Import button on Setup) closes the items this EOC set UP.</li>
           <li><b>Roster:</b> units, their leaders, expected report windows and status.</li>
           <li><b>Disaster Reports:</b> reports, and the SITREP generator.</li>
@@ -1214,7 +1219,7 @@ function load() {
 }
 
 // ── Emergency Events ──────────────────────────────────────────────────────────
-var EVENT_FIELDS = ['name','area','type','startTs','ic','op','opPeriodHrs','pace','paceTs','commsEvent','sitrepHrs','sitrepBy','lastSitrepTs','rollups','lastRollupTs','closedTs'];
+var EVENT_FIELDS = ['name','area','type','startTs','ic','op','opPeriodHrs','pace','paceTs','commsEvent','sitrepHrs','sitrepBy','lastSitrepTs','totalsBy','rollups','lastRollupTs','closedTs'];
 // SITREP interval: set per event by EOC leadership on the Setup tab. Never invented: 0 (not set) until they set one.
 var SITREP_OPTS = [2,4,8,12,24], SITREP_NOT_SET = 'SITREP interval not set: ask EOC leadership';
 function sitrepHrs() { var h = parseInt(incident && incident.sitrepHrs, 10); return SITREP_OPTS.indexOf(h) >= 0 ? h : 0; }
@@ -1727,6 +1732,47 @@ function missByUnit(drs) {
   order.forEach(function(k){ var m = last[k]; (isNo(m.dr.miss_safe) ? no : yes).push(unitOf(m)||'?'); });
   return {no: unitsOnce(no), yes: unitsOnce(yes)};
 }
+// Totals, two ways (Travis, 2026-11-16: "Provide a way to show both"). A Disaster Report can be a ward's running update
+// that repeats its numbers (adding every report then counts them twice) or the report of one home or household (then
+// they add up). Every screen counts both: 'all' adds every report (the default), 'latest' takes each ward's latest
+// report only. The event keeps which count leads (incident.totalsBy, so the wall and the SITREP follow it); the other
+// is shown beside it wherever the two differ.
+function latestPerWard(drs) {
+  var last = {}, order = [];
+  drs.forEach(function(m, i){
+    var k = ((m.dr.stake||'')+'|'+(m.dr.ward||'')).toLowerCase(); if (k === '|') k = '#'+i;
+    if (!last[k]) { order.push(k); last[k] = m; } else if ((m.ts||0) >= (last[k].ts||0)) last[k] = m;
+  });
+  return order.map(function(k){ return last[k]; });
+}
+function drTotals(drs) {
+  var t = {reports: drs.length, inj: 0, dead: 0, dmg: 0, dest: 0, vol: 0, hrs: 0};
+  drs.forEach(function(m){ var r = m.dr; t.inj += ni(r.mem_inj); t.dead += ni(r.mem_dead); t.dmg += ni(r.homes_dmg); t.dest += ni(r.homes_dest); t.vol += ni(r.vol_count); t.hrs += ni(r.vol_hrs); });
+  return t;
+}
+function totalsBy() { return (incident && incident.totalsBy === 'latest') ? 'latest' : 'all'; }
+var TOTALS_BY = {all: 'Add every report', latest: 'Each ward’s latest report'};
+var TOTALS_OTHER = {all: 'each ward’s latest', latest: 'every report added'};
+function totalsBoth(drs) {
+  var a = drTotals(drs), l = drTotals(latestPerWard(drs)), lead = totalsBy();
+  return {all: a, latest: l, lead: lead, main: lead === 'latest' ? l : a, other: lead === 'latest' ? a : l, otherLabel: TOTALS_OTHER[lead],
+          differ: ['inj','dead','dmg','dest','vol','hrs'].some(function(k){ return a[k] !== l[k]; })};
+}
+function setTotalsBy(v) {
+  incident.totalsBy = (v === 'latest') ? 'latest' : 'all'; var aev = activeEvent(); if (aev) aev.totalsBy = incident.totalsBy;
+  notes.unshift({id: uid(), ts: Date.now(), text: 'Totals now lead with: '+TOTALS_BY[incident.totalsBy]+' (the other count is shown beside it where they differ)'});
+  if (networkMode) fetch('/api/notes', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(notes[0])}).catch(function(){});
+  save(); render();
+}
+function renderTotalsBy(id, drs) {
+  var el = document.getElementById(id); if (!el) return;
+  var b = totalsBy(), t = totalsBoth(drs);
+  el.innerHTML = '<span title="A Disaster Report can be a ward’s update that repeats its numbers (adding every report then counts them twice) or the report of one home or household (then they add up). Pick the count that leads; the other is shown beside it where they differ. The wall and the SITREP follow this event’s choice.">Totals:</span>'
+    + ['all','latest'].map(function(v){ return '<button class="filter-btn'+(b===v?' active':'')+'" aria-pressed="'+(b===v)+'" onclick="setTotalsBy(\''+v+'\')">'+esc(TOTALS_BY[v])+'</button>'; }).join('')
+    + (drs.length ? '<span>'+(t.differ ? 'The two counts differ: the other one is under each number.' : 'Both counts give the same numbers.')+'</span>' : '');
+}
+function altLine(t, k) { return t.other[k] !== t.main[k] ? t.otherLabel+': '+t.other[k] : null; }
+
 // The mission office's view: each ward's missionary answer from its LATEST report that answered, when, how it came,
 // the report's own note, and since when a NO has stood. One line per ward (stake at a Council / Area EOC).
 function missRows(drs) {
@@ -2346,8 +2392,9 @@ function render() {
 function renderOverview(drs, sos, wcls) {
   wcls = wcls||[];
   renderMissTable(drs);
-  var totInj=0,totDead=0,totDmg=0,totDest=0,totVol=0;
-  drs.forEach(function(m){ totInj+=ni(m.dr.mem_inj); totDead+=ni(m.dr.mem_dead); totDmg+=ni(m.dr.homes_dmg); totDest+=ni(m.dr.homes_dest); totVol+=ni(m.dr.vol_count); });
+  var T = totalsBoth(drs);
+  var totInj=T.main.inj,totDead=T.main.dead,totDmg=T.main.dmg,totDest=T.main.dest,totVol=T.main.vol;
+  renderTotalsBy('ov-totals-by', drs);
   var totWclHrs=0, totCrewCount=0;
   wcls.forEach(function(m){ totWclHrs+=parseFloat(m.wcl.total_hrs)||0; totCrewCount+=ni(m.wcl.crew_count); });
 
@@ -2379,15 +2426,15 @@ function renderOverview(drs, sos, wcls) {
 
   var accounted = drs.filter(function(m){return isYes(m.dr.miss_safe);}).length;
   var statsEl = document.getElementById('ov-stats');
-  function tile(n,l,cls){return '<div class="stat'+(cls?' '+cls:'')+'"><div class="n">'+n+'</div><div class="l">'+esc(l)+'</div></div>';}
+  function tile(n,l,cls,alt){return '<div class="stat'+(cls?' '+cls:'')+'"><div class="n">'+n+'</div><div class="l">'+esc(l)+'</div>'+(alt?'<div class="alt">'+esc(alt)+'</div>':'')+'</div>';}
   statsEl.innerHTML =
     tile(drs.length,'Disaster Reports') +
     (missNoList.length>0 ? tile('NO','Missionaries accounted for','danger') : accounted>0 ? tile('YES','Missionaries accounted for','ok') : tile('&mdash;','Missionaries: no answer yet','')) +
-    tile(totInj,'Injuries', totInj>0?'warn':'') +
-    tile(totDead,'Deaths', totDead>0?'danger':'') +
-    tile(totDmg,'Homes Damaged', totDmg>0?'warn':'') +
-    tile(totDest,'Homes Destroyed', totDest>0?'danger':'') +
-    tile(totVol,'Volunteers (Disaster Reports)') +
+    tile(totInj,'Injuries', totInj>0?'warn':'', altLine(T,'inj')) +
+    tile(totDead,'Deaths', totDead>0?'danger':'', altLine(T,'dead')) +
+    tile(totDmg,'Homes Damaged', totDmg>0?'warn':'', altLine(T,'dmg')) +
+    tile(totDest,'Homes Destroyed', totDest>0?'danger':'', altLine(T,'dest')) +
+    tile(totVol,'Volunteers (Disaster Reports)', '', altLine(T,'vol')) +
     tile(wcls.length,'Crew Logs') +
     tile(totCrewCount,'Crew Members') +
     tile(totWclHrs,'Crew Hours') +
@@ -2526,11 +2573,11 @@ function renderDR(drs) {
   }).join('');
 }
 function renderDRAgg(drs) {
-  var totInj=0,totDead=0,totDmg=0,totDest=0,totVol=0,totHrs=0;
-  drs.forEach(function(m){ totInj+=ni(m.dr.mem_inj); totDead+=ni(m.dr.mem_dead); totDmg+=ni(m.dr.homes_dmg); totDest+=ni(m.dr.homes_dest); totVol+=ni(m.dr.vol_count); totHrs+=ni(m.dr.vol_hrs); });
-  function tile(n,l,c){return '<div class="stat'+(c?' '+c:'')+'"><div class="n">'+n+'</div><div class="l">'+esc(l)+'</div></div>';}
+  var T = totalsBoth(drs), M = T.main;
+  renderTotalsBy('dr-totals-by', drs);
+  function tile(n,l,c,alt){return '<div class="stat'+(c?' '+c:'')+'"><div class="n">'+n+'</div><div class="l">'+esc(l)+'</div>'+(alt?'<div class="alt">'+esc(alt)+'</div>':'')+'</div>';}
   document.getElementById('dr-agg-stats').innerHTML =
-    tile(drs.length,'Disaster Reports')+tile(totInj,'Injuries',totInj>0?'warn':'')+tile(totDead,'Deaths',totDead>0?'danger':'')+tile(totDmg,'Homes Damaged',totDmg>0?'warn':'')+tile(totDest,'Homes Destroyed',totDest>0?'danger':'')+tile(totVol,'Volunteers')+tile(totHrs,'Volunteer Hours');
+    tile(drs.length,'Disaster Reports')+tile(M.inj,'Injuries',M.inj>0?'warn':'',altLine(T,'inj'))+tile(M.dead,'Deaths',M.dead>0?'danger':'',altLine(T,'dead'))+tile(M.dmg,'Homes Damaged',M.dmg>0?'warn':'',altLine(T,'dmg'))+tile(M.dest,'Homes Destroyed',M.dest>0?'danger':'',altLine(T,'dest'))+tile(M.vol,'Volunteers','',altLine(T,'vol'))+tile(M.hrs,'Volunteer Hours','',altLine(T,'hrs'));
 }
 
 function buildSitrep() {
@@ -2559,13 +2606,15 @@ function buildSitrep() {
   var totInj=0,totDead=0,totDmg=0,totDest=0,totVol=0,totHrs=0;
   var needLocal=[],needNbr=[],needHQ=[],missNo=[],missYes=[];
   drs.forEach(function(m){ var r=m.dr; var u=unitOf(m)||'?';
-    totInj+=ni(r.mem_inj); totDead+=ni(r.mem_dead); totDmg+=ni(r.homes_dmg); totDest+=ni(r.homes_dest); totVol+=ni(r.vol_count); totHrs+=ni(r.vol_hrs);
     if(isYes(r.need_local)) needLocal.push(u);
     if(isYes(r.need_neighbor)) needNbr.push(u);
     if(isYes(r.need_hq)) needHQ.push(u);
   });
   needLocal = unitsOnce(needLocal); needNbr = unitsOnce(needNbr); needHQ = unitsOnce(needHQ);
   var missNow = missByUnit(drs); missNo = missNow.no; missYes = missNow.yes;
+  // totals: the count this event leads with, the other in brackets where they differ (see totalsBoth)
+  var T = totalsBoth(drs); totInj=T.main.inj; totDead=T.main.dead; totDmg=T.main.dmg; totDest=T.main.dest; totVol=T.main.vol; totHrs=T.main.hrs;
+  function both(k) { var o = altLine(T, k); return T.main[k] + (o ? '   ('+o+')' : ''); }
   var sos = msgs.filter(function(m){return m.type==='so';});
 
   var line = '============================================================';
@@ -2585,10 +2634,13 @@ function buildSitrep() {
     txt += '  No missionary status received.\n';
   }
   txt += '\n------------------------------------------------------------\nSECTION B: LIFE SAFETY\n\n';
-  txt += '  Members injured:  '+totInj+'\n  Member deaths:    '+totDead+'\n';
+  txt += '  Totals: '+(T.lead==='latest' ? 'each ward\u2019s latest Disaster Report' : 'every Disaster Report added')
+       + (T.differ ? '; in brackets: '+T.otherLabel+', where it differs' : ' (each ward\u2019s latest report gives the same)')+'\n\n';
+  txt += '  Members injured:  '+both('inj')+'\n  Member deaths:    '+both('dead')+'\n';
+  txt += '  Member homes damaged:   '+both('dmg')+'\n  Member homes destroyed: '+both('dest')+'\n';
   if (!totInj && !totDead) txt += '  No injuries or fatalities reported.\n';
   txt += '\n------------------------------------------------------------\nSECTION C: RESOURCES\n\n';
-  txt += '  Total volunteers:      '+totVol+'\n  Total volunteer hours: '+totHrs+'\n';
+  txt += '  Total volunteers:      '+both('vol')+'\n  Total volunteer hours: '+both('hrs')+'\n';
   txt += '\n------------------------------------------------------------\nSECTION D: NEEDS SUMMARY\n\n';
   txt += '  '+UP+' needing local Church facilities ('+needLocal.length+'):\n    '+(needLocal.join(', ')||'None')+'\n';
   txt += '  '+UP+' needing neighboring unit assist ('+needNbr.length+'):\n    '+(needNbr.join(', ')||'None')+'\n';

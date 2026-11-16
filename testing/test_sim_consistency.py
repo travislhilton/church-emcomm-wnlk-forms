@@ -277,6 +277,74 @@ try:
             if (r or {}).get('via') == 'phone':
                 sent.append((it, r))
 
+    def totals_checks(pg, wl, drs):
+        """Totals two ways (Travis, 2026-11-16): every report added, or each ward's latest report only. The event's
+        choice leads on the Overview, the Disaster Reports tab, the SITREP and the wall; the other is shown beside it."""
+        keys = ('inj', 'dead', 'dmg', 'dest', 'vol')
+        def shot(name, sel=None, page=pg):
+            if SHOTS:
+                pathlib.Path(SHOTS).mkdir(parents=True, exist_ok=True)
+                (page.query_selector(sel) if sel else page).screenshot(path=str(pathlib.Path(SHOTS) / f'{name}.png'))
+        def tot(ps):
+            return {'inj': sum(ni(p.get('mem_injuries')) for p in ps), 'dead': sum(ni(p.get('mem_deaths')) for p in ps),
+                    'dmg': sum(ni(p.get('mem_damaged')) for p in ps), 'dest': sum(ni(p.get('mem_destroyed')) for p in ps),
+                    'vol': sum(ni(p.get('vol_count')) for p in ps)}
+        latest = {}
+        for p in drs:                                     # delivered in time order: the last one per ward is its latest
+            latest[(str(p.get('inc_stake') or '') + '|' + str(p.get('inc_ward') or '')).lower()] = p
+        A, L = tot(drs), tot(list(latest.values()))
+        differ = [k for k in keys if A[k] != L[k]]
+        check(f'totals: the run has wards whose follow-up reports repeat numbers, so the two counts differ (every report {A}, each ward\'s latest {L})', differ, (A, L))
+        LABEL = {'inj': 'Injuries', 'dead': 'Deaths', 'dmg': 'Homes Damaged', 'dest': 'Homes Destroyed', 'vol': r'Volunteers \(Disaster Reports\)'}
+        def tiles():
+            t = pg.inner_text('#ov-stats'); out = {}
+            for k, lab in LABEL.items():
+                m = re.search(r'(\d+)\s*\n\s*' + lab + r'(?:\s*\n\s*([^\n]*?): (\d+))?', t)
+                out[k] = (int(m.group(1)), int(m.group(3)) if m and m.group(3) else None) if m else None
+            return out
+        def want_tiles(main, other):
+            return {k: (main[k], other[k] if other[k] != main[k] else None) for k in keys}
+        pg.evaluate("switchTab('overview')"); pg.wait_for_timeout(400)
+        got = tiles()
+        check('totals: by default the Overview adds every report and shows each ward\'s latest under the numbers that differ', got == want_tiles(A, L), got)
+        bar = pg.inner_text('#ov-totals-by')
+        check('totals: the Overview offers both counts, "Add every report" chosen', 'Add every report' in bar and 'latest report' in bar
+              and pg.evaluate("document.querySelector('#ov-totals-by .filter-btn.active').textContent") == 'Add every report', bar)
+        shot('totals-all', '#tab-overview')
+        pg.click('#ov-totals-by >> text=Each ward\u2019s latest report'); pg.wait_for_timeout(800)
+        got = tiles()
+        check('totals: chosen "Each ward\'s latest report", the Overview leads with it and shows every report added under the numbers that differ',
+              got == want_tiles(L, A), got)
+        shot('totals-latest', '#tab-overview')
+        ev = call('GET', '/api/incident')
+        check('totals: the choice is kept with the event on the server', ev.get('totalsBy') == 'latest', ev.get('totalsBy'))
+        check('totals: the choice is written in the EOC log', any('Totals now lead with' in (n.get('text') or '') for n in call('GET', '/api/notes')))
+        pg.evaluate("switchTab('dr')"); pg.wait_for_timeout(300)
+        drt = pg.inner_text('#dr-agg-stats')
+        m = re.search(r'(\d+)\s*\n\s*Homes Damaged', drt)
+        check('totals: the Disaster Reports tab follows the same choice', m and int(m.group(1)) == L['dmg'], drt[:200])
+        pg.evaluate("switchTab('overview')")
+        pg.evaluate('buildSitrep()'); pg.wait_for_timeout(500)
+        b = pg.inner_text('#sitrep-pre').split('SECTION B', 1)[-1].split('SECTION D', 1)[0]
+        line = lambda lab, k: re.search(lab + r':\s+' + str(L[k]) + (r'\s+\(every report added: ' + str(A[k]) + r'\)' if A[k] != L[k] else r'\s*\n'), b)
+        ok = all(line(lab, k) for lab, k in (('Members injured', 'inj'), ('Member deaths', 'dead'), ('Member homes damaged', 'dmg'),
+                                             ('Member homes destroyed', 'dest'), ('Total volunteers', 'vol')))
+        check('totals: the SITREP gives the chosen count, the other in brackets where it differs, and now the homes too',
+              ok and "each ward\u2019s latest Disaster Report" in b, b[:600])
+        wl.reload(wait_until='load'); wl.wait_for_timeout(2500)
+        nums = lambda sel: [int(x) for x in re.findall(r'\d+', wl.inner_text(sel))]
+        w = {'life': nums('#life-v'), 'homes': nums('#homes-v'), 'homes_sub': wl.inner_text('#homes-sub'), 'life_sub': wl.inner_text('#life-sub'),
+             'alerts': wl.inner_text('#alerts')}
+        okw = ((f"{L['inj']} member" in w['alerts'] if L['inj'] else True) and
+               (w['life'] == [L['inj'], L['dead']] and w['homes'] == [L['dmg'], L['dest']]
+               and ((f"every report added: {A['dmg']} / {A['dest']}" in w['homes_sub']) if (A['dmg'], A['dest']) != (L['dmg'], L['dest']) else True)
+               and ((f"every report added: {A['inj']} / {A['dead']}" in w['life_sub']) if (A['inj'], A['dead']) != (L['inj'], L['dead']) else True)))
+        check('totals: the wall (tiles and its alert strip) follows the event\'s choice and shows the other count under the numbers', okw, w)
+        shot('totals-wall', page=wl)
+        pg.click('#ov-totals-by >> text=Add every report'); pg.wait_for_timeout(800)
+        check('totals: back to "Add every report" on the page and the server', tiles() == want_tiles(A, L) and call('GET', '/api/incident').get('totalsBy') == 'all',
+              call('GET', '/api/incident').get('totalsBy'))
+
     def verify(expect_missing):
         drs = [it['payload'] for it, _ in sent if it['form'] == 'dr']
         want = {'dr': len(drs), 'so': sum(1 for it, _ in sent if it['form'] == 'so'), 'wcl': sum(1 for it, _ in sent if it['form'] == 'wcl'),
@@ -361,6 +429,8 @@ try:
                 m = re.search(r'(\d+) to decide', wl.inner_text('#act-sum'))
                 check(f'the wall\'s work items count the decisions to make ({n_dec})', (int(m.group(1)) if m else 0) == n_dec, wl.inner_text('#act-sum'))
                 check('the wall raised no page error', not werrs, werrs)
+                if expect_missing is False:
+                    totals_checks(pg, wl, drs)
                 br.close()
 
     STAGE[0] = 'just before the found report'
