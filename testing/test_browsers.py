@@ -28,7 +28,7 @@ try:
     from playwright.sync_api import sync_playwright
 except ImportError:
     print('SKIP: playwright is not installed (python -m pip install playwright; python -m playwright install firefox webkit)')
-    sys.exit(0)
+    sys.exit(2)   # not run: never counted as passed (check-dev-setup says NOT RUN)
 
 REPO = pathlib.Path(__file__).resolve().parent.parent
 PE, PS, PW = 8480, 8490, 8481

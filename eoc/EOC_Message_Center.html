@@ -4093,11 +4093,14 @@ function setupSteps() {
     {done: !!(incident && incident.eocName), what: 'Name this EOC and the EOC above it', why: 'Setup tab, This EOC: level, name, the units it covers, where roll-ups go', go: "goSetup('sec-identity')"},
     {done: !!(ev && ev.name), what: 'Open the event', why: 'Setup tab, Emergency Event: + Open a New Event (every operator switches to it)', go: "goSetup('event-card')"},
     {done: !!(incident && incident.pace), what: 'Set the PACE level', why: 'Setup tab, Active event: the level the Stake President decided; also the SITREP interval, once EOC leadership sets one (it may stay "not set")', go: "goSetup('sec-details')"},
-    {done: !networkMode || !!(w.enabled && (w.mode !== 'winlink' || (w.callsigns||[]).length)), what: 'Choose the Winlink callsign that feeds this EOC', why: networkMode && w.mode === 'none' ? 'Winlink Express is not on this laptop: radio reports arrive as files in the Drop Folder' : 'Then reports sent by radio file themselves (auto-ingest)', go: 'configureWatcher()', btn: 'Choose'},
+    {done: !networkMode || noWinlinkHere() || !!(w.enabled && (w.mode !== 'winlink' || (w.callsigns||[]).length)), what: 'Choose the Winlink callsign that feeds this EOC', why: networkMode && w.mode === 'none' ? 'Winlink Express is not on this laptop: radio reports arrive as files in the Drop Folder' : 'Then reports sent by radio file themselves (auto-ingest)', go: 'configureWatcher()', btn: 'Choose', go2: 'setNoWinlink()', btn2: 'No Winlink on this laptop'},
     {done: roster.length > 0, what: 'Put the ' + unitPlural() + ' you expect reports from on the roster', why: 'Roster tab: + Add ' + unitLabel(), go: "switchTab('roster')"},
     {done: hasSheet, what: 'Fill in or load the Comms Sheet', why: 'Setup tab, Comms Sheet: who to call, Winlink addresses, gateways, nets', go: "goSetup('comms-card')"}
   ];
 }
+// A laptop without Winlink Express: radio reports come in as files (Drop Folder), so the step is answered, not skipped
+function noWinlinkHere() { try { return localStorage.getItem('emcomm_no_winlink') === '1'; } catch (e) { return false; } }
+function setNoWinlink() { try { localStorage.setItem('emcomm_no_winlink', '1'); } catch (e) {} toast('Noted: radio reports reach this EOC as files in the Drop Folder (a HAM saves them there)'); renderStart(); }
 function goSetup(id) { switchTab('setup'); var el = document.getElementById(id); if (el) setTimeout(function(){ el.scrollIntoView({block:'start'}); }, 30); }
 function renderStart() {
   var box = document.getElementById('ov-start'); if (!box) return;
@@ -4110,7 +4113,8 @@ function renderStart() {
     + '<div style="display:flex;align-items:baseline;gap:10px"><h2 style="margin:0;flex:1">Set up this EOC <span style="font-weight:600;font-size:12px;color:var(--muted);text-transform:none;letter-spacing:0">'
     + left + ' of ' + steps.length + ' steps left · quick reference card 3</span></h2><button class="btn-ghost" type="button" style="font-size:11px" onclick="hideStart()">Hide this list</button></div><ol>'
     + steps.map(function(x, i){ return '<li class="' + (x.done ? 'done' : '') + '"><span class="tk">' + (x.done ? '&#10003;' : (i + 1)) + '</span><span class="what">' + esc(x.what)
-      + '<span class="why">' + esc(x.why) + '</span></span>' + (x.done ? '' : '<button class="btn sm" type="button" onclick="' + x.go + '">' + (x.btn || 'Go') + '</button>') + '</li>'; }).join('')
+      + '<span class="why">' + esc(x.why) + '</span></span>' + (x.done ? '' : '<button class="btn sm" type="button" onclick="' + x.go + '">' + (x.btn || 'Go') + '</button>'
+        + (x.go2 ? ' <button class="btn secondary sm" type="button" onclick="' + x.go2 + '">' + x.btn2 + '</button>' : '')) + '</li>'; }).join('')
     + '</ol>' + (folded ? '</details>' : '</div>');
 }
 function hideStart() { try { localStorage.setItem('emcomm_start_hidden', String(activeEventId() || 'none')); } catch (e) {} renderStart(); }
@@ -4322,11 +4326,23 @@ function loadFromServer() {
     _startPolling();
   }).catch(function(){ showNetBar(false); _startPolling(); });
 }
+// Phones and other operators cannot reach this EOC: say so on the page, not only in the server window
+function renderReachBar(d) {
+  var el = document.getElementById('reach-bar');
+  if (!el) { var nb = document.getElementById('net-bar'); if (!nb || !nb.parentNode) return; el = document.createElement('div'); el.id = 'reach-bar';
+    el.style.cssText = 'display:none;background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn);border-radius:6px;padding:6px 10px;margin:4px 0;font-size:12px;font-weight:600';
+    nb.parentNode.insertBefore(el, nb.nextSibling); }
+  var t = [];
+  if (d && d.firewallBlocked) t.push('Windows Firewall is blocking Python: phones and other operators cannot open this EOC. An administrator: Start, "Allow an app through Windows Firewall", Change settings, tick every Python line and its Private box.');
+  if (d && d.networkPublic) t.push('This Wi-Fi is set to Public in Windows, so phones may not reach this EOC: Settings, Network & internet, Wi-Fi, this network, Private network.');
+  el.textContent = t.join(' '); el.style.display = t.length ? '' : 'none';
+}
 function _pollServer() {
   if(!networkMode) return;
   // Follow the active event: if another operator opened or switched to an event, reload.
   fetch('/api/status').then(function(r){return r.json();}).then(function(d){
     renderDrillBar(d && d.ok ? d.drill : null);
+    renderReachBar(d);
     if (d && d.ok && d.activeEventId && activeEventId() && d.activeEventId!==activeEventId()) {
       _reloadForEvent('Another operator switched this EOC to: '+(d.activeEventName||'(unnamed event)'));
     } else if (d && d.ok && incident && incident.eventId && d.activeEventStatus && d.activeEventStatus!==incident.eventStatus) {
@@ -4460,7 +4476,10 @@ function showDropBar() {
       + ' &nbsp;<span class="sl-more">(set up)</span>';
   bar.title = 'Drop Folder: ' + (dropState.watch_path || '(not set)')
       + (lastFile ? '\nLast report: ' + lastFile : '') + (lastCheck ? '\nLast check: ' + lastCheck : '')
+      + ((dropState.recent_errors || []).length ? '\nCould not file (left in the folder):' + dropState.recent_errors.map(function(e){ return '\n  ' + e.time + ' ' + e.file + ': ' + e.reason; }).join('') : '')
       + '\nClick to choose another folder.';
+  var re1 = (dropState.recent_errors || [])[0];
+  if (re1 && re1.file !== window._dropErrSeen) { if (window._dropErrSeen !== undefined) toast('Drop Folder: could not file ' + re1.file + ' (' + re1.reason + '). It stays in the folder.'); window._dropErrSeen = re1.file; }
   bar.style.display = '';
   bar.onclick = function(){ configureDrop(); };
 }

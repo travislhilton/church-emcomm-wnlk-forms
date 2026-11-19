@@ -188,11 +188,19 @@ def parse_args(argv):
             export = args.pop(0)
         elif a == '--privacy' and args:
             priv = args.pop(0)
-        elif a.isdigit():
-            port = int(a)
+        elif a.startswith('--data='):
+            export = a.split('=', 1)[1]
+        elif a.startswith('--privacy='):
+            priv = a.split('=', 1)[1]
+        elif a.isdigit() or (a.startswith('--port=') and a[7:].isdigit()):
+            port = int(a[7:] if a.startswith('--port=') else a)
         elif a in ('-h', '--help'):
             print(__doc__)
             sys.exit(0)
+        else:
+            # an argument it does not know is never ignored silently (--port=8143 once started on 8090)
+            print(f'  Unknown argument: {a}. Usage: python sim_server.py [--port=8090 | 8090] [--data <export root>] [--privacy <mode>] [--help]')
+            sys.exit(2)
     return port, export, priv
 
 
@@ -1269,7 +1277,12 @@ def main():
     STATE.port = port
     class _SimServer(ThreadingHTTPServer):
         request_queue_size = 128      # the default 5 is refused outright on Windows when a room of phones opens /results together
-    srv = _SimServer(('0.0.0.0', port), Handler)
+    try:
+        srv = _SimServer(('0.0.0.0', port), Handler)
+    except OSError:
+        print(f'  Port {port} is already in use: another simulator (or another program) is running on it.')
+        print(f'  Close that window, or start this one on another port: python sim_server.py --port={port + 1}')
+        sys.exit(1)
     bar = '=' * 72
     print(f'  {bar}')
     print('  Church of Jesus Christ EMCOMM - Simulator (drills)')

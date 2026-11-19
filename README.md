@@ -192,7 +192,7 @@ These links serve the files from the project's GitHub Pages site. The same files
 
 > **Do not** use right-click → Run as Administrator — not needed, and installs to the wrong location.
 
-**No internet required. No admin rights required.**
+**No internet required. No administrator needed to install.** The first time the EOC Server starts, Windows asks whether Python may use the network: an administrator of this laptop presses **Allow access**, and this Wi-Fi must be set to **Private** (Settings → Network & internet → Wi-Fi → the network → Private network), or phones cannot reach the EOC. The server window warns about both.
 
 The installer puts everything in `Documents\Church of Jesus Christ EMCOMM\`. When Documents syncs to OneDrive (or another cloud service), it uses `C:\Church of Jesus Christ EMCOMM\` instead, so the EOC database never sits in a synced folder, and moves an earlier install there. The paths below say Documents; read them as that folder.
 

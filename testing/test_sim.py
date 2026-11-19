@@ -560,11 +560,18 @@ try:
     # the scenario's PACE timeline drives the EOC header: a fresh plan (timeline intact: P, C at T+80), jump to T+79, run at 60x past T+80
     call(EOC_PORT, 'PUT', '/api/incident', dict(call(EOC_PORT, 'GET', '/api/incident'), pace='E'))
     plan = call(SIM_PORT, 'POST', '/api/run/plan', {'scenario': 'copper-creek-dam', 'stakes': ['S1'], 'eoc': {'url': f'http://127.0.0.1:{EOC_PORT}', 'winlink': 'EOC-A@winlink.org'}, 'seed': 5, 'speed': 60})
-    call(SIM_PORT, 'POST', '/api/run/jump', {'minute': 79})
+    # jump to 78 (two seconds of drill clock before T+80 at 60x) and read the level at once: a slow laptop has time to see P
+    call(SIM_PORT, 'POST', '/api/run/jump', {'minute': 78})
     call(SIM_PORT, 'POST', '/api/run/start')
-    time.sleep(0.6)
-    p_start = call(EOC_PORT, 'GET', '/api/status')['pace']
-    time.sleep(2.5)
+    p_start = ''
+    for _ in range(20):
+        p_start = call(EOC_PORT, 'GET', '/api/status')['pace']
+        if p_start == 'P': break
+        time.sleep(0.05)
+    for _ in range(60):   # then wait until T+80 has passed (up to 6 s)
+        if call(SIM_PORT, 'GET', '/api/run')['clock'].get('pace') == 'C': break
+        time.sleep(0.1)
+    time.sleep(0.3)
     s3 = call(SIM_PORT, 'GET', '/api/run')
     p_c = call(EOC_PORT, 'GET', '/api/status')['pace']
     lg = [l['text'] for l in s3['log'] if l['text'].startswith('PACE ')]
@@ -689,7 +696,11 @@ try:
     check('the roll-up logged a SIM note at the Area EOC, prefixed with the sending EOC', any('SIM: SITREP #1 roll-up from Bravo Stake' in n['text'] and n['text'].startswith('[Bravo Stake EOC (simulator)]') for n in notes_a), [n['text'][:80] for n in notes_a][:3])
     acts_a = call(AREA, 'GET', '/api/actions')
     ups = [a for a in acts_a if a.get('from') == 'Bravo Stake EOC (simulator)']
-    check('work items waiting on the line above arrived open at the Area EOC naming the simulated stake (if any report asked)', all(a['status'] == 'open' for a in ups), len(ups))
+    # the roll-up carries no work items (S2, audit 2026-11-18): the Area EOC derives its own from the merged reports, one
+    # per unit and need, so the operator never sees the same item twice (it once showed 55 repeated titles)
+    open_a = [(a.get('unit') or '', a.get('title') or '') for a in acts_a if a.get('status') != 'done']
+    check('the Area EOC holds work items from the merged reports, none of them twice', acts_a and len(open_a) == len(set(open_a)),
+          (len(acts_a), sorted({t for t in open_a if open_a.count(t) > 1})[:5]))
     call(SIM_PORT, 'POST', '/api/run/start'); time.sleep(2.5); call(SIM_PORT, 'POST', '/api/run/pause')
     s4 = call(SIM_PORT, 'GET', '/api/run')
     check('the running clock never fires elsewhere items or bundled reports on their own', all(i['status'] == 'elsewhere' for i in s4['items'] if i['local'] is False) and not any(i['status'] == 'fired' and i['result'] and not str(i['result'].get('via', '')).startswith('rollup') for i in s4['items'] if i.get('rollup')))

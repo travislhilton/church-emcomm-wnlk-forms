@@ -15,7 +15,10 @@ QUICK INSTALL
    [2] HAM (amateur radio) Field Operator
    [3] EOC (Emergency Operations Center) Operator: Satellite, Stake or Council / Area EOC
 
-No internet required. No admin rights required.
+No internet required. No administrator needed to install.
+The first time the EOC Server starts, an administrator of this laptop
+presses Allow access, and this Wi-Fi must be set to Private
+(Settings > Network & internet > Wi-Fi > the network > Private network).
 Installs to: Documents\Church of Jesus Christ EMCOMM\  (with README.md and PACE_PLAN.md, the PACE (Primary, Alternate, Contingency, Emergency) plan)
   (C:\Church of Jesus Christ EMCOMM\ when Documents syncs to OneDrive)
 

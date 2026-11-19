@@ -22,7 +22,7 @@ if defined PYEXE goto found
 echo.
 echo  ERROR: Python 3 was not found on this computer.
 echo.
-echo  The EOC server needs Python 3.7 or newer. It is free.
+echo  The EOC server needs Python 3.8 or newer. It is free.
 echo  Windows does not include it. Install it BEFORE an emergency:
 echo  the internet may be down when you need it.
 echo.
@@ -48,9 +48,9 @@ echo.
 pause
 exit /b 0
 
-rem Test-run one python.exe; keep it when it is a real Python 3.7 or newer.
+rem Test-run one python.exe; keep it when it is a real Python 3.8 or newer.
 :try
-"%~1" -c "import sys; sys.exit(0 if sys.version_info >= (3, 7) else 1)" >nul 2>&1
+"%~1" -c "import sys; sys.exit(0 if sys.version_info >= (3, 8) else 1)" >nul 2>&1
 if errorlevel 1 exit /b 1
 set "PYEXE=%~1"
 exit /b 0
@@ -58,7 +58,7 @@ exit /b 0
 :try_launcher
 where py >nul 2>&1
 if errorlevel 1 exit /b 1
-py -3 -c "import sys; sys.exit(0 if sys.version_info >= (3, 7) else 1)" >nul 2>&1
+py -3 -c "import sys; sys.exit(0 if sys.version_info >= (3, 8) else 1)" >nul 2>&1
 if errorlevel 1 exit /b 1
 set "PYEXE=py"
 set "PYARG=-3"

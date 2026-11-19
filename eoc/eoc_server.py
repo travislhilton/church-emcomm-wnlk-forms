@@ -27,7 +27,7 @@ except ValueError:
 VERSION = '1.0'
 # The Worker forms / Church of Jesus Christ EMCOMM app version this server ships (APP_VERSION in templates/_shared/emcomm-app.js).
 # Phones whose app is older still send fine; the receive page just tells them to update when they have internet.
-FORMS_VERSION = '2026-11-16.1'
+FORMS_VERSION = '2026-11-18.1'
 BASE = pathlib.Path(__file__).resolve().parent   # resolve: before Python 3.9 __file__ is relative when started from this folder
 DB_FILE   = BASE / 'eoc_data.db'
 HTML_FILE = BASE / 'EOC_Message_Center.html'
@@ -235,6 +235,7 @@ _drop_state = {
     'last_file':  '',
     'dup':        0,      # files read that held only reports already on file (nothing counts twice)
     'last_dup':   '',
+    'recent_errors': [],  # the last few files that could not be filed: {file, reason, time} (the drop bar lists them)
 }
 
 _watcher_lock = threading.Lock()
@@ -2316,9 +2317,27 @@ def _detect_form_type(filename: str, data: dict):
 
 def _ingest_drop_file(path: pathlib.Path) -> tuple:
     """Parse a Worker Form .txt JSON file (or a .json roll-up bundle from another
-    EOC) and insert into EOC database.
+    EOC, a Winlink .mime, or a Winlink message saved as text) and insert into EOC database.
     Returns (form_type, is_new); raises on parse or type-detection errors."""
-    raw = path.read_text(encoding='utf-8-sig')  # utf-8-sig strips BOM if present
+    if path.suffix.lower() == '.mime':   # a Winlink message copied in by hand (from a USB drive, another station)
+        mime = _parse_mime_file(path)
+        parsed = _parse_church_tag(mime.get('body') or '')
+        if not parsed:
+            raise ValueError('a Winlink message with no Church form in it')
+        return parsed[0], _ingest_mime(mime, parsed[0], parsed[1], path.name)
+    b = path.read_bytes()
+    try:
+        raw = b.decode('utf-8-sig')            # utf-8-sig strips BOM if present
+    except UnicodeDecodeError:
+        raw = b.decode('cp1252', errors='replace')   # Notepad's "ANSI" on Windows
+    if not raw.lstrip('\ufeff \r\n\t').startswith('{') and '[Church-' in raw:
+        # a Winlink message saved as text (its body carries the [Church-XX|...] tag): file it as Winlink would
+        parsed = _parse_church_tag(raw)
+        if not parsed:
+            raise ValueError('a Church tag that could not be read')
+        mime = {'from_': '', 'to': '', 'subject': '', 'date': '', 'body': raw, 'attachments': [], 'xml': [],
+                'msg_id': 'drop-' + hashlib.sha1(raw.encode('utf-8', 'replace')).hexdigest()[:20]}
+        return parsed[0], _ingest_mime(mime, parsed[0], parsed[1], path.name)
     return _ingest_text(raw, path.name, source='internet', tag='DROP')
 
 
@@ -2580,7 +2599,7 @@ def _drop_loop():
                 continue
 
             ingested_dir = watch_path / DROP_INGESTED_SUBDIR
-            files = [f for f in watch_path.iterdir() if f.suffix.lower() in ('.txt', '.json') and f.is_file()]
+            files = [f for f in watch_path.iterdir() if f.suffix.lower() in ('.txt', '.json', '.mime') and f.is_file()]
             sigs = {f: _file_sig(f) for f in files}
             present = set(sigs.values())
             seen &= present          # forget files that are gone: a Worker form saves the next report under the same name
@@ -2615,8 +2634,13 @@ def _drop_loop():
                     error_counts[sig] = n
                     if n < 3:
                         seen.discard(sig)
-                    with _drop_lock:
-                        _drop_state['errors'] += 1
+                    if n == 1:   # a file counts once, however often it is retried
+                        reason = ('not a Church form file (it is not the .txt a phone form saves)' if isinstance(exc, json.JSONDecodeError)
+                                  else str(exc) or type(exc).__name__)
+                        with _drop_lock:
+                            _drop_state['errors'] += 1
+                            _drop_state['recent_errors'] = ([{'file': fpath.name, 'reason': reason[:160], 'time': time.strftime('%H:%M')}]
+                                                            + _drop_state['recent_errors'])[:5]
                     print(f'  [DROP]   Error ({n}/3) — {fpath.name} stays in folder: {exc}')
 
             with _drop_lock:
@@ -2840,6 +2864,7 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
                                     'pace': ev.get('pace') or '', 'formsVersion': FORMS_VERSION,
                                     'map': bool(_map_dir(inc.get('mapPath') or '')),
                                     'firewallBlocked': _FIREWALL['blocked'],   # Windows Firewall keeps other devices out
+                                    'networkPublic': _FIREWALL['public'],      # this Wi-Fi is a Public network in Windows
                                     'drill': _drill_view()})
 
                 elif path == '/api/readout':
@@ -3465,7 +3490,7 @@ def _warn_loopback_only():
 # window, or answer it without administrator rights, and Windows keeps an inbound Block rule for this python.exe:
 # this laptop still opens the Message Center, and no phone or other operator can. Nothing on the screen says why.
 # So the server reads the rules once at start (reading needs no rights) and says so.
-_FIREWALL = {'blocked': False}
+_FIREWALL = {'blocked': False, 'public': False}
 def _firewall_blocks(programs, exes) -> bool:
     """True when a blocked program path is one of this Python's own paths (compared as Windows does: any case, either slash)."""
     def norm(p):
@@ -3485,6 +3510,13 @@ def _check_firewall():
                            stdin=subprocess.DEVNULL, timeout=90, creationflags=0x08000000)   # no console window of its own
         programs = r.stdout.decode('utf-8', 'replace').splitlines()
         _FIREWALL['blocked'] = _firewall_blocks(programs, [sys.executable, getattr(sys, '_base_executable', '')])
+        # A Wi-Fi Windows calls Public (the default for a new network) keeps phones out even when Python is allowed on
+        # Private networks, and the Allow prompt never says so (audit 2026-11-18)
+        r2 = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive', '-Command',
+                             '(Get-NetConnectionProfile -ErrorAction SilentlyContinue | ForEach-Object { $_.NetworkCategory }) -join ","'],
+                            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, timeout=60, creationflags=0x08000000)
+        cats = [c.strip().lower() for c in r2.stdout.decode('utf-8', 'replace').split(',') if c.strip()]
+        _FIREWALL['public'] = bool(cats) and 'public' in cats and not any(c in ('private', 'domainauthenticated') for c in cats)
     except Exception as e:      # no PowerShell, or the firewall service is off: nothing to report
         print(f'  [FIREWALL] not checked: {type(e).__name__}: {e}')
         return
@@ -3498,6 +3530,15 @@ def _check_firewall():
         print('  !!    2. Press "Change settings".')
         print('  !!    3. Tick every "Python" line, and its "Private" box. Press OK.')
         print('  !!  The server does not need a restart.')
+        print('  ' + '!' * 72)
+        print()
+    if _FIREWALL['public']:
+        print()
+        print('  ' + '!' * 72)
+        print('  !!  THIS WI-FI IS SET TO "PUBLIC" IN WINDOWS. Phones and other operators')
+        print('  !!  may not be able to open this EOC.')
+        print('  !!  To fix it: Settings > Network & internet > Wi-Fi > this network >')
+        print('  !!  Network profile type: Private network. (An administrator may be needed.)')
         print('  ' + '!' * 72)
         print()
 

@@ -149,20 +149,20 @@ function Find-Winlink {
 }
 
 function Test-PythonExe([string]$exe) {
-    # "Python 3.x.y" when this program really runs Python 3.7 or newer, else $null. The Microsoft Store
+    # "Python 3.x.y" when this program really runs Python 3.8 or newer, else $null. The Microsoft Store
     # placeholder (WindowsApps\python.exe when Python is not installed) prints "Python was not found" and does
     # not match; running it with --version does not open the Store.
     try {
         $ver = (& $exe --version 2>&1 | Select-Object -First 1 | Out-String).Trim()
         if ($ver -match '^Python (\d+)\.(\d+)') {
-            if ([int]$Matches[1] -eq 3 -and [int]$Matches[2] -ge 7) { return $ver }
+            if ([int]$Matches[1] -eq 3 -and [int]$Matches[2] -ge 8) { return $ver }
         }
     } catch {}
     return $null
 }
 
 function Find-Python {
-    # Returns "Python 3.x.y (path)" if a working Python 3.7+ is found, else $null
+    # Returns "Python 3.x.y (path)" if a working Python 3.8+ is found, else $null
     foreach ($cmd in @('py', 'python3', 'python')) {
         foreach ($app in @(Get-Command $cmd -All -CommandType Application -ErrorAction SilentlyContinue)) {
             $ver = Test-PythonExe $app.Source
@@ -475,10 +475,10 @@ if ($installWinlink) {
         Write-Warn "Winlink templates will be installed to $installBase for now."
         Write-Warn "After installing Winlink, copy them to:"
         Write-Info "  C:\RMS Express\Global Folders\Templates\Church of Jesus Christ EMCOMM Forms\"
-        Write-Info "  Download Winlink Express: https://winlink.org"
+        Write-Info "  Download Winlink Express: https://downloads.winlink.org/User%20Programs/"
         Write-Host ""
         $ans = Read-Host "  Open Winlink download page now? (y/n)"
-        if ($ans -match '^[Yy]') { Start-Process "https://winlink.org" }
+        if ($ans -match '^[Yy]') { Start-Process "https://downloads.winlink.org/User%20Programs/" }
         Write-Host ""
     }
 }
@@ -1019,7 +1019,7 @@ if ($installEOC) {
     Write-Info "     Tick 'Private networks' and press Allow. If you press Cancel, phones and"
     Write-Info "     other laptops cannot reach this EOC (the server window then shows the fix)."
     Write-Info "  3. Double-click 'Church of Jesus Christ EMCOMM EOC Message Center'."
-    Write-Info "     On its Setup tab, type this EOC's name and choose its level."
+    Write-Info "     It opens on the Overview tab: work down the 'Set up this EOC' checklist; each step has a Go button."
     Write-Info "  4. Other operators, phones and the TV open the addresses the server window shows."
     Write-Info "  5. Read Card 3 (EOC Operator) in 'Church of Jesus Christ EMCOMM Quick Reference Cards'."
     Write-Info "     For a drill: the Simulator shortcut, and Card 9 (Your First Drill)."
