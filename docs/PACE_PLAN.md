@@ -67,14 +67,14 @@ The Church's structure gives a stake two lines above it, not one EOC: the **coun
 
 **Voice at Contingency, not Emergency.** FRS/GMRS and VHF/UHF amateur voice sit at C deliberately. They are working radio paths that run alongside Winlink over VARA FM, not a last resort. (The county's own plan puts amateur radio at *Emergency* for public-safety voice because the county has P25 (Project 25 public-safety digital radio) and NIFOG (National Interoperability Field Operations Guide) channels above it; the stake has no such layers, so radio is our third level, not our fourth.) Emergency is reserved for the case where no radio works at all.
 
-### 2d. More than one EOC — Satellite EOCs, the Stake Center EOC and a Council / Area EOC
+### 2d. More than one EOC — Satellite EOCs, the Stake EOC and a Council / Area EOC
 
 The Message Center is the same software at every level; what differs is who it reports to. A stake can run it in three places at once:
 
 | EOC | Where | Covers | Reports to |
 |---|---|---|---|
-| **Satellite EOC** (optional, one or more) | A ward meetinghouse other than the Stake Center — chosen because it is closer to the damage, on the far side of a closed road or river, or has power and internet when the Stake Center does not | The wards (or the part of the community) the Stake President assigns to it on the stake sheet (§6d) | Stake Center EOC |
-| **Stake Center EOC** | The Stake Center | Every ward not assigned to a Satellite EOC, plus everything the Satellite EOCs roll up | The two lines above the stake (§2c): SITREP to the council line and the welfare line, forms to the welfare line; a Council / Area EOC when one is open |
+| **Satellite EOC** (optional, one or more) | A ward meetinghouse other than the Stake Center — chosen because it is closer to the damage, on the far side of a closed road or river, or has power and internet when the Stake Center does not | The wards (or the part of the community) the Stake President assigns to it on the stake sheet (§6d) | Stake EOC |
+| **Stake EOC** | The Stake Center | Every ward not assigned to a Satellite EOC, plus everything the Satellite EOCs roll up | The two lines above the stake (§2c): SITREP to the council line and the welfare line, forms to the welfare line; a Council / Area EOC when one is open |
 | **Council / Area EOC** (only when opened) | The Area Welfare and Self-Reliance Specialist's station, opened by the coordinating council or the welfare region. The Church positions its own communication equipment "at Church headquarters, some welfare facilities, and area offices," so an area office, a welfare facility or a stake center is the likely anchor; record the actual location on the sheet | Every stake in the Council | Area Presidency / Church headquarters as directed |
 
 Each EOC runs its own server and database, has its own **drop email address** (for the EOC Drop Folder), its own **Winlink address**, its own net and FRS/GMRS assignments, and sets its **level** (Satellite / Stake / Council-Area), **name**, **units covered**, the **EOC it reports to** and, at a Stake EOC, the **council line and welfare line** addresses on the Setup tab. The level changes the roster vocabulary — a Satellite or Stake EOC tracks **wards** and bishops, a Council / Area EOC tracks **stakes** and stake presidents — and puts the EOC's name in the header, the SITREP and the server console. The Disaster Report has an optional **Ward** field for this: leave it blank for a stake-wide report, fill it when a ward reports through a Satellite or Stake EOC.
@@ -192,7 +192,7 @@ Modeled on the ICS-205 Incident Radio Communications Plan that public-safety PAC
 | Local Welfare and Self-Reliance Manager (WSRM) for this stake (name / phone) | |
 | **P** — EOC email address for form files | |
 | **P** — EOC operator cell for texted files | |
-| **A** — Landline numbers: Stake Center EOC / Satellite EOC / backup EOC meetinghouse | |
+| **A** — Landline numbers: Stake EOC / Satellite EOC / backup EOC meetinghouse | |
 | **A** — Meetinghouse Wi-Fi (network / password location) — volunteers may also use any other internet they can reach | |
 | **A** — Starlink (who has it / where staged) | |
 | **A** — Stake EOC Winlink address | `________@winlink.org` |
@@ -222,7 +222,7 @@ In the EOC Message Center the **C** gateway rows above are the Comms Sheet's gat
 
 ### 6b. Resources by site
 
-| Resource | Stake Center EOC | Satellite EOC (ward building: ______) | Backup EOC (meetinghouse: ______) | HAM go-kit |
+| Resource | Stake EOC | Satellite EOC (ward building: ______) | Backup EOC (meetinghouse: ______) | HAM go-kit |
 |---|---|---|---|---|
 | Internet (facility / Starlink / any reachable) | | | | |
 | Landline phone (number) | | | | |
@@ -250,9 +250,9 @@ In the EOC Message Center the **C** gateway rows above are the Comms Sheet's gat
 
 | EOC | Level | Location (building / address) | Wards or part of community covered | Drop email | Winlink address | P2P frequency (VARA FM) | Net / FRS-GMRS channels | Reports to | Operator lead (name / call sign) |
 |---|---|---|---|---|---|---|---|---|---|
-| Stake Center EOC | Stake | | all wards not listed below | | | | | council line + welfare line (§6a); Council / Area EOC if open | |
-| Satellite EOC 1 | Satellite | | | | | | | Stake Center EOC | |
-| Satellite EOC 2 | Satellite | | | | | | | Stake Center EOC | |
+| Stake EOC | Stake | | all wards not listed below | | | | | council line + welfare line (§6a); Council / Area EOC if open | |
+| Satellite EOC 1 | Satellite | | | | | | | Stake EOC | |
+| Satellite EOC 2 | Satellite | | | | | | | Stake EOC | |
 | Council / Area EOC (only if opened) | Council / Area | | all stakes in the Council | | | | | Area Presidency / Church headquarters as directed | |
 
 Roll-up schedule: with every SITREP (interval set on the Setup tab: ____ h, directed by ________) · At C the roll-up goes as a Winlink attachment to the "Reports to" Winlink address · Last roll-up sent: ______ at ______ · Satellite EOC opened / closed (date, time, by whom): ______

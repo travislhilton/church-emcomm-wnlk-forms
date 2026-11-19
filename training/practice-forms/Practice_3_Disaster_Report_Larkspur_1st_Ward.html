@@ -19,10 +19,9 @@ textarea { width: 99%; border: 1px solid #999; font-size: 12px; font-family: Ari
 input[type=submit] { border: 2px solid green; border-radius: 3px; background-color: #fff; padding: 3px 10px; font-size: 13px; cursor: pointer; }
 input[type=reset]  { border: 2px solid red;   border-radius: 3px; background-color: #fff; padding: 3px 10px; font-size: 13px; cursor: pointer; }
 input[type=button] { border: 2px solid #0f88f2; border-radius: 3px; background-color: #fff; padding: 3px 10px; font-size: 13px; cursor: pointer; }
-.logo { line-height: 1.25; font-family: 'Times New Roman', Times, Georgia, serif; color: #000; text-align: center; }
-.logo .top { font-size: 11px; letter-spacing: 0.20em; font-weight: normal; text-transform: uppercase; display: block; }
-.logo .mid { font-size: 27px; font-weight: normal; letter-spacing: 0.03em; text-transform: uppercase; display: block; white-space: nowrap; line-height: 1.1; }
-.logo .bot { font-size: 12px; letter-spacing: 0.12em; font-weight: normal; text-transform: uppercase; display: block; }
+.logo { line-height: 1.2; font-family: Arial, Helvetica, sans-serif; color: #000; text-align: center; }
+.logo .mid { font-size: 15px; font-weight: bold; display: block; }
+.logo .bot { font-size: 10px; display: block; margin-top: 2px; }
 .exbox { border:2px solid #b00000; background:#fff3f3; padding:4px 8px; margin:4px 0 6px; font-size:13px; font-weight:bold; color:#b00000; }
 .exbox small { font-weight:normal; color:#444; }
 input::placeholder, textarea::placeholder { color:#6b7280; opacity:1; }   /* WebKit's default #a9a9a9 fails WCAG AA */
@@ -54,6 +53,11 @@ function cleanAllFields() {
 // Fields Load Data must never overwrite: Winlink fills them when the form opens
 var LOAD_SKIP = {testCall:1, parseme:1, msg_body:1, attached_text:1, attached_file:1, GPS:1, stn_lat:1, stn_lon:1, stn_grid:1, op_callsign:1, fileToLoad:1, loc_src:1, subj_prefix:1};
 function fv(id) { var e = document.getElementById(id); return e ? asciiClean(e.value).replace(/\s+$/, '').trim() : ''; }
+// Tag values never carry the tag's own separators ([ ] |), or a name like "Bldg [B]" would cut the tag short
+function tv(s) { return String(s == null ? '' : s).replace(/\[/g, '(').replace(/\]/g, ')').replace(/\|/g, '/'); }
+function fvt(id) { return tv(fv(id)); }
+// One CSV value: quoted, so a comma in an address keeps every later column in place
+function cq(s) { return '"' + String(s == null ? '' : s).replace(/"/g, '""') + '"'; }
 
 function rb(name) {
   var els = document.getElementsByName(name);
@@ -102,10 +106,10 @@ function buildMsg() {
   if (fv('miss_details')) m += '  Additional details: ' + fv('miss_details') + '\n';
   m += '\n';
   m += 'Church Members\n';
-  m += row('  Member injuries', fv('mem_injuries') || '0');
-  m += row('  Member deaths', fv('mem_deaths') || '0');
-  m += row('  Member homes damaged', fv('mem_damaged') || '0');
-  m += row('  Member homes destroyed', fv('mem_destroyed') || '0');
+  m += row('  Member injuries', fv('mem_injuries') || '(not reported)');
+  m += row('  Member deaths', fv('mem_deaths') || '(not reported)');
+  m += row('  Member homes damaged', fv('mem_damaged') || '(not reported)');
+  m += row('  Member homes destroyed', fv('mem_destroyed') || '(not reported)');
   if (fv('mem_details')) m += '  Additional details: ' + fv('mem_details') + '\n';
   m += '\n';
   m += 'Church Buildings\n';
@@ -113,8 +117,8 @@ function buildMsg() {
   m += 'Community\n';
   m += '  ' + (fv('community') || '(not provided)') + '\n\n';
   m += 'Volunteers\n';
-  m += row('  Number of volunteers', fv('vol_count') || '0');
-  m += row('  Total volunteer hours', fv('vol_hours') || '0');
+  m += row('  Number of volunteers', fv('vol_count') || '(not reported)');
+  m += row('  Total volunteer hours', fv('vol_hours') || '(not reported)');
   if (fv('vol_activities')) m += '  Activities: ' + fv('vol_activities') + '\n';
   m += row('  Volunteer injuries or accidents', rb('vol_injuries'));
   if (fv('vol_inj_details')) m += '  Additional details: ' + fv('vol_inj_details') + '\n';
@@ -146,37 +150,34 @@ function buildMsg() {
   m += '============================================================\n';
   // Machine-parseable data line for EOC rollup tools — do not edit
   // CSV rollup line (Oregon/Winlink standard — paste into spreadsheet column A)
-  m += '\nCSV,' + fv('inc_stake') + ',' + fmtDate(fv('inc_date')) + ',' + fv('inc_location') + ',' +
-       fv('inc_type') + ',' + rb('miss_safe') + ',' + (fv('mem_injuries')||'0') + ',' +
-       (fv('mem_deaths')||'0') + ',' + (fv('mem_damaged')||'0') + ',' +
-       (fv('mem_destroyed')||'0') + ',' + (fv('vol_count')||'0') + ',' +
-       (fv('vol_hours')||'0') + ',' + rb('need_local') + ',' + rb('need_neighbor') + ',' +
-       rb('need_hq') + ',' + fv('sub_name') + ',' + fv('sub_phone') + '\n';
-  m += '\n[Church-DR|' + (exOn() ? 'exercise=YES|' : '') + 'stake=' + fv('inc_stake') +
-       (fv('inc_ward') ? '|ward=' + fv('inc_ward') : '') +
-       '|date=' + fmtDate(fv('inc_date')) +
-       '|location=' + fv('inc_location') +
-       '|type=' + fv('inc_type') +
+  m += '\nCSV,' + [fv('inc_stake'), fmtDate(fv('inc_date')), fv('inc_location'), fv('inc_type'), rb('miss_safe'),
+       fv('mem_injuries'), fv('mem_deaths'), fv('mem_damaged'), fv('mem_destroyed'), fv('vol_count'), fv('vol_hours'),
+       rb('need_local'), rb('need_neighbor'), rb('need_hq'), fv('sub_name'), fv('sub_phone')].map(cq).join(',') + '\n';
+  m += '\n[Church-DR|' + (exOn() ? 'exercise=YES|' : '') + 'stake=' + fvt('inc_stake') +
+       (fvt('inc_ward') ? '|ward=' + fvt('inc_ward') : '') +
+       '|date=' + fmtDate(fvt('inc_date')) +
+       '|location=' + fvt('inc_location') +
+       '|type=' + fvt('inc_type') +
        '|miss_safe=' + rb('miss_safe') +
-       '|mem_inj=' + (fv('mem_injuries')||'0') +
-       '|mem_dead=' + (fv('mem_deaths')||'0') +
-       '|homes_dmg=' + (fv('mem_damaged')||'0') +
-       '|homes_dest=' + (fv('mem_destroyed')||'0') +
-       '|vol_count=' + (fv('vol_count')||'0') +
-       '|vol_hrs=' + (fv('vol_hours')||'0') +
+       '|mem_inj=' + fvt('mem_injuries') +
+       '|mem_dead=' + fvt('mem_deaths') +
+       '|homes_dmg=' + fvt('mem_damaged') +
+       '|homes_dest=' + fvt('mem_destroyed') +
+       '|vol_count=' + fvt('vol_count') +
+       '|vol_hrs=' + fvt('vol_hours') +
        '|vol_inj=' + rb('vol_injuries') +
        '|need_local=' + rb('need_local') +
        '|need_neighbor=' + rb('need_neighbor') +
        '|need_hq=' + rb('need_hq') +
-       '|submitter=' + fv('sub_name') +
-       '|phone=' + fv('sub_phone') +
-       '|sp=' + fv('sp_name') +
-       (fv('stn_lat_d') ? '|lat=' + fv('stn_lat_d') : '') +
-       (fv('stn_lon_d') ? '|lon=' + fv('stn_lon_d') : '') +
-       (fv('stn_grid_d') ? '|grid=' + fv('stn_grid_d') : '') +
-       (fv('op_callsign') ? '|op_call=' + fv('op_callsign') : '') +
-       (fv('op_name')     ? '|op_name=' + fv('op_name')     : '') +
-       (fv('op_position') ? '|op_pos='  + fv('op_position') : '') + ']\n';
+       '|submitter=' + fvt('sub_name') +
+       '|phone=' + fvt('sub_phone') +
+       '|sp=' + fvt('sp_name') +
+       (fvt('stn_lat_d') ? '|lat=' + fvt('stn_lat_d') : '') +
+       (fvt('stn_lon_d') ? '|lon=' + fvt('stn_lon_d') : '') +
+       (fvt('stn_grid_d') ? '|grid=' + fvt('stn_grid_d') : '') +
+       (fvt('op_callsign') ? '|op_call=' + fvt('op_callsign') : '') +
+       (fvt('op_name')     ? '|op_name=' + fvt('op_name')     : '') +
+       (fvt('op_position') ? '|op_pos='  + fvt('op_position') : '') + ']\n';
   return m;
 }
 
@@ -395,9 +396,8 @@ window.onload = function() {
   <tr>
     <td width="160" style="border-right:1px solid #999; padding:6px;">
       <div class="logo">
-        <span class="top">The Church of</span>
-        <span class="mid">Jesus Christ</span>
-        <span class="bot">of Latter-day Saints</span>
+        <span class="mid">Church of Jesus Christ EMCOMM</span>
+        <span class="bot">Independent emergency communications volunteer project</span>
       </div>
     </td>
     <td>
@@ -424,7 +424,7 @@ window.onload = function() {
   <tr><td colspan="2" style="padding:0;">
     <table class="fields">
       <tr>
-        <td width="40%"><div class="lbl">Date</div><input type="date"  id="inc_date" name="inc_date" value="2026-11-12" /></td>
+        <td width="40%"><div class="lbl">Date</div><input type="date"  id="inc_date" name="inc_date" value="2026-11-19" /></td>
         <td><div class="lbl">Location</div><input type="text"  id="inc_location" name="inc_location" placeholder="City, State" value="1250 N 200 E, Larkspur" /></td>
       </tr>
       <tr>

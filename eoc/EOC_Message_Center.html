@@ -39,11 +39,10 @@ body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,sa
 /* Header */
 .site-header{background:var(--hdr);color:var(--hdr-fg);position:sticky;top:0;z-index:30;padding:10px 16px 0;}
 .hdr-top{display:flex;align-items:center;gap:12px;padding-bottom:8px;flex-wrap:wrap;}
-/* Church wordmark — same lockup as the portal (forms/index.html .church-name): serif, three centered uppercase lines */
-.logo-block{font-family:'Times New Roman',Times,Georgia,serif;line-height:1.2;flex-shrink:0;letter-spacing:0;text-align:center;}
-.logo-block .l1{font-size:7px;letter-spacing:.30em;display:block;text-transform:uppercase;}
-.logo-block .l2{font-size:18px;font-weight:400;display:block;letter-spacing:.04em;line-height:1.1;text-transform:uppercase;white-space:nowrap;}
-.logo-block .l3{font-size:7.3px;letter-spacing:.18em;display:block;text-transform:uppercase;}
+/* Project name — the app's own type; the Church's name and logo are its trademarks, so no Church-style lockup (owner 2026-11-19) */
+.logo-block{line-height:1.2;flex-shrink:0;}
+.logo-block .l2{font-size:14px;font-weight:700;display:block;white-space:nowrap;}
+.logo-block .l3{font-size:10px;display:block;opacity:.75;}
 .hdr-center{flex:1;min-width:0;}
 .hdr-center h1{font-size:15px;font-weight:700;margin:0;}
 .hdr-incident{font-size:11px;opacity:.75;margin:2px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -322,9 +321,8 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
 <div class="site-header">
   <div class="hdr-top">
     <div class="logo-block">
-      <span class="l1">The Church of</span>
-      <span class="l2">Jesus Christ</span>
-      <span class="l3">of Latter-day Saints</span>
+      <span class="l2">Church of Jesus Christ EMCOMM</span>
+      <span class="l3">Independent emergency communications volunteer project</span>
     </div>
     <div class="hdr-center">
       <h1>EOC Message Center <span style="font-weight:400;opacity:.7;font-size:10px;letter-spacing:.04em">EMERGENCY OPERATIONS CENTER &#183; PACE: PRIMARY, ALTERNATE, CONTINGENCY, EMERGENCY</span> <span id="hdr-eoc" style="display:none;font-size:10px;font-weight:700;background:#ffffff22;border-radius:4px;padding:1px 6px;margin-left:4px;vertical-align:middle"></span></h1>
@@ -629,7 +627,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
       <div class="form-row">
         <div class="form-group" style="flex:0 0 180px"><label>EOC level</label>
           <select id="eoc-level" onchange="syncUpwardLines(); renderMustRoles()">
-            <option value="stake">Stake EOC (Stake Center)</option>
+            <option value="stake">Stake EOC (usually at the stake center)</option>
             <option value="satellite">Satellite EOC (sub-stake, ward building)</option>
             <option value="area">Council / Area EOC (opened by the coordinating council or the welfare region)</option>
           </select>
@@ -821,7 +819,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
 
     <div class="card" id="comms-card">
       <h2>EMCOMM Comms Sheet — contacts, Winlink addresses, gateways and nets</h2>
-      <p style="font-size:11px;color:var(--muted);margin:0 0 8px">One sheet for the whole stake, edited here by the stake Welfare and Self-Reliance Specialist (emergency communications) and shown to everyone: the <b>Comms</b> tab on every operator's screen, the wall display, a printable one-page sheet for go-bags, a text block to paste into a Winlink message or email, and a small JSON file that any other EOC (Satellite, Stake Center or Area) takes on board automatically when it arrives by Drop Folder, Winlink attachment or USB — the newer sheet always wins. Points of contact and the Winlink addresses are for the chain field &#8594; Satellite EOC &#8594; Stake EOC &#8594; the council line (Area Seventy) and the welfare line (WSRM, then AWSRM). Gateways are the Winlink RMS (Radio Message Server) stations to try, in order, at Contingency (VHF/UHF, very high / ultra high frequency: VARA FM, then VARA HF). Voice nets are the stake amateur net and the ward FRS/GMRS (Family Radio Service / General Mobile Radio Service) channels. Lines for <b>this event only</b> (a net moved to simplex, a temporary gateway) sit on top and clear when the event closes.</p>
+      <p style="font-size:11px;color:var(--muted);margin:0 0 8px">One sheet for the whole stake, edited here by the stake Welfare and Self-Reliance Specialist (emergency communications) and shown to everyone: the <b>Comms</b> tab on every operator's screen, the wall display, a printable one-page sheet for go-bags, a text block to paste into a Winlink message or email, and a small JSON file that any other EOC (Satellite, Stake or Area) takes on board automatically when it arrives by Drop Folder, Winlink attachment or USB — the newer sheet always wins. Points of contact and the Winlink addresses are for the chain field &#8594; Satellite EOC &#8594; Stake EOC &#8594; the council line (Area Seventy) and the welfare line (WSRM, then AWSRM). Gateways are the Winlink RMS (Radio Message Server) stations to try, in order, at Contingency (VHF/UHF, very high / ultra high frequency: VARA FM, then VARA HF). Voice nets are the stake amateur net and the ward FRS/GMRS (Family Radio Service / General Mobile Radio Service) channels. Lines for <b>this event only</b> (a net moved to simplex, a temporary gateway) sit on top and clear when the event closes.</p>
       <div id="comms-editor"></div>
       <div class="toolbar" style="flex-wrap:wrap;gap:10px;margin-top:10px">
         <button class="btn" onclick="saveComms()">Save Comms Sheet</button>

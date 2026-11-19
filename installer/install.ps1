@@ -40,10 +40,8 @@ try {
 # -- Banner -------------------------------------------------------------------
 Clear-Host
 Write-Host ""
-Write-Host "  THE CHURCH OF JESUS CHRIST" -ForegroundColor White
-Write-Host "  of Latter-day Saints" -ForegroundColor White
-Write-Host ""
 Write-Host "  Church of Jesus Christ EMCOMM" -ForegroundColor Cyan
+Write-Host "  Independent emergency communications volunteer project" -ForegroundColor White
 Write-Host "  Installer v1.0" -ForegroundColor Gray
 Write-Host ("  " + ("-" * 50)) -ForegroundColor DarkGray
 Write-Host ""
@@ -219,7 +217,7 @@ Write-Host ""
 Write-Host "  [3]  EOC Operator  (Satellite, Stake or Council / Area EOC -- full install)" -ForegroundColor Cyan
 Write-Host "       Browser Worker Forms + Winlink Templates + EOC Message Center + Quick Reference Cards"
 Write-Host "       Complete package for any Emergency Operations Center (EOC): a Satellite EOC in a ward"
-Write-Host "       building, the Stake Center EOC, or a Council / Area EOC -- same software, rolls up to the EOC above"
+Write-Host "       building, the Stake EOC, or a Council / Area EOC -- same software, rolls up to the EOC above"
 Write-Host ""
 Write-Host "  [U]  Uninstall" -ForegroundColor Cyan
 Write-Host "       Remove Church of Jesus Christ EMCOMM from this computer (a copy of the EOC records is kept)"

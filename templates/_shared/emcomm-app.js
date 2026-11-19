@@ -15,7 +15,7 @@
      'file'   an installed copy opened from disk: same as portal, without the offline app.
    Phones are clients only; the EOC server on the laptop is the only server. */
 (function () {
-  var APP_VERSION = '2026-11-18.2';   // bump with any change the EOC server must know about (see FORMS_VERSION in eoc_server.py)
+  var APP_VERSION = '2026-11-19.1';   // bump with any change the EOC server must know about (see FORMS_VERSION in eoc_server.py)
   var OUTBOX_KEY = 'church_outbox_v1', EOCS_KEY = 'church_eocs_v1', PENDING_KEY = 'church_outbox_pending_v1';
   var FORM_NAME = {dr: 'Disaster Report', so: 'Supply Order', wcl: 'Work Crew Log'};
   var FILENAME = {dr: 'Church_Disaster_Report_Worker.txt', so: 'Church_Supply_Order_Worker.txt', wcl: 'Church_Work_Crew_Log_Worker.txt'};
@@ -226,9 +226,9 @@
     + '#ea-paper .pp-page{page-break-after:always;break-after:page}'
     + '#ea-paper .pp-page:last-child{page-break-after:auto;break-after:auto}'
     + '#ea-paper .pp-head{display:flex;gap:.3in;margin:0 0 .1in}'
-    + '#ea-paper .pp-logo{width:1.85in;flex:none;white-space:nowrap;text-align:center;font-family:Georgia,"Times New Roman",serif;padding-top:2pt}'
-    + '#ea-paper .pp-logo .a{font-size:8.5pt;letter-spacing:.06em}'
-    + '#ea-paper .pp-logo .b{font-size:17pt;line-height:1.05;letter-spacing:.02em}'
+    + '#ea-paper .pp-logo{width:1.85in;flex:none;text-align:center;font-family:Arial,Helvetica,sans-serif;padding-top:2pt}'
+    + '#ea-paper .pp-logo .a{font-size:7.5pt}'
+    + '#ea-paper .pp-logo .b{font-size:11pt;font-weight:bold;line-height:1.15}'
     + '#ea-paper .pp-ttl{flex:1;min-width:0}'
     + '#ea-paper .pp-tline{display:flex;justify-content:space-between;align-items:flex-end;gap:.15in;border-bottom:1.5pt solid #000;padding-bottom:2pt}'
     + '#ea-paper h1{font:bold 11pt/1.2 Arial,Helvetica,sans-serif;margin:0;padding:0;color:#000;background:none;border:none}'
@@ -476,7 +476,7 @@
         + (o.html != null ? o.html : '<div class="pp-v"' + (o.h ? ' style="min-height:' + o.h + 'in"' : '') + '>' + esc(c[1]) + '</div>') + '</td>';
     }).join('') + '</tr></table>';
   }
-  function plogo() { return '<div class="pp-logo"><div class="a">THE CHURCH OF</div><div class="b">JESUS CHRIST</div><div class="a">OF LATTER-DAY SAINTS</div></div>'; }
+  function plogo() { return '<div class="pp-logo"><div class="b">Church of Jesus Christ EMCOMM</div><div class="a">Independent emergency communications volunteer project</div></div>'; }
   function pex() { return '<span class="pp-ex">' + bx(pon('exercise')) + 'THIS IS AN EXERCISE</span>'; }
   function pgps() {
     return '<div class="pp-sub">Sender location <span class="pp-add">(GPS, Global Positioning System; added by Church of Jesus Christ EMCOMM, optional)</span></div>'

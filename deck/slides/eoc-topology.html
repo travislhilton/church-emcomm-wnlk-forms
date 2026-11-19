@@ -2,7 +2,7 @@
 
 <div style="display:flex;flex-direction:column;gap:6px">
   <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:20px;letter-spacing:0.14em;text-transform:uppercase;color:#C8102E">More Than One EOC</p>
-  <h1 style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:54px;font-weight:700;line-height:1.0;color:#1A2744">Satellite &#8594; Stake Center &#8594; Area: One Message Center, Three Levels</h1>
+  <h1 style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:54px;font-weight:700;line-height:1.0;color:#1A2744">Satellite &#8594; Stake &#8594; Area: One Message Center, Three Levels</h1>
   <p style="font-size:22px;color:#6B7A8D">Same software at every EOC. Each one names itself, its parent, and the wards it covers &#8212; then rolls its records up without anyone re-keying them.</p>
 </div>
 
@@ -22,9 +22,9 @@
       <text x="480" y="52" text-anchor="middle" font-size="24" font-weight="700" fill="#F7F8FA">COUNCIL / AREA EOC (if opened)</text>
       <text x="480" y="80" text-anchor="middle" font-size="16" fill="#FFD6DE">else: SITREP to Area Seventy + welfare line (WSRM → AWSRM) · roster = stakes</text>
 
-      <!-- Stake Center EOC -->
+      <!-- Stake EOC -->
       <rect x="300" y="196" width="360" height="86" rx="12" fill="#4A7FC1"/>
-      <text x="480" y="230" text-anchor="middle" font-size="24" font-weight="700" fill="#F7F8FA">STAKE CENTER EOC</text>
+      <text x="480" y="230" text-anchor="middle" font-size="24" font-weight="700" fill="#F7F8FA">STAKE EOC</text>
       <text x="480" y="258" text-anchor="middle" font-size="16" fill="#D6E8FF">Stake President directs · roster = wards · merges satellites</text>
 
       <!-- Satellite EOCs -->
@@ -84,5 +84,5 @@
 </div>
 
 <p style="position:absolute;left:128px;bottom:64px;font-size:24px;color:#6B7A8D">Open a Satellite EOC when wards cannot reach the Stake Center: roads cut, river between, Stake Center dark, or one team swamped</p>
-<aside>This is the answer to "what if the Stake Center is not reachable, or one part of the stake is cut off?" The same installer choice [3] and the same Message Center run at a ward building as a Satellite EOC, at the Stake Center, and at a Council / Area EOC if the council or welfare region opens one; otherwise the Stake EOC sends straight to the two lines above it, the Area Seventy's council and the welfare line. The only configuration is the Setup tab: level, name, wards covered, and the parent EOC's drop email and Winlink address. The level changes the vocabulary — wards at a Satellite or Stake EOC, stakes at a Council / Area EOC — and the Disaster Report has an optional Ward field for it. Roll-up is one JSON file that rides the same PACE ladder as the SITREP: email attachment at Primary and Alternate, Winlink attachment at Contingency, USB at Emergency. The parent never has to click anything on the first two; the Drop Folder and the Winlink watcher recognise a roll-up and merge it. Dedupe is by id, Winlink Message-ID and a content hash, so forwarding originals and sending a roll-up never double-counts. Import Handoff is a different button: it replaces everything and is only for shift change.</aside>
+<aside>This is the answer to "what if the Stake Center is not reachable, or one part of the stake is cut off?" The same installer choice [3] and the same Message Center run at a ward building as a Satellite EOC, at the Stake EOC, and at a Council / Area EOC if the council or welfare region opens one; otherwise the Stake EOC sends straight to the two lines above it, the Area Seventy's council and the welfare line. The only configuration is the Setup tab: level, name, wards covered, and the parent EOC's drop email and Winlink address. The level changes the vocabulary — wards at a Satellite or Stake EOC, stakes at a Council / Area EOC — and the Disaster Report has an optional Ward field for it. Roll-up is one JSON file that rides the same PACE ladder as the SITREP: email attachment at Primary and Alternate, Winlink attachment at Contingency, USB at Emergency. The parent never has to click anything on the first two; the Drop Folder and the Winlink watcher recognise a roll-up and merge it. Dedupe is by id, Winlink Message-ID and a content hash, so forwarding originals and sending a roll-up never double-counts. Import Handoff is a different button: it replaces everything and is only for shift change.</aside>
 </section>

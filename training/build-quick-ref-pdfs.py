@@ -37,11 +37,13 @@ CARDS = [
     ('4', 'Leaders_Overview'),
     ('5', 'Drill_Controller'),
     ('6', 'Satellite_EOC'),
-    ('7', 'Stake_Center_EOC'),
+    ('7', 'Stake_Center_EOC'),   # file name kept (printed QR codes and links); the card says Stake EOC
     ('8', 'Council_Area_EOC'),
     ('9', 'Your_First_Drill'),
     ('10', 'Team_Leader_Crew_Chief'),
 ]
+TITLES = {'7': 'Stake EOC'}   # where the page title differs from the file name
+
 # CSS zoom per card side so each side fits one Letter page (measured in Chrome
 # at the 696 px printable width (8.5 in less 0.75 + 0.5 in margins); 1 = natural size). Keys: "<card>-<side index>".
 ZOOM = {}  # every side fits at 1 (no zoom), so printing the web page gives the same result; 2026-11-03
@@ -147,7 +149,7 @@ def main():
     for (no, name), row in zip(CARDS, rows):
         body = with_zoom(row, no)
         all_rows.append(body)
-        title = f'Quick Reference Card {no} — {name.replace("_", " ")}'
+        title = f'Quick Reference Card {no} — {TITLES.get(no, name.replace("_", " "))}'
         html_path = OUT / f'Quick_Reference_Card_{no}_{name}.html'
         pdf_path = OUT / f'Quick_Reference_Card_{no}_{name}.pdf'
         with open(html_path, 'w', encoding='utf-8', newline='\n') as fh:

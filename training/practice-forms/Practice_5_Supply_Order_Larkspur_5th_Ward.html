@@ -24,10 +24,9 @@ textarea { width: 99%; border: 1px solid #999; font-size: 12px; font-family: Ari
 input[type=submit] { border: 2px solid green; border-radius: 3px; background-color: #fff; padding: 3px 10px; font-size: 13px; cursor: pointer; }
 input[type=reset]  { border: 2px solid red;   border-radius: 3px; background-color: #fff; padding: 3px 10px; font-size: 13px; cursor: pointer; }
 input[type=button] { border: 2px solid #0f88f2; border-radius: 3px; background-color: #fff; padding: 3px 10px; font-size: 13px; cursor: pointer; }
-.logo { line-height: 1.25; font-family: 'Times New Roman', Times, Georgia, serif; color: #000; text-align: center; }
-.logo .top { font-size: 11px; letter-spacing: 0.20em; font-weight: normal; text-transform: uppercase; display: block; }
-.logo .mid { font-size: 27px; font-weight: normal; letter-spacing: 0.03em; text-transform: uppercase; display: block; white-space: nowrap; line-height: 1.1; }
-.logo .bot { font-size: 12px; letter-spacing: 0.12em; font-weight: normal; text-transform: uppercase; display: block; }
+.logo { line-height: 1.2; font-family: Arial, Helvetica, sans-serif; color: #000; text-align: center; }
+.logo .mid { font-size: 15px; font-weight: bold; display: block; }
+.logo .bot { font-size: 10px; display: block; margin-top: 2px; }
 .exbox { border:2px solid #b00000; background:#fff3f3; padding:4px 8px; margin:4px 0 6px; font-size:13px; font-weight:bold; color:#b00000; }
 .exbox small { font-weight:normal; color:#444; }
 input::placeholder, textarea::placeholder { color:#6b7280; opacity:1; }   /* WebKit's default #a9a9a9 fails WCAG AA */
@@ -51,6 +50,11 @@ function cleanAllFields() {
 // Fields Load Data must never overwrite: Winlink fills them when the form opens
 var LOAD_SKIP = {testCall:1, parseme:1, msg_body:1, attached_text:1, attached_file:1, GPS:1, stn_lat:1, stn_lon:1, stn_grid:1, op_callsign:1, fileToLoad:1, loc_src:1, subj_prefix:1};
 function fv(id) { var e = document.getElementById(id); return e ? asciiClean(e.value).replace(/\s+$/, '').trim() : ''; }
+// Tag values never carry the tag's own separators ([ ] |), or a name like "Bldg [B]" would cut the tag short
+function tv(s) { return String(s == null ? '' : s).replace(/\[/g, '(').replace(/\]/g, ')').replace(/\|/g, '/'); }
+function fvt(id) { return tv(fv(id)); }
+// One CSV value: quoted, so a comma in an address keeps every later column in place
+function cq(s) { return '"' + String(s == null ? '' : s).replace(/"/g, '""') + '"'; }
 function pad(s, w) { s = String(s); while (s.length < w) s += ' '; return s; }
 function line(n) { var s = ''; for (var i = 0; i < n; i++) s += '-'; return s + '\n'; }
 
@@ -188,7 +192,7 @@ function buildMsg() {
     var od = fv('other_desc' + k), on = fv('other_num' + k), ou = fv('other_unit' + k), oq = fv('other_qty' + k);
     if (od && oq) {
       otherItems.push({desc: od, num: on||'LOCAL', unit: ou, qty: oq});
-      dataItems.push('LOCAL-' + od.substring(0,20) + ':' + oq);
+      dataItems.push('LOCAL-' + tv(od).replace(/[;:,]/g, ' ') + ':' + oq);   // the whole description, not 20 letters
     }
   }
   if (otherItems.length > 0) {
@@ -228,27 +232,25 @@ function buildMsg() {
   m += 'Sender: ' + fv('testCall') + ' | Form PD10052205 | Via Winlink\n';
   m += '============================================================\n';
   // CSV rollup line — paste into spreadsheet for EOC aggregation
-  m += '\nCSV,' + fv('req_stake') + ',' + fmtDate(fv('order_date')) + ',' +
-       fv('del_contact') + ',' + fv('del_phone') + ',' +
-       fv('del_city') + ',' + fv('del_state') + ',' +
-       fmtDate(fv('req_del_date')) + ',' + dataItems.join(';') + '\n';
+  m += '\nCSV,' + [fv('req_stake'), fmtDate(fv('order_date')), fv('del_contact'), fv('del_phone'), fv('del_city'), fv('del_state'),
+       fmtDate(fv('req_del_date')), dataItems.join(';')].map(cq).join(',') + '\n';
   // Machine-parseable line for EOC rollup
-  m += '\n[Church-SO|' + (exOn() ? 'exercise=YES|' : '') + 'stake=' + fv('req_stake') +
-       '|contact=' + fv('del_contact') +
-       '|phone=' + fv('del_phone') +
-       '|city=' + fv('del_city') +
-       '|state=' + fv('del_state') +
-       '|zip=' + fv('del_zip') +
-       '|addr=' + fv('del_addr') +
-       '|order_date=' + fmtDate(fv('order_date')) +
-       '|del_date=' + fmtDate(fv('req_del_date')) +
+  m += '\n[Church-SO|' + (exOn() ? 'exercise=YES|' : '') + 'stake=' + fvt('req_stake') +
+       '|contact=' + fvt('del_contact') +
+       '|phone=' + fvt('del_phone') +
+       '|city=' + fvt('del_city') +
+       '|state=' + fvt('del_state') +
+       '|zip=' + fvt('del_zip') +
+       '|addr=' + fvt('del_addr') +
+       '|order_date=' + fmtDate(fvt('order_date')) +
+       '|del_date=' + fmtDate(fvt('req_del_date')) +
        '|items=' + dataItems.join(';') +
-       (fv('stn_lat_d') ? '|lat=' + fv('stn_lat_d') : '') +
-       (fv('stn_lon_d') ? '|lon=' + fv('stn_lon_d') : '') +
-       (fv('stn_grid_d') ? '|grid=' + fv('stn_grid_d') : '') +
-       (fv('op_callsign') ? '|op_call=' + fv('op_callsign') : '') +
-       (fv('op_name')     ? '|op_name=' + fv('op_name')     : '') +
-       (fv('op_position') ? '|op_pos='  + fv('op_position') : '') + ']\n';
+       (fvt('stn_lat_d') ? '|lat=' + fvt('stn_lat_d') : '') +
+       (fvt('stn_lon_d') ? '|lon=' + fvt('stn_lon_d') : '') +
+       (fvt('stn_grid_d') ? '|grid=' + fvt('stn_grid_d') : '') +
+       (fvt('op_callsign') ? '|op_call=' + fvt('op_callsign') : '') +
+       (fvt('op_name')     ? '|op_name=' + fvt('op_name')     : '') +
+       (fvt('op_position') ? '|op_pos='  + fvt('op_position') : '') + ']\n';
   return m;
 }
 
@@ -440,9 +442,8 @@ window.onload = function() {
   <tr>
     <td width="160" style="border-right:1px solid #999; padding:6px;">
       <div class="logo">
-        <span class="top">The Church of</span>
-        <span class="mid">Jesus Christ</span>
-        <span class="bot">of Latter-day Saints</span>
+        <span class="mid">Church of Jesus Christ EMCOMM</span>
+        <span class="bot">Independent emergency communications volunteer project</span>
       </div>
     </td>
     <td>
@@ -463,7 +464,7 @@ window.onload = function() {
       <tr>
         <td><div class="lbl">Delivery Contact</div><input type="text"  id="del_contact" name="del_contact" style="width:98%;" value="Scott Jeppson (Larkspur 5th Ward)" /></td>
         <td><div class="lbl">Phone (with area code)</div><input type="tel"  id="del_phone" name="del_phone" style="width:180px;" value="555-555-0150" /></td>
-        <td><div class="lbl">Order Date</div><input type="date"  id="order_date" name="order_date" value="2026-11-12" /></td>
+        <td><div class="lbl">Order Date</div><input type="date"  id="order_date" name="order_date" value="2026-11-19" /></td>
       </tr>
       <tr>
         <td><div class="lbl">Delivery Address</div><input type="text"  id="del_addr" name="del_addr" style="width:98%;" value="300 N 200 W" /></td>
@@ -609,7 +610,7 @@ window.onload = function() {
       </tr>
       <tr>
         <td><div class="lbl">Area Welfare Manager's Signature / Name</div><input type="text" id="awm_sig" name="awm_sig" style="width:98%;" /></td>
-        <td><div class="lbl">Requested Delivery Date</div><input type="date"  id="req_del_date" name="req_del_date" value="2026-11-13" /></td>
+        <td><div class="lbl">Requested Delivery Date</div><input type="date"  id="req_del_date" name="req_del_date" value="2026-11-20" /></td>
       </tr>
     </table>
   </td></tr>
