@@ -336,6 +336,12 @@ function Invoke-Uninstall {
 
     Write-Step "Removing..."
     foreach ($t in $targets) { Remove-Item -LiteralPath $t -Recurse -Force -ErrorAction SilentlyContinue }
+    # A Desktop synced by OneDrive puts a deleted folder back, empty, a few seconds later (seen on both EOC laptops,
+    # 2026-11-18: 4 to 7 s after the uninstall). Watch for 15 s and remove whatever comes back.
+    for ($i = 0; $i -lt 15; $i++) {
+        Start-Sleep -Seconds 1
+        foreach ($t in @($targets | Where-Object { Test-Path -LiteralPath $_ })) { Remove-Item -LiteralPath $t -Recurse -Force -ErrorAction SilentlyContinue }
+    }
     $left = @($targets | Where-Object { Test-Path -LiteralPath $_ })
     Write-Host ""
     if ($left.Count) {

@@ -59,7 +59,7 @@ switch ($Step) {
    C 'uninstall: stopped the running EOC Server and Simulator' ($out -match 'Stopped the EOC Server')
    C 'uninstall: copied the records' ($out -match 'Records copied:')
    C 'uninstall: says it is uninstalled' ($out -match 'is uninstalled') (($out -split "`n" | Select-String 'still there|XX|!!' | ForEach-Object { $_.Line.Trim() }) -join ' | ')
-   Start-Sleep 2
+   Start-Sleep 10   # a OneDrive Desktop puts a deleted folder back 4 to 7 s later: give it the time to show
    C 'after: nothing listens on 8080 or 8090' (-not (Listening 8080) -and -not (Listening 8090))
    $desk = [Environment]::GetFolderPath('Desktop')
    $left = @(@($base, $app) | Where-Object { Test-Path -LiteralPath $_ }) + @(Get-ChildItem -LiteralPath $desk -Filter "$name*" -ErrorAction SilentlyContinue | ForEach-Object { $_.Name }) +
