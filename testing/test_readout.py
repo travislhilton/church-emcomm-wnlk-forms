@@ -231,6 +231,9 @@ try:
             pg.goto(f'http://127.0.0.1:{PORT}/')
             pg.wait_for_function('typeof msgs !== "undefined" && msgs.length === 7 && typeof incident === "object" && incident.eocName', timeout=20000)
             pg.evaluate('buildSitrep()')
+            # the text is written once the server has numbered the SITREP (POST /api/sitreps): wait for it, a slow laptop
+            # read the box empty (W9TLH-7, 2026-11-18)
+            pg.wait_for_function('/SECTION G/.test(document.getElementById("sitrep-pre").textContent)', timeout=15000)
             txt = pg.inner_text('#sitrep-pre')
             tiles = pg.evaluate('''() => { var o = {}; renderDRAgg(msgs.filter(function(m){return m.type==="dr";}));
                 document.querySelectorAll("#dr-agg-stats .stat").forEach(function(s){ o[s.querySelector(".l").textContent] = s.querySelector(".n").textContent; }); return o; }''')
