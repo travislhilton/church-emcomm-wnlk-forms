@@ -46,7 +46,7 @@ h1 {
   margin-bottom: 12px;
 }
 .print-btn {
-  background: var(--red);
+  background: var(--navy);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -58,7 +58,7 @@ h1 {
   letter-spacing: 0.05em;
   margin-bottom: 32px;
 }
-.print-btn:hover { background: #9a0020; }
+.print-btn:hover { background: #0f2540; }
 
 .section-label {
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
@@ -252,7 +252,7 @@ h1 {
 .home-link{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 6px;font:600 17px/1 Arial,Helvetica,sans-serif;color:#1a3a5c;text-decoration:none}.home-link span{font-size:28px;line-height:1;margin-top:-3px}
 @media print {
   .home-link { display: none !important; }
-  @page { size: letter; margin: 0.5in; }
+  @page { size: letter; margin: 0.5in 0.5in 0.5in 0.75in; }  /* 3/4 in left margin (hole punch, binder) */
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   html, body { background: #fff; padding: 0; margin: 0; }
   .print-btn, .section-label, .page-header { display: none; }
@@ -276,6 +276,10 @@ h1 {
 }
 @media (max-width: 600px) {
   .card { min-width: 0; }
+  .card-row { flex-direction: column; }
+  .card-front, .card-back { max-width: none; }
+  .card-head { flex-direction: column-reverse; }
+  .card-qr { align-self: flex-end; }
   .bishop-flow { grid-template-columns: 1fr; }
   .bishop-flow .bishop-arrow { transform: rotate(90deg); justify-self: center; }
   .col-2 { flex-direction: column; }
@@ -292,7 +296,7 @@ h1 {
 .sc-table.compact { font-size: 12px; } .sc-table.compact td { padding: 1px 6px; line-height: 1.2; }
 .sc-private { font-size: 11px; font-weight: 700; color: var(--red); letter-spacing: .08em; text-transform: uppercase; }
 
-@page { size: letter; margin: 0.5in; }
+@page { size: letter; margin: 0.5in 0.5in 0.5in 0.75in; }  /* 3/4 in left margin (hole punch, binder) */
 * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 html, body { background: #fff; padding: 0; margin: 0; }
 .page-header, .section-label, .print-btn { display: none; }
