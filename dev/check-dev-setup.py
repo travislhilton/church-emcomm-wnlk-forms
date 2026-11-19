@@ -121,22 +121,30 @@ def run_tests():
     print()
     env = dict(__import__('os').environ, PYTHONIOENCODING='utf-8')
     suites = [['test_acronyms.py'], ['test_public_files.py'], ['test_example.py'], ['test_sim.py'], ['test_sim_consistency.py', '--port=8084'], ['test_training_samples.py'],
-              ['test_phone_api.py', '--ports=8180,8181'], ['test_readout.py', '--port=8186'], ['test_offline_webkit.py'], ['test_browsers.py'], ['test_basemap.py', '--ports=8190,8191'], ['test_contrast.py', '--ports=8580,8581'],
+              ['test_phone_api.py', '--ports=8180,8181'], ['test_readout.py', '--port=8186'], ['test_multi_operator.py', '--port=8089'], ['test_offline_webkit.py'], ['test_browsers.py'], ['test_basemap.py', '--ports=8190,8191'], ['test_contrast.py', '--ports=8580,8581'],
               ['test_install.py', '--ports=8187,8188']]
     for s in suites:
         r = subprocess.run([sys.executable, str(ROOT / 'testing' / s[0]), *s[1:]], cwd=ROOT, env=env, capture_output=True, text=True, encoding='utf-8', errors='replace')
         last = next((ln for ln in reversed((r.stdout + '\n' + r.stderr).splitlines()) if ln.strip()), '(no output)')
-        if r.returncode:
+        if r.returncode == 2 or 'SKIP' in last:
+            # a suite that could not run (no Playwright, no Windows) is NOT RUN, never counted as passed
+            not_run.append(s[0])
+            say('NOTE', f'{s[0]}: NOT RUN: {last}')
+        elif r.returncode:
             detail = [ln for ln in r.stdout.splitlines() if ln.startswith('FAIL')][:5] or r.stderr.splitlines()[-3:]
             say('FAIL', f'{s[0]}: {last}')
             for d in detail:
                 say('', f'  {d[:200]}')
         else:
-            say('NOTE' if 'SKIP' in last else 'PASS', f'{s[0]}: {last}')
+            say('PASS', f'{s[0]}: {last}')
+
+
+not_run = []
 
 
 def finish():
-    print(f'\n{"READY" if not fails else str(len(fails)) + " to fix"}')
+    print(f'\n{"READY" if not fails else str(len(fails)) + " to fix"}'
+          + (f' ({len(not_run)} suite(s) NOT RUN here: {", ".join(not_run)})' if not_run else ''))
     return 1 if fails else 0
 
 

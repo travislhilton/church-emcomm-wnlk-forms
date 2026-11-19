@@ -1187,7 +1187,13 @@ var msgFilter = 'all';
 var editingRosterId = null;
 var pendingConfirm = null;
 var networkMode = false;
-var _lastPollMs = 0;
+var _lastPollMs = 0;   // the SERVER's clock at the last message fetch (X-Server-Ms), never this browser's
+// The incident as last agreed with the server: save() sends only the event fields this screen changed (and the identity
+// only when it changed here), so an operator's note never puts back an old PACE level another screen just set (audit
+// 2026-11-18); _pollIdentity adopts event fields changed elsewhere.
+var _incStamp = null;
+function _incCopy() { return JSON.parse(JSON.stringify(incident || {})); }
+function _same(a, b) { return JSON.stringify(a === undefined ? null : a) === JSON.stringify(b === undefined ? null : b); }
 var _pollTimer = null;
 var _serverMsgIds = {};
 // The roster as last agreed with the server: save() sends the roster only when this screen changed it, and the
@@ -1201,8 +1207,14 @@ function save() {
   if (!networkMode) return;
   msgs.forEach(function(m){ _netPostMsg(m); });
   var rs = JSON.stringify(roster);
-  if (_rosterStamp !== null && rs !== _rosterStamp) { _rosterStamp = rs; fetch('/api/roster',{method:'PUT',headers:{'Content-Type':'application/json'},body:rs}).catch(function(){}); }
-  fetch('/api/incident',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(incident)}).catch(function(){});
+  if (_rosterStamp !== null && rs !== _rosterStamp) { _rosterStamp = rs; netWrite('/api/roster',{method:'PUT',headers:{'Content-Type':'application/json'},body:rs}); }
+  var st = _incStamp || {}, body = {}, any = false;
+  EVENT_FIELDS.forEach(function(k){ if (!_same(incident[k], st[k])) { body[k] = (k in incident) ? incident[k] : null; any = true; } });
+  if (!_incStamp || !_same(identityOf(incident), identityOf(st))) { Object.assign(body, identityOf(incident)); any = true; }
+  if (!any) return;
+  body.eventId = incident.eventId;
+  _incStamp = _incCopy();
+  netWrite('/api/incident', {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
 }
 function load() {
   try {
@@ -1274,9 +1286,9 @@ function refreshEvents(cb) {
 }
 function _reloadForEvent(msg) {
   // The active event changed (here or on another operator's screen): reload everything.
-  _serverMsgIds = {};
+  _serverMsgIds = {}; var srvMs = 0;
   Promise.all([
-    fetch('/api/messages').then(function(r){return r.json();}),
+    fetch('/api/messages').then(function(r){ srvMs = +r.headers.get('X-Server-Ms') || 0; return r.json(); }),
     fetch('/api/roster').then(function(r){return r.json();}),
     fetch('/api/incident').then(function(r){return r.json();}),
     fetch('/api/notes').then(function(r){return r.json();}),
@@ -1284,9 +1296,9 @@ function _reloadForEvent(msg) {
     fetch('/api/actions').then(function(r){return r.json();}).catch(function(){return [];})
   ]).then(function(res){
     msgs = res[0].map(function(m){ var d=JSON.parse(m.data_json||'{}'); d.id=m.id; d.ts=m.received_ms; d.status=m.status||'new'; d.operator_note=m.operator_note||''; _normalizeServerMsg(d); _serverMsgIds[m.id]=1; return d; });
-    roster = res[1]; _rosterStamp = JSON.stringify(roster); incident = res[2]; notes = res[3]; events = Array.isArray(res[4]) ? res[4] : events;
+    roster = res[1]; _rosterStamp = JSON.stringify(roster); incident = res[2]; _incStamp = _incCopy(); notes = res[3]; events = Array.isArray(res[4]) ? res[4] : events;
     actions = Array.isArray(res[5]) ? res[5] : []; _actionsStamp = JSON.stringify(actions);
-    _lastPollMs = Date.now();
+    _lastPollMs = srvMs;
     document.getElementById('sitrep-wrap').style.display='none';
     render(); updateSetupForm();
     if (msg) toast(msg);
@@ -1348,7 +1360,7 @@ function setEventStatus(id, status) {
   if (networkMode) {
     fetch('/api/events/'+encodeURIComponent(id),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:status})})
       .then(function(r){ return r.json(); })
-      .then(function(d){ if (d && d.error) { toast(d.error); return; } if (id===activeEventId()) { incident=d; } refreshEvents(function(){ render(); }); toast(status==='closed'?'Event closed — it stays on file and can be reopened':'Event reopened'); })
+      .then(function(d){ if (d && d.error) { toast(d.error); return; } if (id===activeEventId()) { incident=d; _incStamp=_incCopy(); } refreshEvents(function(){ render(); }); toast(status==='closed'?'Event closed — it stays on file and can be reopened':'Event reopened'); })
       .catch(function(){ toast('Could not update the event'); });
     return;
   }
@@ -1428,7 +1440,7 @@ function saveComms() {
   var evChanged = ev.trim()!==String((incident&&incident.commsEvent)||'').trim();
   incident.commsEvent=ev.trim(); var aev=activeEvent(); if(aev) aev.commsEvent=incident.commsEvent;
   if(networkMode) fetch('/api/comms',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(comms)}).catch(function(){ toast('Saved here, but the server did not answer'); });
-  if(evChanged){ notes.unshift({id:uid(), ts:Date.now(), text:'Comms sheet — event-only lines updated: '+(incident.commsEvent?incident.commsEvent.replace(/\n/g,' · '):'(cleared)')}); if(networkMode) fetch('/api/notes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(notes[0])}).catch(function(){}); }
+  if(evChanged){ notes.unshift({id:uid(), ts:Date.now(), text:'Comms sheet — event-only lines updated: '+(incident.commsEvent?incident.commsEvent.replace(/\n/g,' · '):'(cleared)')}); if(networkMode) netWrite('/api/notes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(notes[0])}); }
   save(); _commsEditorStamp=-1; renderComms(); render();
   var el=document.getElementById('comms-saved'); if(el) el.textContent='Saved '+fmtTs(comms.updatedMs);
   toast('Comms sheet saved'+(networkMode?' — every operator and the wall see it within 30 s':''));
@@ -1599,7 +1611,7 @@ function renameEvent(id) {
     var apply=function(){ Object.assign(ev, ch); if (id===activeEventId()) Object.assign(incident, ch); save(); render(); updateSetupForm(); toast('Event named: '+name); };
     if (!networkMode) { apply(); return; }
     fetch('/api/events/'+encodeURIComponent(id),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(ch)})
-      .then(function(r){ return r.json(); }).then(function(d){ if (d&&d.error) { toast(d.error); return; } if (id===activeEventId()) incident=d; Object.assign(ev, ch); refreshEvents(function(){ render(); updateSetupForm(); }); toast('Event named: '+name); })
+      .then(function(r){ return r.json(); }).then(function(d){ if (d&&d.error) { toast(d.error); return; } if (id===activeEventId()) { incident=d; _incStamp=_incCopy(); } Object.assign(ev, ch); refreshEvents(function(){ render(); updateSetupForm(); }); toast('Event named: '+name); })
       .catch(function(){ toast('Could not save the name on the server'); });
   };
   document.getElementById('modal-confirm-btn').textContent='Save name';
@@ -1768,7 +1780,7 @@ function totalsBoth(drs) {
 function setTotalsBy(v) {
   incident.totalsBy = (v === 'latest') ? 'latest' : 'all'; var aev = activeEvent(); if (aev) aev.totalsBy = incident.totalsBy;
   notes.unshift({id: uid(), ts: Date.now(), text: 'Totals now lead with: '+TOTALS_BY[incident.totalsBy]+' (the other count is shown beside it where they differ)'});
-  if (networkMode) fetch('/api/notes', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(notes[0])}).catch(function(){});
+  if (networkMode) netWrite('/api/notes',{method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(notes[0])});
   save(); render();
 }
 function renderTotalsBy(id, drs) {
@@ -1884,7 +1896,7 @@ function exportRollup() {
   dlText(JSON.stringify(bundle,null,1),'church_eoc_rollup_'+tag+'_'+new Date().toISOString().slice(0,16).replace(/[-:]/g,'').replace('T','_')+'Z.json');
   incident.lastRollupTs=Date.now();
   notes.unshift({id:uid(),ts:Date.now(),text:'Roll-up exported to '+((incident&&incident.parentName)||'parent EOC')+': '+picked.length+' record'+(picked.length===1?'':'s')+(since?' since '+fmtTs(since):' (everything)')+(waiting.length?', '+waiting.length+' work item'+(waiting.length===1?'':'s')+' waiting on that EOC':'')});
-  if(networkMode) fetch('/api/notes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(notes[0])}).catch(function(){});
+  if(networkMode) netWrite('/api/notes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(notes[0])});
   save(); render(); toast('Roll-up exported — '+picked.length+' record'+(picked.length===1?'':'s')+(waiting.length?', '+waiting.length+' work item'+(waiting.length===1?'':'s')+' waiting on the EOC above':''));
 }
 function applyReplyBundle(data){
@@ -1927,7 +1939,7 @@ function mergeBundle(data) {
   notes.unshift(logNote); nNew.push(logNote);
   notes.sort(function(a,b){return b.ts-a.ts;});
   incident.rollups=(incident.rollups||[]).concat([{from:via,level:frm.level||'',at:Date.now(),new:added,dup:dup,exportedAt:data.exportedAt||null}]).slice(-50);
-  if(networkMode){ nNew.forEach(function(n){ fetch('/api/notes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(n)}).catch(function(){}); }); }
+  if(networkMode){ nNew.forEach(function(n){ netWrite('/api/notes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(n)}); }); }
   save(); render();
   return {via:via,added:added,dup:dup,rosterNew:rNew};
 }
@@ -2047,15 +2059,26 @@ function applyUnitsPick() {
 var _identityPollMs = 0, _identitySavedMs = 0;
 function _pollIdentity() {
   if (!networkMode || !incident) return;
-  if (Date.now() - _identitySavedMs < 20000) return;           // this screen just saved: the server holds our copy
   fetch('/api/incident').then(function(r){ return r.json(); }).then(function(srv){
     if (!srv || typeof srv !== 'object') return;
+    // Event fields changed on another screen or by the simulator (PACE, SITREP interval, last SITREP, totals...):
+    // adopt each one this screen has not changed itself since it last agreed with the server.
+    var st = _incStamp || {}, took = [];
+    if (srv.eventId === incident.eventId) EVENT_FIELDS.forEach(function(k){
+      if (!_same(srv[k], st[k]) && _same(incident[k], st[k])) { if (srv[k] === undefined || srv[k] === null) delete incident[k]; else incident[k] = srv[k]; st[k] = srv[k]; took.push(k); }
+    });
+    if (took.length) {
+      _incStamp = st; var ev = activeEvent(); if (ev) took.forEach(function(k){ ev[k] = incident[k]; });
+      render();
+      if (took.indexOf('pace') >= 0) toast('PACE level now '+(incident.pace||'not set')+(incident.pace ? ' - '+_PACE_NAME[incident.pace] : '')+' (set on another screen)');
+    }
+    if (Date.now() - _identitySavedMs < 20000) return;           // this screen just saved its identity: the server holds our copy
     var mine = identityOf(incident), theirs = identityOf(srv);
     if (JSON.stringify(mine) === JSON.stringify(theirs)) return;
     var ae = document.activeElement, setup = document.getElementById('tab-setup');
     if (ae && setup && setup.contains(ae) && /INPUT|TEXTAREA|SELECT/.test(ae.tagName)) return;   // someone is typing on Setup here
     Object.keys(mine).forEach(function(k){ if (!(k in theirs)) delete incident[k]; });
-    Object.assign(incident, theirs);
+    Object.assign(incident, theirs); if (_incStamp) Object.assign(_incStamp, theirs);
     try { localStorage.setItem('church_eoc_v2', JSON.stringify({msgs:msgs,roster:roster,incident:incident,notes:notes,actions:actions,events:events,evStore:{}})); } catch(e){}
     MAP_LOADED = false;
     render(); updateSetupForm();
@@ -2870,7 +2893,7 @@ function renderMessages() {
 function removeMsg(id) {
   pendingConfirm = function(){
     msgs=msgs.filter(function(m){return m.id!==id;});
-    if(networkMode){ fetch('/api/messages/'+id,{method:'DELETE'}).catch(function(){}); delete _serverMsgIds[id]; }
+    if(networkMode){ netWrite('/api/messages/'+id,{method:'DELETE'}); delete _serverMsgIds[id]; }
     save(); render(); closeModal(); toast('Message removed');
   };
   document.getElementById('modal-title').textContent='Remove Message';
@@ -2887,7 +2910,7 @@ function addNote() {
   var n = {id:uid(),ts:Date.now(),text:txt};
   notes.unshift(n);
   document.getElementById('note-input').value='';
-  if(networkMode) fetch('/api/notes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(n)}).catch(function(){});
+  if(networkMode) netWrite('/api/notes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(n)});
   save(); renderNotes(); toast('Note added');
 }
 function renderNotes() {
@@ -2901,7 +2924,7 @@ function renderNotes() {
 }
 function removeNote(id) {
   notes=notes.filter(function(n){return n.id!==id;});
-  if(networkMode) fetch('/api/notes/'+id,{method:'DELETE'}).catch(function(){});
+  if(networkMode) netWrite('/api/notes/'+id,{method:'DELETE'});
   save(); renderNotes(); toast('Note removed');
 }
 function exportNotes() {
@@ -2961,7 +2984,7 @@ function saveIncident() {
   var srH = document.getElementById('inc-sitrep-hrs').value, srBy = document.getElementById('inc-sitrep-by').value.trim();
   var srChanged = String(srH) !== String(keep.sitrepHrs||'') || srBy !== (keep.sitrepBy||'');
   incident = Object.assign(keep, {name:name, area:document.getElementById('inc-area').value.trim(), type:document.getElementById('inc-type').value.trim(), ic:document.getElementById('inc-ic').value.trim(), op:document.getElementById('inc-op').value.trim(), opPeriodHrs:document.getElementById('inc-op-hrs').value, startTs:startTs, pace:pace, sitrepHrs:srH, sitrepBy:srBy});
-  function logNote(text){ notes.unshift({id:uid(), ts:Date.now(), text:text}); if (networkMode) fetch('/api/notes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(notes[0])}).catch(function(){}); }
+  function logNote(text){ notes.unshift({id:uid(), ts:Date.now(), text:text}); if (networkMode) netWrite('/api/notes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(notes[0])}); }
   if (paceChanged) { incident.paceTs = Date.now(); logNote('PACE level in force: '+(pace||'not set')+(pace?' ('+_PACE_NAME[pace]+')':'')); }
   if (srChanged) logNote(srH ? 'SITREP interval: every '+srH+' hours'+(srBy?' (directed by '+srBy+')':'') : SITREP_NOT_SET);
   var ev = activeEvent(); if (ev) Object.assign(ev, eventFieldsOf(incident));
@@ -3179,7 +3202,7 @@ function applyEocSetup(d, parts) {
   }
   var from = (d.from && d.from.name) || 'another EOC';
   notes.unshift({id: uid(), ts: Date.now(), text: 'EOC setup loaded from ' + from + ': ' + (done.join(', ') || 'nothing changed')});
-  if (networkMode) fetch('/api/notes', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(notes[0])}).catch(function(){});
+  if (networkMode) netWrite('/api/notes',{method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(notes[0])});
   _identitySavedMs = Date.now();
   save(); render(); updateSetupForm(); renderComms();
   var after = null;
@@ -3282,9 +3305,9 @@ function importHandoff(e) {
       // The handoff's records replace the ACTIVE event's records; the event itself
       // (its id and status on this server) stays what it is.
       var keepEv = {eventId:activeEventId(), eventStatus:(incident&&incident.eventStatus)||'open', eventCreatedMs:(incident&&incident.eventCreatedMs)||Date.now()};
-      if (networkMode) { msgs.forEach(function(m){ fetch('/api/messages/'+encodeURIComponent(m.id),{method:'DELETE'}).catch(function(){}); }); notes.forEach(function(n){ fetch('/api/notes/'+encodeURIComponent(n.id),{method:'DELETE'}).catch(function(){}); }); actions.forEach(function(a){ actFetch('/api/actions/'+encodeURIComponent(a.id),{method:'DELETE'}).catch(function(){}); }); _serverMsgIds={}; }
+      if (networkMode) { msgs.forEach(function(m){ netWrite('/api/messages/'+encodeURIComponent(m.id),{method:'DELETE'}); }); notes.forEach(function(n){ netWrite('/api/notes/'+encodeURIComponent(n.id),{method:'DELETE'}); }); actions.forEach(function(a){ actFetch('/api/actions/'+encodeURIComponent(a.id),{method:'DELETE'}).catch(function(){}); }); _serverMsgIds={}; }
       msgs=data.msgs||[]; roster=data.roster||[]; incident=Object.assign(data.incident||{}, keepEv); notes=data.notes||[]; actions=data.actions||[];
-      if (networkMode) { notes.forEach(function(n){ fetch('/api/notes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(n)}).catch(function(){}); }); actions.forEach(function(a){ actFetch('/api/actions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(a)}).catch(function(){}); }); }
+      if (networkMode) { notes.forEach(function(n){ netWrite('/api/notes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(n)}); }); actions.forEach(function(a){ actFetch('/api/actions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(a)}).catch(function(){}); }); }
       var ev = activeEvent(); if (ev) Object.assign(ev, eventFieldsOf(incident));
       save(); render(); updateSetupForm(); closeModal(); toast('Handoff imported — '+msgs.length+' messages, '+roster.length+' '+unitPlural()+', '+actions.length+' work items');
     };
@@ -3304,7 +3327,7 @@ function confirmClearAll() {
   pendingConfirm = function(){
     // Clears the ACTIVE event's records (on the server too); the EOC identity and the
     // event itself (name, status) stay. For a new emergency, open a new event instead.
-    if (networkMode) { msgs.forEach(function(m){ fetch('/api/messages/'+encodeURIComponent(m.id),{method:'DELETE'}).catch(function(){}); }); notes.forEach(function(n){ fetch('/api/notes/'+encodeURIComponent(n.id),{method:'DELETE'}).catch(function(){}); }); actions.forEach(function(a){ actFetch('/api/actions/'+encodeURIComponent(a.id),{method:'DELETE'}).catch(function(){}); }); _serverMsgIds={}; }
+    if (networkMode) { msgs.forEach(function(m){ netWrite('/api/messages/'+encodeURIComponent(m.id),{method:'DELETE'}); }); notes.forEach(function(n){ netWrite('/api/notes/'+encodeURIComponent(n.id),{method:'DELETE'}); }); actions.forEach(function(a){ actFetch('/api/actions/'+encodeURIComponent(a.id),{method:'DELETE'}).catch(function(){}); }); _serverMsgIds={}; }
     var keep = identityOf(incident); ['eventId','eventStatus','eventCreatedMs','name','area','type','startTs','ic','op','opPeriodHrs'].forEach(function(k){ if(incident && incident[k]!==undefined) keep[k]=incident[k]; });
     msgs=[]; roster=[]; incident=keep; notes=[]; actions=[];
     save(); render(); closeModal(); toast('Event data cleared — '+eventTitle(activeEvent()));
@@ -3728,7 +3751,9 @@ var _actBusy=0, _actGen=0;
 function actFetch(url, opts) {
   _actBusy++; _actGen++;
   function end(){ _actBusy=Math.max(0,_actBusy-1); _actGen++; }
-  return fetch(url, opts).then(function(r){ end(); return r; }, function(e){ end(); throw e; });
+  return fetch(url, opts).then(function(r){ end(); return r; }, function(e){
+    end(); if (opts && opts.method && opts.method !== 'GET') _netQAdd(url, opts);   // kept and sent when the server answers
+    throw e; });
 }
 function patchAction(id, changes) {
   // Apply locally (log lines like the server writes them) and send the same change to the server.
@@ -4064,7 +4089,7 @@ function cycleStatus(id) {
   if(idx<0) return;
   var m = msgs[idx];
   m.status = _STATUSES[(_STATUSES.indexOf(m.status||'new')+1)%_STATUSES.length];
-  if(networkMode) fetch('/api/messages/'+id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:m.status})}).catch(function(){});
+  if(networkMode) netWrite('/api/messages/'+id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:m.status})});
   save(); render();
 }
 function stBadge(m) {
@@ -4090,13 +4115,38 @@ function initNetwork() {
     if(!_dropPollTimer) _dropPollTimer = setInterval(_pollDrop, 15000);
   }).catch(function(){ clearTimeout(timer); });
 }
+// ── Writes that must not be lost: when the server does not answer, the change waits on this screen (kept in this
+// browser) and is sent, in order, as soon as the server answers again. The bar says so; nothing claims "saved"
+// that is not on the server (audit 2026-11-18: a note and a status made during a drop never reached the server). ──
+var _netQueue = (function(){ try { var q = JSON.parse(localStorage.getItem('church_eoc_netq') || '[]'); return Array.isArray(q) ? q : []; } catch(e){ return []; } })();
+var _netFlushing = false;
+function _netQSave() { try { localStorage.setItem('church_eoc_netq', JSON.stringify(_netQueue)); } catch(e){} }
+function _netQAdd(url, opts) {
+  _netQueue.push({url: url, opts: {method: opts.method, headers: opts.headers || {}, body: opts.body}}); _netQSave();
+  showNetBar(false); toast('NOT SAVED yet: the EOC server is not answering. This change is kept here and sent when it answers.');
+}
+function netWrite(url, opts) {
+  if (_netQueue.length) { _netQAdd(url, opts); return Promise.resolve(null); }       // keep the order of changes
+  return fetch(url, opts).then(function(r){ if (r.status >= 500) throw new Error('server ' + r.status); return r; })
+    .catch(function(){ _netQAdd(url, opts); return null; });
+}
+function netFlush() {
+  if (!_netQueue.length || _netFlushing) return;
+  _netFlushing = true;
+  var it = _netQueue[0];
+  fetch(it.url, it.opts).then(function(r){
+    if (r.status >= 500) throw new Error('server');
+    _netQueue.shift(); _netQSave(); _netFlushing = false;
+    if (_netQueue.length) netFlush(); else { showNetBar(true); toast('Saved: the changes made while the server was not answering are on the server now'); }
+  }).catch(function(){ _netFlushing = false; });
+}
 function showNetBar(ok) {
   var el = document.getElementById('net-bar');
   if(ok){
     el.style.cssText='background:#065f46;color:#d1fae5;';
     el.className='sl-part';
     if(watcherState) showWatcherBar(); if(dropState) showDropBar();
-    el.textContent='⚡ EOC SERVER CONNECTED';
+    el.textContent = _netQueue.length ? '⏳ CONNECTED: sending '+_netQueue.length+' change(s) made while the server was not answering' : '⚡ EOC SERVER CONNECTED';
     el.title='Connected to the EOC server: every operator on this network sees the same data.';
     var hw=document.getElementById('hdr-wall'); if(hw) hw.style.display='';
     var wt=document.getElementById('wall-url-txt'); if(wt) wt.textContent=location.origin+'/wall';
@@ -4107,7 +4157,8 @@ function showNetBar(ok) {
     el.className='sl-part lost';
     // Winlink and Drop Folder states come from the server: hide them until it answers again.
     ['watcher-bar','drop-bar'].forEach(function(id){ var b=document.getElementById(id); if(b) b.style.display='none'; });
-    el.textContent='⚠ CONNECTION LOST — the EOC server is not answering. Check its window on the EOC laptop. This page tries again every 5 seconds.';
+    el.textContent='⚠ CONNECTION LOST: the EOC server is not answering. Check its window on the EOC laptop. This page tries again every 5 seconds.'
+      + (_netQueue.length ? ' NOT SAVED yet: '+_netQueue.length+' change(s) wait on this screen and are sent when it answers.' : '');
     el.title='';
   }
   el.style.display='';
@@ -4115,8 +4166,8 @@ function showNetBar(ok) {
 function _netPostMsg(msg) {
   if(!networkMode || _serverMsgIds[msg.id]) return;
   _serverMsgIds[msg.id] = 1;
-  fetch('/api/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(msg)})
-    .then(function(r){ return r.json(); })
+  netWrite('/api/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(msg)})
+    .then(function(r){ return r ? r.json() : null; })
     .then(function(res){
       if (!res || !res.duplicate) return;
       // the server already has this report (sent by phone, from a file or by another operator): take this copy off
@@ -4140,9 +4191,11 @@ function _normalizeServerMsg(d) {
   return d;
 }
 
+var _notesPollMs = 0;
 function loadFromServer() {
+  var srvMs = 0;
   Promise.all([
-    fetch('/api/messages').then(function(r){return r.json();}),
+    fetch('/api/messages').then(function(r){ srvMs = +r.headers.get('X-Server-Ms') || 0; return r.json(); }),
     fetch('/api/roster').then(function(r){return r.json();}),
     fetch('/api/incident').then(function(r){return r.json();}),
     fetch('/api/notes').then(function(r){return r.json();}),
@@ -4156,9 +4209,9 @@ function loadFromServer() {
       _serverMsgIds[m.id] = 1;
       return d;
     });
-    roster = res[1]; _rosterStamp = JSON.stringify(roster); incident = res[2]; notes = res[3]; events = Array.isArray(res[4]) ? res[4] : [];
+    roster = res[1]; _rosterStamp = JSON.stringify(roster); incident = res[2]; _incStamp = _incCopy(); notes = res[3]; events = Array.isArray(res[4]) ? res[4] : [];
     actions = Array.isArray(res[5]) ? res[5] : []; _actionsStamp = JSON.stringify(actions);
-    _lastPollMs = Date.now();
+    _lastPollMs = srvMs;
     render(); updateSetupForm();
     loadCommsFromServer();
     _startPolling();
@@ -4176,10 +4229,9 @@ function _pollServer() {
     }
   }).catch(function(){});
   if (Date.now() - _commsPollMs > 30000) { _commsPollMs = Date.now(); loadCommsFromServer(); }
-  if (Date.now() - _identityPollMs > 15000) { _identityPollMs = Date.now(); _pollIdentity(); }
+  if (Date.now() - _identityPollMs > 5000) { _identityPollMs = Date.now(); _pollIdentity(); }
   var since = _lastPollMs;
-  _lastPollMs = Date.now();
-  fetch('/api/messages?since='+since).then(function(r){return r.json();}).then(function(rows){
+  fetch('/api/messages?since='+since).then(function(r){ var sm = +r.headers.get('X-Server-Ms'); return r.json().then(function(rows){ if (sm) _lastPollMs = sm; return rows; }); }).then(function(rows){
     var changed = false;
     rows.forEach(function(m){
       var d = JSON.parse(m.data_json||'{}');
@@ -4191,7 +4243,22 @@ function _pollServer() {
     });
     if(changed) render();
     if(document.getElementById('net-bar').textContent.indexOf('LOST')>=0) showNetBar(true);
+    netFlush();
   }).catch(function(){ showNetBar(false); });
+  // Records another operator removed
+  if (since) fetch('/api/deleted?since='+since).then(function(r){return r.json();}).then(function(ids){
+    if (!Array.isArray(ids) || !ids.length) return;
+    var gone = {}; ids.forEach(function(i){ gone[i] = 1; });
+    var before = msgs.length; msgs = msgs.filter(function(m){ return !gone[m.id]; });
+    if (msgs.length !== before) render();
+  }).catch(function(){});
+  // Notes added on another screen, by the simulator or by the server (roll-ups, duplicates dropped)
+  if (Date.now() - _notesPollMs > 10000) { _notesPollMs = Date.now();
+    fetch('/api/notes').then(function(r){return r.json();}).then(function(list){
+      if (!Array.isArray(list)) return; var have = {}; notes.forEach(function(n){ have[n.id] = 1; });
+      var fresh = list.filter(function(n){ return !have[n.id]; });
+      if (fresh.length) { notes = notes.concat(fresh).sort(function(a,b){ return (b.ts||0)-(a.ts||0); }); render(); }
+    }).catch(function(){}); }
   // Roster: changed on the server by someone else (another operator, the simulator, a roll-up) -> adopt it.
   fetch('/api/roster').then(function(r){return r.json();}).then(function(list){
     if(!Array.isArray(list) || _rosterStamp===null) return;
@@ -4244,7 +4311,7 @@ function drillScore(d){ var s=d&&d.score; if(!s||!s.total) return ''; var bad=(s
 function drillReady(flag){
   var me=(incident&&incident.op)||'';
   if(!me){ me=(prompt('Your name (operator on duty):')||'').trim(); if(!me) return;
-    if(incident){ incident.op=me; save(); if(networkMode) fetch('/api/incident',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(incident)}).catch(function(){}); } }
+    if(incident){ incident.op=me; save(); } }
   fetch('/api/drill/ready',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({who:me, ready:flag})}).then(function(r){return r.json();})
     .then(function(j){ if(_drill){ _drill.ready=j.ready||[]; _drawDrillBar(); } toast(flag?'Marked ready for the drill':'Marked not ready'); })
     .catch(function(){ toast('Could not reach the EOC server'); });

@@ -312,6 +312,26 @@ def init_db():
                 conn.execute(f'ALTER TABLE {tbl} ADD COLUMN event_id TEXT NOT NULL DEFAULT ""')
             except sqlite3.OperationalError:
                 pass
+        # Every change to a record is stamped with the SERVER's clock (changed_ms), and every removal is kept in
+        # deleted_msgs, so each open page asks "what changed since <server time>" and sees status changes, removals and
+        # roll-up records dated earlier: a browser's own clock (fast, slow) is never the cursor (audit 2026-11-18).
+        try:
+            conn.execute('ALTER TABLE messages ADD COLUMN changed_ms INTEGER NOT NULL DEFAULT 0')
+            conn.execute('UPDATE messages SET changed_ms=received_ms WHERE changed_ms=0')
+        except sqlite3.OperationalError:
+            pass
+        conn.executescript("""
+            CREATE TABLE IF NOT EXISTS deleted_msgs (id TEXT NOT NULL, event_id TEXT NOT NULL DEFAULT '', ts INTEGER NOT NULL);
+            CREATE INDEX IF NOT EXISTS idx_msg_changed ON messages(event_id, changed_ms);
+            CREATE INDEX IF NOT EXISTS idx_msg_dup ON messages(dup_key, event_id);
+            CREATE INDEX IF NOT EXISTS idx_act_key ON actions(akey, event_id);
+            CREATE TRIGGER IF NOT EXISTS msg_ins AFTER INSERT ON messages BEGIN
+                UPDATE messages SET changed_ms = CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER) WHERE rowid = NEW.rowid; END;
+            CREATE TRIGGER IF NOT EXISTS msg_upd AFTER UPDATE OF status, operator_note, data_json ON messages BEGIN
+                UPDATE messages SET changed_ms = CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER) WHERE rowid = NEW.rowid; END;
+            CREATE TRIGGER IF NOT EXISTS msg_del AFTER DELETE ON messages BEGIN
+                INSERT INTO deleted_msgs (id, event_id, ts) VALUES (OLD.id, OLD.event_id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER)); END;
+        """)
         _ensure_active_event(conn)
         conn.commit()
 
@@ -939,8 +959,11 @@ def _save_incident_view(conn, body):
     the page was looking at (its eventId), which is normally the active one."""
     body = body if isinstance(body, dict) else {}
     ident = {k: v for k, v in body.items() if k not in EVENT_FIELDS and k not in _VIEW_ONLY}
-    conn.execute('INSERT OR REPLACE INTO incident (singleton, data_json) VALUES (1,?)',
-                 (json.dumps(ident),))
+    # A page sends the identity only when it changed it (the rest of the time only the event fields it changed):
+    # a body without identity fields leaves the identity as it is.
+    if ident:
+        conn.execute('INSERT OR REPLACE INTO incident (singleton, data_json) VALUES (1,?)',
+                     (json.dumps(ident),))
     eid = str(body.get('eventId') or '')
     if not eid or not conn.execute('SELECT id FROM events WHERE id=?', (eid,)).fetchone():
         eid = _ensure_active_event(conn)
@@ -2603,10 +2626,12 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
         method = getattr(self, '_method', '?')
         print(f'  [{ts}] {method} {self.path}')
 
-    def send_json(self, data, code=200):
+    def send_json(self, data, code=200, headers=None):
         body = json.dumps(data, default=str).encode()
         self.send_response(code)
         self.send_header('Content-Type', 'application/json')
+        for k, v in (headers or {}).items():
+            self.send_header(k, v)
         self.send_header('Content-Length', str(len(body)))
         # No Access-Control-Allow-Origin: only this server's own pages read its API. Phones on https (the
         # GitHub Pages app) hand reports over through /receive, the simulator and other EOCs talk server to server.
@@ -2649,8 +2674,11 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
             pass
 
     def read_body(self):
-        length = int(self.headers.get('Content-Length', 0))
-        if length == 0:
+        try:
+            length = int(self.headers.get('Content-Length', 0))
+        except ValueError:
+            length = 0
+        if length <= 0:                     # none, or a negative length: never wait for a body that is not coming
             return {}
         raw = self.rfile.read(length)
         try:
@@ -2816,14 +2844,31 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
                     self.send_json(_list_events(conn))
 
                 elif path == '/api/messages':
-                    # Records of one event: the active one unless ?event=<id> names another.
-                    since = int(params.get('since', ['0'])[0])
+                    # Records of one event: the active one unless ?event=<id> names another. ?since=<server ms> gives
+                    # what was added or changed since then (2 s overlap; the page replaces by id). X-Server-Ms is the
+                    # server's clock for the next ?since.
+                    try:
+                        since = int(float(params.get('since', ['0'])[0] or 0))
+                    except ValueError:
+                        self.send_json({'error': 'since must be a number'}, 400); return
                     eid = params.get('event', [''])[0] or _ensure_active_event(conn)
-                    rows = conn.execute(
-                        'SELECT * FROM messages WHERE event_id=? AND received_ms > ? ORDER BY received_ms ASC',
-                        (eid, since)
-                    ).fetchall()
-                    self.send_json([dict(r) for r in rows])
+                    now_ms = int(time.time() * 1000)
+                    if since > 0:
+                        rows = conn.execute('SELECT * FROM messages WHERE event_id=? AND changed_ms > ? ORDER BY received_ms ASC',
+                                            (eid, since - 2000)).fetchall()
+                    else:
+                        rows = conn.execute('SELECT * FROM messages WHERE event_id=? ORDER BY received_ms ASC', (eid,)).fetchall()
+                    self.send_json([dict(r) for r in rows], headers={'X-Server-Ms': str(now_ms)})
+
+                elif path == '/api/deleted':
+                    # Records removed since <server ms> (the open pages drop them)
+                    try:
+                        since = int(float(params.get('since', ['0'])[0] or 0))
+                    except ValueError:
+                        self.send_json({'error': 'since must be a number'}, 400); return
+                    eid = params.get('event', [''])[0] or _ensure_active_event(conn)
+                    rows = conn.execute('SELECT id FROM deleted_msgs WHERE event_id=? AND ts > ?', (eid, since - 2000)).fetchall()
+                    self.send_json([r['id'] for r in rows])
 
                 elif path == '/api/roster':
                     eid = params.get('event', [''])[0] or _ensure_active_event(conn)
@@ -3064,6 +3109,8 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
             conn = get_db()
             try:
                 if path == '/api/roster':
+                    if not isinstance(body, list):
+                        self.send_json({'error': 'The roster is a list of wards'}, 400); return
                     eid = _ensure_active_event(conn)
                     conn.execute('DELETE FROM roster WHERE event_id=?', (eid,))
                     for r in (body if isinstance(body, list) else []):
@@ -3074,6 +3121,8 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
                     self.send_json({'ok': True})
 
                 elif path == '/api/incident':
+                    if not isinstance(body, dict):
+                        self.send_json({'error': 'The incident is an object'}, 400); return
                     before = _active_event(conn).get('lastSitrepTs')
                     _save_incident_view(conn, body)
                     conn.commit()
