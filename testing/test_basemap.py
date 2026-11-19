@@ -290,11 +290,19 @@ try:
                 pg.wait_for_function("MAP && MAP.loaded() && MAP.basemap().shown === 'topo' && MAP.basemap().drawn > 0", timeout=15000)
                 note = pg.inner_text('#map-basemap-note')
                 vis = pg.is_visible('#map-basemap-note')
+                # let the first tile requests finish failing before counting: a slow laptop's Firefox reports some of
+                # them after the page says it fell back (W9TLH-7, 2026-11-18: 6 counted, 6 more arrived later)
+                last, still = -1, 0
+                for _ in range(40):
+                    pg.wait_for_timeout(250)
+                    still = still + 1 if len(failed) == last else 0
+                    last = len(failed)
+                    if still >= 6: break
                 n1 = len(failed)
                 pg.evaluate("for (var i = 0; i < 30; i++) MAP.draw()")
                 pg.wait_for_timeout(1500)
                 check(f'{name}: street map unreachable -> the saved Topo map, with the note "Street map needs internet"', vis and 'Street map needs internet' in note and pg.evaluate('MAP.basemap().choice') == 'streets', note)
-                check(f'{name}: no retry storm: redraws ask the street map nothing more while it is down', len(failed) == n1 and n1 <= 40, (n1, len(failed)))
+                check(f'{name}: no retry storm: redraws ask the street map nothing more while it is down', len(failed) == n1 and n1 <= 40, (n1, len(failed), sorted(set(failed[n1:]) & set(failed[:n1]))[:3]))
                 check(f'{name}: no page error with no street map', not errs, errs[:2])
                 ctx.close()
                 ctx = b.new_context(viewport={'width': 1920, 'height': 1080})
