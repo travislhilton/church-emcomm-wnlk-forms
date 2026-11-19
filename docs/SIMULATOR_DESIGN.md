@@ -103,7 +103,7 @@ Tabs, left to right, in the order a controller uses them:
 
 ### 2.5 Multi-EOC coordination
 
-Built 2026-10-30. **One simulator per EOC in the drill**; each drill director says what theirs plays.
+Built 2026-10-30. **One simulator per EOC in the drill**; each drill controller says what their simulator plays.
 
 - **What this simulator plays** (Setup tab, section 2): a **Stake EOC** (the stake, and the wards a Satellite EOC covers in this drill), a **Satellite EOC** (the stake and the wards it covers; the scenario can suggest them through `eocs.satellite.where`, served by `GET /api/scenarios/<id>?stake=<id>`), or a **Council / Area EOC** (one or more coordinating councils, and which of their stakes have their own EOC laptop in the drill). The scope follows the role; the choice is remembered in the simulator's settings and shown as the run's `site` (role, label, parent, units).
 - **One missionary story per unit** (`engine._settle_missionaries`, 2026-11-14): after planning, each unit's Disaster Reports are settled in time order so a random report never clears a scripted NO before the scripted *found* report, a NO never carries an *accounted for* note, and no NO is left that the scenario never answers ([SCENARIO_AUTHORING.md](SCENARIO_AUTHORING.md) step 4; `testing/test_sim_consistency.py`).

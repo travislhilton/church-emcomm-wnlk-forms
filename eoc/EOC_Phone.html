@@ -107,7 +107,7 @@ function drawDrill(){
   el.innerHTML = '<div class="drill">&#127919; DRILL · <b>' + esc(d.scenario || '') + '</b><br>This EOC plays <b>' + esc(d.site_label || role) + '</b> · ' + esc(when)
     + (OPS && drillScore(d) ? '<br>' + drillScore(d) : '')
     + (d.ready && d.ready.length ? '<br>Ready: ' + esc(d.ready.join(', ')) : '')
-    + '<br><span style="font-weight:400">Every simulated report says SIMULATED in its text, and the EOC screens mark it EXERCISE. Real reports still go through.</span></div>';
+    + '<br><span style="font-weight:400">Every simulated report says THIS IS AN EXERCISE in its text, and the EOC screens mark it EXERCISE. Real reports still go through.</span></div>';
 }
 
 // ── Work items: the EOC's worklist on the phone (take an item, move it) ───────
