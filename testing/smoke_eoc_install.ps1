@@ -1,11 +1,13 @@
 # Smoke test of a freshly installed EOC laptop (checklist A18). Run ON the laptop after testing\reinstall_eoc.ps1 -Phase start;
 # then stop and start both servers and run -Step restart-check, then -Step cleanup.
 # Works in a test event of its own and removes it afterwards; the event the laptop had stays active.
-param([ValidateSet('stake','area')][string]$Role = 'stake', [string]$Want = '2026-11-16.1', [ValidateSet('all','restart-check','cleanup')][string]$Step = 'all')
+param([ValidateSet('stake','area')][string]$Role = 'stake', [string]$Want = '', [ValidateSet('all','restart-check','cleanup')][string]$Step = 'all')
 $ErrorActionPreference = 'Stop'
 $EOCURL = 'http://127.0.0.1:8080'; $SIM = 'http://127.0.0.1:8090'; $name = 'Church of Jesus Christ EMCOMM'
 $base = "C:\$name"; New-Item -ItemType Directory -Force "$env:USERPROFILE\emcomm-reinstall" | Out-Null
 $state = "$env:USERPROFILE\emcomm-reinstall\smoke-state.json"
+# no -Want: the version the installed server was released with (it went stale at 2026-11-16.1 once)
+if (-not $Want) { $m = Select-String -LiteralPath "$base\EOC Message Center\eoc_server.py" -Pattern "^FORMS_VERSION = '([^']+)'" | Select-Object -First 1; if ($m) { $Want = $m.Matches[0].Groups[1].Value } }
 $script:pass = 0; $script:fail = 0
 function J($m, $p, $body = $null, $root = $EOCURL) { if ($null -ne $body) { Invoke-RestMethod -Method $m -Uri "$root$p" -ContentType 'application/json' -Body ($body | ConvertTo-Json -Depth 12 -Compress) -TimeoutSec 30 } else { Invoke-RestMethod -Method $m -Uri "$root$p" -TimeoutSec 30 } }
 function C($label, $ok, $detail = '') { if ($ok) { $script:pass++; "PASS $label" } else { $script:fail++; "FAIL $label -- $detail" } }
@@ -43,7 +45,7 @@ if ($Step -eq 'all') {
   ($dr2 | ConvertTo-Json) | Set-Content -Encoding utf8 (Join-Path $drop 'Church_Disaster_Report_Worker.txt')
   $ok = $false; for ($i = 0; $i -lt 30; $i++) { Start-Sleep 1; if (Smoke-Msgs | Where-Object { $_.data_json -like '*SMOKE 2 Drop Ln*' }) { $ok = $true; break } }
   C 'a report saved into the Drop Folder is filed within 30 s' $ok $drop
-  C 'work item made from the injury report' ((L /api/actions).Count -ge 1)
+  C 'work item made from the injury report' (@(L /api/actions).Count -ge 1)
   try { $ro = J GET /api/readout; C 'incident read-out (/api/readout) answers' ($null -ne $ro) } catch { C 'incident read-out' $false $_.Exception.Message }
   $bs = J GET /api/basemap/status; C 'basemap status answers (nothing downloaded yet)' ($null -ne $bs)
   # 5. the simulator: the invented example pack, its drill configuration, a short run delivering to this EOC
@@ -62,11 +64,11 @@ if ($Step -eq 'all') {
   $info = J GET /api/info $null $SIM
   $plan = J POST /api/run/plan @{ scenario = $cfg.scenario; speed = 60; site = $info.site } $SIM
   C 'simulator plans the scenario against this EOC' ($plan.ok -and $plan.counts) (($plan | ConvertTo-Json -Compress -Depth 3) -replace '^(.{160}).*', '$1')
-  $n0 = (L /api/messages).Count
+  $n0 = @(L /api/messages).Count
   $null = J POST /api/run/start @{} $SIM
-  $ok = $false; for ($i = 0; $i -lt 120; $i++) { Start-Sleep 2; if ((L /api/messages).Count -gt $n0) { $ok = $true; break } }
+  $ok = $false; for ($i = 0; $i -lt 120; $i++) { Start-Sleep 2; if (@(L /api/messages).Count -gt $n0) { $ok = $true; break } }
   $null = J POST /api/run/stop @{} $SIM
-  C 'a simulator run delivers reports to the EOC (60x, within 4 min)' $ok "messages before $n0, after $((L /api/messages).Count)"
+  C 'a simulator run delivers reports to the EOC (60x, within 4 min)' $ok "messages before $n0, after $(@(L /api/messages).Count)"
 }
 if ($Step -eq 'restart-check') {
   $s = Get-Content -Raw $state | ConvertFrom-Json
