@@ -154,7 +154,8 @@
 
 ## Decisions waiting for Travis
 
-- **Who fills a Supply Order?** Card review: the cards disagree (Team Leader / Emergency Response Director on one, any volunteer on another); left as it was until Travis decides.
+- **Who fills a Supply Order: decided (Travis, 2026-11-18: "for now say Bishops store house as a default, but let it be configurable").** Setup, This EOC, *Supply Orders are filled by* (default Bishops' Storehouse), named on the Supply Orders tab, the phone script, SITREP section F, cards 4 and 10, Help and the README (2026-11-18.2, Q26). Who fills *out* the form stays as the cards say: any volunteer fills it out; the ERD and the welfare line approve it.
+- **Stake EOC naming (C18):** cards 6–8 say *Stake Center EOC*, every screen says *Stake EOC*. Asked Travis 2026-11-18 which name to use everywhere.
 - **The 1-801-240-0450 number: decided (Travis, 2026-11-16: "Keep it").** It is the Church's Area Welfare Administration number, printed on the Church's Supply Order form and listed on the Provident Living *Area Planning Guide* contact page; it stays on the Supply Order, its phone script and SITREP section D. It is not a missionary line (it was taken out of the missionary alert earlier).
 - **Basemap defaults:** zoom 8–15, both layers, hard caps 25,000 tiles / 1.5 GB (a real export's units come to 15,790 tiles, 302 MB); a wider ring at zoom 8–12 so a wide map panel offline has no blank sides; should the simulator get the live street map too; should card 3 mention the basemap.
 - **Totals from follow-up reports: decided (Travis, 2026-11-16: "Provide a way to show both").** Built in 2026-11-16.1, see below. The voice-net read-out follows the choice too (decided 2026-11-16 on Travis's "what makes the most sense?"); the contract wording is the station project's to add.
