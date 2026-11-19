@@ -46,7 +46,7 @@ h1 {
   margin-bottom: 12px;
 }
 .print-btn {
-  background: var(--red);
+  background: var(--navy);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -58,7 +58,7 @@ h1 {
   letter-spacing: 0.05em;
   margin-bottom: 32px;
 }
-.print-btn:hover { background: #9a0020; }
+.print-btn:hover { background: #0f2540; }
 
 .section-label {
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
@@ -252,7 +252,7 @@ h1 {
 .home-link{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 6px;font:600 17px/1 Arial,Helvetica,sans-serif;color:#1a3a5c;text-decoration:none}.home-link span{font-size:28px;line-height:1;margin-top:-3px}
 @media print {
   .home-link { display: none !important; }
-  @page { size: letter; margin: 0.5in; }
+  @page { size: letter; margin: 0.5in 0.5in 0.5in 0.75in; }  /* 3/4 in left margin (hole punch, binder) */
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   html, body { background: #fff; padding: 0; margin: 0; }
   .print-btn, .section-label, .page-header { display: none; }
@@ -276,12 +276,16 @@ h1 {
 }
 @media (max-width: 600px) {
   .card { min-width: 0; }
+  .card-row { flex-direction: column; }
+  .card-front, .card-back { max-width: none; }
+  .card-head { flex-direction: column-reverse; }
+  .card-qr { align-self: flex-end; }
   .bishop-flow { grid-template-columns: 1fr; }
   .bishop-flow .bishop-arrow { transform: rotate(90deg); justify-self: center; }
   .col-2 { flex-direction: column; }
 }
 
-@page { size: letter; margin: 0.5in; }
+@page { size: letter; margin: 0.5in 0.5in 0.5in 0.75in; }  /* 3/4 in left margin (hole punch, binder) */
 * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 html, body { background: #fff; padding: 0; margin: 0; }
 .page-header, .section-label, .print-btn { display: none; }
@@ -334,8 +338,8 @@ html, body { background: #fff; padding: 0; margin: 0; }
       <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px">THE PACE PLAN &#8212; FOUR INDEPENDENT PATHS, USED IN ORDER</p>
       <table class="pace-table">
         <tr><td class="p">P</td><td>Primary &#8212; cell</td><td>Volunteers text or email the form file</td></tr>
-        <tr><td class="a">A</td><td>Alternate &#8212; any internet</td><td>The same over any Wi-Fi that still has internet: home, shelter, business, meetinghouse, Starlink</td></tr>
-        <tr><td class="c">C</td><td>Contingency &#8212; radio</td><td>HAM operators send forms by Winlink radio (VARA FM first, then VARA HF: the radio modems Winlink uses); voice on FRS/GMRS (Family Radio Service / General Mobile Radio Service) and the stake net</td></tr>
+        <tr><td class="a">A</td><td>Alternate &#8212; any internet</td><td>The same over any internet: home, shelter, business, meetinghouse, Starlink</td></tr>
+        <tr><td class="c">C</td><td>Contingency &#8212; radio</td><td>HAM operators send forms by Winlink radio (VARA FM, then VARA HF: Winlink&#8217;s radio modems); voice on FRS/GMRS (Family Radio Service / General Mobile Radio Service) and the stake net</td></tr>
         <tr><td class="e">E</td><td>Emergency &#8212; runner</td><td>Paper form carried by hand: printed from the phone, or a blank form filled in</td></tr>
       </table>
       <p style="font-size:13.5px;color:var(--muted);margin-top:3px">Matches the county ARES (Amateur Radio Emergency Service) plan where the stake sits.</p>
@@ -344,7 +348,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
       <b>Who decides:</b> the stake <b>Welfare and Self-Reliance Specialist</b> (emergency communications) recommends the level, the <b>Stake President decides</b> (the bishop for a single-ward net), and the <b>Emergency Response Director (ERD)</b> or the specialist announces it on the net.
     </div>
     <div class="note-box" style="font-size:15px">
-      <b>Above the stake:</b> the Stake EOC reports to the <b>council line</b> (the Area Seventy) and the <b>welfare line</b> (the Welfare and Self-Reliance Manager, WSRM, then the Area Welfare and Self-Reliance Manager, AWSRM) by the same ladder: email, any internet or a landline, Winlink radio, then a satellite phone or the stake liaison at the county EOC.<br><b>Part of the stake cut off?</b> A <b>Satellite EOC</b> in a ward building covers those wards and rolls up to the Stake EOC.
+      <b>Above the stake:</b> the Stake EOC reports to the <b>council line</b> (the Area Seventy) and the <b>welfare line</b> (the Welfare and Self-Reliance Manager, WSRM, then the Area Welfare and Self-Reliance Manager, AWSRM) by the same ladder: email or any internet, Winlink radio, then a satellite phone or the county EOC liaison.<br><b>Part of the stake cut off?</b> A <b>Satellite EOC</b> in a ward building covers those wards and rolls up to the Stake EOC.
     </div>
     <p class="turn-over">Turn over &#8594; Card 4, side 2: The Three Forms &amp; What the Bishop Does</p>
   </div>
@@ -375,7 +379,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
           <li>Take part in the yearly 2-hour practice drill (card 9 explains a drill)</li>
         </ul>
         <div class="note-box" style="margin-top:12px">
-          <b>You do not need to understand the technology.</b> The system is designed so that the Bishop gives direction and volunteers do the rest. The Stake EOC gives you accurate totals for your reports to the Stake President.
+          <b>You do not need to understand the technology.</b> You give direction; volunteers do the rest. The Stake EOC gives you accurate totals for the Stake President.
         </div>
       </div>
     </div>

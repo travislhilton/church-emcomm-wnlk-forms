@@ -46,7 +46,7 @@ h1 {
   margin-bottom: 12px;
 }
 .print-btn {
-  background: var(--red);
+  background: var(--navy);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -58,7 +58,7 @@ h1 {
   letter-spacing: 0.05em;
   margin-bottom: 32px;
 }
-.print-btn:hover { background: #9a0020; }
+.print-btn:hover { background: #0f2540; }
 
 .section-label {
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
@@ -252,7 +252,7 @@ h1 {
 .home-link{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 6px;font:600 17px/1 Arial,Helvetica,sans-serif;color:#1a3a5c;text-decoration:none}.home-link span{font-size:28px;line-height:1;margin-top:-3px}
 @media print {
   .home-link { display: none !important; }
-  @page { size: letter; margin: 0.5in; }
+  @page { size: letter; margin: 0.5in 0.5in 0.5in 0.75in; }  /* 3/4 in left margin (hole punch, binder) */
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   html, body { background: #fff; padding: 0; margin: 0; }
   .print-btn, .section-label, .page-header { display: none; }
@@ -276,12 +276,16 @@ h1 {
 }
 @media (max-width: 600px) {
   .card { min-width: 0; }
+  .card-row { flex-direction: column; }
+  .card-front, .card-back { max-width: none; }
+  .card-head { flex-direction: column-reverse; }
+  .card-qr { align-self: flex-end; }
   .bishop-flow { grid-template-columns: 1fr; }
   .bishop-flow .bishop-arrow { transform: rotate(90deg); justify-self: center; }
   .col-2 { flex-direction: column; }
 }
 
-@page { size: letter; margin: 0.5in; }
+@page { size: letter; margin: 0.5in 0.5in 0.5in 0.75in; }  /* 3/4 in left margin (hole punch, binder) */
 * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 html, body { background: #fff; padding: 0; margin: 0; }
 .page-header, .section-label, .print-btn { display: none; }
@@ -324,7 +328,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
         </div>
         <div class="step">
           <div class="step-num">2</div>
-          <div class="step-text">Start the simulator on the Windows EOC laptop<small>Double-click <b>Church of Jesus Christ EMCOMM Simulator</b> on the Desktop (installer role 3), then open <code style="font-size:13.5px">http://&lt;this laptop&gt;:8090</code>. The organization pack and map data stay on this laptop.</small></div>
+          <div class="step-text">Start the simulator on the Windows EOC laptop<small>Double-click <b>Church of Jesus Christ EMCOMM Simulator</b> on the Desktop (installer role 3); open <code style="font-size:13.5px">http://&lt;this laptop&gt;:8090</code>. The pack and maps stay on this laptop.</small></div>
         </div>
         <div class="step">
           <div class="step-num">3</div>
@@ -341,11 +345,11 @@ html, body { background: #fff; padding: 0; margin: 0; }
       <div class="steps">
         <div class="step">
           <div class="step-num">5</div>
-          <div class="step-text">Hand each newcomer <b>card 9</b> (Your First Drill). Give the instructions, then <b>GO</b> on the Session tab. Hand out each card as it comes due<small>Reports reach the EOC by the path the PACE (Primary, Alternate, Contingency, Emergency) level selects. Net cards to the HAM (amateur radio) operators, prompts to the role named, paper to a runner. After a restart: <b>Resume</b> on the Session tab.</small></div>
+          <div class="step-text">Hand each newcomer <b>card 9</b> (Your First Drill). Give the instructions, then <b>GO</b> on the Session tab. Hand out each card as it comes due<small>Reports come by the path the PACE (Primary, Alternate, Contingency, Emergency) level selects; net cards go to the HAM (amateur radio) operators. After a restart: <b>Resume</b>.</small></div>
         </div>
         <div class="step">
           <div class="step-num">6</div>
-          <div class="step-text">PACE changes follow the scenario&#8217;s triggers<small>The specialist recommends, the Stake President decides, the ERD or the specialist announces it on the net; then you set the level on the Run tab and it reaches the EOC header. Never change it for them.</small></div>
+          <div class="step-text">PACE steps on the scenario&#8217;s own timeline<small>The room still plays it: the specialist recommends, the Stake President decides, the ERD or the specialist announces it. If the room decided otherwise, set their level on the Run tab (<b>Set now</b>) so the EOC header shows it.</small></div>
         </div>
         <div class="step">
           <div class="step-num">7</div>
@@ -358,7 +362,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
       </div>
     </div>
     <div class="note-box tip" style="font-size:14px">
-      <b>Several EOC laptops: one simulator each,</b> same scenario and seed. Operators press <b>I am ready</b> on the drill bar (remote sites say so by voice). On every laptop&#8217;s Session tab, step 3: enter the agreed time in <b>or start every laptop at</b>, then <b>Schedule</b>. The clocks start together.
+      <b>Several EOC laptops: one simulator each,</b> same scenario and seed. Operators press <b>I am ready</b> on the drill bar (remote sites say so by voice). On every laptop&#8217;s Session tab, step 3: type the agreed time in the box <b>or start every laptop at</b>, then press <b>Schedule</b>. The clocks start together.
     </div>
     <p class="turn-over">Turn over &#8594; Card 5, side 2: What the Simulator Sends, Who Plays, What the Hot Wash Reads</p>
   </div>
@@ -373,24 +377,23 @@ html, body { background: #fff; padding: 0; margin: 0; }
       <p style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:8px">INJECTS &#8212; WHAT YOU DO WITH EACH</p>
       <div style="display:flex;flex-direction:column;gap:6px;font-size:15px;line-height:1.45">
         <div><span style="color:var(--red);font-weight:600">Report</span> &#8212; sent to the EOC by the level in force: <b>P / A</b> phone upload &#183; <b>C</b> a Winlink <code style="font-size:13.5px">.mime</code> into the EOC&#8217;s simulated Winlink inbox (a paper card if the EOC has no Winlink) &#183; <b>E</b> paper card for a runner to carry</div>
-        <div><span style="color:var(--muted);font-weight:600">Note</span> &#8212; lands in the EOC notes log prefixed SIM: (roads, weather, the county)</div>
-        <div><span style="color:#8e44ad;font-weight:600">Net card</span> &#8212; hand it to the ward&#8217;s HAM to read on the stake net</div>
+        <div><span style="color:var(--muted);font-weight:600">Note</span> &#8212; in the EOC notes log as SIM: (roads, weather) &#183; <span style="color:#8e44ad;font-weight:600">Net card</span> &#8212; the ward&#8217;s HAM reads it on the net</div>
         <div><span style="color:var(--blue);font-weight:600">Prompt</span> &#8212; hand it to the role named: a recommendation, a decision, a SITREP (situation report) that is due</div>
         <div><span style="color:#1b7f5a;font-weight:600">Work item</span> &#8212; lands on the EOC&#8217;s Work Items list (mission office, county, welfare line, Stake President); the EOC owns it, acts, records the decision</div>
         <div><span style="color:#b03a2e;font-weight:600">Consequence</span> &#8212; fires when a need is met (the resolution) or overdue (the caller comes back). <span style="color:#0b6e99;font-weight:600">Reply</span> &#8212; the welfare line closes an item set UP, DONE with the decision</div>
       </div>
     </div>
     <div class="note-box tip" style="font-size:14px">
-      <b>Role players:</b> Stake President &#183; Welfare and Self-Reliance Specialist &#183; Emergency Response Director (ERD) &#183; a bishop per playing ward &#183; Team Leaders &#183; ward HAM operators &#183; Stake EOC operators &#183; a Satellite EOC operator &#183; the welfare line (the Welfare and Self-Reliance Managers) &#183; the Area Seventy (email only) &#183; a Council / Area EOC if one opens &#183; you.
+      <b>Role players:</b> Stake President &#183; Welfare and Self-Reliance Specialist &#183; Emergency Response Director (ERD) &#183; a bishop per playing ward &#183; Team Leaders &#183; ward HAM operators &#183; Stake EOC operators &#183; a Satellite EOC operator &#183; the welfare line (Welfare and Self-Reliance Managers) &#183; the Area Seventy (email) &#183; a Council / Area EOC if open &#183; you.
     </div>
     <div class="phrase-box">
       <b>The scoreboard reads the Work Items list:</b> every need owned in time (HIGH within 10 minutes), closed or set UP in time, leadership questions answered as a recorded decision, paper and net reports typed in within 25 minutes with the numbers as on the card; SITREP #1 by the time the scenario sets; nothing HIGH left without an owner. Tell the EOC operators on day one: <b>own it, move it, write the decision in.</b>
     </div>
     <div class="note-box warning" style="font-size:14px">
-      <b>Privacy:</b> pseudonymized runs still show real unit and building names. For an issue or screenshot, use the invented Juniper Plains Area or &#8220;Report as text, units redacted&#8221;. A real-contacts run never leaves the room.
+      <b>Privacy:</b> pseudonymized runs still show real unit names. To share one, use the invented Juniper Plains Area or &#8220;Report as text, units redacted&#8221;. Real contacts never leave the room.
     </div>
     <div class="note-box" style="font-size:14px">
-      <b>Same setup on another laptop:</b> Setup tab &#8594; <b>Save simulator setup</b> (no contacts). There: the same pack, then <b>Load simulator setup&#8230;</b>. <b>Save drill configuration</b>: every EOC and simulator of the drill loads it.
+      <b>Same setup on another laptop:</b> <b>Save simulator setup</b> (no contacts), then <b>Load simulator setup&#8230;</b> there with the same pack. <b>Save drill configuration</b>: every EOC and simulator loads it.
     </div>
     <p class="card-disclaimer">Church of Jesus Christ EMCOMM is an independent volunteer project created by Travis Hilton (W9TLH), not an official product of The Church of Jesus Christ of Latter-day Saints.</p>
   <p class="pdf-foot pdf-url">travislhilton.github.io/church-emcomm-wnlk-forms/forms/</p></div>

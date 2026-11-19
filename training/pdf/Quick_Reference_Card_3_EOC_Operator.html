@@ -46,7 +46,7 @@ h1 {
   margin-bottom: 12px;
 }
 .print-btn {
-  background: var(--red);
+  background: var(--navy);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -58,7 +58,7 @@ h1 {
   letter-spacing: 0.05em;
   margin-bottom: 32px;
 }
-.print-btn:hover { background: #9a0020; }
+.print-btn:hover { background: #0f2540; }
 
 .section-label {
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
@@ -252,7 +252,7 @@ h1 {
 .home-link{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 6px;font:600 17px/1 Arial,Helvetica,sans-serif;color:#1a3a5c;text-decoration:none}.home-link span{font-size:28px;line-height:1;margin-top:-3px}
 @media print {
   .home-link { display: none !important; }
-  @page { size: letter; margin: 0.5in; }
+  @page { size: letter; margin: 0.5in 0.5in 0.5in 0.75in; }  /* 3/4 in left margin (hole punch, binder) */
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   html, body { background: #fff; padding: 0; margin: 0; }
   .print-btn, .section-label, .page-header { display: none; }
@@ -276,12 +276,16 @@ h1 {
 }
 @media (max-width: 600px) {
   .card { min-width: 0; }
+  .card-row { flex-direction: column; }
+  .card-front, .card-back { max-width: none; }
+  .card-head { flex-direction: column-reverse; }
+  .card-qr { align-self: flex-end; }
   .bishop-flow { grid-template-columns: 1fr; }
   .bishop-flow .bishop-arrow { transform: rotate(90deg); justify-self: center; }
   .col-2 { flex-direction: column; }
 }
 
-@page { size: letter; margin: 0.5in; }
+@page { size: letter; margin: 0.5in 0.5in 0.5in 0.75in; }  /* 3/4 in left margin (hole punch, binder) */
 * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 html, body { background: #fff; padding: 0; margin: 0; }
 .page-header, .section-label, .print-btn { display: none; }
@@ -384,7 +388,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
           </div>
         </div>
         <div style="background:#e8f5e9;border-left:3px solid #1b7a47;border-radius:4px;padding:10px 14px;font-size:15px">
-          <b>Status badges</b> (click one to move it on): <span style="background:#C8102E;color:#fff;padding:1px 6px;border-radius:3px;font-size:13.5px">NEW</span> just arrived &#183; <span style="background:#1d5fa8;color:#fff;padding:1px 6px;border-radius:3px;font-size:13.5px">ACK</span> someone read it &#183; <span style="background:#9a5300;color:#fff;padding:1px 6px;border-radius:3px;font-size:13.5px">ASSIGNED</span> someone is on it &#183; <span style="background:#1b7a47;color:#fff;padding:1px 6px;border-radius:3px;font-size:13.5px">DONE</span> handled.
+          <b>Status badges</b> (click one to move it on): <span style="background:#475569;color:#fff;padding:1px 6px;border-radius:3px;font-size:13.5px">NEW</span> just arrived &#183; <span style="background:#1d5fa8;color:#fff;padding:1px 6px;border-radius:3px;font-size:13.5px">ACK</span> someone read it &#183; <span style="background:#5b21b6;color:#fff;padding:1px 6px;border-radius:3px;font-size:13.5px">ASSIGNED</span> someone is on it &#183; <span style="background:#1b7a47;color:#fff;padding:1px 6px;border-radius:3px;font-size:13.5px">DONE</span> handled.
         </div>
         <div class="note-box">
           <b>Shift Handoff:</b> Export Handoff JSON &#8594; USB drive &#8594; the incoming operator clicks Import Handoff JSON (it <i>replaces</i> the event&#8217;s records: shift change only). <b>New emergency?</b> Setup tab &#8594; <b>Open a New Event</b>.<br><b>Same setup on another computer:</b> Setup tab &#8594; <b>Save this EOC&#8217;s setup</b>. Send it only to your EOC operators: it can hold real contacts. There: <b>Load a setup&#8230;</b> &#8594; <b>Apply this setup</b>.
@@ -396,7 +400,7 @@ html, body { background: #fff; padding: 0; margin: 0; }
           <b>SITREP:</b> first as soon as possible, then regular status reports on the interval leadership sets (Setup tab), to the Stake President, the council line (Area Seventy) and the welfare line (WSRM, AWSRM). Its header shows the <b>PACE level in force</b>. Send it by the roll-up&#8217;s path.
         </div>
         <div class="note-box" style="margin-top:8px;font-size:14px">
-          <b>Wall display (TV):</b> open <code style="font-size:13.5px">http://&lt;server-ip&gt;:8080/wall</code>, press <b>F</b>. <b>Drill:</b> press <b>I am ready</b> on the drill bar; new to drills: card 9. Your level: cards 6&#8211;8.
+          <b>Wall display (TV):</b> open <code style="font-size:13.5px">http://&lt;server-ip&gt;:8080/wall</code>, press <b>F</b>. <b>Work Items on your phone:</b> <code style="font-size:13.5px">/m?ops=1</code>. Drill: card 9. Your level: cards 6&#8211;8.
         </div>
       </div>
     <p class="card-disclaimer">Church of Jesus Christ EMCOMM (emergency communications) is an independent volunteer project created by Travis Hilton (W9TLH), not an official product of The Church of Jesus Christ of Latter-day Saints.</p>
