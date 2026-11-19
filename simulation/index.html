@@ -100,6 +100,7 @@
   #items li { border-top:1px solid var(--line); padding:5px 0; display:grid; grid-template-columns:52px 1fr auto; gap:2px 8px; align-items:start; }
   #items li.due { background:#fff8ec; }
   #items li.fired { opacity:.75; }
+  #items li.handed { opacity:.5; }
   #items li.error { background:#fdecea; }
   #items li.skipped, #items li.held { opacity:.5; }
   #items .t { font-variant-numeric:tabular-nums; font-weight:600; color:var(--mute); }
@@ -191,7 +192,7 @@
         <p class="small" style="margin:2px 0">Give the instructions, hand out the cards (Roles tab), then:</p>
         <div class="btns"><button class="go" id="ss-go">GO</button>
           <span class="small">or start every laptop at <input type="time" id="ss-at" step="1" style="width:auto"> <button class="b s" id="ss-sched">Schedule</button></span></div>
-        <div id="ss-3-msg" class="small"></div></li>
+        <div id="ss-3-msg" class="small"></div><div id="ss-winlink" class="small"></div></li>
       <li id="ss-4"><h4><span class="tick"></span>4. Live</h4><div id="ss-live" class="live small muted">Not running.</div>
         <div class="btns"><button class="b s" id="ss-pause">Pause</button><button class="b s" id="ss-run">Open the Run tab</button><button class="b s" id="ss-needs">Needs</button></div></li>
       <li id="ss-5"><h4><span class="tick"></span>5. Finish: hot wash and results</h4>
@@ -258,7 +259,7 @@
       <datalist id="lr-roles"></datalist>
     </details> Organization names and buildings are always real.</p>
     <h3>2. What this simulator plays</h3>
-    <p class="small muted" style="margin:0 0 4px">One simulator per EOC in the drill. Each drill director picks what theirs plays; the reports of every ward go to the EOC that covers it, and the stakes nobody plays arrive at the Council / Area EOC as roll-up bundles.</p>
+    <p class="small muted" style="margin:0 0 4px">One simulator per EOC in the drill. Each drill controller picks what their simulator plays; the reports of every ward go to the EOC that covers it, and the stakes nobody plays arrive at the Council / Area EOC as roll-up bundles.</p>
     <div class="btns small" id="rolepick">
       <label><input type="radio" name="role" value="stake" checked> <b>Stake EOC</b></label>
       <label><input type="radio" name="role" value="satellite"> <b>Satellite EOC</b> (some of a stake's wards)</label>
@@ -279,7 +280,7 @@
     <div class="small" id="site-sum"></div>
     <div id="must-box" class="box small" style="display:none"><b>Must-have roles for this EOC</b> <span id="must-sum" class="muted"></span>
       <div id="must-list"></div>
-      <p class="small muted" style="margin:4px 0 0">Red rows stop the drill from naming the people the cards and injects refer to. Directory roles come from the Church directory export; add the others under step 1. The people in the room (drill controller, EOC operator, HAM operator) are the scenario's role cards on the Run tab.</p>
+      <p class="small muted" style="margin:4px 0 0">A red row means cards and injects say the role (for example 'the Emergency Response Director') instead of a person's name. Add the person under step 1. Directory roles come from the Church directory export. The people in the room (drill controller, EOC operator, HAM operator) are the scenario's role cards on the Run tab.</p>
     </div>
     <h3 id="setup-3">3. The EOC this simulator feeds</h3>
     <p class="small muted" style="margin:2px 0 4px">The EOC server's address. On the laptop that runs it: <code>http://127.0.0.1:8080</code>. On another laptop: the address under the QR (Quick Response) code on the EOC wall, like <code>http://192.168.1.20:8080</code>. Then press <b>Check EOC</b>.</p>
@@ -352,7 +353,7 @@
     </div>
     <div class="box"><b id="ph-title">Phase</b><div id="ph-text" class="small"></div><div id="ph-ctl" class="small warn"></div></div>
     <div class="btns small">Show
-      <select id="r-filter" style="width:auto"><option value="all">everything</option><option value="here">this EOC's items</option><option value="elsewhere">other EOCs' items</option><option value="due">due and recent</option><option value="cards">cards to hand out</option><option value="consequences">consequences (waiting / triggered)</option><option value="form">reports</option><option value="note">notes</option><option value="prompt">prompts</option><option value="error">errors</option></select>
+      <select id="r-filter" style="width:auto"><option value="due" selected>due and recent</option><option value="all">everything</option><option value="here">this EOC's items</option><option value="elsewhere">other EOCs' items</option><option value="cards">cards to hand out</option><option value="consequences">consequences (waiting / triggered)</option><option value="form">reports</option><option value="note">notes</option><option value="prompt">prompts</option><option value="error">errors</option></select>
       <span id="r-counts" class="muted"></span>
     </div>
     <ul id="items"></ul>
@@ -376,7 +377,7 @@
 
   <div class="pane" id="pane-hotwash">
     <p class="small muted">Fill in during the run or right after. ✓ met, ✗ missed, – not played. Export for the drill-feedback issue. <b>Gather evidence</b> reads the EOC's Work Items list and fills in what it can see (owners, timing, status, decisions) under the checks that have a rule; you still press the button.</p>
-    <div class="btns"><button class="b" id="hw-evidence">Gather evidence from the EOC</button><button class="b" id="hw-export">Export as text</button><span id="hw-sum" class="small muted"></span></div>
+    <div class="btns"><button class="b" id="hw-evidence">Gather evidence from the EOC</button><button class="b" id="hw-export">Export as text</button><label class="small"><input type="checkbox" id="hw-core"> Core checks only (a short hot wash)</label><span id="hw-sum" class="small muted"></span></div>
     <div class="box"><b>After-action report</b> <span class="small muted">scoreboard, done-when checks, the do-better list by role, the needs ledger, these answers, the timeline. Written beside the run file when the run ends; print it from the browser.</span>
       <div class="btns" style="margin:4px 0 0"><button class="b p" id="hw-debrief">Debrief for the room</button><button class="b" id="hw-report">Open the report</button><button class="b" id="hw-report-txt">Report as text</button><button class="b" id="hw-report-red">Report as text, units redacted</button><span id="hw-report-info" class="small muted"></span></div>
       <p class="small muted" style="margin:4px 0 0">For a drill-feedback issue, use <b>units redacted</b>: unit, building, stake and place names become Unit 1, Building 1 … and leaders' last names are dropped. A pseudonymized run still shows the real unit names everywhere else.</p>
@@ -394,7 +395,7 @@
     <button id="z-fit" title="Fit all (F)">⌂</button>
     <button id="z-measure" title="Measure (M)">📏</button>
   </div>
-  <div id="legend"><b>Severity</b><br><i style="background:#9aa5b1"></i>0 unaffected <i style="background:#e4c441"></i>1 light<br><i style="background:#e67800"></i>2 moderate <i style="background:#b03a2e"></i>3 severe<br><span class="muted">ring = report received at the EOC</span></div>
+  <div id="legend"><b>Severity</b><br><i style="background:#9aa5b1"></i>0 unaffected <i style="background:#e4c441"></i>1 light<br><i style="background:#e67800"></i>2 moderate <i style="background:#b03a2e"></i>3 severe<br><span class="muted">ring = report received at the EOC · dark dot = meetinghouse</span></div>
   <div id="scale"><span id="scale-t"></span><div class="bar" id="scale-b"></div></div>
   <div id="foot"><span id="f-cur">—</span><span id="f-res"></span><span id="f-sel"></span></div>
   <div id="tip"></div>
@@ -682,8 +683,8 @@ function draw() {
     }
   }
   if (l.bldg) {
-    if (S.dataset) for (const b of S.bldgs) { const [sx, sy] = toScr(b.xy[0], b.xy[1]); if (sx < -10 || sx > W + 10 || sy < -10 || sy > H + 10) continue; ctx.beginPath(); ctx.arc(sx, sy, b === S.selB ? 7 : 5, 0, Math.PI * 2); ctx.fillStyle = b === S.selB ? '#e67800' : '#c0392b'; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke(); }
-    else if (S.pack) for (const u of S.pack.units) { if (!u.xy) continue; const [sx, sy] = toScr(u.xy[0], u.xy[1]); ctx.beginPath(); ctx.arc(sx, sy, 5, 0, Math.PI * 2); ctx.fillStyle = '#c0392b'; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke(); }
+    if (S.dataset) for (const b of S.bldgs) { const [sx, sy] = toScr(b.xy[0], b.xy[1]); if (sx < -10 || sx > W + 10 || sy < -10 || sy > H + 10) continue; ctx.beginPath(); ctx.arc(sx, sy, b === S.selB ? 7 : 5, 0, Math.PI * 2); ctx.fillStyle = b === S.selB ? '#e67800' : '#2c3e50'; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke(); }
+    else if (S.pack) for (const u of S.pack.units) { if (!u.xy) continue; const [sx, sy] = toScr(u.xy[0], u.xy[1]); ctx.beginPath(); ctx.arc(sx, sy, 5, 0, Math.PI * 2); ctx.fillStyle = '#2c3e50'; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke(); }
   }
   // severity dots per unit (at the meetinghouse, offset per unit so shared buildings stay readable) and received-report rings
   const r = S.run || S.planned;
@@ -877,9 +878,12 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('bx-bg')
 // the drill configuration a participant package carries: offered once its pack is loaded
 async function offerPackDrillConfig() {
   const box = $('dc-offer');
-  if (!(S.info && S.info.pack && S.info.packDrillConfig) || (S.info.drill && S.info.drill.eoc)) { box.style.display = 'none'; return; }
+  if (!(S.info && S.info.pack && S.info.packDrillConfig)) { box.style.display = 'none'; return; }
+  const again = !!(S.info.drill && S.info.drill.eoc);
   box.style.display = '';
-  box.innerHTML = '<b>This pack includes the drill\'s settings</b> (drill-config.json). <button type="button" class="b" id="dc-from-pack">Set up from them</button> <span class="muted">You then choose which EOC this laptop is.</span>';
+  box.innerHTML = again
+    ? '<button type="button" class="b s" id="dc-from-pack">Set up from the pack\'s drill settings again</button> <span class="muted">(drill-config.json in the pack; you then choose which EOC this laptop is)</span>'
+    : '<b>This pack includes the drill\'s settings</b> (drill-config.json). <button type="button" class="b" id="dc-from-pack">Set up from the pack\'s drill settings</button> <span class="muted">You then choose which EOC this laptop is.</span>';
   $('dc-from-pack').onclick = async () => {
     try { dcUse(await getJSON('/api/pack/drill-config')); $('dc-box').open = true; $('dc-box').scrollIntoView({ block: 'start' }); }
     catch (e) { box.innerHTML += `<div class="err">${esc(e.message)}</div>`; }
@@ -905,6 +909,7 @@ async function checkEoc() {
     post('/api/settings', { eocUrl: eocUrl() }).catch(() => {});
     log(`EOC reachable: ${st.eocName || '?'}, event "${st.activeEventName || ''}"`);
   } catch (e) { $('eocinfo').innerHTML = `<span class="err">not reachable</span>`; log('EOC not reachable at ' + eocUrl() + ' (is eoc_server.py running? same network?)', 'err'); }
+  if (typeof loadSession === 'function') loadSession().catch(() => {});      // the Session tab shows the EOC just checked
 }
 // What this simulator plays: a Stake EOC (minus the wards a satellite covers), a Satellite EOC's
 // wards, or a Council / Area EOC over councils (its stakes without an EOC laptop are played here).
@@ -965,7 +970,7 @@ $('site-stakesel').onchange = () => buildSiteUnits((S.info && S.info.site) || {}
 $('site-councils').onchange = () => buildSiteUnits((S.info && S.info.site) || {});
 async function loadScenarios() {
   const cat = await getJSON('/api/scenarios'); S.scenarios = cat.scenarios;
-  $('scen').innerHTML = cat.scenarios.map(s => `<option value="${esc(s.id)}">${s.status === 'developed' ? '● ' : '○ '}${esc(s.name)}${s.applies_here === false ? ' (not this area)' : ''}${s.local_binding ? ' ★' : ''}</option>`).join('');
+  $('scen').innerHTML = cat.scenarios.map(s => `<option value="${esc(s.id)}">${esc(s.name)} ${s.status === 'developed' ? '(ready to run)' : '(outline only, not playable yet)'}${s.applies_here === false ? ' (not this area)' : ''}${s.local_binding ? ' (local binding)' : ''}</option>`).join('');
   if (S.info && S.info.scenario && cat.scenarios.some(s => s.id === S.info.scenario)) $('scen').value = S.info.scenario;
   $('scen').onchange = showScenario; showScenario();
 }
@@ -996,13 +1001,13 @@ $('dc-apply').onclick = async () => {
   $('dc-msg').textContent = 'Loading the pack and setting up…';
   try {
     const d = await getJSON('/api/drillconfig', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ config: DC, eoc: $('dc-eoc').value, manned }) });
-    $('dc-msg').textContent = `This simulator plays for ${d.drill.eocName}. With people: ${d.drill.manned.join(', ')}. Reloading…`;
+    $('dc-msg').textContent = `This simulator plays for ${d.drill.eocName}. Staffed: ${(d.drill.mannedNames || d.drill.manned || []).join(', ')}. Reloading…`;
     setTimeout(() => location.reload(), 1000);
   } catch (e) { $('dc-msg').textContent = e.message; }
 };
 function showDrillNow() {
   const d = S.info && S.info.drill;
-  $('dc-now').textContent = d ? `— now: ${d.eocName} (with people: ${d.manned.join(', ')})` : '';
+  $('dc-now').textContent = d ? `— now: ${d.eocName} (staffed: ${(d.mannedNames || d.manned || []).join(', ')})` : '';
 }
 // ── Save simulator setup / Load simulator setup… / Save drill configuration (sim_server.py: /api/sim-setup/*, /api/drillconfig/save) ──
 function saveJSONFile(obj, name) {
@@ -1070,9 +1075,13 @@ async function applySimSetup() {
 }
 ['speed', 'seed'].forEach(id => $(id).addEventListener('change', () => post('/api/settings', { [id]: +$(id).value }).catch(() => {})));
 $('ss-event').addEventListener('change', () => post('/api/settings', { sessionEvent: $('ss-event').value.trim() }).catch(() => {}));
+const OUTLINE_ONLY = 'Outline only: this scenario has no timeline yet, so the simulator cannot play it. Choose Copper Creek Dam, or write its timeline (docs/SCENARIO_AUTHORING.md).';
 async function showScenario() {
   const s = S.scenarios.find(x => x.id === $('scen').value); if (!s) return;
-  $('scendesc').innerHTML = `<b>${esc(s.hazard)}</b> · ${s.duration_min} min · ${s.status === 'developed' ? 'fully developed' : 'outline only (no injects yet)'}${s.local_binding ? ' · local binding found' : ''}<br>${esc(s.summary)}<br><span class="muted">PACE: ${esc(s.pace)}<br>Severity: ${esc(s.severity)}</span>`;
+  const outline = s.status !== 'developed';
+  $('scendesc').innerHTML = `<b>${esc(s.hazard)}</b> · ${s.duration_min} min · ${outline ? 'outline only (no timeline yet)' : 'ready to run'}${s.local_binding ? ' · local binding found' : ''}<br>${esc(s.summary)}<br><span class="muted">PACE: ${esc(s.pace)}<br>Severity: ${esc(s.severity)}</span>`
+    + (outline ? `<div class="warn" style="margin-top:4px">${esc(OUTLINE_ONLY)}</div>` : '');
+  $('b-plan').disabled = outline; $('b-plan').title = outline ? OUTLINE_ONLY : '';
   try { S.scenario = await getJSON('/api/scenarios/' + encodeURIComponent(s.id)); } catch (e) { S.scenario = null; }
   checkScenario(s.id);
   if (!S.run) renderRoles(S.scenario && S.scenario.roles || []);
@@ -1086,7 +1095,7 @@ async function checkScenario(id) {
   try { c = await getJSON('/api/scenarios/' + encodeURIComponent(id) + '/check'); } catch (e) { $('scencheck').innerHTML = `<span class="err">scenario check failed: ${esc(e.message)}</span>`; return null; }
   if ($('scen').value !== id) return c;
   S.check = { id, res: c };
-  const list = (arr, cls) => arr.slice(0, 12).map(x => `<li class="${cls}">${esc(x)}</li>`).join('') + (arr.length > 12 ? `<li class="muted">… ${arr.length - 12} more: the drill director runs simulation/scenario_check.py for the full list</li>` : '');
+  const list = (arr, cls) => arr.slice(0, 12).map(x => `<li class="${cls}">${esc(x)}</li>`).join('') + (arr.length > 12 ? `<li class="muted">… ${arr.length - 12} more: the drill controller runs simulation/scenario_check.py for the full list</li>` : '');
   $('scencheck').innerHTML = (c.errors.length ? `<b class="err">Scenario check: ${c.errors.length} error(s)</b>` : `<span class="ok">✓ Scenario check passed</span>`)
     + (c.warnings.length ? ` · <span class="warn">${c.warnings.length} warning(s)</span>` : '') + (c.info && c.info.length ? ` <span class="muted">· ${esc(c.info.join(' · '))}</span>` : '')
     + (c.errors.length || c.warnings.length ? `<ul style="margin:2px 0 0;padding-left:18px">${list(c.errors, 'err')}${list(c.warnings, 'warn')}</ul>` : '');
@@ -1095,6 +1104,8 @@ async function checkScenario(id) {
 $('b-plan').onclick = async () => {
   if (!S.pack) return log('Load a pack first.', 'err');
   const sid = $('scen').value;
+  const sc0 = (S.scenarios || []).find(x => x.id === sid);
+  if (sc0 && sc0.status !== 'developed') { $('planinfo').innerHTML = `<span class="err">${esc(OUTLINE_ONLY)}</span>`; return; }
   const chk = S.check && S.check.id === sid ? S.check.res : await checkScenario(sid);
   if (chk && chk.errors.length && S.planAnyway !== sid) {
     S.planAnyway = sid;
@@ -1144,7 +1155,9 @@ function renderRun() {
   renderScore('score', r.score, r);
   $('score-box').style.display = r.score ? '' : 'none';
   const f = $('r-filter').value;
-  const rows = r.items.filter(it => f === 'all' || f === 'here' && it.local !== false || f === 'elsewhere' && it.local === false || (f === 'due' ? (it.status === 'pending' && it.t <= now + 5) || (it.status === 'fired' && (it.fired_t == null || now - it.fired_t < 15)) : f === 'cards' ? ['voice', 'prompt', 'paper'].includes(it.kind) || it.delivered_via === 'paper' : f === 'consequences' ? !!it.after : f === 'error' ? it.status === 'error' : it.kind === f));
+  // a consequence still waiting on its need sorts after everything with a minute of its own (its minute is only a placeholder)
+  const rows = r.items.filter(it => f === 'all' || f === 'here' && it.local !== false || f === 'elsewhere' && it.local === false || (f === 'due' ? (it.status === 'pending' && it.t <= now + 5) || (it.status === 'fired' && (it.fired_t == null || now - it.fired_t < 15)) : f === 'cards' ? ['voice', 'prompt', 'paper'].includes(it.kind) || it.delivered_via === 'paper' : f === 'consequences' ? !!it.after : f === 'error' ? it.status === 'error' : it.kind === f))
+    .sort((a, b) => (a.status === 'waiting') - (b.status === 'waiting') || a.t - b.t);
   const due = r.items.filter(it => it.status === 'pending' && it.t <= now).length; $('n-due').style.display = due ? 'inline-block' : 'none'; $('n-due').textContent = due;
   const cnt = {}; for (const it of r.items) cnt[it.status] = (cnt[it.status] || 0) + 1;
   $('r-counts').textContent = `${rows.length} shown · ${Object.entries(cnt).map(([k, v]) => `${v} ${k}`).join(', ')}`;
@@ -1153,27 +1166,32 @@ function renderRun() {
     const isDue = it.status === 'pending' && it.t <= now;
     const res = it.result ? (it.result.ok ? `<span class="ok">✓ ${esc(it.result.via)}${it.result.new != null ? ` · new ${it.result.new}, dup ${it.result.dup}` : ''}${it.result.file ? ' · ' + esc(it.result.file.split(/[\\/]/).pop()) : ''}</span>` : `<span class="err">✗ ${esc(it.result.error)}</span>`) : '';
     const toBadge = it.local === false ? ` <span class="to">→ ${esc(it.to)} EOC's simulator</span>` : it.rollup ? ' <span class="to">in a roll-up</span>' : '';
-    const what = (it.kind === 'form' ? `${it.form.toUpperCase()} from <b>${esc(it.unit)}</b>${it.severity != null ? ` <span style="color:${SEVC[it.severity]}">●</span>` : ''}` : it.kind === 'rollup' ? `Roll-up to the Council / Area EOC from <b>${esc(it.stake)}</b> (simulated stake)` : it.kind === 'note' ? 'Note to the EOC log' : it.kind === 'voice' ? `Net card · HAM${it.unit ? ' of <b>' + esc(it.unit) + '</b>' : ''}` : it.kind === 'prompt' ? `Prompt · <b>${esc(it.role.replace(/_/g, ' '))}</b>` : it.kind === 'work_item' ? `Work item to the EOC list · <b>${esc((it.work || {}).title || '')}</b>${it.unit ? ' (' + esc(it.unit) + ')' : ''}` : it.kind === 'reply' ? `Reply from <b>${esc((it.reply || {}).from || 'the line above')}</b>${it.unit ? ' about <b>' + esc(it.unit) + '</b>' : ''} · closes the matching UP items with the decision` : esc(it.kind)) + toBadge
-      + (it.after ? ` <span class="trig">${it.status === 'waiting' ? '⏳ waits until' : '⚡ triggered:'} <i>${esc(afterLabel(r, it))}</i> is ${esc(it.after.is)}${it.triggered ? ` (was, at ${fmtT(it.triggered.at)})` : ''}</span>` : '');
+    const what = (it.kind === 'form' ? `<b>${esc(it.label || it.form.toUpperCase() + ' from ' + it.unit)}</b>${it.severity != null ? ` <span style="color:${SEVC[it.severity]}">●</span>` : ''}${it.sent_t != null ? ` <span class="muted small">(written ${fmtT(it.sent_t)}, arrives late)</span>` : ''}` : it.kind === 'rollup' ? `Roll-up to the Council / Area EOC from <b>${esc(it.stake)}</b> (simulated stake)` : it.kind === 'reply' ? `<b>${esc(it.label || 'Reply')}</b>${it.unit ? ' about <b>' + esc(it.unit) + '</b>' : ''} · closes the matching UP items with the decision` : `<b>${esc(it.label || it.kind)}</b>`) + toBadge
+      + (it.after ? ` <span class="trig">${it.status === 'elsewhere' ? 'after' : it.status === 'waiting' ? '⏳ waits until' : it.triggered ? '⚡ triggered:' : 'after'} <i>${esc(afterLabel(r, it))}</i> is ${esc(it.after.is)}${it.triggered ? ` (at ${fmtT(it.triggered.at)})` : ''}</span>` : '');
     // a card to hand out stays open from the minute it is due until 20 drill minutes after it fired (the clock
     // fires it within a second of being due, so "due" alone would close it at once); Show / Hide override that
     const recent = it.status === 'fired' && it.fired_t != null && now - it.fired_t < 20;
     const open = openCards.has(it.id) || (card && !closedCards.has(it.id) && (isDue || recent));
     const text = it.kind === 'form' ? (it.delivered_via === 'paper' ? it.text : '') : it.text;
     const btns = it.status === 'elsewhere' ? '' : it.rollup && it.status === 'pending' ? '' : it.status === 'waiting' ? `<button class="b s" data-act="fire" data-id="${esc(it.id)}" data-force="1" title="Fire it now without waiting for the need">Force now</button><button class="b s" data-act="skip" data-id="${esc(it.id)}">Skip</button>` : it.status === 'pending' || it.status === 'held' ? `<button class="b s" data-act="fire" data-id="${esc(it.id)}">${it.kind === 'form' || it.kind === 'note' || it.kind === 'work_item' || it.kind === 'rollup' ? 'Send now' : 'Hand out'}</button><button class="b s" data-act="skip" data-id="${esc(it.id)}">Skip</button>${it.status === 'pending' ? `<button class="b s" data-act="hold" data-id="${esc(it.id)}">Hold</button>` : `<button class="b s" data-act="pending" data-id="${esc(it.id)}">Release</button>`}` : it.status === 'skipped' ? `<button class="b s" data-act="pending" data-id="${esc(it.id)}">Unskip</button>` : it.status === 'error' ? `<button class="b s" data-act="fire" data-id="${esc(it.id)}" data-force="1">Retry</button>` : (text ? `<button class="b s" data-show="${esc(it.id)}" data-open="${open ? 1 : 0}">${open ? 'Hide' : 'Show'}</button>` : '');
-    return `<li class="${esc(it.status)}${isDue ? ' due' : ''}"><span class="t">${fmtT(it.t)}</span><span><span class="k ${esc(it.kind)}">${esc(it.kind)}</span>${what}${it.note ? ` <span class="muted small">— ${esc(it.note)}</span>` : ''}${it.status === 'fired' ? ` <span class="muted small">${esc(it.fired_wall || '')}</span>` : ''}</span><span>${btns}</span>${res ? `<span class="res">${res}</span>` : ''}${open && text ? `<div class="card">${esc(text)}</div>` : ''}</li>`;
+    const handed = card && it.status === 'fired' ? `<label class="small" style="margin-left:6px"><input type="checkbox" data-hand="${esc(it.id)}"${it.handed ? ' checked' : ''}> Handed out</label>` : '';
+    return `<li class="${esc(it.status)}${isDue ? ' due' : ''}${it.handed ? ' handed' : ''}"><span class="t">${it.status === 'waiting' || (it.after && !it.triggered) ? 'after' : fmtT(it.t)}</span><span><span class="k ${esc(it.kind)}">${esc(it.kind)}</span>${what}${it.note ? ` <span class="muted small">— ${esc(it.note)}</span>` : ''}${it.status === 'fired' ? ` <span class="muted small">${esc(it.fired_wall || '')}</span>` : ''}</span><span>${btns}${handed}</span>${res ? `<span class="res">${res}</span>` : ''}${open && text ? `<div class="card">${esc(text)}</div>` : ''}</li>`;
   }).join('');
   $('items').querySelectorAll('button[data-act]').forEach(b => b.onclick = async () => { b.disabled = true; try { await post('/api/run/item', { id: b.dataset.id, action: b.dataset.act, force: !!b.dataset.force }); } catch (e) { log(e.message, 'err'); } pollRun(); });
+  $('items').querySelectorAll('input[data-hand]').forEach(cb => cb.onchange = async () => { try { await post('/api/run/item', { id: cb.dataset.hand, action: cb.checked ? 'handed' : 'unhanded' }); } catch (e) { log(e.message, 'err'); } pollRun(); });
   $('items').querySelectorAll('button[data-show]').forEach(b => b.onclick = () => { const id = b.dataset.show; if (b.dataset.open === '1') { openCards.delete(id); closedCards.add(id); } else { closedCards.delete(id); openCards.add(id); } renderRun(); });
   $('r-log').textContent = (r.log || []).slice(-40).map(e => `${e.wall} ${fmtT(e.t)}  ${e.text}`).join('\n'); $('r-log').scrollTop = 1e6;
   renderRoles(r.roles, now); renderHotwash(); renderNeeds();
 }
+// cut at a word boundary, never mid-word
+function cutWords(t, n) { t = String(t || ''); if (t.length <= n) return t; const c = t.slice(0, n), sp = c.lastIndexOf(' '); return (sp > n * 0.6 ? c.slice(0, sp) : c).replace(/[\s,;:.\-–—]+$/, '') + '…'; }
 function afterLabel(r, it) {
   const a = it.after || {}, inj = a.need.split('#')[0], suf = a.need.split('#')[1] || '';
   const n = (r.needs || []).find(x => x.inject === inj && (!it.unit_id || x.item.includes('@' + it.unit_id)) && (!suf || x.id.split('#').pop().startsWith(suf)));
-  return n ? n.label.slice(0, 70) : a.need;
+  return n ? cutWords(n.label, 90) : a.need;
 }
 // ---------- scoreboard and the needs ledger ----------
+const SCORE_WORDS = { strong: 'Strong', steady: 'Steady', struggling: 'Room to grow', overwhelmed: 'Baseline: first run' };
 const NSTATE = { open: 'open', met: 'met', late: 'met late', overdue: 'OVERDUE', missed: 'MISSED', waived: 'not played' };
 function renderScore(prefix, sc, r) {
   const tiles = $(prefix + '-tiles'), bar = $(prefix + '-bar'), chips = $(prefix + '-checks'); if (!tiles) return;
@@ -1182,7 +1200,7 @@ function renderScore(prefix, sc, r) {
   tiles.innerHTML = [
     [`Met`, `${sc.met + sc.late}<small>/${sc.total}</small>`, sc.late ? `${sc.late} late` : 'needs', bad ? '' : 'good'],
     [`Overdue${arrow}`, `${bad}`, sc.missed ? `${sc.missed} missed` : 'needs', bad ? 'bad' : 'good'],
-    [`Score`, `${sc.pct == null ? '—' : sc.pct}<small>%</small>`, sc.label || '', sc.pct == null ? '' : sc.pct >= 65 ? 'good' : sc.pct >= 40 ? 'warnt' : 'bad'],
+    [`Score`, `${sc.pct == null ? '—' : sc.pct}<small>%</small>`, SCORE_WORDS[sc.label] || sc.label || '', sc.pct == null ? '' : sc.pct >= 65 ? 'good' : sc.pct >= 40 ? 'warnt' : 'bad'],
     [`To owner`, `${sc.median_owner_min == null ? '—' : sc.median_owner_min}<small> min</small>`, 'median', ''],
     [`No owner`, `${sc.high_unowned}`, 'high prio', sc.high_unowned ? 'bad' : ''],
   ].map(([k, v, s2, cls]) => `<div class="tile ${cls}"><div class="k">${esc(k)}</div><div class="v">${v}</div>${s2 ? `<div class="k" style="text-transform:none;white-space:normal;overflow:visible">${esc(s2)}</div>` : ''}</div>`).join('');
@@ -1216,10 +1234,10 @@ function renderNeeds() {
     const soon = n.state === 'open' && /due in [0-5] min/.test(due);
     const what = n.kind === 'report' ? `typed in within ${rule.typed || 25} min, numbers as on the card` : `owner within ${rule.owner} min · ${(rule.done_states || ['done']).join(' / ')} within ${rule.done} min${rule.decision ? ' · decision written in' : ''}`;
     const acc = n.accuracy ? ` · <b>${Math.round(n.accuracy.score * 100)}%</b> of the card's fields` : '';
-    const btn = ['open', 'overdue'].includes(n.state) ? `<button class="b s" data-nd="${esc(n.id)}" data-nv="waive" title="Not played in this drill: leave it out of the score">Waive</button>` : n.state === 'waived' ? `<button class="b s" data-nd="${esc(n.id)}" data-nv="reopen">Reopen</button>` : '';
+    const btn = ['open', 'overdue'].includes(n.state) ? `<button class="b s" data-nd="${esc(n.id)}" data-nv="met" title="Done in the room (by voice, on paper): count it as met now">Mark met</button><button class="b s" data-nd="${esc(n.id)}" data-nv="waive" title="Not played in this drill: leave it out of the score">Waive</button>` : n.state === 'waived' || n.marked ? `<button class="b s" data-nd="${esc(n.id)}" data-nv="reopen">Reopen</button>` : '';
     return `<li class="${esc(n.state)}${soon ? ' soon' : ''}"><span class="t" style="font-variant-numeric:tabular-nums;font-weight:600;color:var(--mute)">${fmtT(n.arose_t)}</span><span><span class="nst ${esc(n.state)}">${esc(NSTATE[n.state] || n.state)}</span> ${n.prio === 1 ? '<b style="color:var(--err)">HIGH</b> ' : ''}${esc(n.label)}${n.unit && !n.label.includes(n.unit) ? ` <span class="muted">(${esc(n.unit)})</span>` : ''}${due ? ` <span class="due${/overdue/.test(due) ? ' over' : ''}">${esc(due)}</span>` : ''}</span><span>${btn}</span><span class="ev">${esc(what)}${n.evidence ? ` — <b>${esc(n.evidence)}</b>` : ''}${acc}${n.owner ? ` · owner ${esc(n.owner)}` : ''}</span></li>`;
   }).join('') || '<li class="muted small" style="display:block">Nothing in this list.</li>';
-  ul.querySelectorAll('button[data-nd]').forEach(b => b.onclick = () => post('/api/run/need', { id: b.dataset.nd, action: b.dataset.nv }).then(pollRun).catch(e => log(e.message, 'err')));
+  ul.querySelectorAll('button[data-nd]').forEach(b => b.onclick = () => post('/api/run/need', { id: b.dataset.nd, action: b.dataset.nv, who: 'the controller' }).then(pollRun).catch(e => log(e.message, 'err')));
 }
 $('nd-filter').onchange = renderNeeds; $('nd-cat').onchange = renderNeeds;
 $('b-ndrefresh').onclick = () => post('/api/run/needs').then(pollRun).catch(e => log(e.message, 'err'));
@@ -1264,11 +1282,14 @@ function renderRoles(roles, now) {
 }
 function renderHotwash() {
   const r = S.run; if (!r) { $('hw').innerHTML = '<li class="muted small">Plan a run to get its checklist.</li>'; $('hw-sum').textContent = ''; return; }
-  const done = r.hotwash.filter(h => h.result).length; $('hw-sum').textContent = `${done} of ${r.hotwash.length} answered`;
-  $('hw').innerHTML = r.hotwash.map((h, n) => `<li><div><b>${fmtT(h.t)}</b> ${esc(h.check)}</div><div class="small muted">How: ${esc(h.how)}${h.auto ? ' · <i>has an evidence rule</i>' : ''}</div>${h.evidence ? `<div class="ev ${h.suggest === '✓' ? 'y' : 'n'}"><b>${esc(h.suggest || '')}</b> evidence: ${esc(h.evidence)}</div>` : ''}<div class="chk">${['✓', '✗', '–'].map(v => `<button class="b s ${h.result === v ? 'on' : ''}" data-hw="${n}" data-v="${v}">${v}</button>`).join('')}<input type="text" data-hwn="${n}" value="${esc(h.note)}" placeholder="note" style="flex:1"></div></li>`).join('');
+  const done = r.hotwash.filter(h => h.result).length, nCore = r.hotwash.filter(h => h.core).length, core = $('hw-core').checked;
+  $('hw-core').parentElement.style.display = nCore ? '' : 'none';
+  $('hw-sum').textContent = `${done} of ${r.hotwash.length} answered${nCore ? ` · ${nCore} core` : ''}${r.hotwash.some(h => h.result_from === 'evidence') ? ' · ✓/✗ from the evidence are preselected: change any you disagree with' : ''}`;
+  $('hw').innerHTML = r.hotwash.map((h, n) => core && !h.core ? '' : `<li${h.core ? ' class="core"' : ''}><div><b>${fmtT(h.t)}</b> ${h.core ? '<span class="to">core</span> ' : ''}${esc(h.check)}${h.result_from === 'evidence' ? ' <span class="muted small">(preselected from the evidence)</span>' : ''}</div><div class="small muted">How: ${esc(h.how)}${h.auto ? ' · <i>has an evidence rule</i>' : ''}</div>${h.evidence ? `<div class="ev ${h.suggest === '✓' ? 'y' : 'n'}"><b>${esc(h.suggest || '')}</b> evidence: ${esc(h.evidence)}</div>` : ''}<div class="chk">${['✓', '✗', '–'].map(v => `<button class="b s ${h.result === v ? 'on' : ''}" data-hw="${n}" data-v="${v}">${v}</button>`).join('')}<input type="text" data-hwn="${n}" value="${esc(h.note)}" placeholder="note" style="flex:1"></div></li>`).join('');
   $('hw').querySelectorAll('button[data-hw]').forEach(b => b.onclick = () => post('/api/run/hotwash', { n: +b.dataset.hw, result: b.dataset.v, note: $('hw').querySelector(`input[data-hwn="${b.dataset.hw}"]`).value }).then(pollRun));
   $('hw').querySelectorAll('input[data-hwn]').forEach(i => i.onchange = () => post('/api/run/hotwash', { n: +i.dataset.hwn, result: S.run.hotwash[+i.dataset.hwn].result, note: i.value }));
 }
+$('hw-core').onchange = renderHotwash;
 $('hw-export').onclick = () => { if (S.run) window.open('/api/run/export', '_blank'); };
 $('hw-evidence').onclick = async () => { if (!S.run) return; try { const r = await post('/api/run/evidence'); log(r.ok ? `Evidence gathered: ${r.checks} checks, ${r.items} work items on the EOC` : r.error, r.ok ? '' : 'err'); } catch (e) { log(e.message, 'err'); } pollRun(); };
 
@@ -1309,8 +1330,11 @@ function renderSession() {
     $('ss-live').className = 'live small';
     $('ss-live').innerHTML = `<span class="clk">${fmtT(r.minute)}</span> of T+${r.duration} · <b>${esc(st)}</b> · ${r.speed}× · PACE <b>${esc(r.pace)}</b>${r.phase ? ' · ' + esc(r.phase) : ''}`
       + (sc.total ? `<br>Needs met <b>${sc.met + (sc.late || 0)}/${sc.total}</b>${(sc.overdue || 0) + (sc.missed || 0) ? ' · <b class="err">' + ((sc.overdue || 0) + (sc.missed || 0)) + ' overdue</b>' : ''}${sc.pct != null ? ' · ' + sc.pct + '%' : ''}` : '')
-      + (r.next.length ? '<br>Next: ' + r.next.map(n => `${fmtT(n.t)} ${esc(n.kind)} ${esc(n.what)}`).join(' · ') : '');
+      + (r.next.length ? '<br>Next: ' + r.next.map(n => `${fmtT(n.t).replace(/:00$/, '')} ${esc(n.what)}`).join(' · ') : '');
   } else { $('ss-live').className = 'live small muted'; $('ss-live').textContent = 'Not running.'; }
+  // no watched Winlink folder: from the first Contingency minute every Winlink report is a paper card to hand out
+  const wl = s.winlink_paper;
+  $('ss-winlink').innerHTML = wl ? `<span class="warn">⚠ The EOC does not watch a Winlink folder: from ${fmtT(wl.from_t).replace(/:00$/, '')} every report becomes a paper card you must hand out (about ${wl.cards}).</span>` : '';
   $('ss-pause').disabled = !running;
   $('ss-stop').disabled = !(running || paused || sched);
   $('ss-results').textContent = s.results_url;
@@ -1318,7 +1342,13 @@ function renderSession() {
   $('ss-sessions').querySelectorAll('button[data-resume]').forEach(b => b.onclick = async () => { b.disabled = true; try { const r = await post('/api/session/resume', { id: b.dataset.resume }); log(r.ok ? `Session ${r.run} resumed, ${r.status} at ${fmtT(r.minute)}: GO continues it` : r.error, r.ok ? '' : 'err'); } catch (e) { log(e.message, 'err'); } loadSession(); pollRun(); });
   document.querySelectorAll('#pane-session a[data-goto]').forEach(a => a.onclick = ev => { ev.preventDefault(); showPane(a.dataset.goto); const h = a.dataset.step && $(a.dataset.step); if (h) h.scrollIntoView({ block: 'start' }); });
 }
+let ssResetArm = 0;
 $('ss-reset').onclick = async () => {
+  const st = SS && SS.run ? SS.run.status : '';
+  if (st === 'paused' && SS.run.session && Date.now() - ssResetArm > 5000) {   // two clicks: a paused session is not thrown away by one
+    ssResetArm = Date.now(); $('ss-2-msg').innerHTML = '<span class="warn">Click again to reset: the paused session becomes a rehearsal.</span>'; return;
+  }
+  ssResetArm = 0;
   $('ss-reset').disabled = true; $('ss-2-msg').textContent = 'Resetting…';
   try { const r = await post('/api/session/reset', { event: $('ss-event').value.trim() }); if (!r.ok) throw new Error(r.error); log(`Session reset: run ${r.run}${r.event ? ', fresh drill event "' + r.event + '"' : ''}${r.roster_added ? `; the EOC roster was empty, so the ${r.roster_added} playing units were added` : ''}`); if (r.warning) log(r.warning, 'err'); }
   catch (e) { $('ss-2-msg').innerHTML = `<span class="err">${esc(e.message)}</span>`; }

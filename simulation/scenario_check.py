@@ -50,7 +50,7 @@ PACE_KEYS = {'t', 'level', 'why', 'trigger', 'manual'}
 PHASE_KEYS = {'id', 'from', 'to', 'title', 'narrative', 'controller'}
 INJECT_KEYS = {'id', 'kind', 'each', 'where', 'same_as', 't', 'template', 'form', 'channel', 'after', 'to', 'text', 'title', 'detail',
                'next', 'cat', 'prio', 'due', 'unit', 'from', 'decision', 'status', 'match', 'agency', 'fields', 'subject', 'need',
-               'lesson', 'role'}
+               'lesson', 'role', 'delay'}
 KINDS = ('form', 'note', 'voice', 'prompt', 'paper', 'work_item', 'reply', 'ics', 'rollup')
 EACH = ('once', 'unit', 'stake')
 TO = ('stake', 'satellite', 'area', 'all', 'unit', 'eoc')
@@ -66,28 +66,44 @@ WORK_STATES = ('open', 'progress', 'up', 'done', 'any')
 REPLY_STATUS = ('done', 'progress', 'open')
 CATS = tuple(k for k in engine.NEED_DEFAULTS if k != 'report')
 NEED_RULE_KEYS = {'owner', 'done', 'decision', 'done_states', 'typed', 'label', 'role'}
-NEED_KEYS = NEED_RULE_KEYS | {'cat', 'form', 'title_contains', 'prio'}
+NEED_KEYS = NEED_RULE_KEYS | {'cat', 'form', 'title_contains', 'prio', 'coach'}     # coach: what to do, in the debrief
 DONE_STATES = ('open', 'progress', 'up', 'done')
 ROLE_KEYS = {'id', 'title', 'cards'}
 CARD_KEYS = {'t', 'text'}
-HOTWASH_KEYS = {'t', 'check', 'how', 'auto'}
+HOTWASH_KEYS = {'t', 'check', 'how', 'auto', 'core', 'to'}     # core: a short hot wash covers it first
 AUTO_KEYS = {'items', 'expect'}
 AUTO_ITEMS = {'cat', 'key_prefix', 'title_contains'}
 AUTO_EXPECT = {'min_count', 'max_count', 'owner_within_min', 'done_within_min', 'status_in', 'decision', 'no_unowned_high'}
-DONE_TYPES = ('sitrep', 'no_unowned_high', 'pct_min', 'cat_met', 'need_met')
-DONE_CHECK_KEYS = {'id', 'label', 'by'} | set(DONE_TYPES)
+DONE_TYPES = ('sitrep', 'no_unowned_high', 'pct_min', 'cat_met', 'need_met', 'rollups_merged')
+DONE_CHECK_KEYS = {'id', 'label', 'by', 'to'} | set(DONE_TYPES)
+LEVELS = ('stake', 'satellite', 'area', 'all')         # a done check's or hot-wash line's `to`
 EOCS_KEYS = {'satellite': {'name', 'where'}, 'area': {'name'}}
 AGENCY_KEYS = {'name', 'call', 'contact', 'place', 'forms'}
 APPLIES_KEYS = {'bbox'}
 BANDS = ('0', '1', '2', '3')
 # the values the engine fills: per unit (engine._Ctx) and once (engine.plan's once_values); agencies add {k}, {k}_call, {k}_contact, {k}_place
-ONCE_VALUES = {'stake', 'eoc_call', 'eoc_winlink', 'eoc_email', 'eoc', 'today', 'erd', 'erd_phone', 'specialist', 'specialist_phone'}
+ONCE_VALUES = {'stake', 'eoc_call', 'eoc_winlink', 'eoc_email', 'eoc', 'today', 'erd', 'erd_phone', 'specialist', 'specialist_phone',
+               'erd_who', 'specialist_who'}
 UNIT_VALUES = ONCE_VALUES | {'unit', 'unit_type', 'city', 'building', 'address', 'building_name', 'state', 'zip', 'stake_president',
                              'stake_center', 'stake_center_city', 'stake_center_zip', 'stake_center_name', 'bishop', 'bishop_role',
-                             'bishop_phone', 'bishop_email', 'crew_chief', 'crew_chief_phone', 'unit_call', 'tomorrow', 'severity'}
+                             'bishop_phone', 'bishop_email', 'crew_chief', 'crew_chief_phone', 'unit_call', 'tomorrow', 'severity',
+                             'unit_misspelled'}
 TEXT_KEYS = ('text', 'title', 'detail', 'next', 'due', 'unit', 'from', 'decision', 'subject')
 DERIVED_SUFFIXES_FALLBACK = ('report', 'miss', 'life', 'hq', 'nbr', 'local', 'shelter', 'bldg', 'approve', 'safety')
 PLACEHOLDER = re.compile(r'\{([a-z_]+)\}')
+
+
+def _as_list(v):
+    return [v] if isinstance(v, str) else list(v or [])
+
+
+def _levels(r, where, d):
+    """`to` on a done check or hot-wash line: one EOC level or a list of them."""
+    if 'to' not in d:
+        return
+    lv = _as_list(d['to'])
+    if not lv or any(x not in LEVELS for x in lv):
+        r.err(where, f"one of {', '.join(LEVELS)} or a list of them, got {d['to']!r}")
 
 
 class Report:
@@ -517,6 +533,12 @@ def check(sc: dict, local: dict = None, pack: dict = None, catalog: dict = None,
                     r.err(w + '.after.is', f"must be one of {', '.join(AFTER_IS)}, found {a.get('is')!r}")
                 if 'delay' in a and not (_num(a['delay']) and a['delay'] >= 0):
                     r.err(w + '.after.delay', 'expected minutes >= 0')
+        if 'delay' in inj:
+            # a report written at its minute and delivered `delay` minutes later (held at a gateway, relayed late)
+            if kind != 'form':
+                r.err(w + '.delay', 'only a form (report) can arrive late')
+            elif not (_num(inj['delay']) and inj['delay'] > 0):
+                r.err(w + '.delay', 'expected minutes > 0')
         nd = inj.get('need')
         if nd is not None:
             if _unknown(r, w + '.need', nd, NEED_KEYS):
@@ -577,6 +599,11 @@ def check(sc: dict, local: dict = None, pack: dict = None, catalog: dict = None,
                 r.err(w + '.cat_met', f"unknown category {ck['cat_met']!r}")
             if 'pct_min' in ck and not (_num(ck['pct_min']) and 0 <= ck['pct_min'] <= 100):
                 r.err(w + '.pct_min', 'a percentage')
+            if 'rollups_merged' in ck and ck['rollups_merged'] is not True:
+                r.err(w + '.rollups_merged', 'true')
+            _levels(r, w + '.to', ck)
+            if 'rollups_merged' in ck and not set(_as_list(ck.get('to', 'all'))) <= {'area'}:
+                r.warn(w, 'rollups_merged applies only at a Council / Area EOC: give it "to": "area"')
 
     # hot wash
     for n, h in enumerate(sc.get('hotwash') or []):
@@ -585,6 +612,9 @@ def check(sc: dict, local: dict = None, pack: dict = None, catalog: dict = None,
             continue
         if not h.get('check'):
             r.err(w, 'missing "check"')
+        if 'core' in h and not isinstance(h['core'], bool):
+            r.err(w + '.core', 'true or false')
+        _levels(r, w + '.to', h)
         if 't' in h:
             _time(r, w + '.t', h['t'], duration)
         au = h.get('auto')

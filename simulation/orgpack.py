@@ -322,12 +322,20 @@ def required_status(pack: dict, site: dict) -> list:
             row['filled'] = bool(units) and not row['missing']
             row['status'] = 'filled' if row['filled'] else 'missing'
         else:
-            orgs = councils if r.get('org') == 'council' else ([welfare] if r.get('org') == 'welfare' and welfare.get('id') else ([stake] if stake else []))
+            if r.get('org') == 'council':
+                orgs = councils
+            elif r.get('org') == 'welfare':
+                orgs = [welfare] if welfare.get('id') else []
+            elif level == 'area':
+                orgs = councils            # the Council / Area EOC's own station: its council, never a stake left over from a Stake setup
+            else:
+                orgs = [stake] if stake else []
             for o in orgs:
                 c = idx.leader(o, r['roles'])
                 if not c and r['key'] == 'ham':                # a HAM in any ward of the stake counts
                     c = next((idx.leader(u, r['roles']) for u in idx.units_of(o['id']) if idx.leader(u, r['roles'])), {}) if o is stake else {}
-                (row['who'] if c else row['missing']).append({'org': o['id'], 'name': o.get('name', ''), 'who': c.get('name', ''), 'role': c.get('role', '')} if c else {'org': o['id'], 'name': o.get('name', '')})
+                name = f"Council / Area EOC ({o.get('name', '')})" if level == 'area' and o in councils and r.get('org') != 'council' else o.get('name', '')
+                (row['who'] if c else row['missing']).append({'org': o['id'], 'name': name, 'who': c.get('name', ''), 'role': c.get('role', '')} if c else {'org': o['id'], 'name': name})
             row['filled'] = bool(orgs) and not row['missing']
             row['status'] = 'filled' if row['filled'] else 'missing'
             if r['source'] == 'local' and not row['filled']:

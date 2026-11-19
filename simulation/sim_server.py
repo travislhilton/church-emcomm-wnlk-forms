@@ -546,7 +546,12 @@ def local_roles_view(trusted: bool) -> dict:
 def plan_run(body: dict) -> dict:
     """Plan a run from the Setup tab's request (or the same request again, for a session reset). Call with STATE.lock held."""
     sid = body.get('scenario') or ''
-    sc = scenario_for_run(sid)
+    if catalog_entry(sid).get('status') == 'outline':
+        raise ValueError(OUTLINE_ONLY)
+    try:
+        sc = scenario_for_run(sid)
+    except FileNotFoundError:
+        raise ValueError(OUTLINE_ONLY)
     site = dict(body.get('site') or {})
     eoc = dict(body.get('eoc') or site.get('eoc') or {})
     eoc_url = (eoc.get('url') or STATE.settings.get('eocUrl') or f'http://{STATE.lan_ip}:8080').rstrip('/')
@@ -657,13 +662,37 @@ def session_status() -> dict:
         ph = [p for p in r.run.get('phases', []) if p['from'] <= r.elapsed() < p['to']]
         run['phase'] = ph[0]['title'] if ph else ''
         nxt = sorted((it for it in r.run['items'] if it['status'] == 'pending' and it.get('local', True)), key=lambda it: it['t'])[:5]
-        run['next'] = [{'t': it['t'], 'kind': it['kind'], 'what': (it.get('work') or {}).get('title') or it.get('unit') or (it.get('role') or '').replace('_', ' ') or it['kind']} for it in nxt]
+        run['next'] = [{'t': it['t'], 'kind': it['kind'], 'what': engine.item_label(it)} for it in nxt]
+    winlink = None
+    if r and probe.get('ok') and not probe.get('receivedDir'):
+        # no watched Winlink folder: every report the plan sends by Winlink becomes a paper card for the controller
+        winlink = winlink_paper_cards(r.run)
     sessions = list_sessions()
     return {'ok': True, 'pack': bool(STATE.pack), 'pack_label': (STATE.pack or {}).get('source', ''), 'privacy': STATE.privacy,
             'eoc': {'url': url, 'ok': bool(probe.get('ok')), 'name': st.get('eocName', ''), 'event': st.get('activeEventName', ''), 'pace': st.get('pace', '')},
-            'planned_before': bool(STATE.settings.get('lastPlan')), 'run': run,
+            'planned_before': bool(STATE.settings.get('lastPlan')), 'run': run, 'winlink_paper': winlink,
             'resumable': [x for x in sessions if x['resumable']], 'sessions': sessions[:12],
             'results_url': f'http://{STATE.lan_ip}:{STATE.port}/results'}
+
+
+def winlink_paper_cards(run: dict) -> dict:
+    """From which drill minute, and about how many, reports this run would send by Winlink (Contingency, a fixed Winlink
+    channel, a partner agency's ICS message): with no watched Winlink folder each becomes a paper card to hand out."""
+    pace = run.get('pace') or []
+    first_c = min((p['t'] for p in pace if p.get('level') == 'C'), default=None)
+    n, first = 0, None
+    for it in run.get('items') or []:
+        if not it.get('local', True) or it.get('rollup') or it.get('status') == 'elsewhere':
+            continue
+        t = float(it.get('t') or 0)
+        wl = (it['kind'] == 'ics' or (it['kind'] == 'form' and (it.get('channel') == 'winlink'
+              or (it.get('channel', 'by_pace') == 'by_pace' and engine.pace_at(pace, t) == 'C'))))
+        if wl:
+            n += 1
+            first = t if first is None else min(first, t)
+    if not n:
+        return None
+    return {'from_t': first_c if first_c is not None else first, 'cards': n}
 
 
 def session_reset(body: dict) -> dict:
@@ -773,13 +802,26 @@ def session_resume(run_id: str) -> dict:
         return {'ok': True, 'run': run_id, 'status': c['status'], 'minute': round(c['elapsed_min'], 1)}
 
 
+OUTLINE_ONLY = ('Outline only: this scenario has no timeline yet, so the simulator cannot play it. Choose Copper Creek Dam, '
+                'or write its timeline (docs/SCENARIO_AUTHORING.md).')
+
+
+def catalog_entry(sid: str) -> dict:
+    try:
+        return next((s for s in engine.catalog(extra_dirs=STATE.scenario_dirs())['scenarios'] if s['id'] == sid), {})
+    except Exception:
+        return {}
+
+
 def check_scenario(sid: str) -> dict:
     """The scenario validator's result for a scenario of the catalog, with its local binding and over the loaded pack."""
     import scenario_check
+    if catalog_entry(sid).get('status') == 'outline':
+        return {'ok': False, 'outline': True, 'errors': [OUTLINE_ONLY], 'warnings': [], 'info': []}
     try:
         sc = engine.load_scenario(sid, extra_dirs=STATE.scenario_dirs())
-    except FileNotFoundError as e:
-        return {'ok': False, 'errors': [str(e)], 'warnings': [], 'info': []}
+    except FileNotFoundError:
+        return {'ok': False, 'outline': True, 'errors': [OUTLINE_ONLY], 'warnings': [], 'info': []}
     sc.pop('local_binding', None)
     lp = STATE.local_binding(sid)
     try:
@@ -1085,8 +1127,10 @@ class Handler(SimpleHTTPRequestHandler):
                     STATE.settings['scenario'] = cfg.get('scenario', '')
                     # one simulator per EOC laptop: unless told otherwise it plays against this laptop's EOC server
                     STATE.settings['eocUrl'] = (body.get('eocUrl') or f'http://{STATE.lan_ip}:8080').rstrip('/')
+                    staffed = sorted(drillconfig.manned_set(cfg, manned))
+                    names = {e.get('id'): e.get('name') or e.get('id') for e in cfg.get('eocs', [])}
                     STATE.settings['drill'] = {'name': cfg.get('name', ''), 'eoc': eoc_id, 'eocName': me.get('name', ''),
-                                               'manned': sorted(drillconfig.manned_set(cfg, manned)),
+                                               'manned': staffed, 'mannedNames': [names.get(x, x) for x in staffed],
                                                'scenario': cfg.get('scenario', ''), 'event': str((cfg.get('event') or {}).get('name') or '')}
                     save_settings(STATE.settings)
                 return self.send_json({'ok': True, 'site': site, 'scenario': cfg.get('scenario', ''), 'drill': STATE.settings['drill'], 'info': STATE.info()})
@@ -1115,7 +1159,10 @@ class Handler(SimpleHTTPRequestHandler):
                         return self.send_json({'ok': False, 'error': 'Load an organization pack first.'}, HTTPStatus.BAD_REQUEST)
                     if STATE.runner and STATE.runner.run['clock']['status'] == 'running':
                         return self.send_json({'ok': False, 'error': 'A run is in progress. Stop it first.'}, HTTPStatus.CONFLICT)
-                    run = plan_run(body)
+                    try:
+                        run = plan_run(body)
+                    except ValueError as e:          # an outline, or a scenario plan() refuses: the reason, never a file path
+                        return self.send_json({'ok': False, 'error': str(e)}, HTTPStatus.BAD_REQUEST)
                     return self.send_json({'ok': True, 'run': STATE.runner.state(), 'counts': engine.counts(run)})
             if path == '/api/session/reset':
                 return self.send_json(session_reset(body))
@@ -1142,6 +1189,8 @@ class Handler(SimpleHTTPRequestHandler):
                 act = body.get('action')
                 if act == 'fire':
                     return self.send_json({'ok': True, 'item': r.fire(body.get('id', ''), force=bool(body.get('force')))})
+                if act in ('handed', 'unhanded'):       # the Run tab's "Handed out" tick on a card
+                    return self.send_json(r.set_handed(body.get('id', ''), act == 'handed'))
                 r.set_status(body.get('id', ''), {'skip': 'skipped', 'hold': 'held', 'pending': 'pending'}.get(act, 'pending'))
             elif path == '/api/run/schedule':
                 return self.send_json(r.schedule(str(body.get('at') or '')))
@@ -1159,7 +1208,7 @@ class Handler(SimpleHTTPRequestHandler):
                     pass
                 return self.send_json(res)
             elif path == '/api/run/need':
-                return self.send_json(r.set_need(str(body.get('id') or ''), str(body.get('action') or '')))
+                return self.send_json(r.set_need(str(body.get('id') or ''), str(body.get('action') or ''), str(body.get('who') or '')))
             elif path == '/api/run/needs':
                 # read the EOC now (the loop does this every few seconds while the clock runs)
                 r._needs_tick(final=bool(body.get('final')))
