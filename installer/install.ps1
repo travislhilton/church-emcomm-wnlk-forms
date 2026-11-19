@@ -575,6 +575,24 @@ if ($installWorker) {
         }
     }
 
+    # Printable handouts (field reports with no EOC, the EOC flow, the simulator) and the Avery 5371 business card sheet;
+    # the EOC server serves these and the cards at /print/ for its Help tab's Printables section -- optional in older packages
+    $hoSrcDir  = Join-Path $RepoRoot 'training\handouts\pdf'
+    $hoDestDir = Join-Path $workerDest 'Handouts (PDF)'
+    $handouts = @()
+    if (Test-Path $hoSrcDir) { $handouts = @(Get-ChildItem -Path $hoSrcDir -Filter '*.pdf' -File -ErrorAction SilentlyContinue) }
+    if ($handouts.Count -gt 0) {
+        if (-not (Test-Path $hoDestDir)) { New-Item -ItemType Directory -Force $hoDestDir | Out-Null }
+        foreach ($p in $handouts) {
+            try {
+                Copy-Item $p.FullName (Join-Path $hoDestDir $p.Name) -Force -ErrorAction Stop
+                Write-OK "Copied: Handouts (PDF)\$($p.Name)"
+            } catch {
+                Write-Warn "Kept the existing $($p.Name): it is open in another program. Close it and run the installer again to update it."
+            }
+        }
+    }
+
     # Desktop shortcut folder
     $desktopPath = (Get-UserFolder 'Desktop')
     $shortcutDir  = Join-Path $desktopPath 'Church of Jesus Christ EMCOMM Forms'
@@ -619,6 +637,12 @@ if ($installWorker) {
                         -TargetPath   $pdfDestDir `
                         -Description  'Printable Quick Reference Cards -- one PDF per role, print double-sided'
         Write-OK "Shortcut: Church of Jesus Christ EMCOMM Quick Reference Cards (Desktop)"
+    }
+    if ($handouts.Count -gt 0) {
+        Create-Shortcut -ShortcutPath (Join-Path $shortcutDir 'Handouts (PDF).lnk') `
+                        -TargetPath   $hoDestDir `
+                        -Description  'Printable handouts and the Avery 5371 business card sheet'
+        Write-OK "Shortcut: Handouts (PDF)"
     }
 }
 

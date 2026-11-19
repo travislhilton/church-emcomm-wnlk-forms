@@ -24,6 +24,8 @@ The chain is **field → Satellite EOC → Stake EOC → the council line (Area 
 | Running a drill or a training session | [The Simulator](#the-church-of-jesus-christ-emcomm-simulator--a-drill-without-a-disaster) and [card 5](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/pdf/Quick_Reference_Card_5_Drill_Controller.pdf) | 🧪 **Experimental**: not fully exercised yet; try it and tell us what you find |
 | Something does not work | [Support, feedback and bug reports](#support-feedback-and-bug-reports) | |
 
+**Handouts to print:** [1. Field reports with no EOC](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/handouts/pdf/Handout_1_Field_Reports_Without_an_EOC.pdf) (ready to use) · [2. The EOC flow](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/handouts/pdf/Handout_2_The_EOC_Flow.pdf) (experimental) · [3. The simulator](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/handouts/pdf/Handout_3_The_Simulator.pdf) (experimental) · [Business card sheet, Avery 5371](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/handouts/pdf/Business_Cards_Avery_5371.pdf) (print two-sided at Actual size, flip on the long edge; test on plain paper first). On an EOC laptop they are also in the Message Center's Help tab, *13. Printables*, and work with no internet.
+
 ## Which device can I use?
 
 Bring any device. Only two jobs need a Windows computer.

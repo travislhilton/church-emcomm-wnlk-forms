@@ -905,6 +905,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
         <a href="#" onclick="helpGo('wall');return false">10. Wall display</a>
         <a href="#" onclick="helpGo('trouble');return false">11. When something is wrong</a>
         <a href="#" onclick="helpGo('feedback');return false">12. Feedback</a>
+        <a href="#" onclick="helpGo('print');return false">13. Printables</a>
       </nav>
       <div id="help-content">
 
@@ -1154,6 +1155,16 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
           <button class="btn secondary" onclick="copyText(diagInfo())">Copy diagnostic info</button>
         </div>
         <p style="font-size:11px;color:var(--muted)">Independent volunteer project, not an official product of The Church of Jesus Christ of Latter-day Saints.</p>
+      </section>
+
+      <section class="help-sec" id="help-print">
+        <h2>13. Printables</h2>
+        <p>Cards and handouts to print for volunteers, operators and leaders. They open from this laptop, so they work with no internet. A phone on the EOC Wi-Fi can open the same links. Print at <b>Actual size</b> on Letter paper; where it says two-sided, flip on the long edge.</p>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Printable</th><th>For</th><th>Print</th></tr></thead>
+          <tbody id="print-list"></tbody>
+        </table></div>
+        <p style="font-size:12px;color:var(--muted)" id="print-note"></p>
       </section>
 
       </div>
@@ -2025,6 +2036,7 @@ function switchTab(t) {
   if (t==='map') renderMap();
   if (t==='dr') loadSitreps();
   if (t==='actions') { actTabOpened(); renderActions(); }
+  if (t==='help') renderPrintables();
 }
 
 // ── Map tab: the status map (module between the EMCOMM-MAP markers; data served by this EOC from /map/) ──
@@ -4078,6 +4090,49 @@ function helpGo(sec) {
   if (!el) return;
   var hdrH = document.querySelector('.site-header').getBoundingClientRect().height;
   window.scrollTo(0, el.getBoundingClientRect().top + window.pageYOffset - hdrH - 10);
+}
+// 13. Printables: the Quick Reference Cards and the handouts the installer puts in Field Worker Forms (served at /print/).
+var _PRINTABLES = [
+  ['Quick_Reference_Cards_All', 'All ten Quick Reference Cards', 'Trainers: one file', 'Two-sided', 'c'],
+  ['Quick_Reference_Card_1_Helping_Hands_Volunteer', 'Card 1: Helping Hands volunteer', 'Volunteers with a phone', 'Two-sided', 'c'],
+  ['Quick_Reference_Card_2_EMCOMM_HAM_Operator', 'Card 2: HAM operator', 'Licensed amateur radio operators', 'Two-sided', 'c'],
+  ['Quick_Reference_Card_3_EOC_Operator', 'Card 3: EOC operator', 'Operators at this laptop', 'Two-sided', 'c'],
+  ['Quick_Reference_Card_4_Leaders_Overview', 'Card 4: Leaders', 'Stake President, Bishop, Emergency Response Director', 'Two-sided', 'c'],
+  ['Quick_Reference_Card_5_Drill_Controller', 'Card 5: Drill controller', 'Whoever runs the simulator', 'Two-sided', 'c'],
+  ['Quick_Reference_Card_6_Satellite_EOC', 'Card 6: Satellite EOC', 'Satellite EOC operators', 'Two-sided', 'c'],
+  ['Quick_Reference_Card_7_Stake_Center_EOC', 'Card 7: Stake EOC', 'Stake EOC operators', 'Two-sided', 'c'],
+  ['Quick_Reference_Card_8_Council_Area_EOC', 'Card 8: Council / Area EOC', 'Council and Area EOC operators', 'Two-sided', 'c'],
+  ['Quick_Reference_Card_9_Your_First_Drill', 'Card 9: Your first drill', 'Anyone new to a drill', 'Two-sided', 'c'],
+  ['Quick_Reference_Card_10_Team_Leader_Crew_Chief', 'Card 10: Team Leader / Crew Chief', 'Team Leaders and Crew Chiefs', 'Two-sided', 'c'],
+  ['Handout_1_Field_Reports_Without_an_EOC', 'Handout 1: Field reports with no EOC', 'Everyone: how a report travels by every path', 'One page', 'h'],
+  ['Handout_2_The_EOC_Flow', 'Handout 2: The EOC flow', 'EOC operators and leaders', 'One page', 'h'],
+  ['Handout_3_The_Simulator', 'Handout 3: The simulator', 'Trainers and drill controllers', 'One page', 'h'],
+  ['Business_Cards_Avery_5371', 'Business card sheet (Avery 5371)', 'A handout: links to this project and to HAM Sidekick Station', 'Two-sided card stock; test on plain paper first', 'h']
+];
+var _PRINT_WEB = 'https://travislhilton.github.io/church-emcomm-wnlk-forms/training/';
+function _printHref(name, kind) {
+  if (location.protocol !== 'file:') return '/print/' + name + '.pdf';
+  // opened as a file (no server): the copies beside this install
+  return '../Field Worker Forms/' + (kind === 'c' ? 'Quick Reference Cards (PDF)' : 'Handouts (PDF)') + '/' + name + '.pdf';
+}
+function renderPrintables() {
+  var tb = document.getElementById('print-list'); if (!tb) return;
+  function draw(have) {
+    tb.innerHTML = _PRINTABLES.map(function(r) {
+      var web = _PRINT_WEB + (r[4] === 'c' ? 'pdf/' : 'handouts/pdf/') + r[0] + '.pdf';
+      var local = !have || have[r[0] + '.pdf'];
+      var link = local ? '<a href="' + esc(_printHref(r[0], r[4])) + '" target="_blank" rel="noopener">' + esc(r[1]) + '</a>'
+                       : esc(r[1]) + ' <a href="' + esc(web) + '" target="_blank" rel="noopener">(online copy)</a>';
+      return '<tr><td>' + link + '</td><td>' + esc(r[2]) + '</td><td>' + esc(r[3]) + '</td></tr>';
+    }).join('');
+    var n = have ? _PRINTABLES.filter(function(r) { return !have[r[0] + '.pdf']; }).length : 0;
+    document.getElementById('print-note').innerHTML = (n ? n + ' of these are not on this laptop (an older install): their links go to the online copy. ' : '')
+      + 'Online: the cards at <a href="' + esc(_PRINT_WEB + 'quick-ref-cards.html') + '" target="_blank" rel="noopener">Quick Reference Cards</a>, the handouts in the project '
+      + '<a href="https://github.com/travislhilton/church-emcomm-wnlk-forms#find-your-role" target="_blank" rel="noopener">README</a>.';
+  }
+  draw(null);
+  if (location.protocol === 'file:') return;
+  fetch('/api/printables').then(function(r) { return r.ok ? r.json() : null; }).then(function(j) { if (j && j.files) draw(j.files); }).catch(function() {});
 }
 function renderHelpPace() {
   var p = (incident && incident.pace) || '', name = _PACE_NAME[p] || '';

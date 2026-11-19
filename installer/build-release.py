@@ -84,8 +84,10 @@ CORE = [f'templates/{d}/{n}' for d, names in FORMS.items() for n in names] + [
 ] + [f'training/pdf/Quick_Reference_Card_{n}.pdf' for n in (
     '1_Helping_Hands_Volunteer', '2_EMCOMM_HAM_Operator', '3_EOC_Operator', '4_Leaders_Overview', '5_Drill_Controller',
     '6_Satellite_EOC', '7_Stake_Center_EOC', '8_Council_Area_EOC', '9_Your_First_Drill', '10_Team_Leader_Crew_Chief')] + [
+    'training/pdf/Quick_Reference_Cards_All.pdf'] + [f'training/handouts/pdf/{n}.pdf' for n in (
+    'Handout_1_Field_Reports_Without_an_EOC', 'Handout_2_The_EOC_Flow', 'Handout_3_The_Simulator', 'Business_Cards_Avery_5371')] + [
     'sw.js', 'README.md', 'docs/PACE_PLAN.md', 'LICENSE']
-ZIP_ONLY = ['installer/install.bat', 'installer/install.ps1', 'training/pdf/Quick_Reference_Cards_All.pdf']
+ZIP_ONLY = ['installer/install.bat', 'installer/install.ps1']
 
 
 def tracked(prefix: str) -> list:

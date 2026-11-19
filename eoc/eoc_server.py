@@ -27,7 +27,7 @@ except ValueError:
 VERSION = '1.0'
 # The Worker forms / Church of Jesus Christ EMCOMM app version this server ships (APP_VERSION in templates/_shared/emcomm-app.js).
 # Phones whose app is older still send fine; the receive page just tells them to update when they have internet.
-FORMS_VERSION = '2026-11-19.1'
+FORMS_VERSION = '2026-11-19.2'
 BASE = pathlib.Path(__file__).resolve().parent   # resolve: before Python 3.9 __file__ is relative when started from this folder
 DB_FILE   = BASE / 'eoc_data.db'
 HTML_FILE = BASE / 'EOC_Message_Center.html'
@@ -79,6 +79,31 @@ def _worker_form_path(key: str):
         if p.exists():
             return p
     return None
+
+# Printables (the Help tab's last section): the Quick Reference Card PDFs and the handouts, served at /print/<file>.pdf
+# from the install (Field Worker Forms) or, run from the repository or the ZIP, from training/. Names only, never a path.
+PRINT_DIRS = (BASE.parent / 'Field Worker Forms' / 'Quick Reference Cards (PDF)', BASE.parent / 'Field Worker Forms' / 'Handouts (PDF)',
+              BASE.parent / 'training' / 'pdf', BASE.parent / 'training' / 'handouts' / 'pdf')
+_PRINT_NAME = re.compile(r'^[A-Za-z0-9_]+\.pdf$')
+
+def _print_path(name: str):
+    if not _PRINT_NAME.match(name or ''):
+        return None
+    for d in PRINT_DIRS:
+        p = d / name
+        if p.is_file():
+            return p
+    return None
+
+def _print_list():
+    """The printable PDFs this laptop has: {file name: size in bytes}."""
+    out = {}
+    for d in PRINT_DIRS:
+        if d.is_dir():
+            for p in d.glob('*.pdf'):
+                if _PRINT_NAME.match(p.name) and p.name not in out:
+                    out[p.name] = p.stat().st_size
+    return out
 
 # Discovery: every EOC server announces itself on the LAN by UDP broadcast so a phone can
 # pick which EOC to send to when a drill runs more than one EOC on the same network.
@@ -2789,6 +2814,13 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
             else:
                 self.send_json({'error': 'No such form here. Try /forms/dr, /forms/so or /forms/wcl'}, 404)
             return
+        if path == '/api/printables':
+            self.send_json({'files': _print_list()}); return
+        if path.startswith('/print/'):
+            fp = _print_path(urllib.parse.unquote(path[len('/print/'):]))
+            if not fp:
+                self.send_json({'error': 'No such printable here'}, 404); return
+            self.send_bytes(fp.read_bytes(), 'application/pdf'); return
         if path == '/api/browse':        # this laptop's folders: for the person at this laptop, never for a phone or another laptop
             if not self._is_this_laptop():
                 self.send_json({'error': 'Folders can be browsed only on the laptop that runs the EOC server. Type the full folder path instead.'}, 403); return

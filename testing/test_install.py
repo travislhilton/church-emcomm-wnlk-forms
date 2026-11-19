@@ -85,7 +85,7 @@ PORTAL_EXTRA = ['sw.js', 'training/quick-ref-cards.html', 'training/pdf/Quick_Re
 LAUNCHER = 'Open EOC Message Center.cmd'          # written by the installer, not copied
 SHORTCUTS = {
     1: ['%s Forms/Disaster Report Form.lnk', '%s Forms/Supply Order Form.lnk', '%s Forms/Work Crew Log Form.lnk',
-        '%s Forms/Quick Reference Cards.lnk', '%s Forms/Quick Reference Cards (PDF).lnk', '%s Quick Reference Cards.lnk'],
+        '%s Forms/Quick Reference Cards.lnk', '%s Forms/Quick Reference Cards (PDF).lnk', '%s Forms/Handouts (PDF).lnk', '%s Quick Reference Cards.lnk'],
     2: ['%s Forms/Training - Winlink Practice Forms.lnk'],
     3: ['%s EOC Message Center.lnk', '%s EOC Server.lnk', '%s Simulator.lnk', '%s EOC Drop Folder.lnk'],
 }
@@ -110,6 +110,8 @@ def expected(pkg, role, base, wl_templates):
     for rel in pkg:
         if re.match(r'training/pdf/Quick_Reference_Card[^/]*\.pdf$', rel):
             put(fw / 'Quick Reference Cards (PDF)' / rel.rsplit('/', 1)[1], rel)
+        if re.match(r'training/handouts/pdf/[^/]*\.pdf$', rel):
+            put(fw / 'Handouts (PDF)' / rel.rsplit('/', 1)[1], rel)
     if role >= 2:
         for rel in TEMPLATES:
             put(wl_templates / (NAME + ' Forms') / rel.rsplit('/', 1)[1], rel)
@@ -247,7 +249,8 @@ def servers(root, base):
             return
         pages = {'/': b'EOC', '/wall': b'wallmap', '/m': b'EOC on this Wi-Fi', '/receive': b'decodePayload', '/forms/dr': b'Disaster Report',
                  '/forms/so': b'Supply Order', '/forms/wcl': b'Work Crew Log', '/icons/icon-180.png': b'\x89PNG', '/app.webmanifest': b'EMCOMM EOC',
-                 '/api/readout': b'emcomm-readout/1'}
+                 '/api/readout': b'emcomm-readout/1', '/print/Quick_Reference_Card_3_EOC_Operator.pdf': b'%PDF',
+                 '/print/Handout_2_The_EOC_Flow.pdf': b'%PDF', '/print/Business_Cards_Avery_5371.pdf': b'%PDF'}
         bad = []
         for path, marker in pages.items():
             try:
@@ -256,7 +259,7 @@ def servers(root, base):
                     bad.append(path)
             except Exception as e:
                 bad.append('%s (%s)' % (path, e))
-        check('installed EOC server: serves every page (Message Center, wall, phone page, the three forms, icon, manifest, read-out)', not bad, bad)
+        check('installed EOC server: serves every page (Message Center, wall, phone page, the three forms, icon, manifest, read-out, printables)', not bad, bad)
         s, b = call(PE, 'GET', '/', raw=True)
         check('installed EOC server: the Message Center it serves is the installed file', b == (eoc / 'EOC_Message_Center.html').read_bytes())
         dq = call(PE, 'GET', '/api/drop/status')
