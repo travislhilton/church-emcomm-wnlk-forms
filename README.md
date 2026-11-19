@@ -10,19 +10,19 @@ The chain is **field → Satellite EOC → Stake EOC → the council line (Area 
 
 ## Find your role
 
-| You are | Start here |
-|---|---|
-| A Helping Hands volunteer with any phone, tablet or computer | [For Field Volunteers](#for-field-volunteers--phone-app-no-account): nothing to install |
-| A Team Leader or Crew Chief | [Onboard volunteers at a staging area](#for-team-leaders-and-erds--how-to-onboard-volunteers-at-a-staging-area) and [card 10](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/pdf/Quick_Reference_Card_10_Team_Leader_Crew_Chief.pdf) |
-| A licensed HAM operator at a field station or the EOC | [[2] HAM Field Operator](#2-ham-field-operator-licensed-amateur-radio) |
-| Running a Satellite or Stake EOC | [[3] EOC Operator](#3-eoc-operator--satellite-stake-or-council--area-eoc-full-install), then the *Set up this EOC* checklist on the Message Center's Overview tab |
-| The Area Seventy's council, the welfare line (WSRM, AWSRM), the Area Welfare and Self-Reliance Specialist, or a Council / Area EOC operator | [[4] Council and Area](#4-council-and-area--the-two-lines-above-the-stake) |
-| A Stake President, Bishop or Emergency Response Director (ERD) | [For Stake and Ward Leaders](#for-stake-presidents-bishops-and-emergency-response-directors) |
-| Joining an EOC or a drill from your own device | [Which device can I use?](#which-device-can-i-use) |
-| Planning the stake's communications | [Communications PACE (Primary, Alternate, Contingency, Emergency) Plan](#communications-pace-plan) and [docs/PACE_PLAN.md](docs/PACE_PLAN.md) |
-| Taking part in your first drill (any role) | [card 9](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/pdf/Quick_Reference_Card_9_Your_First_Drill.pdf) |
-| Running a drill or a training session | [The Simulator](#the-church-of-jesus-christ-emcomm-simulator--a-drill-without-a-disaster) and [card 5](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/pdf/Quick_Reference_Card_5_Drill_Controller.pdf) |
-| Something does not work | [Support, feedback and bug reports](#support-feedback-and-bug-reports) |
+| You are | Start here | Status |
+|---|---|---|
+| A Helping Hands volunteer with any phone, tablet or computer | [For Field Volunteers](#for-field-volunteers--phone-app-no-account): nothing to install | ✅ **Ready to use** |
+| A Team Leader or Crew Chief | [Onboard volunteers at a staging area](#for-team-leaders-and-erds--how-to-onboard-volunteers-at-a-staging-area) and [card 10](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/pdf/Quick_Reference_Card_10_Team_Leader_Crew_Chief.pdf) | ✅ **Ready to use** |
+| A licensed HAM operator at a field station or the EOC | [[2] HAM Field Operator](#2-ham-field-operator-licensed-amateur-radio) | ✅ **Ready to use** |
+| Running a Satellite or Stake EOC | [[3] EOC Operator](#3-eoc-operator--satellite-stake-or-council--area-eoc-full-install), then the *Set up this EOC* checklist on the Message Center's Overview tab | 🧪 **Experimental**: not fully exercised yet; try it and tell us what you find |
+| The Area Seventy's council, the welfare line (WSRM, AWSRM), the Area Welfare and Self-Reliance Specialist, or a Council / Area EOC operator | [[4] Council and Area](#4-council-and-area--the-two-lines-above-the-stake) | 🧪 **Experimental**: not fully exercised yet; try it and tell us what you find |
+| A Stake President, Bishop or Emergency Response Director (ERD) | [For Stake and Ward Leaders](#for-stake-presidents-bishops-and-emergency-response-directors) | 🧪 **Experimental**: not fully exercised yet; try it and tell us what you find |
+| Joining an EOC or a drill from your own device | [Which device can I use?](#which-device-can-i-use) | 🧪 **Experimental**: not fully exercised yet; try it and tell us what you find |
+| Planning the stake's communications | [Communications PACE (Primary, Alternate, Contingency, Emergency) Plan](#communications-pace-plan) and [docs/PACE_PLAN.md](docs/PACE_PLAN.md) | 🧪 **Experimental**: not fully exercised yet; try it and tell us what you find |
+| Taking part in your first drill (any role) | [card 9](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/pdf/Quick_Reference_Card_9_Your_First_Drill.pdf) | 🧪 **Experimental**: not fully exercised yet; try it and tell us what you find |
+| Running a drill or a training session | [The Simulator](#the-church-of-jesus-christ-emcomm-simulator--a-drill-without-a-disaster) and [card 5](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/pdf/Quick_Reference_Card_5_Drill_Controller.pdf) | 🧪 **Experimental**: not fully exercised yet; try it and tell us what you find |
+| Something does not work | [Support, feedback and bug reports](#support-feedback-and-bug-reports) | |
 
 ## Which device can I use?
 
@@ -145,7 +145,7 @@ One PDF per role, formatted for 8.5 × 11 in paper with the card's front on page
 | 3 | EOC Operator (Satellite, Stake or Council / Area EOC) | [Quick_Reference_Card_3_EOC_Operator.pdf](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/pdf/Quick_Reference_Card_3_EOC_Operator.pdf) |
 | 4 | Bishops, Stake Presidents and Emergency Response Directors | [Quick_Reference_Card_4_Leaders_Overview.pdf](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/pdf/Quick_Reference_Card_4_Leaders_Overview.pdf) |
 | 5 | Drill Controller (the Church of Jesus Christ EMCOMM Simulator) | [Quick_Reference_Card_5_Drill_Controller.pdf](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/pdf/Quick_Reference_Card_5_Drill_Controller.pdf) |
-| 6 | Satellite EOC: what it does and what it owes the Stake Center (print with card 3) | [Quick_Reference_Card_6_Satellite_EOC.pdf](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/pdf/Quick_Reference_Card_6_Satellite_EOC.pdf) |
+| 6 | Satellite EOC: what it does and what it owes the Stake EOC (print with card 3) | [Quick_Reference_Card_6_Satellite_EOC.pdf](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/pdf/Quick_Reference_Card_6_Satellite_EOC.pdf) |
 | 7 | Stake EOC: who decides, what goes to the two lines above (print with card 3) | [Quick_Reference_Card_7_Stake_Center_EOC.pdf](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/pdf/Quick_Reference_Card_7_Stake_Center_EOC.pdf) |
 | 8 | Council / Area EOC: only when one is opened; stakes, totals, headquarters assistance (print with card 3) | [Quick_Reference_Card_8_Council_Area_EOC.pdf](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/pdf/Quick_Reference_Card_8_Council_Area_EOC.pdf) |
 | 9 | Your First Drill: for every drill participant, any role | [Quick_Reference_Card_9_Your_First_Drill.pdf](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/pdf/Quick_Reference_Card_9_Your_First_Drill.pdf) |
@@ -450,7 +450,7 @@ Net control can read the current picture on the stake's voice net from what the 
 
 **Print your Quick Reference Cards** — print and laminate the EOC Operator card: [Quick_Reference_Card_3_EOC_Operator.pdf](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/pdf/Quick_Reference_Card_3_EOC_Operator.pdf) (Letter, double-sided), and the card for your level: [Satellite EOC (6)](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/pdf/Quick_Reference_Card_6_Satellite_EOC.pdf), [Stake EOC (7)](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/pdf/Quick_Reference_Card_7_Stake_Center_EOC.pdf) or [Council / Area EOC (8)](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/pdf/Quick_Reference_Card_8_Council_Area_EOC.pdf).
 
-### Running more than one EOC — Satellite, Stake Center and Council / Area
+### Running more than one EOC — Satellite, Stake and Council / Area
 
 The same install (choice [3]) runs at every EOC level (Quick Reference Cards 6, 7 and 8 give each level its own sheet). On the **Setup** tab each EOC sets its **level**, **name**, the **units it covers** and the **parent EOC** it reports to (name, drop email, Winlink address):
 

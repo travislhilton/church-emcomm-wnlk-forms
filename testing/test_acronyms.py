@@ -238,6 +238,7 @@ def documents():
     # pages and forms
     pages = sorted(p.relative_to(REPO).as_posix() for p in [*REPO.glob('forms/*.html'), *REPO.glob('eoc/*.html')])
     pages.append('simulation/index.html')
+    pages += sorted(p.relative_to(REPO).as_posix() for p in REPO.glob('training/handouts/*.html'))   # printed handouts and business card
     for f in ('disaster-report', 'supply-order', 'work-crew-log'):
         pages += sorted(p.relative_to(REPO).as_posix() for p in (REPO / 'templates' / f).glob('*.html') if not p.name.endswith('_Viewer.html'))
     for rel in pages:

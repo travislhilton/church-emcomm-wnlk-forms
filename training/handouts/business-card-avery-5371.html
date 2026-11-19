@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Business Cards — Avery 5371</title>
+<!--
+  Two-sided business card for Avery 5371 (also 5871, 8371, 8871): Letter sheet, 10 cards of 3.5 x 2 in,
+  2 columns x 5 rows, 0.75 in side margins, 0.5 in top and bottom, no gaps between cards.
+  Page 1 = fronts (Church of Jesus Christ EMCOMM), page 2 = backs (HAM Sidekick Station).
+  Print at Actual size (100 %), two-sided, flip on long edge. The grid is symmetric, so the backs line up.
+  Each sheet's colour runs 0.1 in past the cut lines, so a slightly shifted print shows colour, not a white edge.
+-->
+<style>
+@page { size: letter; margin: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+:root {
+  --navy: #1A2744; --navy-2: #24366A; --red: #C8102E; --coral: #FF6B6B; --ink: #F7F8FA; --mute: #B9C6DA;
+  --teal: #0C3A41; --teal-2: #13606A; --amber: #F2A33A; --amber-2: #FFD089;
+  --sans: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+html, body { background: #e9edf2; font-family: var(--sans); }
+.sheet { position: relative; width: 8.5in; height: 11in; background: #fff; margin: 0 auto 24px; overflow: hidden; break-after: page; }
+.sheet:last-of-type { break-after: auto; }
+.bleed { position: absolute; left: 0.65in; top: 0.4in; width: 7.2in; height: 10.2in; }
+.front-sheet .bleed { background: var(--navy); }
+.back-sheet .bleed { background: var(--teal); }
+.card { position: absolute; width: 3.5in; height: 2in; overflow: hidden; color: var(--ink); }
+.cut { position: absolute; inset: 0; pointer-events: none; }
+
+/* ── FRONT: Church of Jesus Christ EMCOMM ── */
+.front { background: radial-gradient(120% 140% at 100% 0%, #2c4580 0%, var(--navy) 55%, #121c33 100%); }
+.front .title b::after { content: ""; display: block; width: 0.42in; height: 0.035in; background: var(--red); border-radius: 2px; margin-top: 2.5pt; }
+.front .waves { position: absolute; right: -0.25in; top: -0.25in; width: 2.1in; height: 2.1in; opacity: .16; }
+.front .txt { position: absolute; left: 0.17in; top: 0.15in; width: 2.05in; }
+.kicker { font-size: 5.6pt; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+.front .kicker { color: var(--coral); }
+.title { font-size: 12.2pt; line-height: 1.02; font-weight: 800; margin-top: 3pt; letter-spacing: -.01em; }
+.title b { display: block; font-size: 17pt; letter-spacing: .02em; }
+.tag { font-size: 6.6pt; line-height: 1.28; color: var(--mute); margin-top: 4pt; }
+.paths { display: flex; gap: 5pt; margin-top: 6pt; }
+.path { display: flex; flex-direction: column; align-items: center; gap: 1.5pt; font-size: 5.4pt; font-weight: 700; letter-spacing: .04em; color: var(--ink); text-transform: uppercase; }
+.path svg { width: 0.25in; height: 0.25in; }
+.qrbox { position: absolute; right: 0.15in; top: 0.17in; width: 1.16in; text-align: center; }
+.qr { display: block; width: 1.16in; height: 1.16in; background: #fff; border-radius: 6px; overflow: hidden; }
+.qr svg { display: block; width: 100%; height: 100%; }
+.scan { font-size: 6.2pt; font-weight: 800; margin-top: 3.5pt; letter-spacing: .02em; }
+.scan small { display: block; font-size: 5.3pt; font-weight: 500; color: var(--mute); margin-top: 1pt; letter-spacing: 0; }
+.foot { position: absolute; left: 0.17in; right: 0.15in; bottom: 0.1in; font-size: 5.2pt; color: var(--mute); display: flex; justify-content: space-between; align-items: flex-end; }
+.foot .who { font-weight: 700; color: var(--ink); font-size: 6pt; }
+
+/* ── BACK: HAM Sidekick Station ── */
+.back { background: radial-gradient(130% 140% at 0% 100%, var(--teal-2) 0%, var(--teal) 55%, #082a30 100%); }
+.back .txt { position: absolute; left: 1.47in; top: 0.15in; width: 1.88in; }
+.back .kicker { color: var(--amber); }
+.back .title b { color: var(--amber-2); font-size: 15.5pt; }
+.back .qrbox { left: 0.16in; right: auto; }
+.back .foot { left: 0.16in; right: 0.17in; }
+.wave2txt { display: block; width: 1.88in; height: 0.36in; margin-top: 6pt; }
+.feat { list-style: none; margin-top: 3pt; font-size: 6.1pt; line-height: 1.33; color: var(--ink); }
+.feat li::before { content: "▸ "; color: var(--amber); }
+
+/* on screen only */
+.howto { max-width: 8.5in; margin: 24px auto; background: #fff; border-radius: 10px; padding: 18px 22px; font: 14px/1.5 var(--sans); color: #1A2744; box-shadow: 0 1px 4px #0002; }
+.howto h1 { font-size: 20px; margin-bottom: 6px; }
+.howto ol { margin: 8px 0 0 20px; }
+.howto button { margin-top: 10px; font: 600 14px var(--sans); background: #1A2744; color: #fff; border: 0; border-radius: 6px; padding: 8px 16px; cursor: pointer; }
+.sheet { box-shadow: 0 2px 10px #0003; }
+@media print { html, body { background: #fff; } .howto { display: none; } .sheet { margin: 0; box-shadow: none; } }
+</style>
+</head>
+<body>
+
+<div class="howto">
+  <h1>Business cards: Avery 5371 (2 × 3.5 in, 10 per sheet)</h1>
+  Page 1 is the front (Church of Jesus Christ EMCOMM: emergency communications), page 2 the back (HAM Sidekick Station: for amateur radio nets). Each QR (Quick Response) code opens that project's guide on GitHub.
+  <ol>
+    <li>Print one test on plain paper first: <b>Actual size / 100 %</b> (never "Fit to page"), Letter, <b>two-sided, flip on long edge</b>. Hold it over a card sheet against a window: the cards should sit inside the perforations.</li>
+    <li>Then load the Avery sheet as your printer's manual asks (often face down in the rear or manual tray), paper type <b>Cardstock / Heavy</b>, and print.</li>
+    <li>No two-sided printer? Print page 1, put the sheet back in the tray turned over (top edge first, as for your printer), print page 2.</li>
+  </ol>
+  <button onclick="window.print()">Print the cards</button>
+</div>
+
+<template id="tpl-front">
+  <div class="card front">
+    <svg class="waves" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="2.2"><circle cx="80" cy="20" r="16"/><circle cx="80" cy="20" r="30"/><circle cx="80" cy="20" r="44"/><circle cx="80" cy="20" r="58"/></g></svg>
+    <div class="txt">
+      <div class="kicker">Emergency communications</div>
+      <div class="title">Church of Jesus Christ <b>EMCOMM</b></div>
+      <div class="tag">Disaster Reports, Supply Orders and Work Crew Logs that get through — with signal or without.</div>
+      <div class="paths">
+        <div class="path"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2" width="11" height="20" rx="2.2" fill="none" stroke="#fff" stroke-width="1.6"/><rect x="8.6" y="5" width="6.8" height="9" rx=".6" fill="#FF6B6B"/><path d="M9.6 8h4.8M9.6 10.2h3.4" stroke="#fff" stroke-width="1"/><circle cx="12" cy="18.4" r="1.1" fill="#fff"/></svg>Phone</div>
+        <div class="path"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v13M8 22h8" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="8" r="1.8" fill="#FF6B6B"/><path d="M7.6 4.2a6 6 0 0 0 0 7.6M16.4 4.2a6 6 0 0 1 0 7.6M4.6 1.8a10 10 0 0 0 0 12.4M19.4 1.8a10 10 0 0 1 0 12.4" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg>Radio</div>
+        <div class="path"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8.5L19 6.5V22H6z" fill="none" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 2v5h5" fill="none" stroke="#fff" stroke-width="1.4"/><path d="M8.6 11h7.8M8.6 14h7.8M8.6 17h5" stroke="#FF6B6B" stroke-width="1.5"/></svg>Paper</div>
+      </div>
+    </div>
+    <div class="qrbox">
+      <span class="qr" data-url="https://github.com/travislhilton/church-emcomm-wnlk-forms"></span>
+      <div class="scan">Scan for the guide<small>forms · Winlink · EOC</small></div>
+    </div>
+    <div class="foot"><span><span class="who">Travis Hilton · W9TLH</span><br>Independent volunteer project · not an official Church product</span></div>
+  </div>
+</template>
+
+<template id="tpl-back">
+  <div class="card back">
+    <div class="qrbox">
+      <span class="qr" data-url="https://github.com/travislhilton/hamsidekick"></span>
+      <div class="scan">Scan for the guide<small>free · open source</small></div>
+    </div>
+    <div class="txt">
+      <div class="kicker">For amateur radio voice nets</div>
+      <div class="title">HAM Sidekick <b>Station</b></div>
+      <svg class="wave2txt" viewBox="0 0 180 34" aria-hidden="true">
+        <path d="M2 17h8l3-9 4 18 4-24 4 30 4-22 3 14 3-7h6" fill="none" stroke="#F2A33A" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        <path d="M54 17h12m-5-5 5 5-5 5" fill="none" stroke="#FFD089" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="74" y="4" width="104" height="26" rx="4" fill="#ffffff1f" stroke="#ffffff55"/>
+        <path d="M80 11h40M124 11h26M80 17h58M80 23h30M114 23h34" stroke="#F7F8FA" stroke-width="2.4" stroke-linecap="round"/>
+      </svg>
+      <ul class="feat">
+        <li>Every transmission written down as it ends</li>
+        <li>Callsigns looked up; check-ins coached</li>
+        <li>Net log and Winlink messages for the EOC</li>
+      </ul>
+    </div>
+    <div class="foot"><span>Companion to Church of Jesus Christ EMCOMM</span><span>W9TLH</span></div>
+  </div>
+</template>
+
+<div class="sheet front-sheet" id="fronts"><div class="bleed"></div></div>
+<div class="sheet back-sheet" id="backs"><div class="bleed"></div></div>
+
+<script src="qr.js"></script>
+<script>
+// Lay out 10 cards per sheet: 2 columns x 5 rows from (0.75 in, 0.5 in), no gaps (Avery 5371).
+(function () {
+  function fill(sheetId, tplId) {
+    var sheet = document.getElementById(sheetId), tpl = document.getElementById(tplId);
+    for (var r = 0; r < 5; r++) for (var c = 0; c < 2; c++) {
+      var card = tpl.content.firstElementChild.cloneNode(true);
+      card.style.left = (0.75 + c * 3.5) + 'in';
+      card.style.top = (0.5 + r * 2) + 'in';
+      sheet.appendChild(card);
+    }
+  }
+  fill('fronts', 'tpl-front');
+  fill('backs', 'tpl-back');
+})();
+</script>
+</body>
+</html>
