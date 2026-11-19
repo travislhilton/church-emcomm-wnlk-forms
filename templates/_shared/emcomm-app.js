@@ -711,7 +711,7 @@
     });
   }
   function postReports(reps, to, toName) {
-    var body = {reports: reps.map(function (r) { return {id: r.id, form: r.form, filename: r.filename, data: r.data}; }), app: APP_VERSION};
+    var body = {reports: reps.map(function (r) { return {id: r.id, form: r.form, filename: r.filename, savedAt: r.savedAt, data: r.data}; }), app: APP_VERSION};
     if (to) body.to = to;
     sheet('<h3>Sending…</h3><p class="ea-muted">' + reps.length + ' report' + (reps.length === 1 ? '' : 's') + ' to ' + esc(toName) + '</p>');
     fetch('/api/upload', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)})

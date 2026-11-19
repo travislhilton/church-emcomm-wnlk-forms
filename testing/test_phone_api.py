@@ -121,7 +121,7 @@ try:
     # the date written 10/30/2026, blanks shown as (not selected) or 0 -> still filed once
     wl_copy = {'id': 'WLCOPY000001', 'type': 'dr', 'dupKey': 'WLCOPY000001', 'source': 'auto',
                'dr': {'ward': 'alpha 3rd ward', 'location': 'Shelter at  Alpha HS', 'submitter': 'Field Worker', 'date': '10/30/2026', 'type': 'flood',
-                      'mem_inj': '2', 'mem_dead': '0', 'homes_dmg': '0', 'miss_safe': '(not selected)', 'op_call': 'W9TST'}}
+                      'mem_inj': '2', 'mem_dead': '0', 'homes_dmg': '0', 'miss_safe': 'Yes', 'need_local': '(not selected)', 'op_call': 'W9TST'}}
     check('the same report by another path (Winlink copy of the uploaded file) = duplicate, not filed twice',
           call(PA, 'POST', '/api/messages', wl_copy).get('duplicate') is True and len(call(PA, 'GET', '/api/messages')) == 2)
     msgs = call(PA, 'GET', '/api/messages')
@@ -487,6 +487,42 @@ try:
     check('setup check: a Winlink folder here (with its callsigns), a Drop Folder not here, a map data folder here; a folder without map data is no map folder; another site refused',
           sc['winlink'] == {'path': str(fake), 'exists': True, 'callsigns': ['W9AAA', 'W9BBB']} and sc['drop']['exists'] is False and sc['map']['exists'] is True
           and sc2['map']['exists'] is False and sc2['winlink']['exists'] is False and set(sc) == {'winlink', 'drop', 'map'} and s_ev == 403, (sc, sc2, s_ev))
+    # ── audit 2026-11-18: a ward's story over several reports (new event, so nothing above is counted) ──
+    call(PA, 'POST', '/api/events', {'name': 'Ward story check'})
+    base = {'inc_stake': 'Alpha Stake', 'inc_ward': 'Alpha 9th Ward', 'inc_type': 'Flood', 'inc_date': '2026-11-18', 'inc_location': 'Alpha 9th chapel',
+            'mem_injuries': '1', 'sub_name': 'Field Worker', 'bldg_damage': 'None visible'}
+    t0 = int(time.time() * 1000) - 3600000
+    call(PA, 'POST', '/api/upload', {'reports': [{'id': 's1', 'form': 'dr', 'savedAt': t0, 'data': dict(base, miss_safe='YES')}]})
+    up = call(PA, 'POST', '/api/upload', {'reports': [{'id': 's2', 'form': 'dr', 'savedAt': t0 + 600000, 'data': dict(base, miss_safe='NO', miss_details='Elders not back')}]})
+    check('a report that changes only the missionary answer is a new report, not a duplicate', up.get('new') == 1, up)
+    acts = call(PA, 'GET', '/api/actions')
+    miss = [a for a in acts if a['cat'] == 'missionaries']
+    check('"None visible" building damage opens no work item', not [a for a in acts if a['cat'] == 'facilities'], [a['title'] for a in acts])
+    check('one missionary item for the ward, open', len(miss) == 1 and miss[0]['status'] == 'open', miss)
+    call(PA, 'POST', '/api/upload', {'reports': [{'id': 's3', 'form': 'dr', 'savedAt': t0 + 1200000, 'data': dict(base, miss_safe='NO', mem_injuries='3', miss_details='Elders not back')}]})
+    acts = call(PA, 'GET', '/api/actions')
+    life = [a for a in acts if a['cat'] == 'life']
+    check('a follow-up report from the same ward updates its items, never adds them again', len([a for a in acts if a['cat'] == 'missionaries']) == 1
+          and len(life) == 1 and life[0]['title'].startswith('3 injured') and any('Updated from the report' in (l.get('text') or '') for l in life[0].get('log', [])), [a['title'] for a in acts])
+    late = call(PA, 'POST', '/api/upload', {'reports': [{'id': 's0', 'form': 'dr', 'savedAt': t0 - 600000, 'data': dict(base, miss_safe='YES', inc_location='old note')}]})
+    acts = call(PA, 'GET', '/api/actions')
+    check('an older report arriving late (held mail) is filed but does not close the newer missionary item', late.get('new') == 1
+          and next(a for a in acts if a['cat'] == 'missionaries')['status'] == 'open')
+    msgs2 = [json.loads(x['data_json']) for x in call(PA, 'GET', '/api/messages')]
+    check('each report keeps when it was written (sentTs from the phone)', sorted(m.get('sentTs') for m in msgs2) == [t0 - 600000, t0, t0 + 600000, t0 + 1200000], [m.get('sentTs') for m in msgs2])
+    call(PA, 'POST', '/api/upload', {'reports': [{'id': 's4', 'form': 'dr', 'savedAt': t0 + 1800000, 'data': dict(base, miss_safe='YES', mem_injuries='3', miss_details='All four found')}]})
+    m4 = next(a for a in call(PA, 'GET', '/api/actions') if a['cat'] == 'missionaries')
+    check('a later YES from the ward closes its missionary item, with the decision written', m4['status'] == 'done' and m4.get('decision', '').startswith('Accounted for'), m4)
+    dup = call(PA, 'POST', '/api/upload', {'reports': [{'id': 's4b', 'form': 'dr', 'data': dict(dict(base, miss_safe='YES', mem_injuries='3', miss_details='All four found'), sub_name='Field Worker ')}]})
+    dmsg = {'id': 'WLDUP1', 'type': 'dr', 'dupKey': 'WLDUP1', 'source': 'auto', 'dr': {'stake': 'Alpha Stake', 'ward': 'Alpha 9th Ward', 'location': 'Alpha 9th chapel',
+            'submitter': 'Field Worker', 'date': '11/18/2026', 'type': 'flood', 'mem_inj': '3', 'miss_safe': 'YES'}}
+    check('the same last report by another path is still one report', call(PA, 'POST', '/api/messages', dmsg).get('duplicate') is True)
+    # SITREPs: numbered per event by the server, kept whole
+    s1 = call(PA, 'POST', '/api/sitreps', {'text': 'SITREP #{NO} first'}); s2 = call(PA, 'POST', '/api/sitreps', {'text': 'SITREP #{NO} second'})
+    kept = call(PA, 'GET', '/api/sitreps')
+    check('SITREPs are numbered 1, 2 by the server and kept (newest first), each with a note', s1.get('no') == 1 and s2.get('no') == 2 and s2.get('text') == 'SITREP #2 second'
+          and [k['no'] for k in kept] == [2, 1] and kept[1]['text'] == 'SITREP #1 first'
+          and sum('SITREP #' in (n.get('text') or '') for n in call(PA, 'GET', '/api/notes')) == 2, (s1, s2, kept))
     print('\nRESULT:', 'ALL PASS' if all(res) else 'FAILURES', f'({sum(res)}/{len(res)})')
 finally:
     if keep:

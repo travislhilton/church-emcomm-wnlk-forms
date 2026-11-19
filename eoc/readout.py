@@ -207,7 +207,7 @@ def latest_per_ward(drs: list) -> list:
         if k not in last:
             order.append(k)
             last[k] = m
-        elif (m.get('ts') or 0) >= (last[k].get('ts') or 0):
+        elif (m.get('sentTs') or m.get('ts') or 0) >= (last[k].get('sentTs') or last[k].get('ts') or 0):   # latest written
             last[k] = m
     return [last[k] for k in order]
 

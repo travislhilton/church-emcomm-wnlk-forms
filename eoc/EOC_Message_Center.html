@@ -183,10 +183,10 @@ textarea{resize:vertical;min-height:120px;}
 .rollup-copy{position:absolute;top:8px;right:8px;}
 /* Modal */
 #fb-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:110;align-items:center;justify-content:center;}
-#fb-box{background:var(--card,#fff);color:inherit;border-radius:10px;padding:16px;width:min(620px,94vw);max-height:90vh;display:flex;flex-direction:column;gap:8px;box-shadow:0 8px 30px rgba(0,0,0,.35);}
-#fb-list{overflow:auto;height:min(340px,42vh);border:1px solid #cbd5e1;border-radius:6px;}
+#fb-box{background:var(--surface);color:var(--fg);border-radius:10px;padding:16px;width:min(620px,94vw);max-height:90vh;display:flex;flex-direction:column;gap:8px;box-shadow:0 8px 30px rgba(0,0,0,.35);}
+#fb-list{overflow:auto;height:min(340px,42vh);border:1px solid var(--border);border-radius:6px;}
 #fb-list.busy{opacity:.55;pointer-events:none;}
-#fb-list button{display:block;width:100%;text-align:left;padding:7px 10px;border:none;border-bottom:1px solid #e2e8f0;background:transparent;color:inherit;font:inherit;cursor:pointer;overflow-wrap:anywhere;}
+#fb-list button{display:block;width:100%;text-align:left;padding:7px 10px;border:none;border-bottom:1px solid var(--border);background:transparent;color:inherit;font:inherit;cursor:pointer;overflow-wrap:anywhere;}
 #fb-list button:hover{background:rgba(59,130,246,.12);}
 #modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center;}
 #modal-bg.open{display:flex;}
@@ -461,7 +461,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
     <div class="totals-by" id="dr-totals-by"></div>
     <div class="stat-row" id="dr-agg-stats"></div>
     <div class="toolbar">
-      <span style="font-size:12px;font-weight:600">ICS-209 (Incident Command System form 209) SITREP (situation report)</span>
+      <span style="font-size:12px;font-weight:600">SITREP (situation report)</span>
       <span id="sitrep-sched" style="font-size:12px;color:var(--muted)"></span>
       <a href="#" onclick="goSetSitrep();return false" style="font-size:11px;font-weight:600;color:var(--accent)">change</a>
       <button class="btn" onclick="buildSitrep()">Generate SITREP</button>
@@ -471,7 +471,9 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
     <div id="sitrep-wrap" style="display:none" class="rollup-wrap">
       <pre class="rollup-pre" id="sitrep-pre"></pre>
       <button class="btn sm rollup-copy" onclick="copyEl('sitrep-pre')">Copy</button>
+      <button class="btn secondary sm" style="margin-left:6px" onclick="copySitrepShort()" title="Sections A to D, F, the totals of G and only what waits on the line above: small enough for HF (high frequency) radio">Copy short version for radio</button>
     </div>
+    <details id="sitrep-history" style="display:none;margin-top:8px"></details>
     <div class="card" style="padding:0;margin-top:12px">
       <div class="tbl-wrap">
         <table>
@@ -1462,7 +1464,7 @@ function renderNetList() {
   var n = netCallList();
   if (!n.call.length && !n.up.length && !msgs.length) { el.innerHTML = ''; return; }
   var PN = {P:'Primary (cellular)', A:'Alternate (any internet)', C:'Contingency (radio)', E:'Emergency (runners)'};
-  el.innerHTML = '<div class="card net-card"><h2>Net control: call list <button class="btn secondary sm" style="margin-left:8px;vertical-align:middle" onclick="copyText(netCallText())">Copy for net control</button></h2>'
+  el.innerHTML = '<div class="card net-card"><h2>Net control: call list <button class="btn secondary sm" style="margin-left:8px;vertical-align:middle" onclick="copyText(plainAscii(netCallText()))">Copy for net control</button></h2>'
     + '<p style="font-size:12px;margin:0 0 6px">PACE level in force: <b>'+esc(n.pace ? n.pace+' — '+PN[n.pace] : 'not set')+'</b> · next SITREP (situation report) '+(n.sitrepDue ? 'due <b>'+esc(hhmm(n.sitrepDue))+'</b>' : 'interval not set')+' · last roll-up sent '+(n.lastRollup ? esc(hhmm(n.lastRollup)) : 'none')+'</p>'
     + '<h3 style="font-size:12px;margin:8px 0 4px">Call on the net now ('+n.call.length+')</h3>'
     + (n.call.length ? '<ul style="margin:0 0 6px 18px;font-size:12px">'+n.call.map(function(c){ return '<li><b>'+esc(c.unit)+'</b>: '+esc(c.why)+'</li>'; }).join('')+'</ul>' : '<p style="font-size:12px;color:var(--muted);margin:0">Nobody to call: every '+esc(unitLabel().toLowerCase())+' on the roster has reported.</p>')
@@ -1719,6 +1721,11 @@ function unitOf(m) {
 function unitsOnce(list) {
   var seen = {}; return list.filter(function(u){ var k = String(u||'?').toLowerCase(); if (seen[k]) return false; seen[k] = 1; return true; });
 }
+// When the sender wrote a report: the phone's save time or the Winlink Date header (sentTs), else when it arrived.
+// "Latest report" always means the latest WRITTEN: Winlink mail held at a gateway can arrive hours after a newer report.
+function wts(m) { return (m && (m.sentTs || m.ts)) || 0; }
+// "Received 18:22 (sent 15:10)" when a report took more than 30 minutes to arrive.
+function sentNote(m) { return (m && m.sentTs && m.ts - m.sentTs > 30*60000) ? ' (sent '+fmtTs(m.sentTs)+')' : ''; }
 // Missionary status by unit: the LATEST Disaster Report from each ward that answered the question decides, so a later
 // "found safe" report clears an earlier NO. A report with no ward stands alone. Returns {no: [units], yes: [units]}.
 function missByUnit(drs) {
@@ -1726,7 +1733,7 @@ function missByUnit(drs) {
   drs.forEach(function(m, i){
     if (!isNo(m.dr.miss_safe) && !isYes(m.dr.miss_safe)) return;
     var k = ((m.dr.stake||'')+'|'+(m.dr.ward||'')).toLowerCase(); if (k === '|') k = '#'+i;
-    if (!last[k]) { order.push(k); last[k] = m; } else if ((m.ts||0) >= (last[k].ts||0)) last[k] = m;
+    if (!last[k]) { order.push(k); last[k] = m; } else if (wts(m) >= wts(last[k])) last[k] = m;
   });
   var no = [], yes = [];
   order.forEach(function(k){ var m = last[k]; (isNo(m.dr.miss_safe) ? no : yes).push(unitOf(m)||'?'); });
@@ -1741,7 +1748,7 @@ function latestPerWard(drs) {
   var last = {}, order = [];
   drs.forEach(function(m, i){
     var k = ((m.dr.stake||'')+'|'+(m.dr.ward||'')).toLowerCase(); if (k === '|') k = '#'+i;
-    if (!last[k]) { order.push(k); last[k] = m; } else if ((m.ts||0) >= (last[k].ts||0)) last[k] = m;
+    if (!last[k]) { order.push(k); last[k] = m; } else if (wts(m) >= wts(last[k])) last[k] = m;
   });
   return order.map(function(k){ return last[k]; });
 }
@@ -1777,13 +1784,13 @@ function altLine(t, k) { return t.other[k] !== t.main[k] ? t.otherLabel+': '+t.o
 // the report's own note, and since when a NO has stood. One line per ward (stake at a Council / Area EOC).
 function missRows(drs) {
   var by = {}, order = [];
-  drs.slice().sort(function(a,b){ return (a.ts||0)-(b.ts||0); }).forEach(function(m, i){
+  drs.slice().sort(function(a,b){ return wts(a)-wts(b); }).forEach(function(m, i){
     var k = ((m.dr.stake||'')+'|'+(m.dr.ward||'')).toLowerCase(); if (k === '|') k = '#'+i;
     var r = by[k]; if (!r) { r = by[k] = {unit: unitOf(m)||'?', last: null, answer: '', since: 0, reports: 0}; order.push(k); }
     r.reports++;
     var a = isNo(m.dr.miss_safe) ? 'NO' : isYes(m.dr.miss_safe) ? 'YES' : '';
     if (!a) { if (!r.last) r.last = m; return; }
-    if (a === 'NO' && r.answer !== 'NO') r.since = m.ts||0;
+    if (a === 'NO' && r.answer !== 'NO') r.since = wts(m);
     r.answer = a; r.last = m;
   });
   var rows = order.map(function(k){ return by[k]; });
@@ -1802,7 +1809,7 @@ function renderMissTable(drs) {
   try { var keep = localStorage.getItem('emcomm_miss_open'); if (keep === '1') open = ' open'; } catch(e){}
   el.innerHTML = '<details class="card miss-card"'+open+' ontoggle="try{localStorage.setItem(\'emcomm_miss_open\', this.open?\'1\':\'\')}catch(e){}"><summary><h2 style="display:inline">Missionary status by '+esc(unitLabel().toLowerCase())+'</h2> <span style="font-size:12px;color:var(--muted)">'
     + (nNo ? '<b style="color:var(--danger)">'+nNo+' not accounted for</b> · ' : '') + (rows.length-nNo-nNone)+' accounted for'+(nNone ? ' · '+nNone+' no answer' : '')+' · for the mission office</span></summary>'
-    + '<div class="toolbar" style="margin:8px 0"><span style="font-size:11px;color:var(--muted)">Each line is the '+esc(unitLabel().toLowerCase())+'\'s latest report that answered. A later "found safe" report clears an earlier NO.</span><span class="spacer"></span><button class="btn secondary sm" onclick="copyText(missText())">Copy for the mission office</button></div>'
+    + '<div class="toolbar" style="margin:8px 0"><span style="font-size:11px;color:var(--muted)">Each line is the '+esc(unitLabel().toLowerCase())+'\'s latest report that answered. A later "found safe" report clears an earlier NO.</span><span class="spacer"></span><button class="btn secondary sm" onclick="copyText(plainAscii(missText()))">Copy for the mission office</button></div>'
     + '<div class="tbl-wrap"><table><thead><tr><th>'+esc(unitLabel())+'</th><th>Missionaries</th><th>Since</th><th>Latest report</th><th>Note on that report</th></tr></thead><tbody>'
     + rows.map(function(r){ var m = r.last; return '<tr><td>'+esc(r.unit)+'</td><td>'+label(r)+'</td><td>'+(r.answer==='NO' && r.since ? esc(hhmm(r.since)) : '')+'</td><td style="white-space:nowrap">'+(m ? esc(fmtTs(m.ts))+(missSource(m) ? '<br><span style="font-size:10px;color:var(--muted)">'+esc(missSource(m))+'</span>' : '') : '')+'</td><td style="font-size:12px">'+esc(m ? missNote(m) : '')+'</td></tr>'; }).join('')
     + '</tbody></table></div></details>';
@@ -1978,6 +1985,7 @@ function switchTab(t) {
     p.classList.toggle('active', p.id==='tab-'+t);
   });
   if (t==='map') renderMap();
+  if (t==='dr') loadSitreps();
   if (t==='actions') { actTabOpened(); renderActions(); }
 }
 
@@ -2562,7 +2570,7 @@ function renderDR(drs) {
     var r=m.dr;
     var missClass = isNo(r.miss_safe)?'miss-no':'miss-yes';
     var unitCell = esc(unitOf(m)||'?') + ((eocLevel()!=='area' && r.ward && r.stake) ? '<br><span style="font-size:10px;color:var(--muted)">'+esc(r.stake)+'</span>' : '') + (m.via ? '<br><span style="font-size:10px;color:var(--muted)">via '+esc(m.via)+'</span>' : '');
-    return '<tr><td>'+fmtTs(m.ts)+'</td><td><strong>'+unitCell+'</strong>'+exChip(m)+'</td><td>'+esc(r.date||'')+'</td><td>'+esc(r.type||'')+'</td>'
+    return '<tr><td>'+fmtTs(m.ts)+(sentNote(m) ? '<br><span style="font-size:10px;color:var(--muted)">'+esc(sentNote(m).trim())+'</span>' : '')+'</td><td><strong>'+unitCell+'</strong>'+exChip(m)+'</td><td>'+esc(r.date||'')+'</td><td>'+esc(r.type||'')+'</td>'
       +'<td><span class="chip '+missClass+'">'+esc(yn(r.miss_safe))+'</span></td>'
       +'<td>'+ni(r.mem_inj)+'</td><td>'+ni(r.mem_dead)+'</td><td>'+ni(r.homes_dmg)+'</td><td>'+ni(r.homes_dest)+'</td>'
       +'<td>'+ni(r.vol_count)+'</td><td>'+ni(r.vol_hrs)+'</td>'
@@ -2580,6 +2588,23 @@ function renderDRAgg(drs) {
     tile(drs.length,'Disaster Reports')+tile(M.inj,'Injuries',M.inj>0?'warn':'',altLine(T,'inj'))+tile(M.dead,'Deaths',M.dead>0?'danger':'',altLine(T,'dead'))+tile(M.dmg,'Homes Damaged',M.dmg>0?'warn':'',altLine(T,'dmg'))+tile(M.dest,'Homes Destroyed',M.dest>0?'danger':'',altLine(T,'dest'))+tile(M.vol,'Volunteers','',altLine(T,'vol'))+tile(M.hrs,'Volunteer Hours','',altLine(T,'hrs'));
 }
 
+// Winlink carries plain text (ISO-8859-1): the SITREP, the net call list and the missionary text are written in plain
+// ASCII, with no curly quotes, long dashes or ellipses that would arrive as "?" at the line above.
+function plainAscii(s) {
+  return String(s == null ? '' : s).replace(/[‘’‚′´]/g, "'").replace(/[“”„″]/g, '"')
+    .replace(/[–—―−]/g, '-').replace(/…/g, '...').replace(/[   ]/g, ' ')
+    .replace(/[•●▪·]/g, '*').replace(/→/g, '->').replace(/[^\x00-\xFF]/g, '?');
+}
+function tzName(d) {
+  try { var p = new Intl.DateTimeFormat('en-US', {timeZoneName: 'short'}).formatToParts(d);
+        for (var i = 0; i < p.length; i++) if (p[i].type === 'timeZoneName') return p[i].value; } catch (e) {}
+  return 'local';
+}
+function zulu(d) { return pad2(d.getUTCHours()) + pad2(d.getUTCMinutes()) + 'Z'; }
+function stamp(d) { return (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear()+' '+pad2(d.getHours())+':'+pad2(d.getMinutes())+' '+tzName(d)+' ('+zulu(d)+')'; }
+var _sitrepShort = '';
+// The SITREP (situation report): numbered per event and kept by the EOC server (Earlier SITREPs), marked as an exercise
+// when any report is, one line pair per ward from its latest report, and a short version for radio.
 function buildSitrep() {
   var drs = msgs.filter(function(m){return m.type==='dr';});
   if (!drs.length) { toast('No disaster reports loaded'); return; }
@@ -2589,21 +2614,19 @@ function buildSitrep() {
   incident.lastSitrepTs = now.getTime(); var _ev = activeEvent(); if (_ev) _ev.lastSitrepTs = incident.lastSitrepTs;
   setTimeout(function(){ save(); renderSitrepSched(); }, 0);
   var nextRpt = new Date(now.getTime() + interval*3600000);
-  var ds = (now.getMonth()+1)+'/'+now.getDate()+'/'+now.getFullYear()+' '+pad2(now.getHours())+':'+pad2(now.getMinutes());
-  var nextDs = (nextRpt.getMonth()+1)+'/'+nextRpt.getDate()+'/'+nextRpt.getFullYear()+' '+pad2(nextRpt.getHours())+':'+pad2(nextRpt.getMinutes());
   var incName = (incident&&incident.name)||'(Unnamed Incident)';
   var incArea = (incident&&incident.area)||'';
   var incType = (incident&&incident.type)||'';
-  var icName = (incident&&incident.ic)||'(Unknown)';
-  var op = (incident&&incident.op)||'(Unknown)';
+  var icName = (incident&&incident.ic)||'';
+  var op = (incident&&incident.op)||'';
   var UP = unitPlural().charAt(0).toUpperCase()+unitPlural().slice(1);
   var leaders = eocLevel()==='area' ? 'stake presidents' : 'bishops';
   var fromEoc = (eocName()||'(EOC not named)')+' ['+eocLabel()+']';
   var toList=[]; if (incident&&incident.parentName) toList.push(incident.parentName);
   upwardLines().forEach(function(l){ toList.push(l.name+' ('+l.line+(l.email?', '+l.email:'')+')'); });
-  var toEoc = toList.length ? toList.join('; ') : (eocLevel()==='area' ? 'Area Presidency / Church headquarters as directed' : eocLevel()==='stake' ? '(council line and welfare line not set — Setup tab)' : '(Stake EOC not set — Setup tab)');
+  var toEoc = toList.length ? toList.join('; ') : (eocLevel()==='area' ? 'Area Presidency / Church headquarters as directed' : eocLevel()==='stake' ? '(council line and welfare line not set: Setup tab)' : '(Stake EOC not set: Setup tab)');
+  var ex = msgs.some(isEx) || !!_drill, EXL = '*** THIS IS AN EXERCISE ***';
 
-  var totInj=0,totDead=0,totDmg=0,totDest=0,totVol=0,totHrs=0;
   var needLocal=[],needNbr=[],needHQ=[],missNo=[],missYes=[];
   drs.forEach(function(m){ var r=m.dr; var u=unitOf(m)||'?';
     if(isYes(r.need_local)) needLocal.push(u);
@@ -2613,80 +2636,127 @@ function buildSitrep() {
   needLocal = unitsOnce(needLocal); needNbr = unitsOnce(needNbr); needHQ = unitsOnce(needHQ);
   var missNow = missByUnit(drs); missNo = missNow.no; missYes = missNow.yes;
   // totals: the count this event leads with, the other in brackets where they differ (see totalsBoth)
-  var T = totalsBoth(drs); totInj=T.main.inj; totDead=T.main.dead; totDmg=T.main.dmg; totDest=T.main.dest; totVol=T.main.vol; totHrs=T.main.hrs;
+  var T = totalsBoth(drs);
   function both(k) { var o = altLine(T, k); return T.main[k] + (o ? '   ('+o+')' : ''); }
+  var blank = function(v){ return String(v==null?'':v).trim()===''; };
+  var cnt = function(v){ return blank(v) ? '-' : String(ni(v)); };
+  var latest = latestPerWard(drs);
+  var label = function(m){ var r=m.dr; return eocLevel()==='area' ? (r.stake||'?')+(r.ward?' / '+r.ward:'') : (unitOf(m)||'Unknown'); };
+  var noLife = unitsOnce(latest.filter(function(m){ return blank(m.dr.mem_inj) && blank(m.dr.mem_dead); }).map(label));
   var sos = msgs.filter(function(m){return m.type==='so';});
 
-  var line = '============================================================';
-  var txt = line+'\n     Church of Jesus Christ EMCOMM — ICS-209 SITUATION REPORT (SITREP)\n     The Church of Jesus Christ of Latter-day Saints\n'+line+'\n\n';
-  txt += 'From EOC: '+fromEoc+'\nTo:       '+toEoc+'\n';
-  if (incident&&incident.eocUnits) txt += 'Covers:   '+incident.eocUnits+'\n';
-  txt += 'Incident: '+incName+(incArea?' | '+incArea:'')+'\nType:     '+incType+'\nIC:       '+icName+'\nOp:       '+op+'\nPACE level in force: '+((incident&&incident.pace)?(incident.pace+' — '+_PACE_NAME[incident.pace]+(incident.paceTs?' (since '+fmtTs(incident.paceTs)+')':'')):'____ (P / A / C / E)')+'\nSITREP interval: every '+interval+' hours'+(incident&&incident.sitrepBy?' (directed by '+incident.sitrepBy+')':'')+'\nCompiled: '+ds+' local\n\n';
-  txt += '------------------------------------------------------------\nSECTION A: MISSIONARY STATUS\n\n';
+  var line = '============================================================', rule = '------------------------------------------------------------';
+  var head = line+'\n'+(ex ? '     '+EXL+'\n' : '')+'     SITUATION REPORT (SITREP) #{NO} - Church of Jesus Christ EMCOMM\n     The Church of Jesus Christ of Latter-day Saints\n'+line+'\n\n';
+  head += 'From EOC: '+fromEoc+'\nTo:       '+toEoc+'\n';
+  if (incident&&incident.eocUnits) head += 'Covers:   '+incident.eocUnits+'\n';
+  head += 'Incident: '+incName+(incArea?' | '+incArea:'')+'\n';
+  if (incType) head += 'Type:     '+incType+'\n';
+  if (icName) head += 'Incident lead: '+icName+'\n';
+  if (op) head += 'Operator: '+op+'\n';
+  if (incident&&incident.startTs) head += 'Operational period: '+stamp(new Date(incident.startTs))+' to now\n';
+  head += 'PACE level in force: '+((incident&&incident.pace)?(incident.pace+' - '+_PACE_NAME[incident.pace]+(incident.paceTs?' (since '+fmtTs(incident.paceTs)+')':'')):'____ (P / A / C / E)')+'\nSITREP interval: '+(interval ? 'every '+interval+' hours' : 'not set')+(incident&&incident.sitrepBy?' (directed by '+incident.sitrepBy+')':'')+'\nCompiled: '+stamp(now)+'\n\n';
+
+  var a = rule+'\nSECTION A: MISSIONARY STATUS\n\n';
   if (missNo.length) {
-    txt += '  *** MISSIONARIES NOT ACCOUNTED FOR ***\n';
-    txt += '  '+UP+': '+missNo.join(', ')+'\n';
-    txt += '  ACTION: Contact '+leaders+' immediately.\n';
+    a += '  *** MISSIONARIES NOT ACCOUNTED FOR ***\n';
+    a += '  '+UP+': '+missNo.join(', ')+'\n';
+    a += '  ACTION: Contact '+leaders+' immediately.\n';
   } else if (missYes.length) {
-    txt += '  All missionaries accounted for.\n';
-    txt += '  '+UP+' reporting safe: '+missYes.join(', ')+'\n';
+    a += '  All missionaries accounted for.\n';
+    a += '  '+UP+' reporting safe: '+missYes.join(', ')+'\n';
   } else {
-    txt += '  No missionary status received.\n';
+    a += '  No missionary status received.\n';
   }
-  txt += '\n------------------------------------------------------------\nSECTION B: LIFE SAFETY\n\n';
-  txt += '  Totals: '+(T.lead==='latest' ? 'each ward\u2019s latest Disaster Report' : 'every Disaster Report added')
-       + (T.differ ? '; in brackets: '+T.otherLabel+', where it differs' : ' (each ward\u2019s latest report gives the same)')+'\n\n';
-  txt += '  Members injured:  '+both('inj')+'\n  Member deaths:    '+both('dead')+'\n';
-  txt += '  Member homes damaged:   '+both('dmg')+'\n  Member homes destroyed: '+both('dest')+'\n';
-  if (!totInj && !totDead) txt += '  No injuries or fatalities reported.\n';
-  txt += '\n------------------------------------------------------------\nSECTION C: RESOURCES\n\n';
-  txt += '  Total volunteers:      '+both('vol')+'\n  Total volunteer hours: '+both('hrs')+'\n';
-  txt += '\n------------------------------------------------------------\nSECTION D: NEEDS SUMMARY\n\n';
-  txt += '  '+UP+' needing local Church facilities ('+needLocal.length+'):\n    '+(needLocal.join(', ')||'None')+'\n';
-  txt += '  '+UP+' needing neighboring unit assist ('+needNbr.length+'):\n    '+(needNbr.join(', ')||'None')+'\n';
-  txt += '  '+UP+' requesting Church HQ support    ('+needHQ.length+'):\n    '+(needHQ.join(', ')||'None')+'\n';
-  if (needHQ.length) txt += '  ACTION: Contact Area Welfare Administration 1-801-240-0450\n';
-  txt += '\n------------------------------------------------------------\nSECTION E: '+UP.toUpperCase()+' DETAIL\n\n';
-  drs.slice().sort(function(a,b){return (unitOf(a)||'').localeCompare(unitOf(b)||'');}).forEach(function(m){ var r=m.dr;
-    txt += '  '+padR(unitOf(m)||'Unknown',40)+(m.via?'  via '+m.via:'')+'\n';
-    txt += '    Missionaries safe: '+yn(r.miss_safe)+'\n';
-    txt += '    Inj/Dead/HomeDmg/HomeDest: '+ni(r.mem_inj)+'/'+ni(r.mem_dead)+'/'+ni(r.homes_dmg)+'/'+ni(r.homes_dest)+'\n';
-    txt += '    Volunteers: '+ni(r.vol_count)+' ('+ni(r.vol_hrs)+' hrs)\n';
-    txt += '    Needs: Local='+yn(r.need_local)+' Neighbor='+yn(r.need_neighbor)+' HQ='+yn(r.need_hq)+'\n';
-    txt += '    Submitter: '+(r.submitter||'?')+(r.phone?' | '+(r.phone||''):'')+'\n';
-    txt += '    Received: '+fmtTs(m.ts)+'\n\n';
+  a += '\n'+rule+'\nSECTION B: LIFE SAFETY\n\n';
+  a += '  Totals: '+(T.lead==='latest' ? 'each ward\'s latest Disaster Report' : 'every Disaster Report added')
+       + (T.differ ? '; in brackets: '+T.otherLabel+', where it differs' : ' (each ward\'s latest report gives the same)')+'\n\n';
+  a += '  Members injured:  '+both('inj')+'\n  Member deaths:    '+both('dead')+'\n';
+  a += '  Member homes damaged:   '+both('dmg')+'\n  Member homes destroyed: '+both('dest')+'\n';
+  if (noLife.length) a += '  Injuries and deaths not reported by: '+noLife.join(', ')+'\n';
+  else if (!T.main.inj && !T.main.dead) a += '  No injuries or fatalities reported.\n';
+  a += '\n'+rule+'\nSECTION C: RESOURCES\n\n';
+  a += '  Total volunteers:      '+both('vol')+'\n  Total volunteer hours: '+both('hrs')+'\n';
+  a += '\n'+rule+'\nSECTION D: NEEDS SUMMARY\n\n';
+  a += '  '+UP+' needing local Church facilities ('+needLocal.length+'):\n    '+(needLocal.join(', ')||'None')+'\n';
+  a += '  '+UP+' needing neighboring unit assist ('+needNbr.length+'):\n    '+(needNbr.join(', ')||'None')+'\n';
+  a += '  '+UP+' requesting Church HQ support    ('+needHQ.length+'):\n    '+(needHQ.join(', ')||'None')+'\n';
+  if (needHQ.length) a += '  ACTION: Call the Area Welfare and Self-Reliance Manager (AWSRM): 1-801-240-0450\n';
+
+  // Section E: one entry per ward, from its latest report (no names or phone numbers: Winlink over radio is not private)
+  var nBy = {}; drs.forEach(function(m){ var k=label(m).toLowerCase(); nBy[k]=(nBy[k]||0)+1; });
+  var e = '\n'+rule+'\nSECTION E: '+(eocLevel()==='area' ? 'STAKE AND WARD' : UP.toUpperCase())+' DETAIL (each one\'s latest report; - = not reported)\n\n';
+  latest.slice().sort(function(x,y){ return label(x).localeCompare(label(y)); }).forEach(function(m){ var r=m.dr, n=nBy[label(m).toLowerCase()]||1;
+    e += '  '+label(m)+(m.via&&eocLevel()!=='area'?'  via '+m.via:'')+'  ('+n+' report'+(n===1?'':'s')+', latest '+fmtTs(wts(m))+')\n';
+    e += '    Missionaries accounted for: '+yn(r.miss_safe)+' | Injured/dead: '+cnt(r.mem_inj)+'/'+cnt(r.mem_dead)
+       + ' | Homes damaged/destroyed: '+cnt(r.homes_dmg)+'/'+cnt(r.homes_dest)+'\n';
+    e += '    Volunteers: '+cnt(r.vol_count)+' ('+cnt(r.vol_hrs)+' hrs) | Needs local/neighbor/HQ: '+yn(r.need_local)+'/'+yn(r.need_neighbor)+'/'+yn(r.need_hq)+'\n';
   });
-  txt += '------------------------------------------------------------\nSECTION F: SUPPLY REQUESTS\n\n';
+  var f = '\n'+rule+'\nSECTION F: SUPPLY REQUESTS\n\n';
   if (sos.length) {
-    txt += '  '+sos.length+' supply order(s) received. See Supply Orders tab for details.\n';
-    soAggregate(sos).forEach(function(a){txt+='    '+padR(a.num||'LOCAL',7)+'  '+padR(a.desc,35)+'  QTY: '+a.total+'\n';});
+    f += '  '+sos.length+' supply order(s) received. See Supply Orders tab for details.\n';
+    soAggregate(sos).forEach(function(x){f+='    '+padR(x.num||'LOCAL',7)+'  '+padR(x.desc,50)+'  QTY: '+x.total+'\n';});
   } else {
-    txt += '  No supply orders received.\n';
+    f += '  No supply orders received.\n';
   }
+  var g = '', gShort = '';
   var wcls = msgs.filter(function(m){return m.type==='wcl';});
   if (wcls.length) {
     var totWclHrs=0, totWclCrew=0;
     wcls.forEach(function(m){totWclHrs+=parseFloat(m.wcl.total_hrs)||0;totWclCrew+=ni(m.wcl.crew_count);});
-    txt += '\n------------------------------------------------------------\nSECTION G: CLEANUP WORK CREWS\n\n';
-    txt += '  Work crew logs received: '+wcls.length+'\n';
-    txt += '  Total crew members:      '+totWclCrew+'\n';
-    txt += '  Total volunteer hours:   '+totWclHrs+'\n';
-    wcls.slice().sort(function(a,b){return (a.wcl.chief_stake||'').localeCompare(b.wcl.chief_stake||'');}).forEach(function(m){ var r=m.wcl;
-      txt += '    '+padR((r.chief_stake||'?')+'/'+(r.chief_ward||'?'),40)+' Chief: '+(r.chief||'?')+' | Crew: '+ni(r.crew_count)+' | Hrs: '+(r.total_hrs||'0')+'\n';
+    gShort = '\n'+rule+'\nSECTION G: CLEANUP WORK CREWS\n\n'
+      + '  Work crew logs received: '+wcls.length+'\n  Total crew members:      '+totWclCrew+'\n  Total volunteer hours:   '+totWclHrs+'\n';
+    g = gShort;
+    wcls.slice().sort(function(x,y){return (x.wcl.chief_stake||'').localeCompare(y.wcl.chief_stake||'');}).forEach(function(m){ var r=m.wcl;
+      g += '    '+padR((r.chief_stake||'?')+'/'+(r.chief_ward||'?'),40)+' Crew: '+ni(r.crew_count)+' | Hrs: '+(r.total_hrs||'0')+'\n';
     });
   }
+  var h = '';
   var rlog=(incident&&incident.rollups)||[];
   if (rlog.length) {
-    txt += '\n------------------------------------------------------------\nSECTION H: REPORTING EOCs (roll-ups merged into this report)\n\n';
+    h += '\n'+rule+'\nSECTION H: REPORTING EOCs (roll-ups merged into this report)\n\n';
     var by={}; rlog.forEach(function(x){ var k=x.from||'?'; if(!by[k]) by[k]={n:0,recs:0,last:0,level:x.level||''}; by[k].n++; by[k].recs+=x.new||0; if((x.at||0)>by[k].last) by[k].last=x.at||0; });
-    Object.keys(by).sort().forEach(function(k){ var b=by[k]; txt += '  '+padR(k+(b.level?' ['+(_LEVEL_LABEL[b.level]||b.level)+']':''),44)+' roll-ups: '+b.n+' | records: '+b.recs+' | last: '+fmtTs(b.last)+'\n'; });
+    Object.keys(by).sort().forEach(function(k){ var b=by[k]; h += '  '+padR(k+(b.level?' ['+(_LEVEL_LABEL[b.level]||b.level)+']':''),44)+' roll-ups: '+b.n+' | records: '+b.recs+' | last: '+fmtTs(b.last)+'\n'; });
   }
-  txt += sitrepActions(interval);
-  txt += '\n'+line+'\nNEXT SITREP: '+(interval ? nextDs+' local (in '+interval+' hours)' : SITREP_NOT_SET)+'\n'+line+'\nVia Winlink EMCOMM | '+op+' | '+fromEoc+'\n'+line+'\n';
-
-  document.getElementById('sitrep-pre').textContent = txt;
+  var foot = '\n'+line+'\nNEXT SITREP: '+(interval ? stamp(nextRpt)+' (in '+interval+' hours)' : SITREP_NOT_SET)+'\n'+line+'\nVia Winlink EMCOMM | '+(op ? op+' | ' : '')+fromEoc+'\n'+(ex ? EXL+'\n' : '')+line+'\n';
+  var full = plainAscii(head + a + e + f + g + h + sitrepActions(interval, false) + foot);
+  var short = plainAscii(head.replace('(SITREP) #{NO}', '(SITREP) #{NO} - SHORT VERSION FOR RADIO') + a + f + gShort + sitrepActions(interval, true) + foot);
+  var show = function(no){
+    var tag = '#'+(no||'?');
+    document.getElementById('sitrep-pre').textContent = full.split('#{NO}').join(tag);
+    _sitrepShort = short.split('#{NO}').join(tag);
+    document.getElementById('sitrep-wrap').style.display = '';
+    toast('SITREP '+tag+' generated');
+  };
+  if (networkMode) {
+    fetch('/api/sitreps', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({text: full})})
+      .then(function(r){ return r.json(); }).then(function(res){ show(res && res.no); loadSitreps(); })
+      .catch(function(){ incident.sitrepCount = (incident.sitrepCount||0)+1; show(incident.sitrepCount); });
+  } else {
+    incident.sitrepCount = (incident.sitrepCount||0)+1; show(incident.sitrepCount);
+  }
+}
+// Earlier SITREPs of this event (kept by the EOC server): open one to read or copy it again.
+var _sitreps = [];
+function loadSitreps() {
+  if (!networkMode) return;
+  fetch('/api/sitreps').then(function(r){ return r.json(); }).then(function(list){ _sitreps = Array.isArray(list) ? list : []; renderSitreps(); }).catch(function(){});
+}
+function renderSitreps() {
+  var el = document.getElementById('sitrep-history'); if (!el) return;
+  if (!_sitreps.length) { el.style.display = 'none'; el.innerHTML = ''; return; }
+  el.style.display = '';
+  el.innerHTML = '<summary style="cursor:pointer;font-size:12px;font-weight:600">Earlier SITREPs ('+_sitreps.length+')</summary>'
+    + _sitreps.map(function(x){ return '<div style="font-size:12px;margin:4px 0">SITREP #'+x.no+' &middot; '+esc(fmtTs(x.ts))
+      + ' <button class="btn secondary sm" onclick="showSitrep(\''+jsq(x.id)+'\')">Open</button></div>'; }).join('');
+}
+function showSitrep(id) {
+  var x = _sitreps.filter(function(y){ return y.id === id; })[0]; if (!x) return;
+  document.getElementById('sitrep-pre').textContent = x.text; _sitrepShort = '';
   document.getElementById('sitrep-wrap').style.display = '';
-  toast('SITREP generated');
+}
+function copySitrepShort() {
+  if (!_sitrepShort) { toast('Generate a SITREP first: the short version is made with it'); return; }
+  copyText(_sitrepShort); toast('Short SITREP for radio copied');
 }
 
 // ── Supply Orders ─────────────────────────────────────────────────────────────
@@ -3484,7 +3554,7 @@ function fvSource(m) {
 }
 function formView(m) {
   var sub=m[m.type]||{}, h='';
-  h+='<div class="fv-meta"><span>Received <b>'+esc(fmtTs(m.ts))+'</b></span><span>Via <b>'+esc(fvSource(m))+'</b></span>';
+  h+='<div class="fv-meta"><span>Received <b>'+esc(fmtTs(m.ts))+'</b>'+esc(sentNote(m))+'</span><span>Via <b>'+esc(fvSource(m))+'</b></span>';
   if(m.from) h+='<span>From <b>'+esc(m.from)+'</b></span>';
   if(m.to) h+='<span>To <b>'+esc(m.to)+'</b></span>';
   if(m.subject) h+='<span>Subject <b>'+esc(m.subject)+'</b></span>';
@@ -3577,10 +3647,14 @@ function actSeenLoad() { try { return parseInt(localStorage.getItem('emcomm_act_
 function actTabOpened() { _actSeenPrev = actSeenLoad(); try { localStorage.setItem('emcomm_act_seen', String(Date.now())); } catch(e){} }
 function showDecisions() { switchTab('actions'); var b=document.querySelector('#act-filters .filter-btn[onclick*="decide"]'); setActFilter('decide', b); }
 function actGroupChanged() { try { localStorage.setItem('emcomm_act_group', document.getElementById('act-group').checked?'1':''); } catch(e){} renderActions(); }
+function wardKey(sub) { var k=((sub.stake||'')+'|'+(sub.ward||'')).trim().toLowerCase(); return k==='|' ? '' : k; }
+var NOTHING_RX = /^\s*(none|no|n\/?a|nothing|not? (any|known|visible|reported))\b/i;   // "None visible" is not damage
 function actionsFromMsg(m) {
   // Same rules and keys as _derive_actions() in eoc_server.py (keep in step).
+  // A Disaster Report's items are keyed by its ward (stake|ward): a ward's follow-up report updates its open item.
   var t=m.type, sub=m[t]||{}, f=m.fields||{}, out=[], unit;
-  function item(kind,cat,prio,title,detail,nxt){ out.push({key:t+':'+kind+':'+m.id, cat:cat, prio:prio, title:title, detail:detail||'', next:nxt||'', unit:unit, src:{id:m.id,type:t}, auto:true}); }
+  var wk = t==='dr' ? wardKey(sub) : '';
+  function item(kind,cat,prio,title,detail,nxt){ out.push({key:t+':'+kind+':'+(wk||m.id), cat:cat, prio:prio, title:title, detail:detail||'', next:nxt||'', unit:unit, src:{id:m.id,type:t}, srcTs:wts(m), auto:true}); }
   if(t==='dr'){
     unit=sub.ward||sub.stake||'?';
     if(isNo(sub.miss_safe)) item('miss','missionaries',1,'Missionaries not accounted for: '+unit, f.miss_details, 'Tell the Stake President now; contact the mission office');
@@ -3591,7 +3665,7 @@ function actionsFromMsg(m) {
     if(isYes(sub.need_neighbor)) item('nbr','assist',2,'Neighboring unit assistance needed: '+unit, nd, 'Match with a unit that has crews free');
     if(isYes(sub.need_local)) item('local','facilities',2,'Local Church facilities needed: '+unit, nd, 'Decide which building opens; tell the facilities manager');
     var dest=ni(sub.homes_dest); if(dest) item('shelter','facilities',2,dest+' homes destroyed, shelter check: '+unit, '', 'Confirm every family has a place to sleep tonight');
-    var bd=String(sub.bldg_damage||f.bldg_damage||'').trim(); if(bd) item('bldg','facilities',2,'Church building damage reported: '+unit, bd, 'Have the facilities manager inspect before use');
+    var bd=String(sub.bldg_damage||f.bldg_damage||'').trim(); if(bd && !NOTHING_RX.test(bd)) item('bldg','facilities',2,'Church building damage reported: '+unit, bd, 'Have the facilities manager inspect before use');
   } else if(t==='so'){
     unit=sub.stake||'?';
     var n=String(sub.items||'').split(';').filter(function(p){return p.trim();}).length, need=sub.del_date||'';
@@ -3606,7 +3680,23 @@ function deriveActions() {
   // Standalone: from the messages. Networked: the server did that; only overdue units are added here.
   var have={}; actions.forEach(function(a){ if(a.key) have[a.key]=1; });
   var fresh=[];
-  if(!networkMode) msgs.forEach(function(m){ actionsFromMsg(m).forEach(function(a){ if(!have[a.key]){ have[a.key]=1; fresh.push(a); } }); });
+  if(!networkMode) {
+    // in the order written: a later report from the same ward updates its item; an answer of YES closes its missionary item
+    msgs.filter(function(m){ return m.type==='dr'||m.type==='so'||m.type==='wcl'; }).sort(function(a,b){ return wts(a)-wts(b); }).forEach(function(m){
+      actionsFromMsg(m).forEach(function(a){
+        var old=actions.filter(function(x){ return x.key===a.key; })[0];
+        if(old){ if((a.srcTs||0) >= (old.srcTs||0) && (old.title!==a.title || old.detail!==a.detail || (old.status==='done' && /^dr:miss:/.test(a.key)))){
+                   old.log=old.log||[]; old.log.push({ts:Date.now(), who:'auto', text:(old.status==='done'?'Reported again':'Updated from a later report')});
+                   old.title=a.title; old.detail=a.detail; old.srcTs=a.srcTs; if(old.status==='done' && /^dr:miss:/.test(a.key)) old.status='open'; }
+                 return; }
+        if(!have[a.key]){ have[a.key]=1; fresh.push(a); }
+      });
+      var wk = m.type==='dr' ? wardKey(m.dr||{}) : '';
+      if(wk && isYes((m.dr||{}).miss_safe)) actions.concat(fresh).forEach(function(x){
+        if(x.key==='dr:miss:'+wk && x.status!=='done' && wts(m) >= (x.srcTs||0)){ x.status='done'; x.decision='Accounted for per the report of '+hhmm(wts(m)); x.log=x.log||[]; x.log.push({ts:Date.now(), who:'auto', text:'Done: missionaries accounted for'}); }
+      });
+    });
+  }
   var now=Date.now();
   roster.forEach(function(r){
     if(r.voiceContact || !r.expectedMinutes || !(incident&&incident.startTs)) return;
@@ -3806,16 +3896,19 @@ function copyActionsTsv() {
   actSorted(actFiltered()).forEach(function(a){ lines.push([_ACT_ST_LABEL[a.status]||a.status, a.prio===1?'High':a.prio===3?'Low':'Normal', a.title, a.unit||'', _ACT_CAT[a.cat]||a.cat||'', a.owner||'', a.next||'', a.due||'', a.decision||'', fmtTs(a.ts), a.from||''].map(function(v){ return String(v).replace(/[\t\n]+/g,' '); }).join('\t')); });
   copyText(lines.join('\n'));
 }
-function sitrepActions(intervalHrs) {
+function sitrepActions(intervalHrs, brief) {
   // SITREP section I: what waits on the line above, then every other open item, then the decisions recorded this period.
   var open=actSorted(openActions()), up=open.filter(function(a){return a.status==='up';}), rest=open.filter(function(a){return a.status!=='up';});
   var since=Date.now()-intervalHrs*3600000;
   var decided=actions.filter(function(a){ return a.status==='done' && (a.decision||'').trim() && (a.updatedTs||a.ts||0)>=since; });
   if(!open.length && !decided.length) return '';
   var txt='\n------------------------------------------------------------\nSECTION I: OPEN DECISIONS AND ACTIONS ('+open.length+' open)\n\n';
-  var line=function(a){ return '  '+(a.prio===1?'[HIGH] ':'')+a.title+(a.unit&&a.title.indexOf(a.unit)<0?' ('+a.unit+')':'')+(a.from?' [from '+a.from+']':'')+'\n    owner: '+(a.owner||'nobody')+' · status: '+({open:'open',progress:'in work',up:'waiting above',done:'done'})[a.status]+(a.next?' · next: '+a.next:'')+(a.due?' · due '+a.due:'')+'\n'; };
+  var line=function(a){ return '  '+(a.prio===1?'[HIGH] ':'')+a.title+(a.unit&&a.title.indexOf(a.unit)<0?' ('+a.unit+')':'')+(a.from?' [from '+a.from+']':'')+'\n    owner: '+(a.owner||'not assigned')+' - status: '+({open:'open',progress:'in work',up:'waiting above',done:'done'})[a.status]+(a.next?' - next: '+a.next:'')+(a.due?' - due '+a.due:'')+'\n'; };
   if(up.length){ txt+='  DECISION OR SUPPORT REQUESTED FROM THE LINE ABOVE:\n'; up.forEach(function(a){ txt+=line(a); }); txt+='\n'; }
-  if(rest.length){ txt+='  BEING WORKED AT THIS EOC:\n'; rest.forEach(function(a){ txt+=line(a); }); }
+  // Being worked here: only the high-priority items go over the air; the rest stay on the Work Items tab
+  var hi=rest.filter(function(a){return a.prio===1;});
+  if(rest.length){ txt+='  BEING WORKED AT THIS EOC (high priority):\n'; (brief?[]:hi).forEach(function(a){ txt+=line(a); });
+    if(rest.length>(brief?0:hi.length)) txt+='  +'+(rest.length-(brief?0:hi.length))+' more open at this EOC (Work Items tab)\n'; }
   if(decided.length){ txt+='\n  DECISIONS RECORDED THIS PERIOD:\n'; decided.forEach(function(a){ txt+='  '+a.title+': '+a.decision+'\n'; }); }
   return txt;
 }

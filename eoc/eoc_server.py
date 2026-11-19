@@ -274,6 +274,15 @@ def init_db():
                 ts   INTEGER NOT NULL,
                 text TEXT NOT NULL
             );
+            -- Every SITREP generated, numbered per event, its whole text kept (the next shift and the after-action
+            -- review read what was sent). Not part of a roll-up.
+            CREATE TABLE IF NOT EXISTS sitreps (
+                id       TEXT PRIMARY KEY,
+                event_id TEXT NOT NULL,
+                no       INTEGER NOT NULL,
+                ts       INTEGER NOT NULL,
+                text     TEXT NOT NULL
+            );
             CREATE TABLE IF NOT EXISTS events (
                 id         TEXT PRIMARY KEY,
                 created_ms INTEGER NOT NULL,
@@ -1293,22 +1302,31 @@ def _norm_val(v) -> str:
 
 # The fields a report keeps whichever way it came (the volunteer's file, the HAM's Winlink message, a phone):
 # the same report by two paths has the same key, so it is filed once.
-_REPORT_CORE = {'dr': ('ward', 'location', 'submitter', 'date', 'type', 'mem_inj', 'mem_dead', 'homes_dmg', 'homes_dest', 'vol_count'),
+# The yes/no answers count too: a ward's second report with the same numbers but a changed missionary answer or a new
+# need is a new report, never a duplicate (audit 2026-11-18: a NO after a YES was dropped).
+_REPORT_CORE = {'dr': ('ward', 'location', 'submitter', 'date', 'type', 'mem_inj', 'mem_dead', 'homes_dmg', 'homes_dest', 'vol_count',
+                       'vol_hrs', 'miss_safe', 'need_local', 'need_neighbor', 'need_hq'),
                 'so': ('addr', 'contact', 'order_date'),
                 'wcl': ('location', 'chief', 'date', 'crew_count', 'total_hrs')}
 _REPORT_ANCHOR = {'dr': ('ward', 'location'), 'so': ('addr', 'contact'), 'wcl': ('location', 'chief')}   # where or who
-_REPORT_COUNTS = ('mem_inj', 'mem_dead', 'homes_dmg', 'homes_dest', 'vol_count', 'crew_count', 'total_hrs')   # blank on one path is 0 on the other
+_REPORT_COUNTS = ('mem_inj', 'mem_dead', 'homes_dmg', 'homes_dest', 'vol_count', 'vol_hrs', 'crew_count', 'total_hrs')   # blank on one path is 0 on the other
+_REPORT_YESNO = ('miss_safe', 'need_local', 'need_neighbor', 'need_hq')
+
+
+def _yes_no(v) -> str:
+    t = str(v or '').strip().lower()
+    return 'yes' if t in ('y', 'yes', 'true', 'on', '1') else 'no' if t in ('n', 'no', 'false', 'off', '0') else ''
 
 
 def _report_key(mtype: str, sub) -> str:
     core = _REPORT_CORE.get(mtype)
     if not core or not isinstance(sub, dict):
         return ''
-    vals = [_norm_val(sub.get(k)) or ('0' if k in _REPORT_COUNTS else '') for k in core]
+    vals = [_yes_no(sub.get(k)) if k in _REPORT_YESNO else (_norm_val(sub.get(k)) or ('0' if k in _REPORT_COUNTS else '')) for k in core]
     if mtype == 'so':
         # item codes differ by path (catalog key in the file, item number in the Winlink message); the quantities do not
         vals.append(','.join(sorted(_norm_val(x.split(':')[-1]) for x in re.split(r'[,;|]', str(sub.get('items') or '')) if ':' in x)))
-    named = [v for k, v in zip(core, vals) if k not in _REPORT_COUNTS and v]
+    named = [v for k, v in zip(core, vals) if k not in _REPORT_COUNTS and k not in _REPORT_YESNO and v]
     if len(named) < 3 or not any(_norm_val(sub.get(k)) for k in _REPORT_ANCHOR[mtype]):
         return ''   # too little to tell two reports apart (no place or name): file it
     return 'report:%s:%s' % (mtype, _fnv1a('|'.join(vals)))
@@ -1543,9 +1561,19 @@ def _is_exercise(v) -> bool:
     return str(v if v is not None else '').strip().lower() in ('yes', '1', 'true', 'on')
 
 
+_NOTHING = re.compile(r'^\s*(none|no|n/?a|nothing|not? (any|known|visible|reported))\b', re.I)
+
+
+def _ward_key(sub: dict) -> str:
+    """stake|ward without case: the unit a Disaster Report's work items belong to ('' when neither is named)."""
+    k = (str(sub.get('stake') or '') + '|' + str(sub.get('ward') or '')).strip().lower()
+    return '' if k == '|' else k
+
+
 def _derive_actions(rec: dict) -> list:
-    """Work items a filed report asks for. Deterministic keys: the same report never
-    makes the same item twice (uploads, Drop Folder copies and roll-ups dedupe)."""
+    """Work items a filed report asks for. A Disaster Report's items are keyed by its ward (stake|ward), so a ward's
+    follow-up report updates its open item instead of adding the same one again (audit 2026-11-18: 88 open items, five
+    copies of each); Supply Orders and crews stay one item per report. Keep in step with actionsFromMsg() in the page."""
     t = (rec.get('type') or '').lower()
     sub = rec.get(t) or {}
     if not isinstance(sub, dict):
@@ -1555,9 +1583,12 @@ def _derive_actions(rec: dict) -> list:
     fields = rec.get('fields') if isinstance(rec.get('fields'), dict) else {}
     out = []
 
+    wk = _ward_key(sub) if t == 'dr' else ''
+    sent = int(rec.get('sentTs') or rec.get('ts') or 0)
+
     def item(kind, cat, prio, title, detail='', nxt=''):
-        out.append({'key': f'{t}:{kind}:{mid}', 'cat': cat, 'prio': prio, 'title': ex + title, 'detail': detail,
-                    'next': nxt, 'unit': unit, 'src': {'id': mid, 'type': t}, 'auto': True})
+        out.append({'key': f'{t}:{kind}:{wk or mid}', 'cat': cat, 'prio': prio, 'title': ex + title, 'detail': detail,
+                    'next': nxt, 'unit': unit, 'src': {'id': mid, 'type': t}, 'srcTs': sent, 'auto': True})
 
     if t == 'dr':
         unit = sub.get('ward') or sub.get('stake') or '?'
@@ -1580,9 +1611,9 @@ def _derive_actions(rec: dict) -> list:
         dest = _int(sub.get('homes_dest'))
         if dest:
             item('shelter', 'facilities', 2, f'{dest} homes destroyed, shelter check: {unit}', '', 'Confirm every family has a place to sleep tonight')
-        if str(sub.get('bldg_damage') or fields.get('bldg_damage') or '').strip():
-            item('bldg', 'facilities', 2, f'Church building damage reported: {unit}',
-                 str(sub.get('bldg_damage') or fields.get('bldg_damage') or ''), 'Have the facilities manager inspect before use')
+        bd = str(sub.get('bldg_damage') or fields.get('bldg_damage') or '').strip()
+        if bd and not _NOTHING.match(bd):     # "None visible" is not damage
+            item('bldg', 'facilities', 2, f'Church building damage reported: {unit}', bd, 'Have the facilities manager inspect before use')
     elif t == 'so':
         unit = sub.get('stake') or '?'
         n = len([p for p in str(sub.get('items') or '').split(';') if p.strip()])
@@ -1597,16 +1628,43 @@ def _derive_actions(rec: dict) -> list:
 
 
 def _file_actions(conn, eid: str, rec: dict) -> int:
-    """Insert the work items a newly filed report calls for (skipping keys already on file)."""
+    """Insert the work items a newly filed report calls for. A key already on file (the same ward's item) is updated
+    from the newer report instead: its title and detail, a log line, and a missionary item closed earlier opens again.
+    A ward's report that answers YES on missionaries closes that ward's open missionary item."""
     n = 0
     now = int(time.time() * 1000)
+    sent = int(rec.get('sentTs') or rec.get('ts') or 0)
+    when = time.strftime('%H:%M', time.localtime(sent / 1000)) if sent else 'now'
     for a in _derive_actions(rec):
-        if conn.execute('SELECT id FROM actions WHERE akey=? AND event_id=?', (a['key'], eid)).fetchone():
+        row = conn.execute('SELECT id, status, data_json FROM actions WHERE akey=? AND event_id=?', (a['key'], eid)).fetchone()
+        if row:
+            d = json.loads(row['data_json'] or '{}')
+            if sent < int(d.get('srcTs') or 0):
+                continue                                   # an older report arriving late changes nothing
+            status = row['status'] or 'open'
+            changed = (d.get('title'), d.get('detail')) != (a['title'], a['detail'])
+            reopen = status == 'done' and a['key'].startswith('dr:miss:')
+            if not changed and not reopen:
+                continue
+            d.update({'title': a['title'], 'detail': a['detail'], 'src': a['src'], 'srcTs': a['srcTs']})
+            d.setdefault('log', []).append({'ts': now, 'who': 'auto', 'text': ('Reported again by the report of ' if reopen else 'Updated from the report of ') + when})
+            conn.execute('UPDATE actions SET data_json=?, status=? WHERE id=?', (json.dumps(d), 'open' if reopen else status, row['id']))
             continue
         a['log'] = [{'ts': now, 'who': 'auto', 'text': 'From the report as filed'}]
         conn.execute('INSERT OR IGNORE INTO actions (id, ts, status, akey, data_json, event_id) VALUES (?,?,?,?,?,?)',
                      (str(uuid.uuid4()), now, 'open', a['key'], json.dumps(a), eid))
         n += 1
+    sub = rec.get('dr') if (rec.get('type') or '').lower() == 'dr' else None
+    wk = _ward_key(sub) if isinstance(sub, dict) else ''
+    if wk and _yes(sub.get('miss_safe')):
+        row = conn.execute("SELECT id, status, data_json FROM actions WHERE akey=? AND event_id=? AND status!='done'",
+                           ('dr:miss:' + wk, eid)).fetchone()
+        if row:
+            d = json.loads(row['data_json'] or '{}')
+            if sent >= int(d.get('srcTs') or 0):
+                d['decision'] = f'Accounted for per the report of {when}'
+                d.setdefault('log', []).append({'ts': now, 'who': 'auto', 'text': f'Done: missionaries accounted for (report of {when})'})
+                conn.execute("UPDATE actions SET data_json=?, status='done' WHERE id=?", (json.dumps(d), row['id']))
     return n
 
 
@@ -1836,6 +1894,23 @@ def _merge_bundle_locked(conn, data: dict, via_label: str = '') -> dict:
             'roster_new': roster_new, 'notes_new': notes_new, 'actions_new': actions_new, 'skipped': bad}
 
 
+def _sent_ms(v, now_ms: int):
+    """When the sender wrote the report (ms), from a phone's savedAt or a Winlink Date header; None when unknown or
+    more than 5 minutes in the future (a wrong clock). "Latest report" means the latest written, not the latest to
+    arrive: mail held at a gateway can arrive hours late (PACE plan, Contingency)."""
+    try:
+        if isinstance(v, str) and v.strip() and not v.strip().lstrip('-').isdigit():
+            from email.utils import parsedate_to_datetime
+            ms = int(parsedate_to_datetime(v.strip()).timestamp() * 1000)
+        else:
+            ms = int(float(v))
+    except (TypeError, ValueError, OverflowError, IndexError):
+        return None
+    if ms <= 0 or ms > now_ms + 300000:
+        return None
+    return min(ms, now_ms)
+
+
 def _parse_church_tag(body: str):
     """Return (tag_type, fields_dict) from a [Church-DR/SO/WCL|...] tag, or None."""
     m = re.search(r'\[Church-(DR|SO|WCL)\|([^\]]*)\]', body)
@@ -1872,6 +1947,9 @@ def _ingest_mime(mime: dict, tag_type: str, tag_fields: dict, filename: str) -> 
         # open the whole form, not just the tag summary). Stripped from roll-ups.
         'body':     mime.get('body', ''),
     }
+    sent = _sent_ms(mime.get('date'), data['ts'])
+    if sent:
+        data['sentTs'] = sent
     with _db_lock:
         conn = get_db()
         try:
@@ -1879,7 +1957,13 @@ def _ingest_mime(mime: dict, tag_type: str, tag_fields: dict, filename: str) -> 
             if conn.execute('SELECT id FROM messages WHERE dup_key=? AND event_id=?', (dup_key, eid)).fetchone():
                 return False
             if _report_on_file(conn, eid, sub_key, tag_fields):
-                return False   # the volunteer's file (or a phone) brought it already
+                # the volunteer's file (or a phone) brought it already: say so in the log, so nobody wonders where it went
+                conn.execute('INSERT OR IGNORE INTO notes (id, ts, text, event_id) VALUES (?,?,?,?)',
+                             (str(uuid.uuid4()), int(time.time() * 1000), f'Already on file, not filed twice: {sub_key.upper()} '
+                              f'{str(tag_fields.get("ward") or tag_fields.get("location") or tag_fields.get("chief") or "").strip()[:80]}'
+                              f' ({filename or "Winlink message"}), the same report came by another path', eid))
+                conn.commit()
+                return False
             conn.execute(
                 'INSERT OR IGNORE INTO messages '
                 '(id, received_ms, type, data_json, status, operator_note, filename, dup_key, event_id)'
@@ -2077,12 +2161,12 @@ def _map_worker_to_eoc(form_type: str, data: dict) -> dict:
             'lat':           data.get('stn_lat_d', ''),
             'lon':           data.get('stn_lon_d', ''),
             'grid':          data.get('stn_grid_d', ''),
-            'mem_inj':       data.get('mem_injuries', '0') or '0',
-            'mem_dead':      data.get('mem_deaths',   '0') or '0',
-            'homes_dmg':     data.get('mem_damaged',  '0') or '0',
-            'homes_dest':    data.get('mem_destroyed','0') or '0',
-            'vol_count':     data.get('vol_count',    '0') or '0',
-            'vol_hrs':       data.get('vol_hours',    '0') or '0',
+            'mem_inj':       data.get('mem_injuries', '') or '',
+            'mem_dead':      data.get('mem_deaths',   '') or '',
+            'homes_dmg':     data.get('mem_damaged',  '') or '',
+            'homes_dest':    data.get('mem_destroyed','') or '',
+            'vol_count':     data.get('vol_count',    '') or '',
+            'vol_hrs':       data.get('vol_hours',    '') or '',
             # Yes / No questions from the PD60000184 paper form (Worker form
             # 2026-10-28+ sends YES / NO / '' for unanswered, like the Winlink tag).
             'miss_safe':     str(data.get('miss_safe',     '') or '').upper(),
@@ -2227,7 +2311,7 @@ def _ingest_text(raw: str, filename: str, source: str = 'internet', tag: str = '
     return _ingest_worker(data, filename, source)
 
 
-def _ingest_worker(data: dict, filename: str, source: str = 'internet') -> tuple:
+def _ingest_worker(data: dict, filename: str, source: str = 'internet', saved_at=None) -> tuple:
     """File one Worker Form report under the active event. Returns (form_type, is_new).
     The duplicate key hashes the form's fields (sorted), so the same report sent from a
     phone twice, or once by upload and once through the Drop Folder, is filed once."""
@@ -2251,6 +2335,9 @@ def _ingest_worker(data: dict, filename: str, source: str = 'internet') -> tuple
         # whole form. Stripped from roll-ups.
         'fields':   {k: v for k, v in data.items() if isinstance(v, (str, int, float, bool))},
     }
+    sent = _sent_ms(saved_at, record['ts']) if saved_at is not None else None
+    if sent:
+        record['sentTs'] = sent      # saved on the phone (the Outbox may hold it for hours)
     with _db_lock:
         conn = get_db()
         try:
@@ -2313,7 +2400,7 @@ def _handle_upload(body: dict) -> dict:
         try:
             if not isinstance(data, dict):
                 raise ValueError('No form data')
-            ft, new = _ingest_worker(data, fn, source='upload')
+            ft, new = _ingest_worker(data, fn, source='upload', saved_at=it.get('savedAt'))
             results.append({'id': it.get('id', ''), 'filename': fn, 'form': ft, 'status': 'new' if new else 'duplicate'})
         except Exception as exc:
             results.append({'id': it.get('id', ''), 'filename': fn, 'status': 'error', 'error': str(exc)})
@@ -2749,6 +2836,12 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
                 elif path == '/api/comms':
                     self.send_json(_get_comms(conn))
 
+                elif path == '/api/sitreps':
+                    # The SITREPs of one event (the active one unless ?event=<id>), newest first, whole text
+                    eid = params.get('event', [''])[0] or _ensure_active_event(conn)
+                    rows = conn.execute('SELECT id, no, ts, text FROM sitreps WHERE event_id=? ORDER BY no DESC', (eid,)).fetchall()
+                    self.send_json([dict(r) for r in rows])
+
                 elif path == '/api/notes':
                     eid = params.get('event', [''])[0] or _ensure_active_event(conn)
                     rows = conn.execute('SELECT id, ts, text FROM notes WHERE event_id=? ORDER BY ts DESC', (eid,)).fetchall()
@@ -2857,6 +2950,20 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
                         _file_actions(conn, eid, body)
                     conn.commit()
                     self.send_json({'ok': True})
+
+                elif path == '/api/sitreps':
+                    # Number and keep a SITREP. The page writes "#{NO}" where the number goes; the server gives the
+                    # next number of the event under the lock, so two operators never send the same number.
+                    eid = _ensure_active_event(conn)
+                    text = str(body.get('text') or '')[:200000]
+                    no = (conn.execute('SELECT MAX(no) FROM sitreps WHERE event_id=?', (eid,)).fetchone()[0] or 0) + 1
+                    text = text.replace('#{NO}', '#%d' % no)
+                    sid, now = str(uuid.uuid4()), int(time.time() * 1000)
+                    conn.execute('INSERT INTO sitreps (id, event_id, no, ts, text) VALUES (?,?,?,?,?)', (sid, eid, no, now, text))
+                    conn.execute('INSERT OR IGNORE INTO notes (id, ts, text, event_id) VALUES (?,?,?,?)',
+                                 (str(uuid.uuid4()), now, f'SITREP #{no} generated and kept (Disaster Reports tab, Earlier SITREPs)', eid))
+                    conn.commit()
+                    self.send_json({'ok': True, 'id': sid, 'no': no, 'ts': now, 'text': text})
 
                 elif path == '/api/notes':
                     conn.execute(

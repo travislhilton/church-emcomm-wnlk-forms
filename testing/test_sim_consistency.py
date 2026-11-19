@@ -334,7 +334,7 @@ try:
         ok = all(line(lab, k) for lab, k in (('Members injured', 'inj'), ('Member deaths', 'dead'), ('Member homes damaged', 'dmg'),
                                              ('Member homes destroyed', 'dest'), ('Total volunteers', 'vol')))
         check('totals: the SITREP gives the chosen count, the other in brackets where it differs, and now the homes too',
-              ok and "each ward\u2019s latest Disaster Report" in b, b[:600])
+              ok and "each ward's latest Disaster Report" in b, b[:600])
         wl.reload(wait_until='load'); wl.wait_for_timeout(2500)
         nums = lambda sel: [int(x) for x in re.findall(r'\d+', wl.inner_text(sel))]
         w = {'life': nums('#life-v'), 'homes': nums('#homes-v'), 'homes_sub': wl.inner_text('#homes-sub'), 'life_sub': wl.inner_text('#life-sub'),

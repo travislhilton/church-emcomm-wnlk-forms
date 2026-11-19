@@ -358,13 +358,13 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
     needL=once(needL); needN=once(needN); needH=once(needH);
     var lastAns={}, ansOrder=[]; drs.forEach(function(m,i){ var r=m.dr; if(!isNo(r.miss_safe)&&!isYes(r.miss_safe)) return;
       var k=((r.stake||'')+'|'+(r.ward||'')).toLowerCase(); if(k==='|') k='#'+i;
-      if(!lastAns[k]){ ansOrder.push(k); lastAns[k]=m; } else if((m.ts||0)>=(lastAns[k].ts||0)) lastAns[k]=m; });
+      if(!lastAns[k]){ ansOrder.push(k); lastAns[k]=m; } else if((m.sentTs||m.ts||0)>=(lastAns[k].sentTs||lastAns[k].ts||0)) lastAns[k]=m; });
     missNo=once(ansOrder.filter(function(k){ return isNo(lastAns[k].dr.miss_safe); }).map(function(k){ return unitOf(lastAns[k])||'?'; }));
     var wcrew=0,whrs=0; wcls.forEach(function(m){ wcrew+=ni(m.wcl.crew_count); whrs+=nf(m.wcl.total_hrs); });
     // totals two ways, as the Message Center (totalsBoth): every report added, or each ward's latest report only;
     // the event's choice (inc.totalsBy) leads, the other is in the line under the number when they differ
     var lastK={}, lastOrder=[]; drs.forEach(function(m,i){ var r=m.dr, k=((r.stake||'')+'|'+(r.ward||'')).toLowerCase(); if(k==='|') k='#'+i;
-      if(!lastK[k]){ lastOrder.push(k); lastK[k]=m; } else if((m.ts||0)>=(lastK[k].ts||0)) lastK[k]=m; });
+      if(!lastK[k]){ lastOrder.push(k); lastK[k]=m; } else if((m.sentTs||m.ts||0)>=(lastK[k].sentTs||lastK[k].ts||0)) lastK[k]=m; });
     var L={inj:0,dead:0,dmg:0,dest:0,vol:0,hrs:0}; lastOrder.forEach(function(k){ var r=lastK[k].dr; L.inj+=ni(r.mem_inj); L.dead+=ni(r.mem_dead); L.dmg+=ni(r.homes_dmg); L.dest+=ni(r.homes_dest); L.vol+=ni(r.vol_count); L.hrs+=ni(r.vol_hrs); });
     var A={inj:inj,dead:dead,dmg:dmg,dest:dest,vol:vol,hrs:hrs}, byLatest=(inc&&inc.totalsBy==='latest'), M=byLatest?L:A, O=byLatest?A:L;
     var oName=byLatest?'every report added':'each ward\u2019s latest';

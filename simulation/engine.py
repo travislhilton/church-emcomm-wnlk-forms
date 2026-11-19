@@ -875,18 +875,19 @@ def _fmt_date(v: str) -> str:
 
 
 def _ascii(s) -> str:
-    return str(s if s is not None else '').encode('ascii', 'replace').decode('ascii').replace('|', '/').replace(']', ')').replace('\n', ' ')
+    return str(s if s is not None else '').encode('ascii', 'replace').decode('ascii').replace('|', '/').replace('[', '(').replace(']', ')').replace('\n', ' ')
 
 
 def _tag(form: str, pairs: list) -> str:
-    return f"[Church-{form.upper()}|" + '|'.join(f'{k}={_ascii(v)}' for k, v in pairs) + ']'
+    # every simulated report is drill traffic: exercise=YES, as the real template writes it when THIS IS AN EXERCISE is ticked
+    return f"[Church-{form.upper()}|exercise=YES|" + '|'.join(f'{k}={_ascii(v)}' for k, v in pairs if k != 'exercise') + ']'
 
 
 def body_text(form: str, d: dict, unit_name: str = '') -> str:
     """A readable report followed by the machine tag and CSV line, as a Winlink template sends it."""
     g = lambda k: _ascii(d.get(k, ''))
     L = ['=' * 60, f'     {FORM_TITLES[form]}', '     The Church of Jesus Christ of Latter-day Saints', '=' * 60, '',
-         f'     *** {SIM_MARK} ***', '']
+         '     *** THIS IS AN EXERCISE ***', f'     *** {SIM_MARK} ***', '']
     if form == 'dr':
         L += ['INCIDENT', f"  Stake: {g('inc_stake')}", f"  Ward / Branch: {g('inc_ward')}", f"  Date: {_fmt_date(g('inc_date'))}",
               f"  Type: {g('inc_type')}", f"  Location: {g('inc_location')}", f"  Stake President: {g('sp_name')}",
@@ -899,13 +900,13 @@ def body_text(form: str, d: dict, unit_name: str = '') -> str:
               f"  {g('needs_details')}", '', 'VOLUNTEERS', f"  Count: {g('vol_count')}   Hours: {g('vol_hours')}",
               f"  Activities: {g('vol_activities')}", f"  Volunteer injuries: {g('vol_injuries')}  {g('vol_inj_details')}", '']
         csv_line = 'CSV,' + ','.join(_ascii(x).replace(',', ';') for x in [
-            g('inc_stake'), _fmt_date(g('inc_date')), g('inc_location'), g('inc_type'), g('miss_safe'), g('mem_injuries') or '0',
-            g('mem_deaths') or '0', g('mem_damaged') or '0', g('mem_destroyed') or '0', g('vol_count') or '0', g('vol_hours') or '0',
+            g('inc_stake'), _fmt_date(g('inc_date')), g('inc_location'), g('inc_type'), g('miss_safe'), g('mem_injuries'),
+            g('mem_deaths'), g('mem_damaged'), g('mem_destroyed'), g('vol_count'), g('vol_hours'),
             g('need_local'), g('need_neighbor'), g('need_hq'), g('sub_name'), g('sub_phone')])
         pairs = [('stake', g('inc_stake'))] + ([('ward', g('inc_ward'))] if g('inc_ward') else []) + [
             ('date', _fmt_date(g('inc_date'))), ('location', g('inc_location')), ('type', g('inc_type')), ('miss_safe', g('miss_safe')),
-            ('mem_inj', g('mem_injuries') or '0'), ('mem_dead', g('mem_deaths') or '0'), ('homes_dmg', g('mem_damaged') or '0'),
-            ('homes_dest', g('mem_destroyed') or '0'), ('vol_count', g('vol_count') or '0'), ('vol_hrs', g('vol_hours') or '0'),
+            ('mem_inj', g('mem_injuries')), ('mem_dead', g('mem_deaths')), ('homes_dmg', g('mem_damaged')),
+            ('homes_dest', g('mem_destroyed')), ('vol_count', g('vol_count')), ('vol_hrs', g('vol_hours')),
             ('vol_inj', g('vol_injuries')), ('need_local', g('need_local')), ('need_neighbor', g('need_neighbor')), ('need_hq', g('need_hq')),
             ('submitter', g('sub_name')), ('phone', g('sub_phone')), ('sp', g('sp_name'))]
     elif form == 'so':
@@ -962,7 +963,7 @@ def winlink_mime(item: dict, run: dict) -> tuple:
     form, d, unit = item['form'], item['payload'], item.get('unit', '')
     call = unit_call({'name': unit})
     stake = d.get('inc_stake') or d.get('req_stake') or d.get('chief_stake') or ''
-    subject = {'dr': f"Church Disaster Report: {stake} - {d.get('inc_type', '')} ({d.get('inc_date', '')})",
+    subject = 'EXERCISE - ' + {'dr': f"Church Disaster Report: {stake} / {d.get('inc_ward', '')} - {d.get('inc_type', '')} ({d.get('inc_date', '')})",
                'so': f"Church Supply Order: {stake} ({d.get('order_date', '')})",
                'wcl': f"Church Work Crew Log: {stake} / {d.get('chief_ward', '')} ({d.get('log_date', '')})"}[form]
     msg = email.message.EmailMessage()
