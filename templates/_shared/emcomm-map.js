@@ -47,7 +47,7 @@
     ok:      {fill: 'rgba(34,197,94,.45)',   line: '#15803d'},
     needs:   {fill: 'rgba(245,158,11,.50)',  line: '#b45309'},
     alert:   {fill: 'rgba(220,38,38,.55)',   line: '#991b1b'},
-    overdue: {fill: 'rgba(148,163,184,.28)', line: '#d97706'},
+    overdue: {fill: 'rgba(148,163,184,.28)', line: '#dc2626'},
     voice:   {fill: 'rgba(59,130,246,.42)',  line: '#1d4ed8'}
   };
   var MARK = {eoc: '#1d4ed8', parent: '#7c3aed', report: '#111827'};
@@ -238,6 +238,13 @@
                                  saved: {topo: bmSaved('topo'), imagery: bmSaved('imagery')}, streets: !!(bmStatus && bmStatus.streetsUrl)}; }
 
     var images = [];   // [{img, b: [w, s, e, n] Web Mercator metres, opacity}]: the directory's own map artwork
+    var hatchPat = null;
+    function hatch() {
+      if (hatchPat) return hatchPat;
+      var c = document.createElement('canvas'); c.width = c.height = 10; var x = c.getContext('2d');
+      x.strokeStyle = 'rgba(120,53,15,.55)'; x.lineWidth = 2; x.beginPath(); x.moveTo(0, 10); x.lineTo(10, 0); x.moveTo(-5, 5); x.lineTo(5, -5); x.moveTo(5, 15); x.lineTo(15, 5); x.stroke();
+      hatchPat = ctx.createPattern(c, 'repeat'); return hatchPat;
+    }
     function draw() {
       if (!W) resize();
       ctx.fillStyle = opts.background || '#eef2f6'; ctx.fillRect(0, 0, W, H);
@@ -249,7 +256,7 @@
       });
       if (!loaded) {
         ctx.fillStyle = '#64748b'; ctx.font = '13px system-ui, sans-serif'; ctx.textAlign = 'center';
-        ctx.fillText(loadError ? 'Map data not available: ' + loadError : 'Loading map data…', W / 2, H / 2);
+        ctx.fillText(!loadError ? 'Loading map data…' : /404/.test(loadError) ? 'No map boundaries on this laptop yet: Setup, This EOC, Map data folder.' : 'Map data not available: ' + loadError, W / 2, H / 2);
         return;
       }
       // unit polygons, filled by status
@@ -258,6 +265,8 @@
         var st = statusFn ? (statusFn(o.name) || {}) : {}, c = COLORS[st.cls] || COLORS.none;
         tracePolys(o.polys);
         ctx.fillStyle = c.fill; ctx.fill();
+        // not by hue alone (colour-blind readers): "with needs" is hatched, an alert gets a "!" at its label point (below)
+        if (st.cls === 'needs') { ctx.fillStyle = hatch(); ctx.fill(); }
         ctx.lineWidth = st.cls === 'overdue' ? 3 : 1.2; ctx.strokeStyle = c.line;
         if (st.cls === 'overdue') ctx.setLineDash([6, 4]);
         ctx.stroke(); ctx.setLineDash([]);
@@ -267,6 +276,12 @@
       orgs.forEach(function (o) {
         if (!isStakeOutline(o) || !onScreen(o.bbox)) return;
         tracePolys(o.polys); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(30,41,59,.55)'; ctx.stroke();
+      });
+      orgs.forEach(function (o) {
+        if (!isUnit(o) || !onScreen(o.bbox) || !statusFn || (statusFn(o.name) || {}).cls !== 'alert') return;
+        var s = toScr(o.labelXY[0], o.labelXY[1]), r = Math.max(9, minLabel * 0.8), y = s[1] - (labels ? minLabel * 1.4 : 0);
+        ctx.beginPath(); ctx.arc(s[0], y, r, 0, Math.PI * 2); ctx.fillStyle = '#991b1b'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#fff'; ctx.stroke();
+        ctx.fillStyle = '#fff'; ctx.font = 'bold ' + Math.round(r * 1.5) + 'px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('!', s[0], y + 1);
       });
       // meetinghouses
       bldgs.forEach(function (b) {

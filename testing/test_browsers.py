@@ -149,6 +149,7 @@ try:
             pg.fill('#inc_stake', 'Larkspur Stake')
             pg.fill('#inc_ward', 'Larkspur 1st Ward')
             pg.fill('#inc_type', 'Flood')
+            pg.fill('#sub_name', 'Test Volunteer')   # stake and name are the fields the forms ask for before saving
             pg.fill('#inc_location', mark)
             pg.click('.emcomm-actions .ea-big.green')
             try:                                       # another EOC on this Wi-Fi: the page asks which one
@@ -457,6 +458,7 @@ try:
             # no signal: the report saved from the portal's form is still in the Outbox after the portal reloads
             ctx, pg, errs = open_page(b, 'phone', f'{WEB}/templates/disaster-report/Church_of_Jesus_Christ_Disaster_Report_Worker.html')
             pg.fill('#inc_stake', 'Larkspur Stake')
+            pg.fill('#sub_name', 'Test Volunteer')
             pg.fill('#inc_location', mark + ' outbox')
             pg.click('.emcomm-actions .ea-big.green')
             saved = False

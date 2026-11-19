@@ -163,6 +163,16 @@
     var auto = /^(stn_|period_|inc_date$|order_date$|req_sig_date$|log_date$)/;
     return Object.keys(d).some(function (k) { return !auto.test(k) && d[k] !== '' && d[k] !== false && d[k] != null; });
   }
+  // The fields the EOC needs to know where and who a report is from (a report without them is filed as "unit not named")
+  var NEEDED = {dr: [['inc_stake', 'stake'], ['sub_name', 'your name']], so: [['req_stake', 'stake'], ['del_contact', 'delivery contact']],
+                wcl: [['chief_stake', 'stake'], ['chief_name', 'your name']]};
+  function missingNeeded(d) {
+    return (NEEDED[E.opts.form] || []).filter(function (n) { return !String(d[n[0]] || '').trim(); }).map(function (n) { return n[1]; });
+  }
+  function neededOk(d, verb) {
+    var miss = missingNeeded(d); if (!miss.length) return true;
+    return confirm('Add your ' + miss.join(' and ') + ' so the EOC knows where this is from.\n\nOK = ' + verb + ' anyway · Cancel = go back and add it');
+  }
   function currentReport() {
     var d = formData(), form = E.opts.form;
     return {id: E.currentId || uid(), form: form, filename: FILENAME[form], title: titleOf(form, d), savedAt: Date.now(), data: d, status: 'waiting', app: APP_VERSION};
@@ -181,7 +191,7 @@
     + '.ea-big{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:56px;margin:8px 0;padding:10px 14px;border:none;border-radius:10px;background:#1a3a5c;color:#fff;font-size:17px;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none}'
     + '.ea-big.green{background:#1a6b3c}.ea-big:disabled{opacity:.55}'
     + '.ea-links{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;font-size:14px;margin:4px 0 2px}'
-    + '.ea-links a,.ea-link{color:#1a3a5c;text-decoration:underline;cursor:pointer;background:none;border:none;font:inherit;padding:4px 0}'
+    + '.ea-links a,.ea-link{color:#1a3a5c;text-decoration:none;cursor:pointer;background:#fff;border:1.5px solid #1a3a5c;border-radius:8px;font:inherit;font-weight:600;padding:8px 12px;min-height:44px;display:inline-flex;align-items:center}'
     + '.ea-count{display:inline-block;min-width:20px;border-radius:10px;background:#b45309;color:#fff;font-size:12px;font-weight:700;padding:0 6px;margin-left:4px}'
     + '.ea-banner{position:sticky;top:0;z-index:50;background:#fff7e0;border-bottom:2px solid #b45309;padding:10px 14px;font-size:15px}'
     + '.ea-banner .b{display:flex;gap:8px;margin-top:8px}.ea-banner button{flex:1;min-height:44px;border-radius:8px;border:none;font-weight:700;font-size:15px;cursor:pointer}'
@@ -193,7 +203,7 @@
     + '.ea-muted{color:#5d6b7a;font-size:14px}'
     + '.ea-item{border-top:1px solid #e3e7ec;padding:10px 0;display:flex;gap:10px;align-items:center}.ea-item:first-child{border-top:none}'
     + '.ea-item .t{flex:1;min-width:0}.ea-item .t b{display:block}.ea-item button{min-height:40px;padding:0 12px;border-radius:8px;border:1.5px solid #c9d1da;background:#fff;font-weight:600;cursor:pointer}'
-    + '.ea-in{width:100%;padding:12px;font-size:18px;border:1.5px solid #bbb;border-radius:8px;margin:6px 0}'
+    + '.ea-in{width:100%;padding:12px;font-size:18px;border:1.5px solid #767676;border-radius:8px;margin:6px 0}'
     + '.ea-ok{background:#e7f6ec;border:2px solid #1a6b3c;border-radius:12px;padding:14px;margin:8px 0}.ea-ok .h{font-size:21px;font-weight:800;color:#1a6b3c}'
     + '.ea-err{background:#fdecee;border:2px solid #b00020;border-radius:12px;padding:12px;margin:8px 0}'
     + '.ea-video{width:100%;border-radius:10px;background:#000;aspect-ratio:1/1;object-fit:cover}'
@@ -308,6 +318,7 @@
   E.saveToOutbox = function (quiet) {
     var rep = currentReport();
     if (!hasContent(rep.data) && !quiet && !confirm('This form looks empty. Save it to the Outbox anyway?')) return null;
+    if (hasContent(rep.data) && !quiet && !neededOk(rep.data, 'save')) return null;
     if (!obUpsert(rep)) return null;
     E.currentId = rep.id;
     E.dirty = false;
@@ -688,6 +699,7 @@
     if (!outboxOnly && E.opts.form) {
       var cur = currentReport();
       if (!hasContent(cur.data) && !confirm('This form looks empty. Send it anyway?')) return;
+      if (hasContent(cur.data) && !neededOk(cur.data, 'send')) return;
       reps.push(cur);
     }
     obWaiting().forEach(function (r) { if (!reps.some(function (x) { return x.id === r.id; })) reps.push(r); });
@@ -890,6 +902,16 @@
       .then(function (s) { if (s && s.lanUrl) { E.eoc = s; return 'eoc'; } return 'portal'; })
       .catch(function () { return 'portal'; });
   }
+  // A form served by an EOC suggests that EOC's own ward (or stake) names, so "5th" does not become a unit of its own
+  function unitNames() {
+    fetch('/api/roster').then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
+      var names = (Array.isArray(rows) ? rows : []).map(function (r) { return String((r && r.name) || '').trim(); }).filter(Boolean);
+      if (!names.length) return;
+      var dl = document.getElementById('ea-units') || document.body.appendChild(document.createElement('datalist'));
+      dl.id = 'ea-units'; dl.innerHTML = names.map(function (n) { return '<option value="' + esc(n) + '">'; }).join('');
+      ['inc_ward', 'chief_ward'].forEach(function (id) { var el = document.getElementById(id); if (el) { el.setAttribute('list', 'ea-units'); if (!el.placeholder) el.placeholder = 'Full name, e.g. ' + names[0]; } });
+    }).catch(function () {});
+  }
   E.init = function (opts) {
     E.opts = opts || {};
     addStyle();
@@ -898,6 +920,7 @@
       E.ctx = ctx;
       if (got[1]) toast(got[1] + ' saved report' + (got[1] === 1 ? '' : 's') + ' brought back into the Outbox');
       if (ctx === 'portal') setupApp();
+      if (ctx === 'eoc') unitNames();
       var q = params();
       if (q.outbox && E.opts.form) {
         var rep = obAll().filter(function (r) { return r.id === q.outbox; })[0];

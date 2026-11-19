@@ -14,7 +14,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 16px; margin: 0; pa
 label { font-size: 13px; color: #444; font-weight: 600; display: block; margin-bottom: 4px; }
 input[type=text], input[type=tel], input[type=date] {
   width: 100%; padding: 10px 12px; font-size: 16px; font-family: Arial, Helvetica, sans-serif;
-  border: 1.5px solid #bbb; border-radius: 6px; background: #fafeff;
+  border: 1.5px solid #767676; border-radius: 6px; background: #fafeff;
   appearance: none; -webkit-appearance: none; }
 input:focus { outline: none; border-color: #1a3a5c; }
 .two-col { }
@@ -40,8 +40,8 @@ table.items td { padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align
 table.items td.num-col, table.items td.unit-col { text-align: center; color: #4b5563; font-size: 12px; }
 table.items td.qty-col { padding: 4px; }
 input.qty { width: 100%; padding: 8px 4px; font-size: 16px; text-align: center;
-  border: 1.5px solid #bbb; border-radius: 4px; background: #fafeff; }
-input.qty:focus { outline: none; border-color: #1a3a5c; }
+  border: 1.5px solid #767676; border-radius: 4px; background: #fafeff; }
+input.qty:focus { outline: 3px solid #1a3a5c; outline-offset: 1px; border-color: #1a3a5c; }
 .sub-sec-hdr { background: #eef2f8; font-weight: bold; font-size: 13px; padding: 6px 8px; color: #1a3a5c; }
 .btn-gps { width:100%; height:46px; background:#1a3a5c; color:#fff; font-size:15px; font-weight:bold; border:none; border-radius:8px; cursor:pointer; }
 .btn-gps:active { background:#142e4a; }
@@ -68,7 +68,7 @@ input::placeholder, textarea::placeholder { color:#6b7280; opacity:1; }   /* Web
   </div>
   <div style="text-align:right;">
     <div style="font-size:17px;font-weight:bold;color:#1a3a5c;line-height:1.2;">Emergency Supply Order</div>
-    <div style="font-size:11px;color:#666;margin-top:3px;">Worker Form</div>
+    <div style="font-size:11px;color:#666;margin-top:3px;">Phone form</div>
   </div>
 </div>
 
@@ -121,7 +121,7 @@ input::placeholder, textarea::placeholder { color:#6b7280; opacity:1; }   /* Web
   <div class="sec-hdr">Delivery Information</div>
   <div class="two-col">
     <div class="frow">
-      <label for="req_stake">Requesting Stake</label>
+      <label for="req_stake">Requesting Stake <span style="font-weight:400;color:#555">(needed)</span></label>
       <input type="text" id="req_stake" name="req_stake" />
     </div>
     <div class="frow">
@@ -131,7 +131,7 @@ input::placeholder, textarea::placeholder { color:#6b7280; opacity:1; }   /* Web
   </div>
   <div class="two-col">
     <div class="frow">
-      <label for="del_contact">Delivery Contact Name</label>
+      <label for="del_contact">Delivery Contact Name <span style="font-weight:400;color:#555">(needed)</span></label>
       <input type="text" id="del_contact" name="del_contact" />
     </div>
     <div class="frow">
@@ -177,78 +177,78 @@ input::placeholder, textarea::placeholder { color:#6b7280; opacity:1; }   /* Web
     </thead>
     <tbody>
       <tr><td colspan="4" class="sub-sec-hdr">General Supplies</td></tr>
-      <tr><td>Blanket — 3-lb. poly fleece (10 per case)</td><td class="num-col">008092</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" id="gs01" name="gs01" inputmode="numeric" /></td></tr>
-      <tr><td>Card stock Emergency Response Services dashboard signs (25 per package)</td><td class="num-col">007126</td><td class="unit-col">package</td><td class="qty-col"><input type="text" class="qty" id="gs02" name="gs02" inputmode="numeric" /></td></tr>
-      <tr><td>Chalk line with chalk</td><td class="num-col">007002</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="gs03" name="gs03" inputmode="numeric" /></td></tr>
-      <tr><td>Duct tape roll, 60 yd. x 2" wide</td><td class="num-col">007250</td><td class="unit-col">roll</td><td class="qty-col"><input type="text" class="qty" id="gs04" name="gs04" inputmode="numeric" /></td></tr>
-      <tr><td>First aid kit (basic)</td><td class="num-col">007058</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="gs05" name="gs05" inputmode="numeric" /></td></tr>
-      <tr><td>Furring strips</td><td class="num-col">007017</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="gs06" name="gs06" inputmode="numeric" /></td></tr>
-      <tr><td>Magnetic Emergency Response Services sign</td><td class="num-col">007125</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="gs07" name="gs07" inputmode="numeric" /></td></tr>
-      <tr><td>Nails, 8d (8-penny) (25 lbs. per case)</td><td class="num-col">007201</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" id="gs08" name="gs08" inputmode="numeric" /></td></tr>
-      <tr><td>Tarp (20' x 30')</td><td class="num-col">009021</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="gs09" name="gs09" inputmode="numeric" /></td></tr>
-      <tr><td>Trash bags, 45-gallon (200 per case)</td><td class="num-col">007008</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" id="gs10" name="gs10" inputmode="numeric" /></td></tr>
+      <tr><td>Blanket — 3-lb. poly fleece (10 per case)</td><td class="num-col">008092</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Blanket — 3-lb. poly fleece (10 per case)" id="gs01" name="gs01" inputmode="numeric" /></td></tr>
+      <tr><td>Card stock Emergency Response Services dashboard signs (25 per package)</td><td class="num-col">007126</td><td class="unit-col">package</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Card stock Emergency Response Services dashboard signs (25 per package)" id="gs02" name="gs02" inputmode="numeric" /></td></tr>
+      <tr><td>Chalk line with chalk</td><td class="num-col">007002</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Chalk line with chalk" id="gs03" name="gs03" inputmode="numeric" /></td></tr>
+      <tr><td>Duct tape roll, 60 yd. x 2" wide</td><td class="num-col">007250</td><td class="unit-col">roll</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Duct tape roll, 60 yd. x 2&quot; wide" id="gs04" name="gs04" inputmode="numeric" /></td></tr>
+      <tr><td>First aid kit (basic)</td><td class="num-col">007058</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: First aid kit (basic)" id="gs05" name="gs05" inputmode="numeric" /></td></tr>
+      <tr><td>Furring strips</td><td class="num-col">007017</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Furring strips" id="gs06" name="gs06" inputmode="numeric" /></td></tr>
+      <tr><td>Magnetic Emergency Response Services sign</td><td class="num-col">007125</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Magnetic Emergency Response Services sign" id="gs07" name="gs07" inputmode="numeric" /></td></tr>
+      <tr><td>Nails, 8d (8-penny) (25 lbs. per case)</td><td class="num-col">007201</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Nails, 8d (8-penny) (25 lbs. per case)" id="gs08" name="gs08" inputmode="numeric" /></td></tr>
+      <tr><td>Tarp (20' x 30')</td><td class="num-col">009021</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Tarp (20' x 30')" id="gs09" name="gs09" inputmode="numeric" /></td></tr>
+      <tr><td>Trash bags, 45-gallon (200 per case)</td><td class="num-col">007008</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Trash bags, 45-gallon (200 per case)" id="gs10" name="gs10" inputmode="numeric" /></td></tr>
 
       <tr><td colspan="4" class="sub-sec-hdr">Tools</td></tr>
-      <tr><td>Bow saw, 21"</td><td class="num-col">007205</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl01" name="tl01" inputmode="numeric" /></td></tr>
-      <tr><td>Box fan</td><td class="num-col">007213</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl02" name="tl02" inputmode="numeric" /></td></tr>
-      <tr><td>Chain oil (1 quart)</td><td class="num-col">007086</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl03" name="tl03" inputmode="numeric" /></td></tr>
-      <tr><td>Chain saw</td><td class="num-col">007078</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl04" name="tl04" inputmode="numeric" /></td></tr>
-      <tr><td>Chain saw chain</td><td class="num-col">007082</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl05" name="tl05" inputmode="numeric" /></td></tr>
-      <tr><td>Chain saw file</td><td class="num-col">007084</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl06" name="tl06" inputmode="numeric" /></td></tr>
-      <tr><td>Chain saw safety kit (helmet and face mask with hearing protection)</td><td class="num-col">007089</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl07" name="tl07" inputmode="numeric" /></td></tr>
-      <tr><td>Chaps</td><td class="num-col">007230</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl08" name="tl08" inputmode="numeric" /></td></tr>
-      <tr><td>Engine oil, 2-cycle (1 quart)</td><td class="num-col">007088</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl09" name="tl09" inputmode="numeric" /></td></tr>
-      <tr><td>Extension cord, 100'</td><td class="num-col">007072</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl10" name="tl10" inputmode="numeric" /></td></tr>
-      <tr><td>Garden rake</td><td class="num-col">007203</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl11" name="tl11" inputmode="numeric" /></td></tr>
-      <tr><td>Gas can, 1-gallon</td><td class="num-col">007080</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl12" name="tl12" inputmode="numeric" /></td></tr>
-      <tr><td>Gas can, 5-gallon</td><td class="num-col">007074</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl13" name="tl13" inputmode="numeric" /></td></tr>
-      <tr><td>Gas funnel</td><td class="num-col">007075</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl14" name="tl14" inputmode="numeric" /></td></tr>
-      <tr><td>Generator, 5 kW</td><td class="num-col">007070</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl15" name="tl15" inputmode="numeric" /></td></tr>
-      <tr><td>Hammers, claw (36 per case)</td><td class="num-col">007200</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl16" name="tl16" inputmode="numeric" /></td></tr>
-      <tr><td>Ice sled (for hauling debris)</td><td class="num-col">007091</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl17" name="tl17" inputmode="numeric" /></td></tr>
-      <tr><td>Pallet jack</td><td class="num-col">007231</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl18" name="tl18" inputmode="numeric" /></td></tr>
-      <tr><td>Pry bar, 12" x 15"</td><td class="num-col">009048</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl19" name="tl19" inputmode="numeric" /></td></tr>
-      <tr><td>Pump, .5 hp submersible residential (110 V) with 50' garden hose</td><td class="num-col">007216</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl20" name="tl20" inputmode="numeric" /></td></tr>
-      <tr><td>Push broom with handle</td><td class="num-col">007081</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl21" name="tl21" inputmode="numeric" /></td></tr>
-      <tr><td>Rope, 100' x 1/4"</td><td class="num-col">007010</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl22" name="tl22" inputmode="numeric" /></td></tr>
-      <tr><td>Shovel, round</td><td class="num-col">007071</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl23" name="tl23" inputmode="numeric" /></td></tr>
-      <tr><td>Shovel, square</td><td class="num-col">007062</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl24" name="tl24" inputmode="numeric" /></td></tr>
-      <tr><td>Shovel, wide-scoop</td><td class="num-col">007054</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl25" name="tl25" inputmode="numeric" /></td></tr>
-      <tr><td>Unassembled wheelbarrows with non-flat tires (if fewer than 25 are needed, purchase locally)</td><td class="num-col">007090</td><td class="unit-col">pallet</td><td class="qty-col"><input type="text" class="qty" id="tl26" name="tl26" inputmode="numeric" /></td></tr>
-      <tr><td>Utility knife with blades</td><td class="num-col">007212</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl27" name="tl27" inputmode="numeric" /></td></tr>
-      <tr><td>Wet/dry vacuum</td><td class="num-col">007211</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl28" name="tl28" inputmode="numeric" /></td></tr>
-      <tr><td>Wrecking bar, gooseneck, 30" x 36"</td><td class="num-col">009046</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="tl29" name="tl29" inputmode="numeric" /></td></tr>
+      <tr><td>Bow saw, 21"</td><td class="num-col">007205</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Bow saw, 21&quot;" id="tl01" name="tl01" inputmode="numeric" /></td></tr>
+      <tr><td>Box fan</td><td class="num-col">007213</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Box fan" id="tl02" name="tl02" inputmode="numeric" /></td></tr>
+      <tr><td>Chain oil (1 quart)</td><td class="num-col">007086</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Chain oil (1 quart)" id="tl03" name="tl03" inputmode="numeric" /></td></tr>
+      <tr><td>Chain saw</td><td class="num-col">007078</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Chain saw" id="tl04" name="tl04" inputmode="numeric" /></td></tr>
+      <tr><td>Chain saw chain</td><td class="num-col">007082</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Chain saw chain" id="tl05" name="tl05" inputmode="numeric" /></td></tr>
+      <tr><td>Chain saw file</td><td class="num-col">007084</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Chain saw file" id="tl06" name="tl06" inputmode="numeric" /></td></tr>
+      <tr><td>Chain saw safety kit (helmet and face mask with hearing protection)</td><td class="num-col">007089</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Chain saw safety kit (helmet and face mask with hearing protection)" id="tl07" name="tl07" inputmode="numeric" /></td></tr>
+      <tr><td>Chaps</td><td class="num-col">007230</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Chaps" id="tl08" name="tl08" inputmode="numeric" /></td></tr>
+      <tr><td>Engine oil, 2-cycle (1 quart)</td><td class="num-col">007088</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Engine oil, 2-cycle (1 quart)" id="tl09" name="tl09" inputmode="numeric" /></td></tr>
+      <tr><td>Extension cord, 100'</td><td class="num-col">007072</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Extension cord, 100'" id="tl10" name="tl10" inputmode="numeric" /></td></tr>
+      <tr><td>Garden rake</td><td class="num-col">007203</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Garden rake" id="tl11" name="tl11" inputmode="numeric" /></td></tr>
+      <tr><td>Gas can, 1-gallon</td><td class="num-col">007080</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Gas can, 1-gallon" id="tl12" name="tl12" inputmode="numeric" /></td></tr>
+      <tr><td>Gas can, 5-gallon</td><td class="num-col">007074</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Gas can, 5-gallon" id="tl13" name="tl13" inputmode="numeric" /></td></tr>
+      <tr><td>Gas funnel</td><td class="num-col">007075</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Gas funnel" id="tl14" name="tl14" inputmode="numeric" /></td></tr>
+      <tr><td>Generator, 5 kW</td><td class="num-col">007070</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Generator, 5 kW" id="tl15" name="tl15" inputmode="numeric" /></td></tr>
+      <tr><td>Hammers, claw (36 per case)</td><td class="num-col">007200</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Hammers, claw (36 per case)" id="tl16" name="tl16" inputmode="numeric" /></td></tr>
+      <tr><td>Ice sled (for hauling debris)</td><td class="num-col">007091</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Ice sled (for hauling debris)" id="tl17" name="tl17" inputmode="numeric" /></td></tr>
+      <tr><td>Pallet jack</td><td class="num-col">007231</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Pallet jack" id="tl18" name="tl18" inputmode="numeric" /></td></tr>
+      <tr><td>Pry bar, 12" x 15"</td><td class="num-col">009048</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Pry bar, 12&quot; x 15&quot;" id="tl19" name="tl19" inputmode="numeric" /></td></tr>
+      <tr><td>Pump, .5 hp submersible residential (110 V) with 50' garden hose</td><td class="num-col">007216</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Pump, .5 hp submersible residential (110 V) with 50' garden hose" id="tl20" name="tl20" inputmode="numeric" /></td></tr>
+      <tr><td>Push broom with handle</td><td class="num-col">007081</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Push broom with handle" id="tl21" name="tl21" inputmode="numeric" /></td></tr>
+      <tr><td>Rope, 100' x 1/4"</td><td class="num-col">007010</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Rope, 100' x 1/4&quot;" id="tl22" name="tl22" inputmode="numeric" /></td></tr>
+      <tr><td>Shovel, round</td><td class="num-col">007071</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Shovel, round" id="tl23" name="tl23" inputmode="numeric" /></td></tr>
+      <tr><td>Shovel, square</td><td class="num-col">007062</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Shovel, square" id="tl24" name="tl24" inputmode="numeric" /></td></tr>
+      <tr><td>Shovel, wide-scoop</td><td class="num-col">007054</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Shovel, wide-scoop" id="tl25" name="tl25" inputmode="numeric" /></td></tr>
+      <tr><td>Unassembled wheelbarrows with non-flat tires (if fewer than 25 are needed, purchase locally)</td><td class="num-col">007090</td><td class="unit-col">pallet</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Unassembled wheelbarrows with non-flat tires (if fewer than 25 are needed, purchase locally)" id="tl26" name="tl26" inputmode="numeric" /></td></tr>
+      <tr><td>Utility knife with blades</td><td class="num-col">007212</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Utility knife with blades" id="tl27" name="tl27" inputmode="numeric" /></td></tr>
+      <tr><td>Wet/dry vacuum</td><td class="num-col">007211</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Wet/dry vacuum" id="tl28" name="tl28" inputmode="numeric" /></td></tr>
+      <tr><td>Wrecking bar, gooseneck, 30" x 36"</td><td class="num-col">009046</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Wrecking bar, gooseneck, 30&quot; x 36&quot;" id="tl29" name="tl29" inputmode="numeric" /></td></tr>
 
       <tr><td colspan="4" class="sub-sec-hdr">Personal Items</td></tr>
-      <tr><td>Body bags (12 per case)</td><td class="num-col">007140</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" id="pi01" name="pi01" inputmode="numeric" /></td></tr>
-      <tr><td>Gloves, all-purpose</td><td class="num-col">007102</td><td class="unit-col">pair</td><td class="qty-col"><input type="text" class="qty" id="pi02" name="pi02" inputmode="numeric" /></td></tr>
-      <tr><td>Heavy rubber gloves (M) (144 pairs per case)</td><td class="num-col">003381</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" id="pi03" name="pi03" inputmode="numeric" /></td></tr>
-      <tr><td>Heavy rubber gloves (L) (144 pairs per case)</td><td class="num-col">003375</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" id="pi04" name="pi04" inputmode="numeric" /></td></tr>
-      <tr><td>Heavy rubber gloves (XL) (144 pairs per case)</td><td class="num-col">003376</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" id="pi05" name="pi05" inputmode="numeric" /></td></tr>
-      <tr><td>Helping Hands T-shirt (M), short-sleeve</td><td class="num-col">007130</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="pi06" name="pi06" inputmode="numeric" /></td></tr>
-      <tr><td>Helping Hands T-shirt (L), short-sleeve</td><td class="num-col">007131</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="pi07" name="pi07" inputmode="numeric" /></td></tr>
-      <tr><td>Helping Hands T-shirt (XL), short-sleeve</td><td class="num-col">007132</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="pi08" name="pi08" inputmode="numeric" /></td></tr>
-      <tr><td>Helping Hands T-shirt (XXL), short-sleeve</td><td class="num-col">007133</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="pi09" name="pi09" inputmode="numeric" /></td></tr>
-      <tr><td>Helping Hands T-shirt (XXXL), short-sleeve</td><td class="num-col">007134</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="pi10" name="pi10" inputmode="numeric" /></td></tr>
-      <tr><td>Helping Hands vests (72 per case)</td><td class="num-col">007155</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" id="pi11" name="pi11" inputmode="numeric" /></td></tr>
-      <tr><td>Hooded disposable coveralls (L)</td><td class="num-col">007232</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="pi12" name="pi12" inputmode="numeric" /></td></tr>
-      <tr><td>Hooded disposable coveralls (XL)</td><td class="num-col">007233</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="pi13" name="pi13" inputmode="numeric" /></td></tr>
-      <tr><td>Hooded disposable coveralls (XXL)</td><td class="num-col">007234</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="pi14" name="pi14" inputmode="numeric" /></td></tr>
-      <tr><td>N95 masks with ventilation (160 masks per case)</td><td class="num-col">007120</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" id="pi15" name="pi15" inputmode="numeric" /></td></tr>
-      <tr><td>Rubber boots (size 8)</td><td class="num-col">007240</td><td class="unit-col">pair</td><td class="qty-col"><input type="text" class="qty" id="pi16" name="pi16" inputmode="numeric" /></td></tr>
-      <tr><td>Rubber boots (size 10)</td><td class="num-col">007242</td><td class="unit-col">pair</td><td class="qty-col"><input type="text" class="qty" id="pi17" name="pi17" inputmode="numeric" /></td></tr>
-      <tr><td>Rubber boots (size 12)</td><td class="num-col">007244</td><td class="unit-col">pair</td><td class="qty-col"><input type="text" class="qty" id="pi18" name="pi18" inputmode="numeric" /></td></tr>
-      <tr><td>Rubber-coated gloves (M), 1 pair</td><td class="num-col">007108</td><td class="unit-col">pair</td><td class="qty-col"><input type="text" class="qty" id="pi19" name="pi19" inputmode="numeric" /></td></tr>
-      <tr><td>Rubber-coated gloves (L), 1 pair</td><td class="num-col">007107</td><td class="unit-col">pair</td><td class="qty-col"><input type="text" class="qty" id="pi20" name="pi20" inputmode="numeric" /></td></tr>
-      <tr><td>Rubber-coated gloves (XL), 1 pair</td><td class="num-col">007109</td><td class="unit-col">pair</td><td class="qty-col"><input type="text" class="qty" id="pi21" name="pi21" inputmode="numeric" /></td></tr>
-      <tr><td>Safety glasses</td><td class="num-col">007208</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" id="pi22" name="pi22" inputmode="numeric" /></td></tr>
+      <tr><td>Body bags (12 per case)</td><td class="num-col">007140</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Body bags (12 per case)" id="pi01" name="pi01" inputmode="numeric" /></td></tr>
+      <tr><td>Gloves, all-purpose</td><td class="num-col">007102</td><td class="unit-col">pair</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Gloves, all-purpose" id="pi02" name="pi02" inputmode="numeric" /></td></tr>
+      <tr><td>Heavy rubber gloves (M) (144 pairs per case)</td><td class="num-col">003381</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Heavy rubber gloves (M) (144 pairs per case)" id="pi03" name="pi03" inputmode="numeric" /></td></tr>
+      <tr><td>Heavy rubber gloves (L) (144 pairs per case)</td><td class="num-col">003375</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Heavy rubber gloves (L) (144 pairs per case)" id="pi04" name="pi04" inputmode="numeric" /></td></tr>
+      <tr><td>Heavy rubber gloves (XL) (144 pairs per case)</td><td class="num-col">003376</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Heavy rubber gloves (XL) (144 pairs per case)" id="pi05" name="pi05" inputmode="numeric" /></td></tr>
+      <tr><td>Helping Hands T-shirt (M), short-sleeve</td><td class="num-col">007130</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Helping Hands T-shirt (M), short-sleeve" id="pi06" name="pi06" inputmode="numeric" /></td></tr>
+      <tr><td>Helping Hands T-shirt (L), short-sleeve</td><td class="num-col">007131</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Helping Hands T-shirt (L), short-sleeve" id="pi07" name="pi07" inputmode="numeric" /></td></tr>
+      <tr><td>Helping Hands T-shirt (XL), short-sleeve</td><td class="num-col">007132</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Helping Hands T-shirt (XL), short-sleeve" id="pi08" name="pi08" inputmode="numeric" /></td></tr>
+      <tr><td>Helping Hands T-shirt (XXL), short-sleeve</td><td class="num-col">007133</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Helping Hands T-shirt (XXL), short-sleeve" id="pi09" name="pi09" inputmode="numeric" /></td></tr>
+      <tr><td>Helping Hands T-shirt (XXXL), short-sleeve</td><td class="num-col">007134</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Helping Hands T-shirt (XXXL), short-sleeve" id="pi10" name="pi10" inputmode="numeric" /></td></tr>
+      <tr><td>Helping Hands vests (72 per case)</td><td class="num-col">007155</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Helping Hands vests (72 per case)" id="pi11" name="pi11" inputmode="numeric" /></td></tr>
+      <tr><td>Hooded disposable coveralls (L)</td><td class="num-col">007232</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Hooded disposable coveralls (L)" id="pi12" name="pi12" inputmode="numeric" /></td></tr>
+      <tr><td>Hooded disposable coveralls (XL)</td><td class="num-col">007233</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Hooded disposable coveralls (XL)" id="pi13" name="pi13" inputmode="numeric" /></td></tr>
+      <tr><td>Hooded disposable coveralls (XXL)</td><td class="num-col">007234</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Hooded disposable coveralls (XXL)" id="pi14" name="pi14" inputmode="numeric" /></td></tr>
+      <tr><td>N95 masks with ventilation (160 masks per case)</td><td class="num-col">007120</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: N95 masks with ventilation (160 masks per case)" id="pi15" name="pi15" inputmode="numeric" /></td></tr>
+      <tr><td>Rubber boots (size 8)</td><td class="num-col">007240</td><td class="unit-col">pair</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Rubber boots (size 8)" id="pi16" name="pi16" inputmode="numeric" /></td></tr>
+      <tr><td>Rubber boots (size 10)</td><td class="num-col">007242</td><td class="unit-col">pair</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Rubber boots (size 10)" id="pi17" name="pi17" inputmode="numeric" /></td></tr>
+      <tr><td>Rubber boots (size 12)</td><td class="num-col">007244</td><td class="unit-col">pair</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Rubber boots (size 12)" id="pi18" name="pi18" inputmode="numeric" /></td></tr>
+      <tr><td>Rubber-coated gloves (M), 1 pair</td><td class="num-col">007108</td><td class="unit-col">pair</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Rubber-coated gloves (M), 1 pair" id="pi19" name="pi19" inputmode="numeric" /></td></tr>
+      <tr><td>Rubber-coated gloves (L), 1 pair</td><td class="num-col">007107</td><td class="unit-col">pair</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Rubber-coated gloves (L), 1 pair" id="pi20" name="pi20" inputmode="numeric" /></td></tr>
+      <tr><td>Rubber-coated gloves (XL), 1 pair</td><td class="num-col">007109</td><td class="unit-col">pair</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Rubber-coated gloves (XL), 1 pair" id="pi21" name="pi21" inputmode="numeric" /></td></tr>
+      <tr><td>Safety glasses</td><td class="num-col">007208</td><td class="unit-col">each</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Safety glasses" id="pi22" name="pi22" inputmode="numeric" /></td></tr>
 
       <tr><td colspan="4" class="sub-sec-hdr">Water</td></tr>
-      <tr><td>Bottled water (24 bottles per case)</td><td class="num-col">007098</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" id="wa01" name="wa01" inputmode="numeric" /></td></tr>
+      <tr><td>Bottled water (24 bottles per case)</td><td class="num-col">007098</td><td class="unit-col">case</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Bottled water (24 bottles per case)" id="wa01" name="wa01" inputmode="numeric" /></td></tr>
       <tr><td colspan="4" class="sub-sec-hdr">Kits and Food Boxes</td></tr>
-      <tr><td>Cleaning kits (84 kits per pallet)</td><td class="num-col">007110</td><td class="unit-col">kit</td><td class="qty-col"><input type="text" class="qty" id="kb01" name="kb01" inputmode="numeric" /></td></tr>
-      <tr><td>Hygiene kits (5 per case, 560 per pallet)</td><td class="num-col">008096</td><td class="unit-col">kit</td><td class="qty-col"><input type="text" class="qty" id="kb02" name="kb02" inputmode="numeric" /></td></tr>
-      <tr><td>Food boxes (56 boxes per pallet)</td><td class="num-col">007175</td><td class="unit-col">box</td><td class="qty-col"><input type="text" class="qty" id="kb03" name="kb03" inputmode="numeric" /></td></tr>
+      <tr><td>Cleaning kits (84 kits per pallet)</td><td class="num-col">007110</td><td class="unit-col">kit</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Cleaning kits (84 kits per pallet)" id="kb01" name="kb01" inputmode="numeric" /></td></tr>
+      <tr><td>Hygiene kits (5 per case, 560 per pallet)</td><td class="num-col">008096</td><td class="unit-col">kit</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Hygiene kits (5 per case, 560 per pallet)" id="kb02" name="kb02" inputmode="numeric" /></td></tr>
+      <tr><td>Food boxes (56 boxes per pallet)</td><td class="num-col">007175</td><td class="unit-col">box</td><td class="qty-col"><input type="text" class="qty" aria-label="Quantity: Food boxes (56 boxes per pallet)" id="kb03" name="kb03" inputmode="numeric" /></td></tr>
     </tbody>
   </table>
 </div>
@@ -268,34 +268,34 @@ input::placeholder, textarea::placeholder { color:#6b7280; opacity:1; }   /* Web
     </thead>
     <tbody>
       <tr>
-        <td class="qty-col"><input type="text" class="qty" id="other_desc1" name="other_desc1" style="text-align:left;" placeholder="Description" /></td>
-        <td class="qty-col"><input type="text" class="qty" id="other_num1" name="other_num1" /></td>
-        <td class="qty-col"><input type="text" class="qty" id="other_unit1" name="other_unit1" /></td>
-        <td class="qty-col"><input type="text" class="qty" id="other_qty1" name="other_qty1" inputmode="numeric" /></td>
+        <td class="qty-col"><input type="text" class="qty" aria-label="Other item 1 description" id="other_desc1" name="other_desc1" style="text-align:left;" placeholder="Description" /></td>
+        <td class="qty-col"><input type="text" class="qty" aria-label="Other item 1 item number" id="other_num1" name="other_num1" /></td>
+        <td class="qty-col"><input type="text" class="qty" aria-label="Other item 1 unit" id="other_unit1" name="other_unit1" /></td>
+        <td class="qty-col"><input type="text" class="qty" aria-label="Other item 1 quantity" id="other_qty1" name="other_qty1" inputmode="numeric" /></td>
       </tr>
       <tr>
-        <td class="qty-col"><input type="text" class="qty" id="other_desc2" name="other_desc2" style="text-align:left;" placeholder="Description" /></td>
-        <td class="qty-col"><input type="text" class="qty" id="other_num2" name="other_num2" /></td>
-        <td class="qty-col"><input type="text" class="qty" id="other_unit2" name="other_unit2" /></td>
-        <td class="qty-col"><input type="text" class="qty" id="other_qty2" name="other_qty2" inputmode="numeric" /></td>
+        <td class="qty-col"><input type="text" class="qty" aria-label="Other item 2 description" id="other_desc2" name="other_desc2" style="text-align:left;" placeholder="Description" /></td>
+        <td class="qty-col"><input type="text" class="qty" aria-label="Other item 2 item number" id="other_num2" name="other_num2" /></td>
+        <td class="qty-col"><input type="text" class="qty" aria-label="Other item 2 unit" id="other_unit2" name="other_unit2" /></td>
+        <td class="qty-col"><input type="text" class="qty" aria-label="Other item 2 quantity" id="other_qty2" name="other_qty2" inputmode="numeric" /></td>
       </tr>
       <tr>
-        <td class="qty-col"><input type="text" class="qty" id="other_desc3" name="other_desc3" style="text-align:left;" placeholder="Description" /></td>
-        <td class="qty-col"><input type="text" class="qty" id="other_num3" name="other_num3" /></td>
-        <td class="qty-col"><input type="text" class="qty" id="other_unit3" name="other_unit3" /></td>
-        <td class="qty-col"><input type="text" class="qty" id="other_qty3" name="other_qty3" inputmode="numeric" /></td>
+        <td class="qty-col"><input type="text" class="qty" aria-label="Other item 3 description" id="other_desc3" name="other_desc3" style="text-align:left;" placeholder="Description" /></td>
+        <td class="qty-col"><input type="text" class="qty" aria-label="Other item 3 item number" id="other_num3" name="other_num3" /></td>
+        <td class="qty-col"><input type="text" class="qty" aria-label="Other item 3 unit" id="other_unit3" name="other_unit3" /></td>
+        <td class="qty-col"><input type="text" class="qty" aria-label="Other item 3 quantity" id="other_qty3" name="other_qty3" inputmode="numeric" /></td>
       </tr>
       <tr>
-        <td class="qty-col"><input type="text" class="qty" id="other_desc4" name="other_desc4" style="text-align:left;" placeholder="Description" /></td>
-        <td class="qty-col"><input type="text" class="qty" id="other_num4" name="other_num4" /></td>
-        <td class="qty-col"><input type="text" class="qty" id="other_unit4" name="other_unit4" /></td>
-        <td class="qty-col"><input type="text" class="qty" id="other_qty4" name="other_qty4" inputmode="numeric" /></td>
+        <td class="qty-col"><input type="text" class="qty" aria-label="Other item 4 description" id="other_desc4" name="other_desc4" style="text-align:left;" placeholder="Description" /></td>
+        <td class="qty-col"><input type="text" class="qty" aria-label="Other item 4 item number" id="other_num4" name="other_num4" /></td>
+        <td class="qty-col"><input type="text" class="qty" aria-label="Other item 4 unit" id="other_unit4" name="other_unit4" /></td>
+        <td class="qty-col"><input type="text" class="qty" aria-label="Other item 4 quantity" id="other_qty4" name="other_qty4" inputmode="numeric" /></td>
       </tr>
       <tr>
-        <td class="qty-col"><input type="text" class="qty" id="other_desc5" name="other_desc5" style="text-align:left;" placeholder="Description" /></td>
-        <td class="qty-col"><input type="text" class="qty" id="other_num5" name="other_num5" /></td>
-        <td class="qty-col"><input type="text" class="qty" id="other_unit5" name="other_unit5" /></td>
-        <td class="qty-col"><input type="text" class="qty" id="other_qty5" name="other_qty5" inputmode="numeric" /></td>
+        <td class="qty-col"><input type="text" class="qty" aria-label="Other item 5 description" id="other_desc5" name="other_desc5" style="text-align:left;" placeholder="Description" /></td>
+        <td class="qty-col"><input type="text" class="qty" aria-label="Other item 5 item number" id="other_num5" name="other_num5" /></td>
+        <td class="qty-col"><input type="text" class="qty" aria-label="Other item 5 unit" id="other_unit5" name="other_unit5" /></td>
+        <td class="qty-col"><input type="text" class="qty" aria-label="Other item 5 quantity" id="other_qty5" name="other_qty5" inputmode="numeric" /></td>
       </tr>
     </tbody>
   </table>
@@ -467,7 +467,8 @@ function getGPS(auto) {
     if (err.code === 3) { btn.disabled = false; setGpsStatus('Location timed out. Tap Get GPS Location to try again.', 'err'); return; }
     // code 1 also covers a locally opened copy: browsers allow geolocation only on https
     gpsSetOff(true);
-    setGpsStatus(err.code === 1 ? 'Location access is not available here. Open the form from the online portal link and allow location access.'
+    setGpsStatus(err.code === 1 ? (window.isSecureContext ? 'Location is off. It is optional. To use it, allow location for this site in your phone\'s settings, or tap Enter coordinates manually.'
+                                                       : 'Location is not available on this page. It is optional: tap Enter coordinates manually, or open the form from the online portal link.')
                                 : 'This device cannot provide a GPS location right now.', '');
   }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 120000 });
 }
@@ -647,6 +648,16 @@ document.addEventListener('DOMContentLoaded', function() {
     var auto = /^(stn_|period_|inc_date$|order_date$|req_sig_date$|log_date$)/;
     return Object.keys(d).some(function (k) { return !auto.test(k) && d[k] !== '' && d[k] !== false && d[k] != null; });
   }
+  // The fields the EOC needs to know where and who a report is from (a report without them is filed as "unit not named")
+  var NEEDED = {dr: [['inc_stake', 'stake'], ['sub_name', 'your name']], so: [['req_stake', 'stake'], ['del_contact', 'delivery contact']],
+                wcl: [['chief_stake', 'stake'], ['chief_name', 'your name']]};
+  function missingNeeded(d) {
+    return (NEEDED[E.opts.form] || []).filter(function (n) { return !String(d[n[0]] || '').trim(); }).map(function (n) { return n[1]; });
+  }
+  function neededOk(d, verb) {
+    var miss = missingNeeded(d); if (!miss.length) return true;
+    return confirm('Add your ' + miss.join(' and ') + ' so the EOC knows where this is from.\n\nOK = ' + verb + ' anyway · Cancel = go back and add it');
+  }
   function currentReport() {
     var d = formData(), form = E.opts.form;
     return {id: E.currentId || uid(), form: form, filename: FILENAME[form], title: titleOf(form, d), savedAt: Date.now(), data: d, status: 'waiting', app: APP_VERSION};
@@ -665,7 +676,7 @@ document.addEventListener('DOMContentLoaded', function() {
     + '.ea-big{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:56px;margin:8px 0;padding:10px 14px;border:none;border-radius:10px;background:#1a3a5c;color:#fff;font-size:17px;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none}'
     + '.ea-big.green{background:#1a6b3c}.ea-big:disabled{opacity:.55}'
     + '.ea-links{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;font-size:14px;margin:4px 0 2px}'
-    + '.ea-links a,.ea-link{color:#1a3a5c;text-decoration:underline;cursor:pointer;background:none;border:none;font:inherit;padding:4px 0}'
+    + '.ea-links a,.ea-link{color:#1a3a5c;text-decoration:none;cursor:pointer;background:#fff;border:1.5px solid #1a3a5c;border-radius:8px;font:inherit;font-weight:600;padding:8px 12px;min-height:44px;display:inline-flex;align-items:center}'
     + '.ea-count{display:inline-block;min-width:20px;border-radius:10px;background:#b45309;color:#fff;font-size:12px;font-weight:700;padding:0 6px;margin-left:4px}'
     + '.ea-banner{position:sticky;top:0;z-index:50;background:#fff7e0;border-bottom:2px solid #b45309;padding:10px 14px;font-size:15px}'
     + '.ea-banner .b{display:flex;gap:8px;margin-top:8px}.ea-banner button{flex:1;min-height:44px;border-radius:8px;border:none;font-weight:700;font-size:15px;cursor:pointer}'
@@ -677,7 +688,7 @@ document.addEventListener('DOMContentLoaded', function() {
     + '.ea-muted{color:#5d6b7a;font-size:14px}'
     + '.ea-item{border-top:1px solid #e3e7ec;padding:10px 0;display:flex;gap:10px;align-items:center}.ea-item:first-child{border-top:none}'
     + '.ea-item .t{flex:1;min-width:0}.ea-item .t b{display:block}.ea-item button{min-height:40px;padding:0 12px;border-radius:8px;border:1.5px solid #c9d1da;background:#fff;font-weight:600;cursor:pointer}'
-    + '.ea-in{width:100%;padding:12px;font-size:18px;border:1.5px solid #bbb;border-radius:8px;margin:6px 0}'
+    + '.ea-in{width:100%;padding:12px;font-size:18px;border:1.5px solid #767676;border-radius:8px;margin:6px 0}'
     + '.ea-ok{background:#e7f6ec;border:2px solid #1a6b3c;border-radius:12px;padding:14px;margin:8px 0}.ea-ok .h{font-size:21px;font-weight:800;color:#1a6b3c}'
     + '.ea-err{background:#fdecee;border:2px solid #b00020;border-radius:12px;padding:12px;margin:8px 0}'
     + '.ea-video{width:100%;border-radius:10px;background:#000;aspect-ratio:1/1;object-fit:cover}'
@@ -792,6 +803,7 @@ document.addEventListener('DOMContentLoaded', function() {
   E.saveToOutbox = function (quiet) {
     var rep = currentReport();
     if (!hasContent(rep.data) && !quiet && !confirm('This form looks empty. Save it to the Outbox anyway?')) return null;
+    if (hasContent(rep.data) && !quiet && !neededOk(rep.data, 'save')) return null;
     if (!obUpsert(rep)) return null;
     E.currentId = rep.id;
     E.dirty = false;
@@ -1172,6 +1184,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!outboxOnly && E.opts.form) {
       var cur = currentReport();
       if (!hasContent(cur.data) && !confirm('This form looks empty. Send it anyway?')) return;
+      if (hasContent(cur.data) && !neededOk(cur.data, 'send')) return;
       reps.push(cur);
     }
     obWaiting().forEach(function (r) { if (!reps.some(function (x) { return x.id === r.id; })) reps.push(r); });
@@ -1195,7 +1208,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   function postReports(reps, to, toName) {
-    var body = {reports: reps.map(function (r) { return {id: r.id, form: r.form, filename: r.filename, data: r.data}; }), app: APP_VERSION};
+    var body = {reports: reps.map(function (r) { return {id: r.id, form: r.form, filename: r.filename, savedAt: r.savedAt, data: r.data}; }), app: APP_VERSION};
     if (to) body.to = to;
     sheet('<h3>Sending…</h3><p class="ea-muted">' + reps.length + ' report' + (reps.length === 1 ? '' : 's') + ' to ' + esc(toName) + '</p>');
     fetch('/api/upload', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)})
@@ -1374,6 +1387,16 @@ document.addEventListener('DOMContentLoaded', function() {
       .then(function (s) { if (s && s.lanUrl) { E.eoc = s; return 'eoc'; } return 'portal'; })
       .catch(function () { return 'portal'; });
   }
+  // A form served by an EOC suggests that EOC's own ward (or stake) names, so "5th" does not become a unit of its own
+  function unitNames() {
+    fetch('/api/roster').then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
+      var names = (Array.isArray(rows) ? rows : []).map(function (r) { return String((r && r.name) || '').trim(); }).filter(Boolean);
+      if (!names.length) return;
+      var dl = document.getElementById('ea-units') || document.body.appendChild(document.createElement('datalist'));
+      dl.id = 'ea-units'; dl.innerHTML = names.map(function (n) { return '<option value="' + esc(n) + '">'; }).join('');
+      ['inc_ward', 'chief_ward'].forEach(function (id) { var el = document.getElementById(id); if (el) { el.setAttribute('list', 'ea-units'); if (!el.placeholder) el.placeholder = 'Full name, e.g. ' + names[0]; } });
+    }).catch(function () {});
+  }
   E.init = function (opts) {
     E.opts = opts || {};
     addStyle();
@@ -1382,6 +1405,7 @@ document.addEventListener('DOMContentLoaded', function() {
       E.ctx = ctx;
       if (got[1]) toast(got[1] + ' saved report' + (got[1] === 1 ? '' : 's') + ' brought back into the Outbox');
       if (ctx === 'portal') setupApp();
+      if (ctx === 'eoc') unitNames();
       var q = params();
       if (q.outbox && E.opts.form) {
         var rep = obAll().filter(function (r) { return r.id === q.outbox; })[0];

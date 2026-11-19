@@ -128,11 +128,11 @@ tr:hover td{background:var(--bg);}
 .qty-cell{font-weight:700;font-size:14px;text-align:right;}
 /* Chips */
 .chip{display:inline-block;border-radius:5px;padding:1px 7px;font-size:10px;font-weight:700;}
-.chip.dr{background:var(--warn-bg);color:var(--warn);}
-.chip.so{background:var(--ok-bg);color:var(--ok);}
+.chip.dr{background:var(--surface);color:var(--danger);border:1.5px solid var(--danger);}   /* one form palette: DR red, SO blue, WCL green (wall, portal, cards) */
+.chip.so{background:var(--surface);color:var(--accent);border:1.5px solid var(--accent);}
 .chip.miss-no{background:var(--danger);color:var(--on-accent);}
 .chip.miss-yes{background:var(--ok-bg);color:var(--ok);}
-.chip.wcl{background:#ede9fe;color:#5b21b6;}
+.chip.wcl{background:var(--surface);color:var(--ok);border:1.5px solid var(--ok);}
 .chip.ex{background:#5b21b6;color:#fff;margin-left:4px;}   /* drill purple: red is kept for alarms */
 .pri{display:inline-block;min-width:18px;text-align:center;border-radius:4px;font-size:10px;font-weight:800;padding:1px 5px;}
 .pri.p1{background:var(--danger);color:var(--on-accent);} .pri.p2{background:var(--warn-bg);color:var(--warn);} .pri.p3{background:var(--bg);color:var(--muted);border:1px solid var(--border);}
@@ -224,6 +224,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
 #modal-x{display:none;}
 @media (max-width:640px){ #modal-x{display:block;position:sticky;top:0;margin:0 0 8px auto;z-index:2;min-height:44px;} }
 @media print { #modal-x{display:none !important;} }
+::placeholder{font-style:italic;opacity:.75;}
 /* Toast */
 #toast{position:fixed;max-width:min(90vw,640px);text-align:center;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:#1e293b;color:#f1f5f9;padding:8px 20px;border-radius:20px;font-size:12px;font-weight:600;opacity:0;transition:transform .25s,opacity .25s;z-index:200;pointer-events:none;}
 #toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
@@ -335,7 +336,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
       <a id="hdr-wall" href="/wall" target="_blank" title="Open the read-only wall display for a TV or projector (press F there for full screen)" style="display:none;color:inherit;font-size:10px;font-weight:700;text-decoration:none;background:#ffffff22;border-radius:4px;padding:1px 6px">&#128250; Wall display</a>
       <div class="hdr-btns">
         <button class="hdr-btn pace-none" id="hdr-pace" onclick="openHelp('pace')" title="PACE level in force. Click for when and how to step down or back up">PACE: not set</button>
-        <button class="hdr-btn" id="hdr-help" onclick="openHelp()" title="EOC Operator Guide: every instruction for this page (keyboard: ?)">&#10067; Help</button>
+        <button class="hdr-btn" id="hdr-help" onclick="openHelp()" title="EOC Operator Guide: every instruction for this page (keyboard: ?)">? Help</button>
       </div>
     </div>
   </div>
@@ -389,6 +390,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
     <div id="ov-start"></div>
     <div class="totals-by" id="ov-totals-by"></div>
     <div class="stat-row" id="ov-stats"></div>
+    <div style="margin:-4px 0 10px"><button class="btn secondary sm" type="button" onclick="showReadout()" title="What the voice net read-out says (the HAM Sidekick station reads it on the net once it is approved)">Voice net read-out</button></div>
     <div id="ov-miss"></div>
     <div class="card">
       <h2 id="tracker-title">Unit Tracker</h2>
@@ -484,7 +486,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
           <thead><tr>
             <th>Received</th><th id="dr-th-unit">Unit</th><th>Date</th><th>Type</th>
             <th title="All missionaries are safe and accounted for">Missionaries safe</th><th>Injuries</th><th>Deaths</th><th>Homes damaged</th><th>Homes destroyed</th>
-            <th>Volunteers</th><th>Volunteer hours</th><th>Needs local facilities</th><th>Needs neighbor units</th><th>Needs headquarters</th>
+            <th>Volunteers</th><th>Volunteer hours</th><th title="Assistance needed: local Church facilities, neighboring units, Church headquarters">Needs</th>
             <th>Submitter</th><th>Notes/GPS (Global Positioning System)</th><th></th>
           </tr></thead>
           <tbody id="dr-tbody"></tbody>
@@ -510,7 +512,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
       <h2 style="padding:12px 16px 0;margin:0;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">Consolidated Items</h2>
       <div class="tbl-wrap">
         <table>
-          <thead><tr><th>Item #</th><th>Description</th><th>Unit</th><th>Total Qty</th><th>From Stakes</th></tr></thead>
+          <thead><tr><th>Item #</th><th>Description</th><th>Unit</th><th>Total Qty</th><th id="so-from-h">From (delivery contact)</th></tr></thead>
           <tbody id="so-items-tbody"></tbody>
         </table>
         <div id="so-empty" class="empty"><div class="ico">&#128230;</div><p>No supply orders loaded yet.</p></div>
@@ -568,6 +570,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
     <div class="toolbar">
       <span class="spacer"></span>
       <button class="btn secondary sm" onclick="exportNotes()">Export as TXT</button>
+      <button class="btn secondary sm" onclick="exportIcs309()" title="ICS 309 (Incident Command System communications log): every report received and every note, with time, from, to and subject">Export radio log: ICS (Incident Command System) 309</button>
     </div>
     <div class="card" style="padding:0">
       <div class="tbl-wrap">
@@ -593,7 +596,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
       <button class="btn secondary sm" onclick="if(MAP){MAP.zoom(1/1.5);}">&minus;</button>
       <button class="btn secondary sm" onclick="switchTab('setup')">&#9998; Setup</button>
     </div>
-    <div class="map-legend"><span><i style="background:rgba(34,197,94,.6);border-color:#15803d"></i>Reported, fine</span><span><i style="background:rgba(245,158,11,.6);border-color:#b45309"></i>Reported with needs</span><span><i style="background:rgba(220,38,38,.65);border-color:#991b1b"></i>Alert: missionaries not accounted for, injuries or deaths</span><span><i style="background:rgba(59,130,246,.5);border-color:#1d4ed8"></i>Voice contact</span><span><i style="background:rgba(148,163,184,.3);border-color:#d97706;border-style:dashed"></i>Overdue</span><span><i style="background:rgba(148,163,184,.3);border-color:#64748b"></i>Not reported</span><span><i style="background:#1d4ed8;border-radius:50%"></i>This EOC</span><span><i style="background:#111827;width:8px;height:8px"></i>Report with a GPS fix</span><span><i style="background:#1e293b;border-radius:50%;width:7px;height:7px"></i>Meetinghouse</span></div>
+    <div class="map-legend"><span><i style="background:rgba(34,197,94,.6);border-color:#15803d"></i>Reported, fine</span><span><i style="background:repeating-linear-gradient(135deg,rgba(245,158,11,.6) 0 3px,rgba(120,53,15,.55) 3px 5px);border-color:#b45309"></i>Reported with needs (hatched)</span><span><i style="background:#991b1b;border-color:#991b1b;color:#fff;font-style:normal;font-weight:800;font-size:9px;line-height:10px;text-align:center">!</i>Alert (!): missionaries not accounted for, injuries or deaths</span><span><i style="background:rgba(59,130,246,.5);border-color:#1d4ed8"></i>Voice contact</span><span><i style="background:rgba(148,163,184,.3);border-color:#dc2626;border-style:dashed"></i>Overdue (dashed red)</span><span><i style="background:rgba(148,163,184,.3);border-color:#64748b"></i>Not reported</span><span><i style="background:#1d4ed8;border-radius:50%"></i>This EOC</span><span><i style="background:#111827;width:8px;height:8px"></i>Report with a GPS fix</span><span><i style="background:#1e293b;border-radius:50%;width:7px;height:7px"></i>Meetinghouse</span></div>
     <div class="map-wrap">
       <canvas id="map-canvas"></canvas>
       <div id="map-side"><p style="color:var(--muted);font-size:12px;margin:0">Click a ward (a stake at a Council / Area EOC) to see its roster line and reports. Drag to pan, wheel or double-click to zoom.</p></div>
@@ -638,8 +641,8 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
       </div>
       <div class="form-row">
         <div class="form-group"><label>Reports to (the EOC above you; roll-ups go here)</label><input type="text" id="eoc-parent" placeholder="Satellite: the Stake EOC  ·  Stake: the Council / Area EOC if one is open, else blank"></div>
-        <div class="form-group"><label>That EOC's email (roll-ups at P / A)</label><input type="text" id="eoc-parent-email" placeholder="eoc@example.org"></div>
-        <div class="form-group"><label>That EOC's Winlink address (roll-ups at C)</label><input type="text" id="eoc-parent-winlink" placeholder="CALLSIGN or CALLSIGN@winlink.org"></div>
+        <div class="form-group"><label>That EOC's email (roll-ups at P / A)</label><input type="text" id="eoc-parent-email" placeholder="e.g. eoc@example.org"></div>
+        <div class="form-group"><label>That EOC's Winlink address (roll-ups at C)</label><input type="text" id="eoc-parent-winlink" placeholder="e.g. N0CALL or N0CALL@winlink.org"></div>
       </div>
       <div id="upward-lines">
         <p style="font-size:11px;color:var(--muted);margin:0 0 6px">Above the Stake EOC the Church structure has <b>two lines</b>; copy them from the stake PACE sheet. The SITREP goes to both. Disaster Reports and Supply Orders go to the welfare line, and its approvals come back the same way.</p>
@@ -650,13 +653,13 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
         </div>
         <div class="form-row">
           <div class="form-group"><label>Welfare line — local Welfare and Self-Reliance Manager (WSRM), then the AWSRM (name)</label><input type="text" id="eoc-welfare" placeholder="e.g., (name), Welfare and Self-Reliance Manager, (region)"></div>
-          <div class="form-group"><label>Welfare line email (SITREP, forms, approvals at P / A)</label><input type="text" id="eoc-welfare-email" placeholder="wsrm@example.org"></div>
-          <div class="form-group"><label>Welfare line Winlink address (SITREP and forms at C)</label><input type="text" id="eoc-welfare-winlink" placeholder="CALLSIGN or CALLSIGN@winlink.org"></div>
+          <div class="form-group"><label>Welfare line email (SITREP, forms, approvals at P / A)</label><input type="text" id="eoc-welfare-email" placeholder="e.g. wsrm@example.org"></div>
+          <div class="form-group"><label>Welfare line Winlink address (SITREP and forms at C)</label><input type="text" id="eoc-welfare-winlink" placeholder="e.g. N0CALL or N0CALL@winlink.org"></div>
         </div>
       </div>
       <div class="form-row">
-        <div class="form-group" style="flex:0 0 140px"><label>EOC latitude</label><input type="text" id="eoc-lat" inputmode="decimal" placeholder="40.33000"></div>
-        <div class="form-group" style="flex:0 0 140px"><label>EOC longitude</label><input type="text" id="eoc-lon" inputmode="decimal" placeholder="-117.52000"></div>
+        <div class="form-group" style="flex:0 0 140px"><label>EOC latitude</label><input type="text" id="eoc-lat" inputmode="decimal" placeholder="e.g. 40.33000"></div>
+        <div class="form-group" style="flex:0 0 140px"><label>EOC longitude</label><input type="text" id="eoc-lon" inputmode="decimal" placeholder="e.g. -117.52000"></div>
         <div class="form-group" style="flex:0 0 auto;align-self:flex-end"><button class="btn secondary" type="button" onclick="useHereForEoc()">Use this computer's location</button></div>
         <div class="form-group"><label>EOC Wi-Fi name (for the wall's join-Wi-Fi QR, Quick Response, code)</label><input type="text" id="eoc-wifi-name" placeholder="optional, e.g., EOC-Net"></div>
         <div class="form-group"><label>EOC Wi-Fi password</label><input type="text" id="eoc-wifi-pass" autocomplete="off" placeholder="optional"></div>
@@ -719,7 +722,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
       <div id="event-new" style="display:none;border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin:0 0 10px">
         <div class="form-row">
           <div class="form-group"><label>Event name</label><input type="text" id="ev-new-name" placeholder="e.g., Larkspur Valley Flood — April 2027"></div>
-          <div class="form-group"><label>Type</label><input type="text" id="ev-new-type" placeholder="Earthquake, Flood, Wildfire, Windstorm…"></div>
+          <div class="form-group"><label>Type</label><input type="text" id="ev-new-type" placeholder="e.g. Earthquake, Flood, Wildfire, Windstorm"></div>
           <div class="form-group"><label>Area / Location</label><input type="text" id="ev-new-area" placeholder="e.g., Larkspur"></div>
           <div class="form-group" style="flex:0 0 160px"><label>Start date</label><input type="date" id="ev-new-date"></div>
         </div>
@@ -860,7 +863,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
       <h2>Help &amp; feedback</h2>
       <p style="font-size:11px;color:var(--muted);margin:0 0 8px">Something wrong, or notes from a drill? File it on GitHub (<b>github.com/travislhilton/church-emcomm-wnlk-forms/issues</b>) or tell the stake Welfare and Self-Reliance Specialist. The buttons open the issue form with your role, this part of the system, the browser, the date, the active event, the PACE level and the diagnostic block already filled in — you add what happened.</p>
       <div class="toolbar" style="flex-wrap:wrap;gap:10px">
-        <button class="btn" onclick="openHelp()">&#10067; Open the EOC Operator Guide</button>
+        <button class="btn" onclick="openHelp()">Open the EOC Operator Guide</button>
         <button class="btn secondary" onclick="openIssue('bug')">Report a bug</button>
         <button class="btn secondary" onclick="openIssue('drill')">Drill feedback</button>
         <button class="btn secondary" onclick="openIssue('idea')">Suggest an idea</button>
@@ -879,7 +882,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
   <!-- HELP — EOC Operator Guide (opened by the header Help / PACE buttons or the ? key) -->
   <div id="tab-help" class="tab-panel">
     <div class="toolbar" style="flex-wrap:wrap;gap:8px">
-      <h2 style="margin:0;font-size:17px">&#10067; EOC Operator Guide</h2>
+      <h2 style="margin:0;font-size:17px">EOC Operator Guide</h2>
       <span class="spacer"></span>
       <button class="btn" onclick="openHelp('pace')">PACE: when and how to change</button>
       <button class="btn secondary" onclick="printHelp('pace')">&#128424; Print PACE steps</button>
@@ -914,7 +917,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
           <tbody>
             <tr><td><span class="pace-badge P">P</span> Primary</td><td>Cell service</td><td>Volunteers text or email the form file. You save it to the EOC Drop Folder.</td><td>Cell call or text</td><td>SITREP (situation report) by email to both lines. Forms by Winlink over the internet (Telnet) to the welfare line.</td></tr>
             <tr><td><span class="pace-badge A">A</span> Alternate</td><td>No cell service, but some internet anywhere: home, shelter, business, meetinghouse, Starlink</td><td>The same file, sent over any Wi-Fi with internet. HAMs (amateur radio operators) send by Winlink Telnet.</td><td>Wi-Fi calling, landline</td><td>The same, over any internet you can reach.</td></tr>
-            <tr><td><span class="pace-badge C">C</span> Contingency</td><td>No internet. Radio only.</td><td>HAMs send by Winlink radio: VHF/UHF VARA FM (a Winlink radio mode) first, then VARA HF. Arrives by auto-ingest.</td><td>Ward FRS/GMRS (Family Radio Service / General Mobile Radio Service) radios to the Team Leader. Stake VHF/UHF net, repeater then simplex.</td><td>SITREP and forms by Winlink radio to the welfare line. HF (high frequency) voice to the Council / Area EOC station if one is open, or through the county EOC station.</td></tr>
+            <tr><td><span class="pace-badge C">C</span> Contingency</td><td>No internet. Radio only.</td><td>HAMs send by Winlink over VARA FM (VHF/UHF, a Winlink radio mode): RMS Gateway, held at the gateway, RMS Post Office, then peer-to-peer; VARA HF only after all of those fail (PACE plan section 5). Arrives by auto-ingest.</td><td>Ward FRS/GMRS (Family Radio Service / General Mobile Radio Service) radios to the Team Leader. Stake VHF/UHF net, repeater then simplex.</td><td>SITREP and forms by Winlink radio to the welfare line. Voice to the Council / Area EOC station if one is open: VHF/UHF first, HF (high frequency) only if that fails, or through the county EOC station.</td></tr>
             <tr><td><span class="pace-badge E">E</span> Emergency</td><td>No radio path works</td><td>A runner carries the paper form (printed from a phone, or a blank form filled by hand). You type it in.</td><td>Runner, face to face</td><td>Satellite phone, the stake liaison at the county EOC, or a courier with the printed SITREP and a USB drive.</td></tr>
           </tbody>
         </table></div>
@@ -933,7 +936,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
         <ol>
           <li><b>Two attempts on the current path fail within 15 minutes.</b> A text or email is not delivered, the Wi-Fi has no internet, a Winlink session will not connect, no gateway answers, or no one answers the net.</li>
           <li><b>One form takes longer than 30 minutes</b> to reach the EOC because the path is congested.</li>
-          <li><b>The Stake President declares it</b> on the specialist's recommendation. Examples: a known cell tower or fiber cut, a county EOC announcement, or the county tasking our ARES (Amateur Radio Emergency Service) operators.</li>
+          <li><b>The Stake President decides it</b> on the specialist's recommendation. Examples: a known cell tower or fiber cut, a county EOC announcement, or the county tasking our ARES (Amateur Radio Emergency Service) operators.</li>
         </ol>
         <p>At the EOC it usually shows up like this:</p>
         <ul>
@@ -1094,6 +1097,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
         <ul>
           <li><b>Shift change, networked:</b> the incoming operator opens the same server address. Nothing needs to move. Walk them through open items, the PACE level and the next SITREP.</li>
           <li><b>Shift change, standalone or moving the EOC:</b> go to Setup and click <b>Export Handoff JSON</b>. The incoming operator clicks <b>Import Handoff JSON</b>, which <b>replaces</b> the active event's data.</li>
+          <li><b>Same setup on another laptop</b> (a backup EOC, the next activation): Setup, Share setup, <b>Save this EOC's setup</b>. Send the file only to your EOC operators: it can hold real contacts. On the other laptop: <b>Load a setup…</b>, untick what to keep, then <b>Apply this setup</b>. It carries no reports: those go in the shift handoff.</li>
           <li><b>Backups:</b> the server writes one every 15 minutes to the <code>backups</code> folder. Click <b>Backup Now</b> on Setup for an extra one, or insert a USB drive for an immediate copy.</li>
           <li><b>Never use Clear</b> to start a new emergency. Open a new event instead.</li>
         </ul>
@@ -1418,7 +1422,7 @@ function renderCommsEditor() {
   _commsEditorStamp=comms.updatedMs||0;
   var s=comms.sheet||{};
   var h='<div class="form-group"><label>Organization (stake, district or area)</label><input type="text" id="comms-org" value="'+esc(s.org||'')+'" placeholder="e.g. Larkspur Stake"></div>';
-  h+='<div class="form-group"><label>For this event only — one line each (shown on top in orange; cleared when the event closes)</label><textarea id="comms-event" rows="2" placeholder="Stake net moved to simplex 146.520 until the repeater is back\nTemporary gateway: W7XYZ-10 145.070 VARA FM">'+esc((incident&&incident.commsEvent)||'')+'</textarea></div>';
+  h+='<div class="form-group"><label>For this event only — one line each (shown on top in orange; cleared when the event closes)</label><textarea id="comms-event" rows="2" placeholder="e.g. Stake net moved to simplex 146.520 until the repeater is back\nTemporary gateway: W7XYZ-10 145.070 VARA FM">'+esc((incident&&incident.commsEvent)||'')+'</textarea></div>';
   COMMS_TABLES.forEach(function(t){
     var rows=Array.isArray(s[t.key])?s[t.key]:[]; if(t.key==='gateways') rows=gwSorted(rows); if(!rows.length) rows=[{}];
     h+='<div style="margin-top:10px"><div style="font-weight:700;font-size:12px;color:var(--navy)">'+esc(t.title)+'</div><div style="font-size:10.5px;color:var(--muted);margin:2px 0 6px">'+esc(t.hint)+'</div>';
@@ -1492,7 +1496,7 @@ function renderNetList() {
   if (!n.call.length && !n.up.length && !msgs.length) { el.innerHTML = ''; return; }
   var PN = {P:'Primary (cellular)', A:'Alternate (any internet)', C:'Contingency (radio)', E:'Emergency (runners)'};
   el.innerHTML = '<div class="card net-card"><h2>Net control: call list <button class="btn secondary sm" style="margin-left:8px;vertical-align:middle" onclick="copyText(plainAscii(netCallText()))">Copy for net control</button></h2>'
-    + '<p style="font-size:12px;margin:0 0 6px">PACE level in force: <b>'+esc(n.pace ? n.pace+' — '+PN[n.pace] : 'not set')+'</b> · next SITREP (situation report) '+(n.sitrepDue ? 'due <b>'+esc(hhmm(n.sitrepDue))+'</b>' : 'interval not set')+' · last roll-up sent '+(n.lastRollup ? esc(hhmm(n.lastRollup)) : 'none')+'</p>'
+    + '<p style="font-size:12px;margin:0 0 6px">PACE level in force: <b>'+esc(n.pace ? n.pace+' — '+PN[n.pace] : 'not set')+'</b> · next SITREP (situation report) '+(n.sitrepDue ? 'due <b>'+esc(hhmm(n.sitrepDue))+'</b>' : (sitrepHrs() ? 'every '+sitrepHrs()+' h (no start time set yet)' : 'interval not set'))+' · last roll-up sent '+(n.lastRollup ? esc(hhmm(n.lastRollup)) : 'none')+'</p>'
     + '<h3 style="font-size:12px;margin:8px 0 4px">Call on the net now ('+n.call.length+')</h3>'
     + (n.call.length ? '<ul style="margin:0 0 6px 18px;font-size:12px">'+n.call.map(function(c){ return '<li><b>'+esc(c.unit)+'</b>: '+esc(c.why)+'</li>'; }).join('')+'</ul>' : '<p style="font-size:12px;color:var(--muted);margin:0">Nobody to call: every '+esc(unitLabel().toLowerCase())+' on the roster has reported.</p>')
     + '<h3 style="font-size:12px;margin:8px 0 4px">Goes up with the next roll-up ('+n.up.length+')</h3>'
@@ -1534,7 +1538,7 @@ function commsText() {
   out.push('  A Alternate   - any surviving internet (Wi-Fi anywhere, Starlink)');
   out.push('  C Contingency - radio: forms by Winlink VHF/UHF VARA FM, then VARA HF; voice on the nets above');
   out.push('  E Emergency   - runner with the paper form');
-  out.push('  Rule: step down after two failed attempts in 15 min or when the Stake President declares it; back up only after a test message round-trips.');
+  out.push('  Rule: step down after two failed attempts in 15 min or when the Stake President decides it; back up only after a test message round-trips.');
   return out.join('\n');
 }
 function commsBundle() { return {kind:COMMS_KIND, v:1, from:{name:eocName()||eocLabel(), level:eocLevel()}, org:(comms.sheet&&comms.sheet.org)||'', updatedMs:comms.updatedMs||Date.now(), exportedAt:Date.now(), sheet:comms.sheet||{}}; }
@@ -1618,7 +1622,7 @@ function renameEvent(id) {
   id = id || activeEventId();
   var ev=null; events.forEach(function(e){ if (e.id===id) ev=e; }); if (!ev) return;
   document.getElementById('modal-title').textContent='Name this Emergency Event';
-  document.getElementById('modal-body').innerHTML='<div class="form-group"><label>Event name</label><input type="text" id="ev-rename" value="'+esc(ev.name||'')+'" placeholder="e.g., Larkspur Valley Flood — April 2027" style="width:100%"></div><div class="form-row" style="margin-top:8px"><div class="form-group"><label>Type</label><input type="text" id="ev-rename-type" value="'+esc(ev.type||'')+'" placeholder="Earthquake, Flood…"></div><div class="form-group"><label>Area / Location</label><input type="text" id="ev-rename-area" value="'+esc(ev.area||'')+'"></div></div><p style="font-size:11px;color:var(--muted);margin:8px 0 0">The name shows in the header, the events table, SITREP headers and exports on every operator\'s screen.</p>';
+  document.getElementById('modal-body').innerHTML='<div class="form-group"><label>Event name</label><input type="text" id="ev-rename" value="'+esc(ev.name||'')+'" placeholder="e.g., Larkspur Valley Flood — April 2027" style="width:100%"></div><div class="form-row" style="margin-top:8px"><div class="form-group"><label>Type</label><input type="text" id="ev-rename-type" value="'+esc(ev.type||'')+'" placeholder="e.g. Earthquake, Flood"></div><div class="form-group"><label>Area / Location</label><input type="text" id="ev-rename-area" value="'+esc(ev.area||'')+'"></div></div><p style="font-size:11px;color:var(--muted);margin:8px 0 0">The name shows in the header, the events table, SITREP headers and exports on every operator\'s screen.</p>';
   pendingConfirm = function(){
     var name=document.getElementById('ev-rename').value.trim(); if (!name) { toast('Give the event a name'); return; }
     var ch={name:name, type:document.getElementById('ev-rename-type').value.trim(), area:document.getElementById('ev-rename-area').value.trim()};
@@ -1904,7 +1908,11 @@ function exportRollup() {
   var bundle={kind:'church_eoc_rollup', v:1,
     from:{name:eocName()||eocLabel(), level:eocLevel(), op:(incident&&incident.op)||'', units:(incident&&incident.eocUnits)||''},
     to:(incident&&incident.parentName)||'', incident:{name:(incident&&incident.name)||'', area:(incident&&incident.area)||'', type:(incident&&incident.type)||''},
-    exportedAt:Date.now(), since:since, msgs:picked, roster:roster, notes:notes.filter(function(n){return (n.ts||0)>since;}),
+    // over radio anyone can read it (Winlink is not private): no leader phone numbers on the roster lines, and only the
+    // notes the EOC above needs (not the drill's SIM: lines or this EOC's own housekeeping)
+    exportedAt:Date.now(), since:since, msgs:picked,
+    roster:roster.map(function(r){ var c=Object.assign({},r); delete c.spPhone; return c; }),
+    notes:notes.filter(function(n){ return (n.ts||0)>since && !/^(SIM:|Roll-up exported|Already on file|Roll-up received)/.test(n.text||''); }),
     // work items waiting on the EOC above: they land open on its list, naming this EOC
     actions:actions.filter(function(a){return a.status==='up';}).map(function(a){ var c=Object.assign({},a); delete c.log; delete c.eventId; return c; })};
   var tag=(eocName()||eocLabel()).replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,'').slice(0,40);
@@ -2611,6 +2619,15 @@ function gpsLink(r) {
 // THIS IS AN EXERCISE: the sender ticked the box on the form (Winlink tag exercise=YES, Worker checkbox)
 function isEx(m) { var s = m && m[m.type]; return !!(s && /^(yes|1|true|on)$/i.test(String(s.exercise||''))); }
 function exChip(m) { return isEx(m) ? '<span class="chip ex" title="The sender marked this report THIS IS AN EXERCISE">EXERCISE</span>' : ''; }
+// The three "assistance needed" answers in one cell: what was asked for, "none" when all three are no, a dash when unanswered
+function needsCell(r) {
+  var asked = [], answered = 0;
+  [['need_local','local facilities'],['need_neighbor','neighboring units'],['need_hq','Church headquarters']].forEach(function(n){
+    if (String(r[n[0]]||'').trim() && !/not selected/i.test(r[n[0]])) answered++;
+    if (isYes(r[n[0]])) asked.push(n[1]); });
+  if (asked.length) return '<b style="color:var(--danger)">'+esc(asked.join(', '))+'</b>';
+  return answered ? 'none' : '<span style="color:var(--muted)">&#8211;</span>';
+}
 function renderDR(drs) {
   var emptyEl = document.getElementById('dr-empty');
   var tbody = document.getElementById('dr-tbody');
@@ -2625,7 +2642,7 @@ function renderDR(drs) {
       +'<td><span class="chip '+missClass+'">'+esc(yn(r.miss_safe))+'</span></td>'
       +'<td>'+ni(r.mem_inj)+'</td><td>'+ni(r.mem_dead)+'</td><td>'+ni(r.homes_dmg)+'</td><td>'+ni(r.homes_dest)+'</td>'
       +'<td>'+ni(r.vol_count)+'</td><td>'+ni(r.vol_hrs)+'</td>'
-      +'<td>'+esc(yn(r.need_local))+'</td><td>'+esc(yn(r.need_neighbor))+'</td><td>'+esc(yn(r.need_hq))+'</td>'
+      +'<td>'+needsCell(r)+'</td>'
       +'<td style="white-space:nowrap">'+esc(r.submitter||'')+(r.phone?'<br><span style="color:var(--muted)">'+esc(r.phone)+'</span>':'')+'</td>'
       +'<td style="max-width:160px;font-size:11px;color:var(--muted)">'+(r.notes?'<span title="'+esc(r.notes)+'">'+esc(r.notes.length>50?r.notes.slice(0,50)+'…':r.notes)+'</span>':'')+(r.lat?'<br>'+gpsLink(r):'')+'</td>'
       +'<td style="white-space:nowrap">'+openBtn(m)+'<button class="btn-ghost" title="Remove" onclick="removeMsg(\''+jsq(m.id)+'\')">&#10005;</button></td></tr>';
@@ -2817,6 +2834,7 @@ function renderSO(sos) {
   renderSOBoard(sos);
   if (sos.length===0) { tbody.innerHTML=''; emptyEl.style.display=''; document.getElementById('so-stake-detail').innerHTML=''; return; }
   emptyEl.style.display='none';
+  var fh=document.getElementById('so-from-h'); if(fh) fh.textContent = eocLevel()==='area' ? 'From (stake)' : 'From (delivery contact)';
 
   // Aggregate by Church item number so Winlink orders (item numbers) and Drop Folder
   // orders (form ids such as gs01) combine; "other" items stay under their own text.
@@ -2961,6 +2979,53 @@ function removeNote(id) {
   document.getElementById('modal-confirm-btn').textContent='Remove';
   document.getElementById('modal-confirm-btn').className='btn danger';
   document.getElementById('modal-bg').classList.add('open');
+}
+// ICS 309 communications log: the radio operator's log in the county's format (time, from, to, subject), from what the
+// EOC holds: each report received (by Winlink with the sending station) and each note in the action log.
+// The voice-net read-out (GET /api/readout, the emcomm-readout/1 document the station reads on the net) as plain
+// sentences, with who must approve it before net control reads it.
+function showReadout() {
+  if (!networkMode) { toast('Needs the networked server'); return; }
+  fetch('/api/readout').then(function(r){ return r.json(); }).then(function(d){
+    var R = d.reporting||{}, uw = R.unit_word||'ward', P = d.property||{}, V = d.volunteers||{}, C = d.crews||{}, S = d.supplies||{}, inc = d.incident||{};
+    var n = function(v){ return v==null ? 'not reported' : String(v); };
+    var lines = [];
+    if (d.source && d.source.event && d.source.event.exercise) lines.push('This is an exercise.');
+    lines.push((d.source&&d.source.eoc&&d.source.eoc.name||'This EOC')+', '+(inc.name||'the event')+(d.as_of?', as of '+d.as_of.slice(11,16):'')+'.');
+    if (d.pace && d.pace.level) lines.push('PACE level '+d.pace.level+'.');
+    lines.push(R.units_reported+(R.units_expected!=null?' of '+R.units_expected:'')+' '+uw+(R.units_reported===1?'':'s')+' reported'+(R.not_reported&&R.not_reported.length?'; not heard from: '+R.not_reported.join(', '):'')+'.');
+    lines.push('Homes damaged '+n(P.homes_damaged)+', destroyed '+n(P.homes_destroyed)+'.');
+    lines.push('Volunteers '+n(V.count)+', '+n(V.hours)+' hours. Crews: '+(C.logs||0)+' logs, '+n(C.members)+' members, '+n(C.hours)+' hours.');
+    if (S.orders) lines.push(S.orders+' Supply Order'+(S.orders===1?'':'s')+(S.top_items&&S.top_items.length?': '+S.top_items.map(function(t){ return t.qty+' '+t.desc; }).join('; '):'')+'.');
+    if (inc.next_sitrep_at) lines.push('Next SITREP due '+inc.next_sitrep_at.slice(11,16)+'.');
+    if (d.totals_by==='latest') lines.push('Counting each '+uw+"'s latest report.");
+    var who = (d.approver&&d.approver.role)||'EOC leadership';
+    document.getElementById('modal-title').textContent='Voice net read-out';
+    document.getElementById('modal-body').innerHTML='<p style="font-size:12px;color:var(--muted);margin:0 0 8px">Net control reads this on the voice net only after the <b>'+esc(who)+'</b> approves it (the approval is on the HAM Sidekick station). Members\' names and phone numbers are never in it.</p>'
+      + '<pre class="fv-pre">'+esc(lines.join('\n'))+'</pre>';
+    document.getElementById('modal-confirm-btn').textContent='Copy';
+    document.getElementById('modal-confirm-btn').className='btn';
+    pendingConfirm = function(){ copyText(lines.join('\n')); closeModal(); };
+    document.getElementById('modal-bg').classList.add('open');
+  }).catch(function(){ toast('Could not read the read-out from the server'); });
+}
+function exportIcs309() {
+  var me = eocName()||eocLabel(), rows = [];
+  msgs.forEach(function(m){
+    var path = m.via ? m.via : (m.from ? 'Winlink' : 'Phone / Drop Folder');
+    rows.push({ts: wts(m), from: m.from || (m.type==='dr'?m.dr.submitter:m.type==='so'?m.so.contact:m.type==='wcl'?m.wcl.chief:'') || unitOf(m) || '?', to: me,
+               subj: (m.subject || ({dr:'Disaster Report',so:'Supply Order',wcl:'Work Crew Log'}[m.type]||m.type) + ' ' + (unitOf(m)||'')) + ' [' + path + ']'});
+  });
+  notes.forEach(function(n){ rows.push({ts: n.ts, from: me, to: '', subj: String(n.text||'').replace(/\s+/g,' ')}); });
+  if (!rows.length) { toast('Nothing to log yet'); return; }
+  rows.sort(function(a,b){ return a.ts-b.ts; });
+  var pad = function(t,n){ t = plainAscii(String(t||'')); return t.length > n ? t.slice(0,n-1)+'~' : t + new Array(n - t.length + 1).join(' '); };
+  var out = ['COMMUNICATIONS LOG (ICS 309)', 'Incident: '+plainAscii((incident&&incident.name)||'')+((msgs.some(isEx) || (typeof _drill!=='undefined' && !!_drill))?'  (EXERCISE)':''),
+             'Station: '+plainAscii(me)+'   Radio operator: '+plainAscii((incident&&incident.op)||''), 'Prepared: '+stamp(new Date()), '',
+             pad('TIME',12)+pad('FROM',28)+pad('TO',24)+'SUBJECT', new Array(100).join('-')];
+  rows.forEach(function(r){ out.push(pad(fmtTs(r.ts),12)+pad(r.from,28)+pad(r.to,24)+plainAscii(r.subj)); });
+  dlText(out.join('\r\n'), 'ICS309_'+(me.replace(/[^A-Za-z0-9]+/g,'_').slice(0,30))+'_'+new Date().toISOString().slice(0,10)+'.txt');
+  toast('ICS 309 log saved: '+rows.length+' lines');
 }
 function exportNotes() {
   if (!notes.length) { toast('No notes to export'); return; }
@@ -3525,7 +3590,9 @@ function soItemsOf(m) {
 // catalog order: [{num, desc, unit, section, total, stakes:['Stake (x3)', ...]}]
 function soAggregate(sos) {
   var agg={};
-  sos.forEach(function(m){ var stake=m.so.stake||'?';
+  // who ordered: at a Council / Area EOC the stake; at a Stake or Satellite EOC every order names the same stake, so the
+  // delivery contact (the Church form has no ward field) tells the orders apart
+  sos.forEach(function(m){ var stake=eocLevel()==='area' ? (m.so.stake||'?') : (m.so.contact||m.so.addr||m.so.stake||'?');
     soItemsOf(m).forEach(function(it){ var k=it.num||it.desc; if(!(it.qty>0)) return;
       if(!agg[k]) agg[k]=Object.assign({},it,{total:0,stakes:[]}); agg[k].total+=it.qty; agg[k].stakes.push(stake+' (x'+it.qty+')'); }); });
   return Object.keys(agg).map(function(k){return agg[k];}).sort(function(a,b){ return a.order-b.order||a.desc.localeCompare(b.desc); });
@@ -4037,11 +4104,14 @@ function renderStart() {
   var steps = setupSteps(), left = steps.filter(function(x){ return !x.done; }).length, hidden = false;
   try { hidden = localStorage.getItem('emcomm_start_hidden') === String(activeEventId() || 'none'); } catch (e) {}
   if (!left || hidden) { box.innerHTML = ''; return; }
-  box.innerHTML = '<div class="card start-card"><div style="display:flex;align-items:baseline;gap:10px"><h2 style="margin:0;flex:1">Set up this EOC <span style="font-weight:600;font-size:12px;color:var(--muted);text-transform:none;letter-spacing:0">'
+  // once reports are coming in, the totals matter more to the leaders looking at this tab: the list folds to one line
+  var folded = msgs.length > 0, wasOpen = !!box.querySelector('details[open]');
+  box.innerHTML = (folded ? '<details class="card start-card"'+(wasOpen?' open':'')+'><summary style="cursor:pointer;font-weight:700">Set up this EOC: ' + left + ' of ' + steps.length + ' steps left <span style="font-weight:400;color:var(--muted)">· show</span></summary>' : '<div class="card start-card">')
+    + '<div style="display:flex;align-items:baseline;gap:10px"><h2 style="margin:0;flex:1">Set up this EOC <span style="font-weight:600;font-size:12px;color:var(--muted);text-transform:none;letter-spacing:0">'
     + left + ' of ' + steps.length + ' steps left · quick reference card 3</span></h2><button class="btn-ghost" type="button" style="font-size:11px" onclick="hideStart()">Hide this list</button></div><ol>'
     + steps.map(function(x, i){ return '<li class="' + (x.done ? 'done' : '') + '"><span class="tk">' + (x.done ? '&#10003;' : (i + 1)) + '</span><span class="what">' + esc(x.what)
       + '<span class="why">' + esc(x.why) + '</span></span>' + (x.done ? '' : '<button class="btn sm" type="button" onclick="' + x.go + '">' + (x.btn || 'Go') + '</button>') + '</li>'; }).join('')
-    + '</ol></div>';
+    + '</ol>' + (folded ? '</details>' : '</div>');
 }
 function hideStart() { try { localStorage.setItem('emcomm_start_hidden', String(activeEventId() || 'none')); } catch (e) {} renderStart(); }
 function goSetPace() {
@@ -4646,7 +4716,7 @@ if (location.hash.length > 1 && document.getElementById('tab-' + location.hash.s
     ok:      {fill: 'rgba(34,197,94,.45)',   line: '#15803d'},
     needs:   {fill: 'rgba(245,158,11,.50)',  line: '#b45309'},
     alert:   {fill: 'rgba(220,38,38,.55)',   line: '#991b1b'},
-    overdue: {fill: 'rgba(148,163,184,.28)', line: '#d97706'},
+    overdue: {fill: 'rgba(148,163,184,.28)', line: '#dc2626'},
     voice:   {fill: 'rgba(59,130,246,.42)',  line: '#1d4ed8'}
   };
   var MARK = {eoc: '#1d4ed8', parent: '#7c3aed', report: '#111827'};
@@ -4837,6 +4907,13 @@ if (location.hash.length > 1 && document.getElementById('tab-' + location.hash.s
                                  saved: {topo: bmSaved('topo'), imagery: bmSaved('imagery')}, streets: !!(bmStatus && bmStatus.streetsUrl)}; }
 
     var images = [];   // [{img, b: [w, s, e, n] Web Mercator metres, opacity}]: the directory's own map artwork
+    var hatchPat = null;
+    function hatch() {
+      if (hatchPat) return hatchPat;
+      var c = document.createElement('canvas'); c.width = c.height = 10; var x = c.getContext('2d');
+      x.strokeStyle = 'rgba(120,53,15,.55)'; x.lineWidth = 2; x.beginPath(); x.moveTo(0, 10); x.lineTo(10, 0); x.moveTo(-5, 5); x.lineTo(5, -5); x.moveTo(5, 15); x.lineTo(15, 5); x.stroke();
+      hatchPat = ctx.createPattern(c, 'repeat'); return hatchPat;
+    }
     function draw() {
       if (!W) resize();
       ctx.fillStyle = opts.background || '#eef2f6'; ctx.fillRect(0, 0, W, H);
@@ -4848,7 +4925,7 @@ if (location.hash.length > 1 && document.getElementById('tab-' + location.hash.s
       });
       if (!loaded) {
         ctx.fillStyle = '#64748b'; ctx.font = '13px system-ui, sans-serif'; ctx.textAlign = 'center';
-        ctx.fillText(loadError ? 'Map data not available: ' + loadError : 'Loading map data…', W / 2, H / 2);
+        ctx.fillText(!loadError ? 'Loading map data…' : /404/.test(loadError) ? 'No map boundaries on this laptop yet: Setup, This EOC, Map data folder.' : 'Map data not available: ' + loadError, W / 2, H / 2);
         return;
       }
       // unit polygons, filled by status
@@ -4857,6 +4934,8 @@ if (location.hash.length > 1 && document.getElementById('tab-' + location.hash.s
         var st = statusFn ? (statusFn(o.name) || {}) : {}, c = COLORS[st.cls] || COLORS.none;
         tracePolys(o.polys);
         ctx.fillStyle = c.fill; ctx.fill();
+        // not by hue alone (colour-blind readers): "with needs" is hatched, an alert gets a "!" at its label point (below)
+        if (st.cls === 'needs') { ctx.fillStyle = hatch(); ctx.fill(); }
         ctx.lineWidth = st.cls === 'overdue' ? 3 : 1.2; ctx.strokeStyle = c.line;
         if (st.cls === 'overdue') ctx.setLineDash([6, 4]);
         ctx.stroke(); ctx.setLineDash([]);
@@ -4866,6 +4945,12 @@ if (location.hash.length > 1 && document.getElementById('tab-' + location.hash.s
       orgs.forEach(function (o) {
         if (!isStakeOutline(o) || !onScreen(o.bbox)) return;
         tracePolys(o.polys); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(30,41,59,.55)'; ctx.stroke();
+      });
+      orgs.forEach(function (o) {
+        if (!isUnit(o) || !onScreen(o.bbox) || !statusFn || (statusFn(o.name) || {}).cls !== 'alert') return;
+        var s = toScr(o.labelXY[0], o.labelXY[1]), r = Math.max(9, minLabel * 0.8), y = s[1] - (labels ? minLabel * 1.4 : 0);
+        ctx.beginPath(); ctx.arc(s[0], y, r, 0, Math.PI * 2); ctx.fillStyle = '#991b1b'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#fff'; ctx.stroke();
+        ctx.fillStyle = '#fff'; ctx.font = 'bold ' + Math.round(r * 1.5) + 'px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('!', s[0], y + 1);
       });
       // meetinghouses
       bldgs.forEach(function (b) {

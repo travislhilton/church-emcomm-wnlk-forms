@@ -57,6 +57,11 @@ function cleanAllFields() {
 // Fields Load Data must never overwrite: Winlink fills them when the form opens
 var LOAD_SKIP = {testCall:1, parseme:1, msg_body:1, attached_text:1, attached_file:1, GPS:1, stn_lat:1, stn_lon:1, stn_grid:1, op_callsign:1, fileToLoad:1, loc_src:1, subj_prefix:1};
 function fv(id) { var e = document.getElementById(id); return e ? asciiClean(e.value).replace(/\s+$/, '').trim() : ''; }
+// Tag values never carry the tag's own separators ([ ] |), or a name like "Bldg [B]" would cut the tag short
+function tv(s) { return String(s == null ? '' : s).replace(/\[/g, '(').replace(/\]/g, ')').replace(/\|/g, '/'); }
+function fvt(id) { return tv(fv(id)); }
+// One CSV value: quoted, so a comma in an address keeps every later column in place
+function cq(s) { return '"' + String(s == null ? '' : s).replace(/"/g, '""') + '"'; }
 function pad(s, w) { s = String(s); while (s.length < w) s += ' '; return s; }
 function line(n) { var s = ''; for (var i = 0; i < n; i++) s += '-'; return s + '\n'; }
 
@@ -144,30 +149,29 @@ function buildMsg() {
   m += '============================================================\n';
 
   // CSV rollup
-  m += '\nCSV,' + fmtDate(fv('log_date')) + ',' + fv('log_location') + ',' +
-       fv('chief_name') + ',' + fv('chief_stake') + ',' + fv('chief_ward') + ',' +
-       crewCount() + ',' + totalHours() + '\n';
+  m += '\nCSV,' + [fmtDate(fv('log_date')), fv('log_location'), fv('chief_name'), fv('chief_stake'), fv('chief_ward'),
+       crewCount(), totalHours()].map(cq).join(',') + '\n';
 
   // Machine-parseable tag
   m += '\n[Church-WCL' + (exOn() ? '|exercise=YES' : '') +
-       '|date=' + fmtDate(fv('log_date')) +
-       '|location=' + fv('log_location') +
-       '|chief=' + fv('chief_name') +
-       '|chief_stake=' + fv('chief_stake') +
-       '|chief_ward=' + fv('chief_ward') +
-       '|chief_hrs=' + (fv('chief_hrs') || '0') +
-       '|chief_phone=' + fv('chief_phone') +
+       '|date=' + fmtDate(fvt('log_date')) +
+       '|location=' + fvt('log_location') +
+       '|chief=' + fvt('chief_name') +
+       '|chief_stake=' + fvt('chief_stake') +
+       '|chief_ward=' + fvt('chief_ward') +
+       '|chief_hrs=' + fvt('chief_hrs') +
+       '|chief_phone=' + fvt('chief_phone') +
        '|crew_count=' + crewCount() +
        '|total_hrs=' + totalHours() +
        '|safety=' + (document.getElementById('safety_cert').checked ? 'YES' : 'NO') +
-       '|crew=' + crewData.join(';') +
-       '|submitter=' + fv('testCall') +
-       (fv('stn_lat_d') ? '|lat=' + fv('stn_lat_d') : '') +
-       (fv('stn_lon_d') ? '|lon=' + fv('stn_lon_d') : '') +
-       (fv('stn_grid_d') ? '|grid=' + fv('stn_grid_d') : '') +
-       (fv('op_callsign') ? '|op_call=' + fv('op_callsign') : '') +
-       (fv('op_name')     ? '|op_name=' + fv('op_name')     : '') +
-       (fv('op_position') ? '|op_pos='  + fv('op_position') : '') + ']\n';
+       '|crew=' + tv(crewData.join(';')) +
+       '|submitter=' + fvt('testCall') +
+       (fvt('stn_lat_d') ? '|lat=' + fvt('stn_lat_d') : '') +
+       (fvt('stn_lon_d') ? '|lon=' + fvt('stn_lon_d') : '') +
+       (fvt('stn_grid_d') ? '|grid=' + fvt('stn_grid_d') : '') +
+       (fvt('op_callsign') ? '|op_call=' + fvt('op_callsign') : '') +
+       (fvt('op_name')     ? '|op_name=' + fvt('op_name')     : '') +
+       (fvt('op_position') ? '|op_pos='  + fvt('op_position') : '') + ']\n';
   return m;
 }
 

@@ -29,7 +29,9 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
 .hdr .eoc .n{font-size:2.1rem;font-weight:800;line-height:1.05}
 .hdr .eoc .l{font-size:1.1rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:.3rem}
 .hdr .ev{flex:1;text-align:center;min-width:0}
-.hdr .ev .n{font-size:2.6rem;font-weight:800;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr .ev .n{font-size:2.6rem;font-weight:800;line-height:1.05;display:flex;justify-content:center;align-items:center;min-width:0}
+.hdr .ev .n .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}   /* only the name is cut: the CLOSED / EXERCISE badges stay in view */
+.hdr .ev .n .closed{flex:none}
 .hdr .ev .s{font-size:1.15rem;color:var(--muted);margin-top:.3rem}
 .hdr .ev .closed{display:inline-block;background:var(--amber);color:#111;font-weight:800;padding:.1rem .7rem;border-radius:.4rem;margin-left:.6rem;font-size:1.1rem;vertical-align:middle}
 .hdr .clock{text-align:right;min-width:16vw}
@@ -44,12 +46,12 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
 /* KPI tiles size to their content (a fixed height let the bottom line spill into the panels below) */
 .tiles{display:grid;grid-template-columns:repeat(8,1fr);gap:0.8vw}
 .tile{background:var(--panel);border:1px solid var(--line);border-radius:.8rem;padding:.9vh .8vw;display:flex;flex-direction:column;justify-content:space-between;gap:.4vh;min-width:0;overflow:hidden}
-.tile .k{font-size:.95rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;line-height:1.15;max-width:100%}
-.tile .k .kx{display:block;font-size:.72rem;text-transform:none;letter-spacing:0;margin-top:.15rem}
+.tile .k{font-size:1.1rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;line-height:1.15;max-width:100%}
+.tile .k .kx{display:block;font-size:.95rem;text-transform:none;letter-spacing:0;margin-top:.15rem}
 .tile .v{font-size:3.6rem;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
 .tile .v.pair{font-size:2.9rem}
 .tile .v small{font-size:1.4rem;color:var(--muted);font-weight:600}
-.tile .sub{font-size:.95rem;color:var(--muted);line-height:1.25;max-width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.tile .sub{font-size:1.1rem;color:var(--muted);line-height:1.25;max-width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .tile.pace{align-items:center;text-align:center}
 .tile.pace .v{font-size:5rem}
 .tile.pace.P{background:#113D2B;border-color:var(--green)} .tile.pace.A{background:#13305A;border-color:var(--blue)}
@@ -71,7 +73,7 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
 .chip.waiting{border-left-color:var(--muted)} .chip.overdue{border-left-color:var(--red);background:#2A1420}
 .chip.overdue .s{color:#FF9DAA;font-weight:700} .chip.missno{border-left-color:var(--red);background:var(--red)} .chip.missno .s{color:#fff;font-weight:800}
 .left{display:flex;flex-direction:column;gap:0.8vw;min-height:0}
-.legend{display:flex;gap:1vw;font-size:.95rem;color:var(--muted);margin-top:.6vh;flex-wrap:wrap}
+.legend{display:flex;gap:1vw;font-size:1.1rem;color:var(--muted);margin-top:.6vh;flex-wrap:wrap}
 .legend i{display:inline-block;width:.9rem;height:.9rem;border-radius:.2rem;vertical-align:-.1rem;margin-right:.3rem}
 /* latest list */
 .list{display:flex;flex-direction:column;gap:.45vh}
@@ -332,11 +334,11 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
     // the level under the name, unless the name already says it (an unnamed EOC shows only its level)
     var lvTxt = inc.eocName && inc.eocName.toLowerCase().indexOf((LEVEL[lv]||'EOC').toLowerCase()) < 0 ? (LEVEL[lv]||'EOC') : '';
     document.getElementById('eoc-level').textContent = [lvTxt, inc.eocUnits||(inc.eocName?'':'name this EOC on the Setup tab')].filter(Boolean).join(' · ');
-    var evn=document.getElementById('ev-name'); evn.innerHTML = (inc.name?esc(inc.name):'No event named') + (inc.eventStatus==='closed'?'<span class="closed">CLOSED</span>':'')
-      + (msgs.length && msgs.every(isEx) ? '<span class="closed" style="background:#991b1b;color:#fff">EXERCISE</span>' : '');
+    var evn=document.getElementById('ev-name'); evn.innerHTML = '<span class="nm">'+(inc.name?esc(inc.name):'No event named')+'</span>' + (inc.eventStatus==='closed'?'<span class="closed">CLOSED</span>':'')
+      + ((msgs.length && msgs.every(isEx)) || (last.status && last.status.drill && last.status.drill.active) ? '<span class="closed" style="background:#5b21b6;color:#fff">EXERCISE</span>' : '');
     var sub=[]; if(inc.type) sub.push(inc.type); if(inc.area) sub.push(inc.area); if(inc.startTs) sub.push('started '+dhm(inc.startTs)+' · '+dur(now-inc.startTs)+' elapsed');
     if(inc.ic) sub.push('Lead: '+inc.ic); if(inc.op) sub.push('Operator: '+inc.op);
-    document.getElementById('ev-sub').textContent = sub.join('  ·  ') || 'Set the event on the Setup tab of the EOC Message Center';
+    document.getElementById('ev-sub').textContent = sub.join('  ·  ') || (inc.name ? 'Start time not set: Setup tab, Active event details' : 'Open the event on the Setup tab of the EOC Message Center');
 
     // PACE
     var p=String(inc.pace||'').toUpperCase().charAt(0); var tp=document.getElementById('t-pace');
@@ -486,7 +488,7 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
       var isDec=function(a){ return a.status!=='up' && !String(a.decision||'').trim() && decRe.test(String(a.title||'')+' '+String(a.next||'')); };
       var nDec=acts.filter(isDec).length;
       document.getElementById('act-sum').textContent=acts.length+' open'+(nDec?' · '+nDec+' to decide':'')+(hi?' · '+hi+' high':'')+(upN?' · '+upN+' waiting above':'')+(nobody?' · '+nobody+' no owner':'');
-      ab2.innerHTML=acts.slice(0,8).map(function(a){ return '<div class="act"><span class="p '+(a.status==='up'?'up':'p'+(a.prio||2))+'">'+(a.status==='up'?'UP':a.prio===1?'HIGH':a.prio===3?'low':'')+'</span><span class="x" title="'+esc(a.next||'')+'">'+(isDec(a)?'<b class="dec">DECIDE</b> ':'')+esc(a.title)+' <small>'+(a.from?'from '+esc(a.from)+' · ':'')+esc(a.owner?a.owner:'no owner')+'</small></span></div>'; }).join('');
+      ab2.innerHTML=acts.slice(0,8).map(function(a){ return '<div class="act"><span class="p '+(a.status==='up'?'up':'p'+(a.prio||2))+'">'+(a.status==='up'?'UP':a.prio===1?'HIGH':a.prio===3?'low':'')+'</span><span class="x" title="'+esc(a.next||'')+'">'+(isDec(a)?'<b class="dec">DECIDE</b> ':'')+actTitle(a)+' <small>'+(a.from?'from '+esc(a.from)+' · ':'')+esc(a.owner?a.owner:'no owner')+'</small></span></div>'; }).join('');
       pa.style.display=''; fits.push([ab2, acts.length, 'the Work Items tab', ab2]);
     } else { pa.style.display='none'; ab2.innerHTML=''; }
 
@@ -530,6 +532,12 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
   var fits=[];
 
   // Hide the rows of a list that do not fit its panel and say how many more there are (a TV cannot scroll).
+  // the unit first (the one fact that must survive the cut on a TV), then the item without its EXERCISE: prefix and its ": <unit>" tail
+  function actTitle(a){
+    var t=String(a.title||''), ex=/^EXERCISE:\s*/i.test(t), u=String(a.unit||'').trim();
+    t=t.replace(/^EXERCISE:\s*/i,''); if(u && t.toLowerCase().slice(-u.length-2)===(': '+u).toLowerCase()) t=t.slice(0,-u.length-2);
+    return (ex?'<b style="background:#5b21b6;color:#fff;border-radius:.3rem;padding:0 .3rem;font-size:.8em">DRILL</b> ':'')+(u?'<b>'+esc(u)+'</b> · ':'')+esc(t);
+  }
   function fitList(list, total, where, body){
     body=body||list.parentNode; where=where||'the operators’ Messages tab';
     var rows=[].slice.call(list.children).filter(function(r){return !r.classList.contains('more');}), limit=body.getBoundingClientRect().top+body.clientHeight-2, shown=0;
@@ -676,7 +684,7 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
     ok:      {fill: 'rgba(34,197,94,.45)',   line: '#15803d'},
     needs:   {fill: 'rgba(245,158,11,.50)',  line: '#b45309'},
     alert:   {fill: 'rgba(220,38,38,.55)',   line: '#991b1b'},
-    overdue: {fill: 'rgba(148,163,184,.28)', line: '#d97706'},
+    overdue: {fill: 'rgba(148,163,184,.28)', line: '#dc2626'},
     voice:   {fill: 'rgba(59,130,246,.42)',  line: '#1d4ed8'}
   };
   var MARK = {eoc: '#1d4ed8', parent: '#7c3aed', report: '#111827'};
@@ -867,6 +875,13 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
                                  saved: {topo: bmSaved('topo'), imagery: bmSaved('imagery')}, streets: !!(bmStatus && bmStatus.streetsUrl)}; }
 
     var images = [];   // [{img, b: [w, s, e, n] Web Mercator metres, opacity}]: the directory's own map artwork
+    var hatchPat = null;
+    function hatch() {
+      if (hatchPat) return hatchPat;
+      var c = document.createElement('canvas'); c.width = c.height = 10; var x = c.getContext('2d');
+      x.strokeStyle = 'rgba(120,53,15,.55)'; x.lineWidth = 2; x.beginPath(); x.moveTo(0, 10); x.lineTo(10, 0); x.moveTo(-5, 5); x.lineTo(5, -5); x.moveTo(5, 15); x.lineTo(15, 5); x.stroke();
+      hatchPat = ctx.createPattern(c, 'repeat'); return hatchPat;
+    }
     function draw() {
       if (!W) resize();
       ctx.fillStyle = opts.background || '#eef2f6'; ctx.fillRect(0, 0, W, H);
@@ -878,7 +893,7 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
       });
       if (!loaded) {
         ctx.fillStyle = '#64748b'; ctx.font = '13px system-ui, sans-serif'; ctx.textAlign = 'center';
-        ctx.fillText(loadError ? 'Map data not available: ' + loadError : 'Loading map data…', W / 2, H / 2);
+        ctx.fillText(!loadError ? 'Loading map data…' : /404/.test(loadError) ? 'No map boundaries on this laptop yet: Setup, This EOC, Map data folder.' : 'Map data not available: ' + loadError, W / 2, H / 2);
         return;
       }
       // unit polygons, filled by status
@@ -887,6 +902,8 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
         var st = statusFn ? (statusFn(o.name) || {}) : {}, c = COLORS[st.cls] || COLORS.none;
         tracePolys(o.polys);
         ctx.fillStyle = c.fill; ctx.fill();
+        // not by hue alone (colour-blind readers): "with needs" is hatched, an alert gets a "!" at its label point (below)
+        if (st.cls === 'needs') { ctx.fillStyle = hatch(); ctx.fill(); }
         ctx.lineWidth = st.cls === 'overdue' ? 3 : 1.2; ctx.strokeStyle = c.line;
         if (st.cls === 'overdue') ctx.setLineDash([6, 4]);
         ctx.stroke(); ctx.setLineDash([]);
@@ -896,6 +913,12 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
       orgs.forEach(function (o) {
         if (!isStakeOutline(o) || !onScreen(o.bbox)) return;
         tracePolys(o.polys); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(30,41,59,.55)'; ctx.stroke();
+      });
+      orgs.forEach(function (o) {
+        if (!isUnit(o) || !onScreen(o.bbox) || !statusFn || (statusFn(o.name) || {}).cls !== 'alert') return;
+        var s = toScr(o.labelXY[0], o.labelXY[1]), r = Math.max(9, minLabel * 0.8), y = s[1] - (labels ? minLabel * 1.4 : 0);
+        ctx.beginPath(); ctx.arc(s[0], y, r, 0, Math.PI * 2); ctx.fillStyle = '#991b1b'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#fff'; ctx.stroke();
+        ctx.fillStyle = '#fff'; ctx.font = 'bold ' + Math.round(r * 1.5) + 'px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('!', s[0], y + 1);
       });
       // meetinghouses
       bldgs.forEach(function (b) {

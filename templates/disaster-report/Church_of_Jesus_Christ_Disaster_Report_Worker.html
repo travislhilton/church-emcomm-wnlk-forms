@@ -14,9 +14,9 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 16px; margin: 0; pa
 label { font-size: 13px; color: #444; font-weight: 600; display: block; margin-bottom: 4px; }
 input[type=text], input[type=tel], input[type=email], input[type=date], textarea, select {
   width: 100%; padding: 10px 12px; font-size: 16px; font-family: Arial, Helvetica, sans-serif;
-  border: 1.5px solid #bbb; border-radius: 6px; background: #fafeff;
+  border: 1.5px solid #767676; border-radius: 6px; background: #fafeff;
   appearance: none; -webkit-appearance: none; }
-input:focus, textarea:focus { outline: none; border-color: #1a3a5c; }
+input:focus, textarea:focus, select:focus { outline: 3px solid #1a3a5c; outline-offset: 1px; border-color: #1a3a5c; }
 textarea { resize: vertical; }
 .two-col { }
 @media(min-width:600px) { .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0; } }
@@ -63,7 +63,7 @@ input::placeholder, textarea::placeholder { color:#6b7280; opacity:1; }   /* Web
   </div>
   <div style="text-align:right;">
     <div style="font-size:17px;font-weight:bold;color:#1a3a5c;line-height:1.2;">Disaster Report</div>
-    <div style="font-size:11px;color:#666;margin-top:3px;">Worker Form</div>
+    <div style="font-size:11px;color:#666;margin-top:3px;">Phone form</div>
   </div>
 </div>
 
@@ -135,7 +135,7 @@ input::placeholder, textarea::placeholder { color:#6b7280; opacity:1; }   /* Web
       <input type="date" id="inc_date" name="inc_date" />
     </div>
     <div class="frow">
-      <label for="inc_stake">Stake</label>
+      <label for="inc_stake">Stake <span style="font-weight:400;color:#555">(needed)</span></label>
       <input type="text" id="inc_stake" name="inc_stake" />
     </div>
   </div>
@@ -176,7 +176,7 @@ input::placeholder, textarea::placeholder { color:#6b7280; opacity:1; }   /* Web
 <div class="card">
   <div class="sec-hdr">Person Submitting This Report</div>
   <div class="frow">
-    <label for="sub_name">Your Name</label>
+    <label for="sub_name">Your Name <span style="font-weight:400;color:#555">(needed)</span></label>
     <input type="text" id="sub_name" name="sub_name" />
   </div>
   <div class="two-col">
@@ -213,19 +213,19 @@ input::placeholder, textarea::placeholder { color:#6b7280; opacity:1; }   /* Web
   <div class="two-col">
     <div class="frow">
       <label for="mem_injuries">Number of member injuries</label>
-      <input type="text" id="mem_injuries" name="mem_injuries" placeholder="0" inputmode="numeric" />
+      <input type="text" id="mem_injuries" name="mem_injuries" placeholder="how many" inputmode="numeric" />
     </div>
     <div class="frow">
       <label for="mem_deaths">Number of member deaths</label>
-      <input type="text" id="mem_deaths" name="mem_deaths" placeholder="0" inputmode="numeric" />
+      <input type="text" id="mem_deaths" name="mem_deaths" placeholder="how many" inputmode="numeric" />
     </div>
     <div class="frow">
       <label for="mem_damaged">Number of member homes damaged</label>
-      <input type="text" id="mem_damaged" name="mem_damaged" placeholder="0" inputmode="numeric" />
+      <input type="text" id="mem_damaged" name="mem_damaged" placeholder="how many" inputmode="numeric" />
     </div>
     <div class="frow">
       <label for="mem_destroyed">Number of member homes destroyed</label>
-      <input type="text" id="mem_destroyed" name="mem_destroyed" placeholder="0" inputmode="numeric" />
+      <input type="text" id="mem_destroyed" name="mem_destroyed" placeholder="how many" inputmode="numeric" />
     </div>
   </div>
   <div class="frow">
@@ -258,11 +258,11 @@ input::placeholder, textarea::placeholder { color:#6b7280; opacity:1; }   /* Web
   <div class="two-col">
     <div class="frow">
       <label for="vol_count">Number of volunteers</label>
-      <input type="text" id="vol_count" name="vol_count" placeholder="0" inputmode="numeric" />
+      <input type="text" id="vol_count" name="vol_count" placeholder="how many" inputmode="numeric" />
     </div>
     <div class="frow">
       <label for="vol_hours">Total number of volunteer hours</label>
-      <input type="text" id="vol_hours" name="vol_hours" placeholder="0" inputmode="numeric" />
+      <input type="text" id="vol_hours" name="vol_hours" placeholder="how many" inputmode="numeric" />
     </div>
   </div>
   <div class="frow">
@@ -441,7 +441,8 @@ function getGPS(auto) {
     if (err.code === 3) { btn.disabled = false; setGpsStatus('Location timed out. Tap Get GPS Location to try again.', 'err'); return; }
     // code 1 also covers a locally opened copy: browsers allow geolocation only on https
     gpsSetOff(true);
-    setGpsStatus(err.code === 1 ? 'Location access is not available here. Open the form from the online portal link and allow location access.'
+    setGpsStatus(err.code === 1 ? (window.isSecureContext ? 'Location is off. It is optional. To use it, allow location for this site in your phone\'s settings, or tap Enter coordinates manually.'
+                                                       : 'Location is not available on this page. It is optional: tap Enter coordinates manually, or open the form from the online portal link.')
                                 : 'This device cannot provide a GPS location right now.', '');
   }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 120000 });
 }
@@ -621,6 +622,16 @@ document.addEventListener('DOMContentLoaded', function() {
     var auto = /^(stn_|period_|inc_date$|order_date$|req_sig_date$|log_date$)/;
     return Object.keys(d).some(function (k) { return !auto.test(k) && d[k] !== '' && d[k] !== false && d[k] != null; });
   }
+  // The fields the EOC needs to know where and who a report is from (a report without them is filed as "unit not named")
+  var NEEDED = {dr: [['inc_stake', 'stake'], ['sub_name', 'your name']], so: [['req_stake', 'stake'], ['del_contact', 'delivery contact']],
+                wcl: [['chief_stake', 'stake'], ['chief_name', 'your name']]};
+  function missingNeeded(d) {
+    return (NEEDED[E.opts.form] || []).filter(function (n) { return !String(d[n[0]] || '').trim(); }).map(function (n) { return n[1]; });
+  }
+  function neededOk(d, verb) {
+    var miss = missingNeeded(d); if (!miss.length) return true;
+    return confirm('Add your ' + miss.join(' and ') + ' so the EOC knows where this is from.\n\nOK = ' + verb + ' anyway · Cancel = go back and add it');
+  }
   function currentReport() {
     var d = formData(), form = E.opts.form;
     return {id: E.currentId || uid(), form: form, filename: FILENAME[form], title: titleOf(form, d), savedAt: Date.now(), data: d, status: 'waiting', app: APP_VERSION};
@@ -639,7 +650,7 @@ document.addEventListener('DOMContentLoaded', function() {
     + '.ea-big{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:56px;margin:8px 0;padding:10px 14px;border:none;border-radius:10px;background:#1a3a5c;color:#fff;font-size:17px;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none}'
     + '.ea-big.green{background:#1a6b3c}.ea-big:disabled{opacity:.55}'
     + '.ea-links{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;font-size:14px;margin:4px 0 2px}'
-    + '.ea-links a,.ea-link{color:#1a3a5c;text-decoration:underline;cursor:pointer;background:none;border:none;font:inherit;padding:4px 0}'
+    + '.ea-links a,.ea-link{color:#1a3a5c;text-decoration:none;cursor:pointer;background:#fff;border:1.5px solid #1a3a5c;border-radius:8px;font:inherit;font-weight:600;padding:8px 12px;min-height:44px;display:inline-flex;align-items:center}'
     + '.ea-count{display:inline-block;min-width:20px;border-radius:10px;background:#b45309;color:#fff;font-size:12px;font-weight:700;padding:0 6px;margin-left:4px}'
     + '.ea-banner{position:sticky;top:0;z-index:50;background:#fff7e0;border-bottom:2px solid #b45309;padding:10px 14px;font-size:15px}'
     + '.ea-banner .b{display:flex;gap:8px;margin-top:8px}.ea-banner button{flex:1;min-height:44px;border-radius:8px;border:none;font-weight:700;font-size:15px;cursor:pointer}'
@@ -651,7 +662,7 @@ document.addEventListener('DOMContentLoaded', function() {
     + '.ea-muted{color:#5d6b7a;font-size:14px}'
     + '.ea-item{border-top:1px solid #e3e7ec;padding:10px 0;display:flex;gap:10px;align-items:center}.ea-item:first-child{border-top:none}'
     + '.ea-item .t{flex:1;min-width:0}.ea-item .t b{display:block}.ea-item button{min-height:40px;padding:0 12px;border-radius:8px;border:1.5px solid #c9d1da;background:#fff;font-weight:600;cursor:pointer}'
-    + '.ea-in{width:100%;padding:12px;font-size:18px;border:1.5px solid #bbb;border-radius:8px;margin:6px 0}'
+    + '.ea-in{width:100%;padding:12px;font-size:18px;border:1.5px solid #767676;border-radius:8px;margin:6px 0}'
     + '.ea-ok{background:#e7f6ec;border:2px solid #1a6b3c;border-radius:12px;padding:14px;margin:8px 0}.ea-ok .h{font-size:21px;font-weight:800;color:#1a6b3c}'
     + '.ea-err{background:#fdecee;border:2px solid #b00020;border-radius:12px;padding:12px;margin:8px 0}'
     + '.ea-video{width:100%;border-radius:10px;background:#000;aspect-ratio:1/1;object-fit:cover}'
@@ -766,6 +777,7 @@ document.addEventListener('DOMContentLoaded', function() {
   E.saveToOutbox = function (quiet) {
     var rep = currentReport();
     if (!hasContent(rep.data) && !quiet && !confirm('This form looks empty. Save it to the Outbox anyway?')) return null;
+    if (hasContent(rep.data) && !quiet && !neededOk(rep.data, 'save')) return null;
     if (!obUpsert(rep)) return null;
     E.currentId = rep.id;
     E.dirty = false;
@@ -1146,6 +1158,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!outboxOnly && E.opts.form) {
       var cur = currentReport();
       if (!hasContent(cur.data) && !confirm('This form looks empty. Send it anyway?')) return;
+      if (hasContent(cur.data) && !neededOk(cur.data, 'send')) return;
       reps.push(cur);
     }
     obWaiting().forEach(function (r) { if (!reps.some(function (x) { return x.id === r.id; })) reps.push(r); });
@@ -1169,7 +1182,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   function postReports(reps, to, toName) {
-    var body = {reports: reps.map(function (r) { return {id: r.id, form: r.form, filename: r.filename, data: r.data}; }), app: APP_VERSION};
+    var body = {reports: reps.map(function (r) { return {id: r.id, form: r.form, filename: r.filename, savedAt: r.savedAt, data: r.data}; }), app: APP_VERSION};
     if (to) body.to = to;
     sheet('<h3>Sending…</h3><p class="ea-muted">' + reps.length + ' report' + (reps.length === 1 ? '' : 's') + ' to ' + esc(toName) + '</p>');
     fetch('/api/upload', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)})
@@ -1348,6 +1361,16 @@ document.addEventListener('DOMContentLoaded', function() {
       .then(function (s) { if (s && s.lanUrl) { E.eoc = s; return 'eoc'; } return 'portal'; })
       .catch(function () { return 'portal'; });
   }
+  // A form served by an EOC suggests that EOC's own ward (or stake) names, so "5th" does not become a unit of its own
+  function unitNames() {
+    fetch('/api/roster').then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
+      var names = (Array.isArray(rows) ? rows : []).map(function (r) { return String((r && r.name) || '').trim(); }).filter(Boolean);
+      if (!names.length) return;
+      var dl = document.getElementById('ea-units') || document.body.appendChild(document.createElement('datalist'));
+      dl.id = 'ea-units'; dl.innerHTML = names.map(function (n) { return '<option value="' + esc(n) + '">'; }).join('');
+      ['inc_ward', 'chief_ward'].forEach(function (id) { var el = document.getElementById(id); if (el) { el.setAttribute('list', 'ea-units'); if (!el.placeholder) el.placeholder = 'Full name, e.g. ' + names[0]; } });
+    }).catch(function () {});
+  }
   E.init = function (opts) {
     E.opts = opts || {};
     addStyle();
@@ -1356,6 +1379,7 @@ document.addEventListener('DOMContentLoaded', function() {
       E.ctx = ctx;
       if (got[1]) toast(got[1] + ' saved report' + (got[1] === 1 ? '' : 's') + ' brought back into the Outbox');
       if (ctx === 'portal') setupApp();
+      if (ctx === 'eoc') unitNames();
       var q = params();
       if (q.outbox && E.opts.form) {
         var rep = obAll().filter(function (r) { return r.id === q.outbox; })[0];
