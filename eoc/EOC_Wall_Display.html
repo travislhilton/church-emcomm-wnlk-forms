@@ -56,6 +56,7 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
 .tile.pace.C{background:#5A3A05;border-color:var(--amber)} .tile.pace.E{background:#5A0E1B;border-color:var(--red)}
 .tile.pace.none{border-style:dashed}
 .tile.hot{border-color:var(--red);background:#2A1420}
+.tile.warn{border-color:var(--amber)}
 .main{flex:1;display:grid;grid-template-columns:5fr 4fr 3fr;gap:0.8vw;min-height:0}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:.8rem;padding:1vh 0.9vw;display:flex;flex-direction:column;min-height:0;min-width:0}
 .panel h2{font-size:1.15rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:.7vh;display:flex;justify-content:space-between;align-items:baseline}
@@ -77,11 +78,11 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
 .row{display:grid;grid-template-columns:5.2rem 3.6rem 1fr auto;gap:.6vw;align-items:center;background:var(--panel2);border-radius:.45rem;padding:.45vh .6vw;font-size:1.2rem;min-width:0}
 .row .t{color:var(--muted);font-variant-numeric:tabular-nums;font-size:1.05rem}
 .row .b{font-weight:800;font-size:.95rem;text-align:center;border-radius:.3rem;padding:.15rem .2rem;color:#fff}
-.b.dr{background:var(--red)} .b.so{background:var(--blue)} .b.wcl{background:var(--green);color:#06281A}
+.b.dr{background:transparent;border:2px solid var(--red);color:#fff} .b.so{background:var(--blue)} .b.wcl{background:var(--green);color:#06281A}
 .row .u{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .row .u small{color:var(--muted);font-size:1rem}
 .row .st{font-size:.9rem;font-weight:800;border-radius:.3rem;padding:.15rem .45rem}
-.st.new{background:var(--red);color:#fff} .st.ack{background:var(--blue);color:#fff} .st.assigned{background:var(--amber);color:#111} .st.complete{background:var(--green);color:#06281A}
+.st.new{background:#334155;color:#fff;border:1px solid #94A3B8} .st.ack{background:var(--blue);color:#fff} .st.assigned{background:#5b21b6;color:#fff} .st.complete{background:var(--green);color:#06281A}
 .st.new.stale{background:var(--amber);color:#111}  /* NEW for more than 30 min: nobody has acknowledged it */
 .row.fresh{outline:2px solid var(--amber)}
 .more{font-size:1rem;color:var(--muted);padding:.3vh .6vw}
@@ -349,7 +350,9 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
     var nNew=msgs.filter(function(m){return m.status==='new';}).length, nWork=msgs.filter(function(m){return m.status==='ack'||m.status==='assigned';}).length;
     document.getElementById('rep-v').textContent=msgs.length;
     document.getElementById('rep-sub').textContent=drs.length+' DR · '+sos.length+' SO · '+wcls.length+' WCL · '+nNew+' new';
-    document.getElementById('t-reports').className='tile'+(nNew?' hot':'');
+    // red is kept for life safety, missionaries and overdue: unacknowledged reports turn amber only after 30 minutes
+    var nStale=msgs.filter(function(m){ return m.status==='new' && (Date.now()-m.ts)>30*60000; }).length;
+    document.getElementById('t-reports').className='tile'+(nStale?' warn':'');
     var inj=0,dead=0,dmg=0,dest=0,vol=0,hrs=0,missNo=[],needL=[],needN=[],needH=[];
     drs.forEach(function(m){ var r=m.dr, u=unitOf(m)||'?'; inj+=ni(r.mem_inj); dead+=ni(r.mem_dead); dmg+=ni(r.homes_dmg); dest+=ni(r.homes_dest); vol+=ni(r.vol_count); hrs+=ni(r.vol_hrs);
       if(isYes(r.need_local)) needL.push(u); if(isYes(r.need_neighbor)) needN.push(u); if(isYes(r.need_hq)) needH.push(u); });
@@ -378,16 +381,19 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
     document.getElementById('vol-sub').textContent=diff(['vol','hrs']) ? oName+': '+(O.vol+wcrew)+' · '+Math.round(O.hrs+whrs) : 'Disaster Reports + Work Crew Logs';
     var soOpen=sos.filter(function(m){return m.status!=='complete';}).length;
     document.getElementById('so-v').textContent=soOpen; document.getElementById('so-sub').textContent=sos.length+' received · '+(sos.length-soOpen)+' done';
-    document.getElementById('t-so').className='tile'+(soOpen?' hot':'');
+    document.getElementById('t-so').className='tile';
 
     // roster
     document.getElementById('units-k').textContent=unitP+' reported'; document.getElementById('roster-h').textContent=(lv==='area'?'Stake':'Ward')+' roster';
     var chips=document.getElementById('chips'), chipsEmpty=document.getElementById('chips-empty');
     var reported=0, overdue=[], html='';
-    var byUnit={}; drs.forEach(function(m){ var k=(unitOf(m)||'').toLowerCase(); if(!byUnit[k]||m.ts>byUnit[k].ts) byUnit[k]=m; });
+    var byUnit={}; drs.forEach(function(m){ var k=(unitOf(m)||'').toLowerCase(); if(!byUnit[k]||(m.sentTs||m.ts)>=(byUnit[k].sentTs||byUnit[k].ts)) byUnit[k]=m; });
     // No roster yet? Seed the board from the units named on the Setup tab ("Larkspur 1st, Larkspur 2nd, Riverside") so it is useful from minute one.
     var seeded=false;
     if(!roster.length && inc.eocUnits){ roster=String(inc.eocUnits).split(/[,;\n]+/).map(function(s){return s.trim();}).filter(Boolean).map(function(n){ return {name:n}; }); seeded=roster.length>0; }
+    // Still no list, but reports came in: show the units that reported (never "0 of 0" while reports are on file)
+    var noList=false;
+    if(!roster.length && drs.length){ var seenU={}; roster=drs.map(function(m){ return unitOf(m)||''; }).filter(function(n){ var k=n.toLowerCase(); if(!n||seenU[k]) return false; seenU[k]=1; return true; }).map(function(n){ return {name:n}; }); noList=roster.length>0; }
     roster.slice().sort(function(a,b){ return (a.name||'').localeCompare(b.name||''); }).forEach(function(r){
       var ld=byUnit[(r.name||'').toLowerCase()]; var cls='waiting', st=seeded?'Waiting — add to the Roster tab for a due time':'Waiting';
       if(ld && isNo(ld.dr.miss_safe)){ cls='missno'; st='MISSIONARIES NOT ACCOUNTED FOR'; reported++; }
@@ -400,9 +406,11 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
     chips.innerHTML=html; chipsEmpty.style.display=roster.length?'none':'';
     renderWallMap(reported, roster.length, inc);
     document.getElementById('units-v').innerHTML=reported+'<small>/'+roster.length+'</small>';
-    document.getElementById('units-sub').textContent=(roster.length-reported)+' not heard from'+(overdue.length?' · '+overdue.length+' overdue':'');
+    document.getElementById('units-v').innerHTML=noList ? String(reported) : reported+'<small>/'+roster.length+'</small>';
+    document.getElementById('units-sub').textContent=noList ? 'no roster yet: add '+(lv==='area'?'stakes':'wards')+' on the Roster tab to see who is missing'
+      : (roster.length-reported)+' not heard from'+(overdue.length?' · '+overdue.length+' overdue':'');
     document.getElementById('t-units').className='tile'+(overdue.length?' hot':'');
-    document.getElementById('roster-sum').textContent=reported+' of '+roster.length+' reported';
+    document.getElementById('roster-sum').textContent=noList ? reported+' reported (no roster)' : reported+' of '+roster.length+' reported';
 
     // latest arrivals
     var list=document.getElementById('latest'), le=document.getElementById('latest-empty');

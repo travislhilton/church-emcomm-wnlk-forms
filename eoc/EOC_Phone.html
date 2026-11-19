@@ -69,7 +69,7 @@ footer{max-width:640px;margin:0 auto;padding:4px 16px 0;font-size:12px;color:var
   <div class="ev" id="eoc-ev">Connecting…</div>
 </header>
 <main id="main"></main>
-<footer>Church of Jesus Christ EMCOMM (emergency communications) digital forms. Independent volunteer project, not an official product of The Church of Jesus Christ of Latter-day Saints. <a href="/">Full EOC Message Center</a></footer>
+<footer>Church of Jesus Christ EMCOMM (emergency communications) digital forms. Independent volunteer project, not an official product of The Church of Jesus Christ of Latter-day Saints.</footer>
 
 <script>
 var PORTAL = 'https://travislhilton.github.io/church-emcomm-wnlk-forms/forms/index.html';
@@ -94,6 +94,9 @@ function header(){
   document.getElementById('eoc-ev').innerHTML = esc(lvl + ev) + (srv.pace ? '<span class="pace ' + esc(srv.pace) + '">PACE ' + esc(srv.pace) + ' ' + esc(PACE_NAME[srv.pace] || '') + '</span>' : '')
     + (srv.drill && srv.drill.active ? '<span class="pace" style="background:#4c1d95">DRILL</span>' : '');
 }
+// The page volunteers reach from the wall's QR code shows reports to fill in and the Comms Sheet only. The EOC's work
+// items (injuries, missing missionaries, who owns what) and the drill score are for operators: /m?ops=1 (card 3).
+var OPS = /[?&]ops=1(&|$)/.test(location.search);
 // ── Drill card: what the simulator feeding this EOC pushed (role, scenario, clock) ─
 function drillScore(d){ var s=d&&d.score; if(!s||!s.total) return ''; var bad=(s.overdue||0)+(s.missed||0); return 'Needs met <b>'+(s.met+s.late)+'/'+s.total+'</b>'+(bad?' · <b style="color:#fca5a5">'+bad+' overdue</b>':'')+(s.pct!=null?' · <b>'+s.pct+'%</b>':''); }
 function drawDrill(){
@@ -102,9 +105,9 @@ function drawDrill(){
   var role = LEVEL[d.role] || d.role || '';
   var when = d.status === 'scheduled' && d.start_at_ms ? 'starts at ' + hm(d.start_at_ms) : d.status === 'running' ? 'running' : (d.status === 'planned' && d.session) ? 'ready: waiting for the trainer\'s GO' : (d.status || 'planned');
   el.innerHTML = '<div class="drill">&#127919; DRILL · <b>' + esc(d.scenario || '') + '</b><br>This EOC plays <b>' + esc(d.site_label || role) + '</b> · ' + esc(when)
-    + (drillScore(d) ? '<br>' + drillScore(d) : '')
+    + (OPS && drillScore(d) ? '<br>' + drillScore(d) : '')
     + (d.ready && d.ready.length ? '<br>Ready: ' + esc(d.ready.join(', ')) : '')
-    + '<br><span style="font-weight:400">Every simulated report says SIMULATED in its text. Real reports still go through.</span></div>';
+    + '<br><span style="font-weight:400">Every simulated report says SIMULATED in its text, and the EOC screens mark it EXERCISE. Real reports still go through.</span></div>';
 }
 
 // ── Work items: the EOC's worklist on the phone (take an item, move it) ───────
@@ -120,7 +123,8 @@ function renderWork(){
   if (!work.length) { card.style.display = 'none'; return; }
   card.style.display = '';
   var ST = {open:'OPEN', progress:'IN WORK', up:'UP'};
-  box.innerHTML = open.length ? open.map(function(a){
+  var showAll = workAll || open.length <= 10, shown = showAll ? open : open.slice(0, 10);
+  box.innerHTML = open.length ? shown.map(function(a){
     var id = jsq(a.id);
     var d = '<div class="d"><div class="m">' + (a.detail ? esc(a.detail) + '<br>' : '') + (a.next ? 'Next: ' + esc(a.next) + '<br>' : '')
       + (a.due ? 'Due ' + esc(a.due) + ' · ' : '') + (a.from ? 'From ' + esc(a.from) + ' · ' : '') + 'Owner: ' + esc(a.owner || 'nobody') + '</div>'
@@ -131,8 +135,10 @@ function renderWork(){
     return '<div class="wi' + (workOpen === a.id ? ' open' : '') + '" onclick="workToggle(\'' + id + '\', event)"><div class="t">'
       + (a.prio === 1 ? '<span class="tag hi">HIGH</span>' : '') + '<span class="tag ' + (a.status === 'up' ? 'up' : a.status === 'progress' ? 'work' : 'open') + '">' + (ST[a.status] || 'OPEN') + '</span>' + esc(a.title) + '</div>'
       + '<div class="m">' + esc(a.unit || '') + (a.owner ? ' · ' + esc(a.owner) : ' · <b>no owner</b>') + (a.next && workOpen !== a.id ? ' · ' + esc(a.next) : '') + '</div>' + d + '</div>';
-  }).join('') : '<p class="muted" style="margin:0">Nothing open. ' + work.length + ' done.</p>';
+  }).join('') + (showAll ? '' : '<button class="sec" style="width:100%" onclick="workAll=true;renderWork()">Show all ' + open.length + ' open items</button>')
+    : '<p class="muted" style="margin:0">Nothing open. ' + work.length + ' done.</p>';
 }
+var workAll = false;
 function workToggle(id, ev){ if (ev && ev.target && ev.target.tagName === 'BUTTON') return; workOpen = workOpen === id ? null : id; renderWork(); }
 function workAct(id, act){
   if (!myName) { myName = (prompt('Your name (goes in the item log):') || '').trim(); if (!myName) return; try { localStorage.setItem('emcomm_phone_name', myName); } catch (e) {} }
@@ -157,14 +163,14 @@ function landing(){
      + '<div class="addr">' + esc(location.host) + '</div>'
      + '<p class="muted" style="margin:6px 0 0">On Android, this button does steps 1 and 2 for you:</p>'
      + '<a class="sec" href="' + esc(PORTAL + '?eoc=' + encodeURIComponent(location.origin) + '#outbox') + '">Open my saved reports (Android)</a></div>';
-  h += '<div class="card" id="work-card" style="display:none"><h2>Work items <span class="muted" id="work-n"></span></h2>'
-     + '<p class="muted" style="margin:0 0 6px">What the reports ask the EOC to do or decide. Tap an item to see it, take it or move it.</p><div id="work"></div></div>';
+  if (OPS) h += '<div class="card" id="work-card" style="display:none"><h2>Work items <span class="muted" id="work-n"></span></h2>'
+     + '<p class="muted" style="margin:0 0 6px">What the reports ask the EOC to do or decide. Tap an item to see it, take it or move it. Highest priority first.</p><div id="work"></div></div>';
   h += '<div class="card" id="comms-card" style="display:none"><h2>Comms sheet</h2><div id="comms"></div></div>';
-  h += '<a class="sec" href="/">Full EOC Message Center (for EOC operators)</a>';
+  if (OPS) h += '<a class="sec" href="/">Full EOC Message Center (for EOC operators)</a>';
   document.getElementById('main').innerHTML = h;
-  drawDrill(); loadWork(); checkInternet();
+  drawDrill(); checkInternet();
   getJSON('/api/comms').then(renderComms).catch(function(){});
-  setInterval(loadWork, 10000);
+  if (OPS) { loadWork(); setInterval(loadWork, 10000); }
   setInterval(function(){ getJSON('/api/status').then(function(s){ srv = s; header(); drawDrill(); }).catch(function(){}); }, 15000);
 }
 // ── A home-screen icon for this EOC, and the full offline app when there is internet ──

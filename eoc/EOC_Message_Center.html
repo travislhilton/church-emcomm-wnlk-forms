@@ -133,7 +133,7 @@ tr:hover td{background:var(--bg);}
 .chip.miss-no{background:var(--danger);color:var(--on-accent);}
 .chip.miss-yes{background:var(--ok-bg);color:var(--ok);}
 .chip.wcl{background:#ede9fe;color:#5b21b6;}
-.chip.ex{background:#991b1b;color:#fff;margin-left:4px;}
+.chip.ex{background:#5b21b6;color:#fff;margin-left:4px;}   /* drill purple: red is kept for alarms */
 .pri{display:inline-block;min-width:18px;text-align:center;border-radius:4px;font-size:10px;font-weight:800;padding:1px 5px;}
 .pri.p1{background:var(--danger);color:var(--on-accent);} .pri.p2{background:var(--warn-bg);color:var(--warn);} .pri.p3{background:var(--bg);color:var(--muted);border:1px solid var(--border);}
 .act-new{display:inline-block;background:var(--accent);color:var(--on-accent);border-radius:4px;font-size:10px;font-weight:700;padding:1px 5px;margin-right:4px;vertical-align:1px;}
@@ -166,7 +166,8 @@ button{cursor:pointer;font-family:inherit;}
 .start-card li .why{display:block;font-size:11px;color:var(--muted);font-weight:400;}
 input::placeholder,textarea::placeholder{color:var(--muted);opacity:1;}
 .btn.sm{padding:3px 9px;font-size:11px;}
-.btn-ghost{background:none;border:none;color:var(--muted);font-size:13px;padding:2px 6px;border-radius:4px;}
+.btn-ghost{background:none;border:none;color:var(--muted);font-size:13px;padding:2px 6px;border-radius:4px;min-width:32px;min-height:32px;}
+@media (max-width:640px){ .btn-ghost{min-width:44px;min-height:44px;} }
 .btn-ghost:hover{background:var(--bg);color:var(--danger);}
 /* Forms */
 .form-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;align-items:flex-end;}
@@ -220,6 +221,9 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
   .fv-pre{max-height:none;overflow:visible;}
   details.fv-raw{display:none;}
 }
+#modal-x{display:none;}
+@media (max-width:640px){ #modal-x{display:block;position:sticky;top:0;margin:0 0 8px auto;z-index:2;min-height:44px;} }
+@media print { #modal-x{display:none !important;} }
 /* Toast */
 #toast{position:fixed;max-width:min(90vw,640px);text-align:center;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:#1e293b;color:#f1f5f9;padding:8px 20px;border-radius:20px;font-size:12px;font-weight:600;opacity:0;transition:transform .25s,opacity .25s;z-index:200;pointer-events:none;}
 #toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
@@ -251,8 +255,8 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
 .hdr-btns{display:flex;gap:6px;margin-top:3px;}
 .hdr-btn{border:1px solid #ffffff55;background:#ffffff22;color:#fff;font-family:inherit;font-size:11px;font-weight:700;border-radius:5px;padding:2px 9px;cursor:pointer;white-space:nowrap;}
 .hdr-btn:hover{background:#ffffff40;}
-.hdr-btn.pace-P{background:#047857;border-color:#34d399;} .hdr-btn.pace-A{background:#1d4ed8;border-color:#93c5fd;}
-.hdr-btn.pace-C{background:#b45309;border-color:#fcd34d;} .hdr-btn.pace-E{background:#be123c;border-color:#fda4af;}
+.hdr-btn.pace-P{background:#1b7a47;border-color:#34d399;} .hdr-btn.pace-A{background:#1d5fa8;border-color:#93c5fd;}
+.hdr-btn.pace-C{background:#9a5300;border-color:#fcd34d;} .hdr-btn.pace-E{background:#b42318;border-color:#fda4af;}
 .hdr-btn.pace-none{border-style:dashed;}
 /* Help tab (EOC Operator Guide) */
 .help-wrap{display:grid;grid-template-columns:210px minmax(0,1fr);gap:16px;align-items:start;}
@@ -1162,6 +1166,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
 <!-- ── Modal ── -->
 <div id="modal-bg">
   <div id="modal-box">
+    <button class="btn secondary sm" id="modal-x" onclick="closeModal()" aria-label="Close">&#10005; Close</button>
     <div id="modal-title"></div>
     <div id="modal-body"></div>
     <div id="modal-footer">
@@ -1304,6 +1309,7 @@ function _reloadForEvent(msg) {
     if (msg) toast(msg);
   }).catch(function(){ toast('Could not reload from the server'); });
 }
+function todayStr() { var d = new Date(); return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
 function showNewEventForm() {
   var box = document.getElementById('event-new'); box.style.display='';
   var d = new Date(); document.getElementById('ev-new-date').value = d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
@@ -1314,7 +1320,8 @@ function openNewEvent() {
   if (!name) { toast('Give the event a name'); return; }
   var dateVal = document.getElementById('ev-new-date').value;
   var body = {name:name, type:document.getElementById('ev-new-type').value.trim(), area:document.getElementById('ev-new-area').value.trim(),
-              startTs: dateVal ? new Date(dateVal+'T00:00').getTime() : Date.now(), op:(incident&&incident.op)||''};
+              // today's event starts now (not at midnight, which made the first SITREP look hours overdue)
+              startTs: (dateVal && dateVal !== todayStr()) ? new Date(dateVal+'T00:00').getTime() : Date.now(), op:(incident&&incident.op)||''};
   document.getElementById('event-new').style.display='none';
   ['ev-new-name','ev-new-type','ev-new-area'].forEach(function(id){ document.getElementById(id).value=''; });
   if (networkMode) {
@@ -1455,7 +1462,9 @@ function netCallList() {
   var drs = msgs.filter(function(m){ return m.type==='dr'; }), now = Date.now(), lead = leaderLabel().toLowerCase();
   var heard = {}; drs.forEach(function(m){ heard[(unitOf(m)||'').toLowerCase()] = 1; });
   var call = [];
-  roster.forEach(function(r){ var nm = (r.name||'').trim(); if (!nm || r.voiceContact || heard[nm.toLowerCase()]) return;
+  // no roster yet: the units named on the Setup tab (Units covered) are who net control calls
+  var who = roster.length ? roster : String((incident&&incident.eocUnits)||'').split(/[,;\n]+/).map(function(u){ return {name:u.trim()}; }).filter(function(r){ return r.name; });
+  who.forEach(function(r){ var nm = (r.name||'').trim(); if (!nm || r.voiceContact || heard[nm.toLowerCase()]) return;
     var due = r.expectedMinutes && incident && incident.startTs ? incident.startTs + r.expectedMinutes*60000 : 0;
     if (due && now > due) call.push({unit:nm, why:'overdue: no report since '+hhmm(due)+'. Ask the '+lead+' for a voice report; mark voice contact on the Roster'});
     else if (!due) call.push({unit:nm, why:'not heard from yet. Ask for a report'}); });
@@ -1992,6 +2001,7 @@ function switchTab(t) {
   document.querySelectorAll('.tab-btn').forEach(function(b,i){
     var tabs=['overview','actions','roster','dr','so','wcl','messages','notes','comms','map','setup'];
     b.classList.toggle('active', tabs[i]===t);
+    if (tabs[i]===t && b.scrollIntoView) try { b.scrollIntoView({inline:'center', block:'nearest'}); } catch(e){}
   });
   document.querySelectorAll('.tab-panel').forEach(function(p){
     p.classList.toggle('active', p.id==='tab-'+t);
@@ -2474,14 +2484,18 @@ function renderOverview(drs, sos, wcls) {
   // Tracker grid
   var grid = document.getElementById('tracker-grid');
   var emptyEl = document.getElementById('tracker-empty');
+  var list = roster, noList = false;
   if (roster.length===0) {
-    grid.innerHTML=''; emptyEl.style.display='';
-    return;
+    // No roster yet, but reports came in: show the units that reported, and offer to put them on the roster
+    var seenU = {}; list = drs.map(function(m){ return unitOf(m)||''; }).filter(function(n){ var k=n.toLowerCase(); if(!n||seenU[k]) return false; seenU[k]=1; return true; }).map(function(n){ return {name:n}; });
+    if (!list.length) { grid.innerHTML=''; emptyEl.style.display=''; return; }
+    noList = true;
   }
   emptyEl.style.display='none';
-  grid.innerHTML = roster.map(function(r){
+  grid.innerHTML = (noList ? '<div class="tracker-note" style="grid-column:1/-1;font-size:12px;color:var(--muted)">'+list.length+' '+(list.length===1?unitLabel().toLowerCase():unitPlural())+' reported, none on the roster yet: the roster tells you who is missing. '
+      + '<button class="btn secondary sm" onclick="rosterFromReports()">Add the '+list.length+' that reported to the roster</button></div>' : '') + list.map(function(r){
     var drForStake = drs.filter(function(m){return (unitOf(m)||'').toLowerCase()===(r.name||'').toLowerCase();});
-    var lastDR = drForStake.sort(function(a,b){return b.ts-a.ts;})[0];
+    var lastDR = drForStake.sort(function(a,b){return wts(b)-wts(a);})[0];
     var isOverdue = !r.voiceContact && !lastDR && r.expectedMinutes && incident.startTs && (now - incident.startTs) > r.expectedMinutes*60000;
     var cls = 'tracker-card';
     var statusLabel = 'No report';
@@ -2498,6 +2512,14 @@ function renderOverview(drs, sos, wcls) {
   }).join('');
 }
 
+// The units that have sent a Disaster Report, added to the roster (each once, by name)
+function rosterFromReports() {
+  var have = {}; roster.forEach(function(r){ have[String(r.name||'').trim().toLowerCase()] = 1; });
+  var added = 0;
+  msgs.filter(function(m){ return m.type==='dr'; }).forEach(function(m){ var n = (unitOf(m)||'').trim(); if (!n || have[n.toLowerCase()]) return;
+    have[n.toLowerCase()] = 1; roster.push({id:uid(), name:n, spName:'', spPhone:'', expectedMinutes:0, voiceContact:false, voiceContactTs:null}); added++; });
+  save(); render(); toast(added+' added to the Roster tab. Add the ones not heard from yet there too.');
+}
 // ── Roster ────────────────────────────────────────────────────────────────────
 function renderRoster(drs) {
   if (!drs) drs = msgs.filter(function(m){return m.type==='dr';});
@@ -2923,9 +2945,16 @@ function renderNotes() {
   }).join('');
 }
 function removeNote(id) {
-  notes=notes.filter(function(n){return n.id!==id;});
-  if(networkMode) netWrite('/api/notes/'+id,{method:'DELETE'});
-  save(); renderNotes(); toast('Note removed');
+  pendingConfirm = function(){
+    notes=notes.filter(function(n){return n.id!==id;});
+    if(networkMode) netWrite('/api/notes/'+id,{method:'DELETE'});
+    save(); renderNotes(); closeModal(); toast('Note removed');
+  };
+  document.getElementById('modal-title').textContent='Remove Note';
+  document.getElementById('modal-body').innerHTML='<p>Remove this note from the EOC log? This cannot be undone.</p>';
+  document.getElementById('modal-confirm-btn').textContent='Remove';
+  document.getElementById('modal-confirm-btn').className='btn danger';
+  document.getElementById('modal-bg').classList.add('open');
 }
 function exportNotes() {
   if (!notes.length) { toast('No notes to export'); return; }
@@ -3860,9 +3889,9 @@ function renderActions() {
     if(a._group) return '<tr class="act-group"><td colspan="9">'+esc(a._group)+' &middot; '+a.n+' item'+(a.n===1?'':'s')+'</td></tr>';
     var isNew = _actSeenPrev && (a.ts||0) > _actSeenPrev && a.status!=='done';
     var src = a.src && a.src.id && msgs.some(function(m){return m.id===a.src.id;}) ? '<button class="btn-ghost open" title="Open the report" onclick="openForm(\''+jsq(a.src.id)+'\')">&#128196;</button>' : '';
-    return '<tr'+(a.status==='done'?' class="act-done"':'')+'><td><span class="pri p'+(a.prio||2)+'" title="'+(a.prio===1?'High':a.prio===3?'Low':'Normal')+'">'+(a.prio===1?'HIGH':a.prio===3?'low':'')+'&#8203;</span></td>'
+    return '<tr'+(a.status==='done'?' class="act-done"':'')+'><td>'+((a.prio||2)===2 ? '' : '<span class="pri p'+a.prio+'" title="'+(a.prio===1?'High':'Low')+' priority">'+(a.prio===1?'HIGH':'low')+'</span>')+'</td>'
       +'<td>'+(isNew?'<span class="act-new" title="Added since you last opened this tab">NEW</span>':'')+'<span class="act-title" onclick="openAction(\''+jsq(a.id)+'\')">'+esc(a.title)+'</span>'+(needsDecision(a)?'<span class="act-decide" title="Asks for a decision: write it on the item">DECIDE</span>':'')+(a.from?'<span class="act-from" title="'+(a.replied?'Answered: the reply went back down':'Waiting on this EOC')+'">'+(a.replied?'replied to ':'from ')+esc(a.from)+'</span>':'')+(a.detail?'<div style="font-size:11px;color:var(--muted);white-space:pre-wrap">'+esc(String(a.detail).slice(0,160))+(a.detail.length>160?'…':'')+'</div>':'')+(a.decision?'<div style="font-size:11px;color:var(--ok)">Decision: '+esc(a.decision)+'</div>':'')+'</td>'
-      +'<td>'+esc(a.unit||'')+'</td><td style="font-size:11px">'+esc(_ACT_CAT[a.cat]||a.cat||'')+'</td><td>'+(a.owner?esc(a.owner):'<span style="color:var(--danger);font-size:11px">nobody</span>')+'</td>'
+      +'<td>'+esc(a.unit||'')+'</td><td style="font-size:11px">'+esc(_ACT_CAT[a.cat]||a.cat||'')+'</td><td>'+(a.owner?esc(a.owner):'<span style="color:'+(a.prio===1&&a.status!=='done'?'var(--danger);font-weight:700':'var(--muted)')+';font-size:11px">no owner</span>')+'</td>'
       +'<td>'+actStBadge(a)+'</td><td style="font-size:11px;color:var(--muted)">'+esc(a.next||'')+(a.due?'<br><b>Due '+esc(a.due)+'</b>':'')+'</td><td style="font-size:11px;white-space:nowrap;color:var(--muted)">'+actAge(a)+'</td>'
       +'<td style="white-space:nowrap">'+src+'<button class="btn-ghost" title="Edit" onclick="openAction(\''+jsq(a.id)+'\')">&#9998;</button><button class="btn-ghost" title="Remove" onclick="removeAction(\''+jsq(a.id)+'\')">&#10005;</button></td></tr>';
   }).join('');

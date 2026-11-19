@@ -3034,9 +3034,33 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
                     if not ev.get('startTs'):
                         ev['startTs'] = int(time.time() * 1000)
                     eid = str(uuid.uuid4())
+                    # The new event starts with this EOC's wards: the roster of the event that was active (names and
+                    # leaders, not their voice contacts), else the identity's Units covered (audit 2026-11-18: following
+                    # the checklist in order left the new event's roster empty, so no ward could show as overdue).
+                    prev = conn.execute('SELECT id FROM events WHERE active=1').fetchone()
+                    carry = []
+                    if prev:
+                        for r in conn.execute('SELECT data_json FROM roster WHERE event_id=?', (prev['id'],)).fetchall():
+                            try:
+                                d = json.loads(r['data_json'] or '{}')
+                            except ValueError:
+                                continue
+                            if isinstance(d, dict) and str(d.get('name') or '').strip() and not d.get('via'):
+                                carry.append({k: d.get(k) for k in ('name', 'spName', 'spPhone', 'expectedMinutes') if k in d})
+                    if not carry:
+                        _ir = conn.execute('SELECT data_json FROM incident WHERE singleton=1').fetchone()
+                        ident = json.loads(_ir['data_json'] or '{}') if _ir else {}
+                        carry = [{'name': u.strip()} for u in re.split(r'[,;\n]+', str(ident.get('eocUnits') or '')) if u.strip()]
                     conn.execute('UPDATE events SET active=0')
                     conn.execute('INSERT INTO events (id, created_ms, status, active, data_json) VALUES (?,?,?,1,?)',
                                  (eid, int(time.time() * 1000), 'open', json.dumps(ev)))
+                    seen = set()
+                    for c in carry:
+                        if c['name'].strip().lower() in seen:
+                            continue
+                        seen.add(c['name'].strip().lower())
+                        _roster_insert(conn, dict({'spName': '', 'spPhone': '', 'expectedMinutes': 0}, **c, id=str(uuid.uuid4()),
+                                                  voiceContact=False, voiceContactTs=None), eid)
                     conn.execute('INSERT OR IGNORE INTO notes (id, ts, text, event_id) VALUES (?,?,?,?)',
                                  (str(uuid.uuid4()), int(time.time() * 1000),
                                   f'Emergency Event opened: {name}' + (f' ({ev["type"]})' if ev.get('type') else ''), eid))
