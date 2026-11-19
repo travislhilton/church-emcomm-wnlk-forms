@@ -127,7 +127,7 @@ Tests that need real equipment (Winlink over radio, an iPhone, a TV, a USB (Univ
 - **Acronyms spelled out**: `python testing/test_acronyms.py` reads every user-facing document (each card, each CCD-1 scenario card, the deck, the pages and forms, the Markdown and text guides) and fails when an acronym's first use has no expansion next to it, or when an upper-case word is not in its acronym list yet (add it with its expansion). `--show` lists each miss with its context. The pre-commit hook runs it after the public-files check.
 - **Simulator**: `python testing/test_sim.py` runs the engine, privacy and server checks against the invented pack in `testing/fixtures/` and a scratch EOC (port 8085; simulator on 8095). Never point a test at `secure data/`.
 - **Browser checks**: the recipes are in `testing/TEST_CHECKLIST.md`, section by section (Worker forms, Winlink templates, Drop Folder, EOC Message Center, wall display, Comms Sheet, phones and the Church of Jesus Christ EMCOMM app).
-- **Layout checks**: deck slides measured in the deck loader; wall display measured in a 1920×1080 iframe; card sides ≤ 952 px at 720 px width (see CLAUDE.md, *Gotchas*).
+- **Layout checks**: deck slides measured in the deck loader; wall display measured in a 1920×1080 iframe; card sides ≤ 952 px at 696 px width (0.75 in left margin) (see CLAUDE.md, *Gotchas*).
 - **Winlink templates**: `testing/make-winlink-test-copies.ps1` builds substituted copies for browser testing; the real test is in Winlink Express.
 
 ## 8. Style

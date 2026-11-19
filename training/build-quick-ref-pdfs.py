@@ -1,6 +1,6 @@
 """Build the printable Quick Reference Card PDFs from training/quick-ref-cards.html.
 
-One PDF per card, US Letter, 0.5 in margins, one card side per page, so a
+One PDF per card, US Letter, 0.75 in left margin and 0.5 in on the other sides, one card side per page, so a
 two-sided card prints front/back on one sheet ("flip on long edge") at any
 printer or print shop. Also writes the per-card print HTML (open in a browser
 and press Print if you cannot use the PDF) and an all-cards PDF.
@@ -43,11 +43,11 @@ CARDS = [
     ('10', 'Team_Leader_Crew_Chief'),
 ]
 # CSS zoom per card side so each side fits one Letter page (measured in Chrome
-# at the 720 px printable width; 1 = natural size). Keys: "<card>-<side index>".
+# at the 696 px printable width (8.5 in less 0.75 + 0.5 in margins); 1 = natural size). Keys: "<card>-<side index>".
 ZOOM = {}  # every side fits at 1 (no zoom), so printing the web page gives the same result; 2026-11-03
 
 PRINT_CSS = """
-@page { size: letter; margin: 0.5in; }
+@page { size: letter; margin: 0.5in 0.5in 0.5in 0.75in; }  /* 3/4 in left margin (hole punch, binder) */
 * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 html, body { background: #fff; padding: 0; margin: 0; }
 .page-header, .section-label, .print-btn { display: none; }
