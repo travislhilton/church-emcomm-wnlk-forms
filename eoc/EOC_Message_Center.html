@@ -503,6 +503,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
       <span class="spacer"></span>
       <button class="btn secondary sm" onclick="copyTableSO()">Copy Items as TSV</button>
     </div>
+    <p class="muted" id="so-filled-line" style="font-size:12px;margin:4px 0 8px"></p>
     <div id="so-board"></div>
     <div id="so-script-wrap" style="display:none" class="rollup-wrap">
       <pre class="rollup-pre" id="so-script-pre"></pre>
@@ -655,6 +656,9 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
           <div class="form-group"><label>Welfare line — local Welfare and Self-Reliance Manager (WSRM), then the AWSRM (name)</label><input type="text" id="eoc-welfare" placeholder="e.g., (name), Welfare and Self-Reliance Manager, (region)"></div>
           <div class="form-group"><label>Welfare line email (SITREP, forms, approvals at P / A)</label><input type="text" id="eoc-welfare-email" placeholder="e.g. wsrm@example.org"></div>
           <div class="form-group"><label>Welfare line Winlink address (SITREP and forms at C)</label><input type="text" id="eoc-welfare-winlink" placeholder="e.g. N0CALL or N0CALL@winlink.org"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Supply Orders are filled by (once approved)</label><input type="text" id="eoc-so-filled" placeholder="e.g. Bishops' Storehouse (the default), or the storehouse or supplier your welfare line names"></div>
         </div>
       </div>
       <div class="form-row">
@@ -1057,7 +1061,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
           <li><b>&#128196; Open</b> shows the whole form as the volunteer filled it, with Print, Copy text and Save .txt.</li>
           <li><b>Missionaries not accounted for:</b> the red bar and Overview alert need immediate action. Tell the Stake President. Each ward's status comes from its <b>latest</b> report that answered: a later report that finds them safe clears the alert. The Overview's <b>Missionary status by ward</b> is the mission office's list; <b>Copy for the mission office</b> gives it as text.</li>
           <li><b>OVERDUE on the Roster</b> means a unit has passed its expected window with nothing received. Call the bishop or Team Leader. If they report by voice, mark &#9742;.</li>
-          <li><b>Supply Orders:</b> items from every unit are added together. <b>Generate Phone Script</b> reads them out for a call. <b>Supply Orders for the welfare line</b> lists each order with its approval and how long it has waited; <b>Approval</b> opens its work item.</li>
+          <li><b>Supply Orders:</b> items from every unit are added together. <b>Generate Phone Script</b> reads them out for a call. <b>Supply Orders for the welfare line</b> lists each order with its approval and how long it has waited; <b>Approval</b> opens its work item. Approved orders are filled by the Bishops' Storehouse unless Setup, This EOC names another storehouse or supplier.</li>
           <li><b>Work Items:</b> the worklist. Every report filed adds the items it calls for on its own: missionaries not accounted for, injuries or deaths, each <i>assistance needed</i> answer, every Supply Order awaiting approval, a crew without its safety briefing, and a roster unit that goes overdue. Add your own with the box at the top (a phone call to return, a shelter to confirm, a decision the Stake President must make). Click an item to set <b>who owns it</b>, its <b>status</b> (Open, In work, Waiting on the line above (UP), Done), the <b>next action</b>, a due time and the <b>decision</b> when it is made; each change is logged with the operator's name. Each ward has one item per need: a follow-up report updates it (an older report arriving late never does), and a later YES on the missionary question closes that ward's missionary item. The filter buttons are the worklists: All open, Decisions to make, Life safety, Missionaries, Supplies, Facilities, Assistance, Overdue units, No owner, Waiting on the line above, Done. <b>Decisions to make</b> is the Stake President's list (each marked DECIDE; the Overview counts them): write the decision on the item and it leaves the list. <b>Group by ward</b> puts each unit's items together; <b>NEW</b> marks items added since you last opened the tab. <b>UP</b> means the item waits on the line above you: it goes with the next roll-up and lands open on that EOC's list, naming yours. <b>No Council / Area EOC open?</b> UP items go up only as SITREP Section I. Phone or email the welfare line for anything urgent and write their answer on the item. The SITREP carries every open item and the decisions recorded in the period (section I); the wall shows the open count and the high-priority items. On a phone, the operators' phone page (Setup, Phones: <b>Operators' phone page</b>, the address ending <code>/m?ops=1</code>) lists the items to take and move; the page the wall's QR code opens does not show them.</li>
           <li><b>Notes:</b> log every decision, every PACE change and every message you send up. Use <b>Export as TXT</b> to save the log.</li>
           <li><b>Copy as TSV</b> pastes any table into a spreadsheet.</li>
@@ -2762,6 +2766,7 @@ function buildSitrep() {
   var f = '\n'+rule+'\nSECTION F: SUPPLY REQUESTS\n\n';
   if (sos.length) {
     f += '  '+sos.length+' supply order(s) received. See Supply Orders tab for details.\n';
+    f += '  Filled by: '+soFilledBy()+', once the ERD and the welfare line approve.\n';
     soAggregate(sos).forEach(function(x){f+='    '+padR(x.num||'LOCAL',7)+'  '+padR(x.desc,50)+'  QTY: '+x.total+'\n';});
   } else {
     f += '  No supply orders received.\n';
@@ -2865,6 +2870,8 @@ function soState(m) {
   return {k:'wait', label:'Needs approval', cls:'danger'};
 }
 function renderSOBoard(sos) {
+  var fl = document.getElementById('so-filled-line');
+  if (fl) fl.textContent = 'Approved orders are filled by: ' + soFilledBy() + ' (change it on Setup, This EOC).';
   var el = document.getElementById('so-board'); if (!el) return;
   if (!sos.length) { el.innerHTML = ''; return; }
   var now = Date.now(), list = sos.slice().sort(function(a,b){ return (a.ts||0)-(b.ts||0); });
@@ -2883,6 +2890,9 @@ function renderSOBoard(sos) {
           +'<td style="white-space:nowrap">'+(a ? '<button class="btn secondary sm" onclick="openAction(\''+jsq(a.id)+'\')">Approval</button> ' : '')+'<button class="btn secondary sm" onclick="openForm(\''+jsq(m.id)+'\')">Open form</button></td></tr>'; }).join('')
     + '</tbody></table></div></div>';
 }
+// Who fills an approved Supply Order: the Bishops' Storehouse unless this EOC names another (Setup, This EOC; Travis 2026-11-18)
+var SO_FILLED_DEFAULT = "Bishops' Storehouse";
+function soFilledBy() { return String((incident && incident.soFilledBy) || '').trim() || SO_FILLED_DEFAULT; }
 function buildPhoneScript() {
   var sos = msgs.filter(function(m){return m.type==='so';});
   if (!sos.length) { toast('No supply orders loaded'); return; }
@@ -2891,7 +2901,7 @@ function buildPhoneScript() {
   var incName=(incident&&incident.name)||'(Unnamed Incident)';
   var stakes=sos.map(function(m){return m.so.stake||'?';});
   var txt='============================================================\n  Church of Jesus Christ EMCOMM SUPPLY ORDER\n  Call: 1-801-240-0450 (Area Welfare Administration)\n============================================================\n\n';
-  txt+='Incident:  '+incName+'\nDate/Time: '+ds+'\nStakes:    '+stakes.join(', ')+'\n\n';
+  txt+='Incident:  '+incName+'\nDate/Time: '+ds+'\nStakes:    '+stakes.join(', ')+'\nFilled by: '+soFilledBy()+' (once approved)\n\n';
   txt+='------------------------------------------------------------\nITEM LIST (read to operator)\n------------------------------------------------------------\n\n';
   var lastCat='';
   soAggregate(sos).forEach(function(a){
@@ -3044,7 +3054,7 @@ function updateSetupForm() {
     sv('eoc-parent', incident.parentName||''); sv('eoc-parent-email', incident.parentEmail||''); sv('eoc-parent-winlink', incident.parentWinlink||'');
     sv('eoc-council', incident.councilName||''); sv('eoc-council-email', incident.councilEmail||''); sv('eoc-council-winlink', incident.councilWinlink||'');
     sv('eoc-welfare', incident.welfareName||''); sv('eoc-welfare-email', incident.welfareEmail||''); sv('eoc-welfare-winlink', incident.welfareWinlink||'');
-    sv('eoc-lat', incident.eocLat||''); sv('eoc-lon', incident.eocLon||''); sv('eoc-wifi-name', incident.wifiName||''); sv('eoc-wifi-pass', incident.wifiPass||'');
+    sv('eoc-lat', incident.eocLat||''); sv('eoc-lon', incident.eocLon||''); sv('eoc-wifi-name', incident.wifiName||''); sv('eoc-wifi-pass', incident.wifiPass||''); sv('eoc-so-filled', soFilledBy());
     sv('eoc-map-path', incident.mapPath||''); mapStatusLine(); basemapStatusLine();
     sv('inc-sitrep-hrs', sitrepHrs() ? String(sitrepHrs()) : ''); sv('inc-sitrep-by', incident.sitrepBy||'');
   }
@@ -3078,7 +3088,7 @@ function saveIncident() {
   if (dateVal && timeVal) { startTs = new Date(dateVal+'T'+timeVal).getTime(); }
   else if (dateVal) { startTs = new Date(dateVal).getTime(); }
   var keep = {};  // EOC identity, the event's id and status, roll-up log and last roll-up time survive a details update
-  ['eocLevel','eocName','eocUnits','parentName','parentEmail','parentWinlink','councilName','councilEmail','councilWinlink','welfareName','welfareEmail','welfareWinlink','eocLat','eocLon','wifiName','wifiPass','lastRollupTs','lastSitrepTs','rollups','closedTs','eventId','eventStatus','eventCreatedMs','pace','paceTs','commsEvent','sitrepHrs','sitrepBy'].forEach(function(k){ if(incident && incident[k]!==undefined) keep[k]=incident[k]; });
+  ['eocLevel','eocName','eocUnits','parentName','parentEmail','parentWinlink','councilName','councilEmail','councilWinlink','welfareName','welfareEmail','welfareWinlink','soFilledBy','eocLat','eocLon','wifiName','wifiPass','lastRollupTs','lastSitrepTs','rollups','closedTs','eventId','eventStatus','eventCreatedMs','pace','paceTs','commsEvent','sitrepHrs','sitrepBy'].forEach(function(k){ if(incident && incident[k]!==undefined) keep[k]=incident[k]; });
   var pace = document.getElementById('inc-pace').value;
   var paceChanged = pace !== (keep.pace||'');
   var srH = document.getElementById('inc-sitrep-hrs').value, srBy = document.getElementById('inc-sitrep-by').value.trim();
@@ -3134,6 +3144,7 @@ function saveEocIdentity() {
   incident.eocLon = document.getElementById('eoc-lon').value.trim();
   incident.wifiName = document.getElementById('eoc-wifi-name').value.trim();
   incident.wifiPass = document.getElementById('eoc-wifi-pass').value;
+  var sf = document.getElementById('eoc-so-filled'); if (sf) incident.soFilledBy = sf.value.trim() || SO_FILLED_DEFAULT;
   var mp = document.getElementById('eoc-map-path').value.trim(); if (mp !== (incident.mapPath||'')) { incident.mapPath = mp; MAP_LOADED = false; }
   _identitySavedMs = Date.now();
   // The units covered go on the roster too (by name, case-insensitive): the operator types each ward or stake once.

@@ -515,7 +515,7 @@ You do not need to run any of this. The decisions that are yours:
 - **Drill it.** A monthly 15-minute net, one two-hour tabletop a year, and one full field-to-Area test a year. A path that has never been tested is not a path.
 - **Read the Leaders' Overview card (card 4)** — one sheet, the whole system, no technical detail: [Quick_Reference_Card_4_Leaders_Overview.pdf](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/pdf/Quick_Reference_Card_4_Leaders_Overview.pdf) (Letter, double-sided) or the [web page](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/quick-ref-cards.html). The [Overview deck](https://travislhilton.github.io/church-emcomm-wnlk-forms/dist/ChurchEMCOMM_Deck_v1.0.zip) is the stake planning and training presentation.
 
-During an activation the Stake EOC gives you accurate totals for your reports to the Stake President and the Area, and sends every Supply Order up the welfare line (WSRM, then AWSRM) for approval. Ask the operator for **Decisions to make** (Work Items tab, or the count on the Overview and the wall): it lists what waits on you, and the decision you give is written on the item.
+During an activation the Stake EOC gives you accurate totals for your reports to the Stake President and the Area, and sends every Supply Order up the welfare line (WSRM, then AWSRM) for approval. Approved orders are filled by the **Bishops' Storehouse** by default; if your welfare line names another storehouse or supplier, type it in **Supply Orders are filled by** (Setup, This EOC). The SITREP and the phone script name it. Ask the operator for **Decisions to make** (Work Items tab, or the count on the Overview and the wall): it lists what waits on you, and the decision you give is written on the item.
 
 ---
 
