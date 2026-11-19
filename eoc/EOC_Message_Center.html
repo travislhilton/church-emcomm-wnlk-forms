@@ -689,7 +689,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
 
     <div class="card" id="drillcfg-card">
       <h2>Load a drill configuration</h2>
-      <p style="font-size:12px;color:var(--muted);margin:0 0 8px">A drill configuration file (from the drill director; it lives in <code>secure data</code> on this laptop, never in the repository) sets up this EOC in one step: identity and units, the EOC above, the council and welfare lines, the must-have roles it knows, the <b>map data folder</b>, the <b>Winlink call sign</b> that feeds this EOC, and the drill event. Then check the fields above and add what it cannot know (Wi-Fi, the people in the room).</p>
+      <p style="font-size:12px;color:var(--muted);margin:0 0 8px">A drill configuration file (from the drill controller: <code>simulation/drill-config.json</code> in the drill's pack folder; a real community's stays on this laptop, never in the repository) sets up this EOC in one step: identity and units, the EOC above, the council and welfare lines, the must-have roles it knows, the <b>map data folder</b>, the <b>Winlink call sign</b> that feeds this EOC, and the drill event. Then check the fields above and add what it cannot know (Wi-Fi, the people in the room).</p>
       <input type="file" id="drillcfg-file" accept=".json,application/json" onchange="readDrillConfig(this)">
       <div id="drillcfg-pick" style="display:none;margin-top:8px">
         <div class="form-group"><label>This laptop is</label><select id="drillcfg-eoc"></select></div>
@@ -833,6 +833,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
       <div class="toolbar" style="flex-wrap:wrap;gap:10px;margin-bottom:0">
         <button class="btn secondary" onclick="if(networkMode) window.open(phoneUrl(),'_blank'); else toast('Needs the networked server')">Open the phone page</button>
         <button class="btn secondary" onclick="copyText(phoneUrl())">Copy phone page URL (web address)</button>
+        <button class="btn secondary" onclick="if(networkMode) window.open(phoneUrl()+'?ops=1','_blank'); else toast('Needs the networked server')" title="The phone page plus the EOC's Work Items: for EOC operators only, never on the wall">Operators' phone page (with Work Items)</button>
         <span id="phone-url-txt" style="font-size:11px;color:var(--muted);align-self:center"></span>
       </div>
     </div>
@@ -957,7 +958,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
         <ul>
           <li><span class="pace-badge P">P</span> Save emailed or texted files to the EOC Drop Folder. Send the SITREP by email.</li>
           <li><span class="pace-badge A">A</span> The same, over whatever internet you have. Keep an eye on the green Drop Folder bar.</li>
-          <li><span class="pace-badge C">C</span> Reports arrive by Winlink auto-ingest. Keep Winlink Express connecting to the radio gateway, and watch the blue bar. When the gateway is down, collect mail with a Vara FM RMS Post Office session and keep a Vara FM P2P (peer-to-peer) session open. For a voice report from the net:
+          <li><span class="pace-badge C">C</span> Reports arrive by Winlink auto-ingest. Keep Winlink Express connecting to the radio gateway, and watch the WINLINK AUTO-INGEST bar. When the gateway is down, collect mail with a Vara FM RMS Post Office session and keep a Vara FM P2P (peer-to-peer) session open. For a voice report from the net:
             <ul>
               <li>Mark the unit with &#9742; on the Roster.</li>
               <li>Add a Note.</li>
@@ -993,12 +994,13 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
         <h2>2. Start of an activation</h2>
         <ol>
           <li><b>Start the server.</b> Double-click <i>Church of Jesus Christ EMCOMM EOC Server</i> on the desktop. Give the address it prints (like <code>http://10.1.2.3:8080</code>) to the other operators on the same Wi-Fi. If Windows asks about the firewall, allow private networks.<br>Without the server, the page runs standalone: one operator, no auto-ingest and no wall display.</li>
+          <li><b>Drill?</b> Setup, <b>Load a drill configuration</b>, then <b>Set up this EOC</b>, does steps 2 and 3 in one go. Then check them.</li>
           <li><b>Setup, This EOC:</b> enter the level (Satellite, Stake or Area), the EOC name, the units it covers, and the parent EOC (name, email and Winlink address). Add the <b>EOC location</b> (phone forms use it) and, if you want a join-Wi-Fi QR code on the wall, the <b>EOC Wi-Fi name and password</b>. Click <b>Save EOC Identity</b>.</li>
-          <li><b>Setup, Open a New Event:</b> enter the name, type, area and start date.</li>
-          <li><b>Setup, Active event details:</b> enter the Stake President or incident lead, your name, the operational period, the <b>PACE level in force</b> and the <b>SITREP interval</b> leadership sets (2, 4, 8, 12 or 24 hours) with who directed it. Click <b>Save Event Details</b>.</li>
-          <li><b>Roster:</b> add every ward (or every stake, at Area level) with its leader, phone and expected report window.</li>
+          <li><b>Setup, Open a New Event:</b> enter the name, type and area. Today's event starts now; pick an earlier date only for an event already under way. The new event starts with this EOC's wards (the last event's roster, or the units covered).</li>
+          <li><b>Setup, Active event details:</b> enter the <b>Incident Commander (IC)</b> (the Stake President or incident lead), your name, the operational period, the <b>PACE level in force</b> and the <b>SITREP interval</b> leadership sets (2, 4, 8, 12 or 24 hours) with who directed it. Click <b>Save Event Details</b>.</li>
+          <li><b>Roster:</b> check every ward (or every stake, at Area level) is there, with its leader, phone and expected report window. A ward not on the roster can never show as overdue.</li>
           <li><b>Comms tab:</b> check that the sheet is current. Add any event-only lines on Setup.</li>
-          <li><b>Start Winlink Express</b> and connect at the current level. Check the blue Winlink bar and the green Drop Folder bar.</li>
+          <li><b>Start Winlink Express</b> and connect at the current level. Check the WINLINK AUTO-INGEST bar and the green Drop Folder bar.</li>
           <li><b>Wall display</b> on a TV (section 10). Its QR code is how phones in the room send reports.</li>
         </ol>
       </section>
@@ -1009,7 +1011,9 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
           <li><b>Header:</b> event name, PACE level, clock and time left in the operational period. The <b>PACE</b> button shows the level in force and opens section 1. <b>Help</b> opens this guide. You can also press <b>?</b> on the keyboard.</li>
           <li><b>Missionary bar:</b> yellow until a Disaster Report answers the missionary question. Green when every ward's latest report that answered says yes. Red when a ward's latest report says no: tell the Stake President at once. A later report that finds them clears it.</li>
           <li><b>Server bar:</b> green (connected) means every operator on the server shares the data. Amber (connection lost) means the server stopped answering: check its window. No bar means standalone: this browser only, no Winlink auto-ingest, no wall display.</li>
-          <li><b>Blue bar:</b> Winlink auto-ingest. <b>Green bar:</b> internet Drop Folder; it also counts files whose reports were already on file ("· 2 already on file"). Click either bar to check or change its folder.</li>
+          <li><b>NOT SAVED</b> on the server bar: changes made while the server was not answering are kept on this screen and sent as soon as it answers. Leave this page open until the count is gone.</li>
+          <li><b>Purple drill bar</b> (a drill only): the scenario, what this EOC plays, the drill clock and who is ready. Press <b>I am ready</b> when you are.</li>
+          <li><b>WINLINK AUTO-INGEST bar</b> (blue when on, grey until a folder is chosen): Winlink auto-ingest. <b>Green bar:</b> internet Drop Folder; it also counts files whose reports were already on file ("· 2 already on file"). Click either bar to check or change its folder.</li>
         </ul>
         <p>What each tab is for:</p>
         <ul>
@@ -1022,22 +1026,24 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
           <li><b>Work Crew Logs:</b> crews and hours.</li>
           <li><b>Messages:</b> every arrival, its status, and which EOC it came through.</li>
           <li><b>Notes:</b> the action log.</li>
-          <li><b>Comms:</b> the EMCOMM Comms Sheet.</li>
-          <li><b>Setup:</b> this EOC, events, event details and PACE level, roll-up, shift handoff, Comms Sheet editor and wall display.</li>
+          <li><b>Comms:</b> the EMCOMM Comms Sheet, with net control's call list on top.</li>
+          <li><b>Map:</b> the wards coloured by roster status, once Setup, This EOC, <b>Map data folder</b> is set (<b>From map data</b> fills the units; <b>Download basemap now</b> keeps street tiles for offline use).</li>
+          <li><b>Setup:</b> this EOC, share setup, drill setup, must-have roles, events, event details and PACE level, roll-up, shift handoff, Comms Sheet, phone page, wall display, help and feedback, and the Danger Zone (<b>Clear this event's data</b>: never for a new emergency).</li>
         </ul>
       </section>
 
       <section class="help-sec" id="help-receive">
         <h2>4. Receiving reports</h2>
         <ul>
-          <li><b>Winlink:</b> with the server running, Church forms received by the <b>chosen callsign</b> appear within 10 seconds. Choose it once: click the blue watcher bar, type the callsign (it lists the ones on this computer) and choose the Winlink Express folder in the folder browser; it is saved for every start. The EOC reads Winlink's messages where they are (<code>C:\RMS Express\&lt;callsign&gt;\Messages\</code>; RMS Express, for Radio Message Server, is Winlink Express's old name), only those that arrived after the event began, and never moves them. In standalone mode, drag the message's <code>.mime</code> file from that folder onto this page.</li>
+          <li><b>Winlink:</b> with the server running, Church forms received by the <b>chosen callsign</b> appear within 10 seconds. Choose it once: click the WINLINK AUTO-INGEST bar (or <b>Choose</b> on the Overview checklist). Step 1: pick the Winlink Express folder (<code>C:\RMS Express</code>) and click <b>Use this folder</b>. Step 2: tick the callsign the field sends this EOC's reports to and click <b>Use the ticked callsign</b>. It is saved for every start. The EOC reads Winlink's messages where they are (<code>C:\RMS Express\&lt;callsign&gt;\Messages\</code>; RMS Express, for Radio Message Server, is Winlink Express's old name), only those that arrived after the event began, and never moves them. In standalone mode, drag the message's <code>.mime</code> file from that folder onto this page.</li>
           <li><b>Phones on the EOC Wi-Fi:</b> anyone in the EOC, with or without the app, scans the QR code on the wall (or opens the phone page address on Setup). They tap <b>New Disaster Report / Supply Order / Work Crew Log</b>, fill it in and tap <b>Send to EOC</b>. It is filed within seconds, marked <i>Phone / browser</i>. No files and no app needed. The form fills in the EOC location, because phones cannot share their GPS (Global Positioning System) location over the EOC Wi-Fi.</li>
           <li><b>Reports saved in the Church of Jesus Christ EMCOMM app:</b> a field worker who filled in forms with no signal joins the EOC Wi-Fi, opens the app, taps <b>Outbox</b>, then <b>Send to EOC</b>, and scans the wall QR code (or types the address under it). Their phone shows a green "received" screen; their GPS from the field comes with the report.</li>
           <li><b>More than one EOC on the same network</b> (a drill): the phone lists every EOC with its name and event, and the report goes to the one picked.</li>
           <li><b>Text, email, AirDrop or USB:</b> save the volunteer's <code>.txt</code> file into the <b>EOC Drop Folder</b> (desktop shortcut), or drag it onto this page. It is filed within 10 seconds; Drop Folder files move to <code>Ingested</code>. A report that is already on file is not added twice: a note says so ("Already on file at the EOC"), and nothing else changes. Sending the same report again is safe.</li>
           <li><b>Roll-ups and Comms Sheets</b> (<code>.json</code> files) from other EOCs come in the same ways: Drop Folder, Winlink attachment, dragged onto this page, or the Import buttons on Setup. They merge automatically.</li>
           <li><b>Voice or paper reports:</b> open the phone page (Setup, <i>Open the phone page</i>) on this computer or any phone on the EOC Wi-Fi, tap <b>New</b> for the form, type the report in and tap <b>Send to EOC</b>. Then mark the unit with &#9742; on the Roster. In standalone mode (no server) this page cannot take a typed-in report: add a Note, mark &#9742;, and have a HAM send the form by Winlink.</li>
-          <li><b>Duplicates are skipped automatically.</b> The same report arriving twice (by Winlink and in a roll-up, for example) appears once.</li>
+          <li><b>Duplicates are skipped automatically.</b> The same report arriving twice (by Winlink and in a roll-up, for example) appears once. A follow-up report from the same ward with any answer changed is a new report, and it is filed.</li>
+          <li><b>Sent time:</b> a report carries the time it was sent (the Winlink message date, or when the phone saved it). Each ward's <b>latest</b> report is the one sent last, so a report that waited hours at a gateway never overrules a newer one; it shows <i>(sent 14:05)</i>, for example, when it arrived more than 30 minutes late.</li>
         </ul>
       </section>
 
@@ -1049,7 +1055,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
           <li><b>Missionaries not accounted for:</b> the red bar and Overview alert need immediate action. Tell the Stake President. Each ward's status comes from its <b>latest</b> report that answered: a later report that finds them safe clears the alert. The Overview's <b>Missionary status by ward</b> is the mission office's list; <b>Copy for the mission office</b> gives it as text.</li>
           <li><b>OVERDUE on the Roster</b> means a unit has passed its expected window with nothing received. Call the bishop or Team Leader. If they report by voice, mark &#9742;.</li>
           <li><b>Supply Orders:</b> items from every unit are added together. <b>Generate Phone Script</b> reads them out for a call. <b>Supply Orders for the welfare line</b> lists each order with its approval and how long it has waited; <b>Approval</b> opens its work item.</li>
-          <li><b>Work Items:</b> the worklist. Every report filed adds the items it calls for on its own: missionaries not accounted for, injuries or deaths, each <i>assistance needed</i> answer, every Supply Order awaiting approval, a crew without its safety briefing, and a roster unit that goes overdue. Add your own with the box at the top (a phone call to return, a shelter to confirm, a decision the Stake President must make). Click an item to set <b>who owns it</b>, its <b>status</b> (OPEN, IN WORK, UP, DONE), the <b>next action</b>, a due time and the <b>decision</b> when it is made; each change is logged with the operator's name. The filter buttons are the worklists: Decisions to make, Life safety, Missionaries, Supplies, Facilities, Assistance, Overdue units, No owner. <b>Decisions to make</b> is the Stake President's list (each marked DECIDE; the Overview counts them): write the decision on the item and it leaves the list. <b>Group by ward</b> puts each unit's items together; <b>NEW</b> marks items added since you last opened the tab. <b>UP</b> means the item waits on the line above you: it goes with the next roll-up and lands open on that EOC's list, naming yours. <b>No Council / Area EOC open?</b> UP items go up only as SITREP Section I. Phone or email the welfare line for anything urgent and write their answer on the item. The SITREP carries every open item and the decisions recorded in the period (section I); the wall shows the open count and the high-priority items.</li>
+          <li><b>Work Items:</b> the worklist. Every report filed adds the items it calls for on its own: missionaries not accounted for, injuries or deaths, each <i>assistance needed</i> answer, every Supply Order awaiting approval, a crew without its safety briefing, and a roster unit that goes overdue. Add your own with the box at the top (a phone call to return, a shelter to confirm, a decision the Stake President must make). Click an item to set <b>who owns it</b>, its <b>status</b> (Open, In work, Waiting on the line above (UP), Done), the <b>next action</b>, a due time and the <b>decision</b> when it is made; each change is logged with the operator's name. Each ward has one item per need: a follow-up report updates it (an older report arriving late never does), and a later YES on the missionary question closes that ward's missionary item. The filter buttons are the worklists: All open, Decisions to make, Life safety, Missionaries, Supplies, Facilities, Assistance, Overdue units, No owner, Waiting on the line above, Done. <b>Decisions to make</b> is the Stake President's list (each marked DECIDE; the Overview counts them): write the decision on the item and it leaves the list. <b>Group by ward</b> puts each unit's items together; <b>NEW</b> marks items added since you last opened the tab. <b>UP</b> means the item waits on the line above you: it goes with the next roll-up and lands open on that EOC's list, naming yours. <b>No Council / Area EOC open?</b> UP items go up only as SITREP Section I. Phone or email the welfare line for anything urgent and write their answer on the item. The SITREP carries every open item and the decisions recorded in the period (section I); the wall shows the open count and the high-priority items. On a phone, the operators' phone page (Setup, Phones: <b>Operators' phone page</b>, the address ending <code>/m?ops=1</code>) lists the items to take and move; the page the wall's QR code opens does not show them.</li>
           <li><b>Notes:</b> log every decision, every PACE change and every message you send up. Use <b>Export as TXT</b> to save the log.</li>
           <li><b>Copy as TSV</b> pastes any table into a spreadsheet.</li>
         </ul>
@@ -1058,7 +1064,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
       <section class="help-sec" id="help-sitrep">
         <h2>6. SITREP and the lines above you</h2>
         <ol>
-          <li><b>Generate the SITREP:</b> go to Disaster Reports and click <b>Generate SITREP</b>. The header carries the event, this EOC and the PACE level in force.</li>
+          <li><b>Generate the SITREP:</b> go to Disaster Reports and click <b>SITREP (situation report)</b>. The server numbers it (#1, #2, …) and keeps it: <b>Earlier SITREPs</b> under the box opens any of them again. The header carries the event, this EOC, the operator, the operational period and the PACE level in force; section E has one line per ward from its latest report, with no names or phone numbers. In a drill it starts and ends with EXERCISE lines. <b>Copy short version for radio</b> gives sections A to D, F, the totals and what waits on the line above: small enough for VARA HF.</li>
           <li><b>Send it on the current level's path.</b> Click <b>Copy</b>, then:
             <ul>
               <li>At P or A, email it. From a Satellite EOC: to the Stake EOC. From a Stake EOC: to <b>both lines above you</b>, the council line (the Area Seventy's coordinating council) and the welfare line (the local Welfare and Self-Reliance Manager (WSRM), then the Area Welfare and Self-Reliance Manager (AWSRM)), plus the Council / Area EOC if one is open. Setup holds the addresses.</li>
@@ -1122,7 +1128,7 @@ details.fv-raw summary{cursor:pointer;font-size:12px;font-weight:600;color:var(-
           <tbody>
             <tr><td>Phones cannot open the phone page, or Send to EOC fails</td><td>The phone must be on the EOC Wi-Fi, not cellular. Allow the Windows firewall prompt for Python on private networks. Guest Wi-Fi often keeps devices apart; use the EOC's own router. Reports stay in the phone's Outbox until they go through.</td></tr>
             <tr><td>Amber connection-lost bar, no green bar, or other operators cannot connect</td><td>Start <i>Church of Jesus Christ EMCOMM EOC Server</i> and use the address it prints. Make sure everyone is on the same Wi-Fi, and allow the Windows firewall prompt.</td></tr>
-            <tr><td>Winlink messages are not appearing</td><td>Click the blue bar. Check the callsign chosen there: it must be the station the messages are sent to. Check the folder: <code>C:\RMS Express</code>. Check that Winlink Express actually connected. As a fallback, drag the <code>.mime</code> file onto the page.</td></tr>
+            <tr><td>Winlink messages are not appearing</td><td>Click the WINLINK AUTO-INGEST bar. Check the callsign chosen there: it must be the station the messages are sent to. Check the folder: <code>C:\RMS Express</code>. Check that Winlink Express actually connected. As a fallback, drag the <code>.mime</code> file onto the page.</td></tr>
             <tr><td>A Drop Folder file is not filed</td><td>It must be the <code>.txt</code> saved by a Worker form, or a <code>.json</code> roll-up or Comms Sheet. Click the green bar to check the folder. Look in <code>Ingested</code>, because it may already be filed.</td></tr>
             <tr><td>"Duplicate skipped"</td><td>This is normal. That report is already on file.</td></tr>
             <tr><td>Reports are filed under the wrong event</td><td>Go to Setup, Emergency Event, and switch to the right event. New arrivals follow the active event.</td></tr>
@@ -3813,7 +3819,7 @@ function replyToItem(id){
     +'<div><label>Their item becomes</label><select id="rp-status"><option value="done">Done / decided</option><option value="progress">In work (answer is partial)</option><option value="open">Open again (they must act)</option></select></div>'
     +'<div><label>Also close it here as</label><select id="rp-mine"><option value="done">Done</option><option value="progress">In work</option><option value="">(leave as is)</option></select></div>'
     +'<div class="full"><label>Note for their log (optional)</label><input type="text" id="rp-note" placeholder="e.g. truck leaves Bramble Junction 11:10, ETA 14:00"></div>'
-    +'</div><p style="font-size:11px;color:var(--muted);margin:8px 0 0">The reply downloads as a JSON file. Send it the way their roll-up came: attach it to a Winlink message to their station, carry it on USB, or drop it in their Drop Folder. Their Message Center merges it like a roll-up (Overview → Merge roll-up).</p>';
+    +'</div><p style="font-size:11px;color:var(--muted);margin:8px 0 0">The reply downloads as a JSON file. Send it the way their roll-up came: attach it to a Winlink message to their station, carry it on USB, or drop it in their Drop Folder. Their Message Center files it by itself from the Drop Folder or a Winlink attachment, or with Setup → <b>Import Roll-up JSON (merge)</b>.</p>';
   document.getElementById('modal-title').textContent='Reply to '+a.from;
   document.getElementById('modal-body').innerHTML=h;
   document.getElementById('modal-box').classList.add('wide');
