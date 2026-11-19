@@ -154,7 +154,7 @@ One PDF per role, formatted for 8.5 × 11 in paper with the card's front on page
 | 10 | Team Leader and Crew Chief: leading a Helping Hands crew | [Quick_Reference_Card_10_Team_Leader_Crew_Chief.pdf](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/pdf/Quick_Reference_Card_10_Team_Leader_Crew_Chief.pdf) |
 | All | All ten cards in one file (20 pages) | [Quick_Reference_Cards_All.pdf](https://travislhilton.github.io/church-emcomm-wnlk-forms/training/pdf/Quick_Reference_Cards_All.pdf) |
 
-The same PDFs are inside the ZIP package under `training\pdf\`, and the installer puts them in `Documents\Church of Jesus Christ EMCOMM\Field Worker Forms\Quick Reference Cards (PDF)\` with a shortcut straight on the desktop, *Church of Jesus Christ EMCOMM Quick Reference Cards*. To rebuild them after editing the cards: `python training/build-quick-ref-pdfs.py` (needs Chrome).
+The same PDFs are inside the ZIP package under `training\pdf\`, and the installer puts them in `Documents\Church of Jesus Christ EMCOMM\Field Worker Forms\Quick Reference Cards (PDF)\` with a shortcut straight on the desktop, *Church of Jesus Christ EMCOMM Quick Reference Cards*. To rebuild them after editing the cards: `python training/build-quick-ref-pdfs.py` (needs Chrome). The three handouts and the business card sheet go beside them, in `Field Worker Forms\Handouts (PDF)\`. On an EOC laptop, the Message Center's Help tab, *13. Printables*, opens every card and handout from the laptop itself, with no internet; a phone on the EOC Wi-Fi can open them too.
 
 ### For Team Leaders and ERDs — how to onboard volunteers at a staging area
 
