@@ -72,6 +72,19 @@ Developing an outline means writing its inject timeline, templates, roles and ho
 | 205 to 225 | 11:15 | Night | AWSRM approvals and the truck by Saddleback and Route 30 (T+205); the 72-hour posture (T+210); first mud-out crews; city mud-out request for tomorrow (T+214); portable cell sites in the north (T+218); test; **Primary** for the north wards (T+225) | **P** (north) |
 | 235 to 240 | 11:45 | Night | Close-out note; hot wash | P |
 
+Added by the usability audit (2026-11-18), for realism:
+
+| T+ | What happens | The EOC is expected to |
+|---|---|---|
+| 72 | A Disaster Report typed in a hurry with the ward's name misspelled ("Larksur 5th Wd") | File it under the right ward, not as a new one |
+| 105 → 137 | A Winlink report written at T+105, held at a gateway, arrives at T+137 after the same ward's newer report (T+125); its `Date:` header says when it was written | Keep the newer counts |
+| 118, 124, 128 | Two reports from one ward, by two leaders, with different counts; a prompt to the EOC operator | Ask the bishop which counts are right: a work item with "counts" in the title |
+| 133 | A television reporter in the parking lot | One spokesperson named; a work item with "media" in the title |
+| 146, 150 | A ward reports a member's death | Bishop and line above told by a leader, no name on the net; a work item with "death" in the title |
+| 158 | Council / Area EOC only: a stake asks the Area to approve its meetinghouse as a public shelter | Decide with the Area Seventy and answer the stake |
+| 172 | The EOC laptop's battery warning: the generator stalled | Second laptop or paper, a printed copy; a work item with "power" in the title |
+
+
 ### PACE timeline
 
 | T+ | Level | Why | Trigger |

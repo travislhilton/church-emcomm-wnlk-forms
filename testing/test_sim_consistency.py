@@ -459,8 +459,9 @@ try:
         print('      (needs check:', type(e).__name__, e, ')')
     rep = runner.report()
     rs, needs = rep.get('roles_score') or {}, rep.get('needs') or []
-    check(f'trainer: each person\'s score counts every need they share, one name per line ({len(needs)} needs, {len(rs)} roles)',
-          needs and sum(d['total'] for d in rs.values()) == sum(len(engine.role_people(n.get('role') or engine.NEED_ROLE.get(n['cat'], ''))) for n in needs)
+    played = set(rep.get('roles_simulated') or [])     # roles the simulator plays itself (the welfare line) are not scored
+    check(f'trainer: each person\'s score counts every need they share, one name per line, roles the simulator plays left out ({len(needs)} needs, {len(rs)} roles)',
+          needs and not (played & set(rs)) and sum(d['total'] for d in rs.values()) == sum(len([p for p in engine.role_people(n.get('role') or engine.NEED_ROLE.get(n['cat'], '')) if p not in played]) for n in needs)
           and all(d['met'] + d['late'] + d['open'] + d['overdue'] + d['missed'] == d['total'] for d in rs.values())
           and not any(' and ' in r or ',' in r for r in rs), rs)
     deb = engine.debrief_html(rep)

@@ -138,11 +138,13 @@ Scoring stays mechanical and transparent: every number on the scoreboard has a n
 
 1. Controller starts the EOC server and the simulator on the Stake laptop, opens a drill event on the EOC ("Drill — Copper Creek Dam failure"), loads the pack in pseudonymized mode, picks the scenario, scope = the stake's units, speed 2x.
 2. Role players open the EOC Message Center (operator), the phone page on their phones (Team Leaders), Winlink Express with the Church templates (HAM), and the simulator's Roles tab on a shared screen.
-3. T+0: the simulator posts the opening note, sets the EOC event's PACE to P, shows phase 1. The first reports arrive by phone upload (P). Players practise the normal path.
-4. T+6: scenario says the cellular network is failing; the specialist role card says "recommend C; two failed attempts in 15 min"; the Stake President role card says "decide and have the net announce it"; the controller confirms the step-down on the Run tab (or lets the timeline do it). The EOC header turns to C.
-5. T+6 to T+60: reports arrive as Winlink files; net cards go to the HAM player who reads them on the (simulated) net; the operator types them in; a paper card arrives by "runner" from the unit with no HAM. The roster fills; the missionaries alert fires for one unit; a Supply Order arrives; the operator generates SITREP #1 and sends it up (the Area laptop receives it).
-6. T+90: Starlink is up at the stake center (A for the EOC's own internet); SITREP #2 goes by email; Winlink Telnet; the step-up round-trip test is a scripted inject.
-7. T+150: cellular returns in part; step up to P after the test; late reports and Work Crew Logs; T+180 hot wash from the checklist.
+The minutes are those of the developed example, Copper Creek Dam (240 drill minutes; PACE P at T+0, C at T+80, A at T+175, P at T+225).
+
+3. T+0 to T+38 (order and warning): the simulator posts the opening note, sets the EOC event's PACE to P, shows phase 1. The first reports arrive by phone upload (P). At T+3 the Stake President decides the 9:00 meetings; at T+5 the specialist recommends how members are told.
+4. T+38 to T+80 (breach and flood wave): the dam fails at T+38; rooftop and missing-missionary traffic; the first assessment (SITREP #1) is due by T+75.
+5. T+80 (Contingency): phones have failed one by one; the specialist recommends C on two failed attempts, the Stake President decides, the net announces it, and the EOC header turns to C. From here reports arrive as Winlink files (or paper cards when the EOC watches no Winlink folder); net cards go to the HAM player; a runner brings a paper form.
+6. T+80 to T+160: a ward not heard from, conflicting counts from one ward, a report held at a gateway that arrives after the same ward's newer one, a misspelled ward name, a member's death, a media inquiry; Starlink is set up and tested (A for the EOC's own internet at T+175).
+7. T+160 to T+240 (the night): the EOC laptop loses power, the public-shelter question goes to the Area, late reports and Work Crew Logs; SITREP #2 by T+210; P again at T+225 after the round-trip test; T+236 hot wash from the checklist (its core lines first when time is short).
 
 ## 4. Scenario file schema
 
@@ -226,7 +228,9 @@ Mechanics, in the same style as the rest of the project:
 - Browser checks (checklist section N): the simulator page loads the real pack; the Run tab fires injects into a scratch EOC and the EOC shows them with the right *Via*; PACE changes show in the EOC header; a pseudonymized run contains no real phone or email (grep the run file against the pack).
 - Drill checks are human (🔒): tabletop with three people; stake drill with the Satellite EOC; Area drill.
 
-## 8. Implementation status (2026-11-02)
+## 8. Implementation status (2026-11-18)
+
+- Usability audit (2026-11-18): done checks and hot-wash lines name their EOC level (`to`), and a Council / Area EOC is scored on its own work (roll-ups merged, Supply Order totals by stake, the public-shelter decision); roll-up work items the simulated stake handled arrive closed, only what it set UP stays open at the Area; roles the simulator plays itself are not scored; the debrief shows misses at their overdue minute, takes each lesson from the inject that was missed and says "Baseline: first run" instead of a harsh word; per-need coaching (`need.coach`) and **Mark met**; the Run tab opens on "due and recent" with readable labels and a **Handed out** tick on cards; the Session tab says what comes next in words and warns when no Winlink folder is watched; outline scenarios cannot be planned; the drill's Winlink body is the real template's layout; Copper Creek Dam gained conflicting counts, a misspelled ward, a late Winlink report (`delay`), a death, a media inquiry and an EOC power failure; `eoc_server.py --help`. Still open: the Message Center's `secure data` line (outside the simulator; not changed here); the invented example has no ERD, specialist or HAM names (its cards use the role names), because a participant package does not carry local roles yet.
 
 - Done since 2026-10-31: `start_simulator.bat` and shipping `simulation/` with installer role 3 (section 2.6); the Area simulator's roll-up bundles for the stakes it plays (section 2.5); the EOC Map tab and wall tile (section 6); the invented Juniper Plains Area replaces the real community in every public file, with private participant packages for real drills; the trainer's **Session** tab (reset, GO, resume; section 2.4); the simulated Winlink inbox; the final and live score; the **debrief for the room** and `/results` (section 2.7).
 - Still open: the other outlined scenarios' injects; the Area simulator's SITREP emails to the council line; a drill with people in the room.

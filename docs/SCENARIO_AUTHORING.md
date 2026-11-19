@@ -126,10 +126,10 @@ The crew names come from the unit's leaders in the pack, then "Crew member n". T
 
 **Placeholders.** Two kinds:
 
-- **Once-filled** (the same everywhere in the run): `{stake}` (the stake or stakes in scope), `{eoc}`, `{eoc_call}`, `{eoc_winlink}`, `{eoc_email}`, `{today}`, `{erd}`, `{erd_phone}`, `{specialist}`, `{specialist_phone}`, and the agency placeholders (step 5).
-- **Per-unit** (filled for the unit an inject expanded to): everything above plus `{unit}`, `{unit_type}`, `{unit_call}` (the unit's simulated Winlink station, `SIM-…`), `{city}`, `{state}`, `{zip}`, `{address}`, `{building}`, `{building_name}`, `{bishop}`, `{bishop_role}`, `{bishop_phone}`, `{bishop_email}`, `{crew_chief}`, `{crew_chief_phone}`, `{stake_president}`, `{stake_center}`, `{stake_center_name}`, `{stake_center_city}`, `{stake_center_zip}`, `{tomorrow}`, `{severity}`.
+- **Once-filled** (the same everywhere in the run): `{stake}` (the stake or stakes in scope), `{eoc}`, `{eoc_call}`, `{eoc_winlink}`, `{eoc_email}`, `{today}`, `{erd}`, `{erd_phone}`, `{erd_who}`, `{specialist}`, `{specialist_phone}`, `{specialist_who}`, and the agency placeholders (step 5).
+- **Per-unit** (filled for the unit an inject expanded to): everything above plus `{unit}`, `{unit_type}`, `{unit_call}` (the unit's simulated Winlink station, `SIM-…`), `{city}`, `{state}`, `{zip}`, `{address}`, `{building}`, `{building_name}`, `{bishop}`, `{bishop_role}`, `{bishop_phone}`, `{bishop_email}`, `{crew_chief}`, `{crew_chief_phone}`, `{stake_president}`, `{stake_center}`, `{stake_center_name}`, `{stake_center_city}`, `{stake_center_zip}`, `{tomorrow}`, `{severity}`, `{unit_misspelled}` (the unit's name as a hurried sender types it: "Larksur 5th Wd"; for a report whose ward name the EOC must recognize).
 
-Templates, and injects with `each: unit`, `each: stake` or `same_as`, get both kinds. **Role cards and injects that fire once get only the once-filled ones: a per-unit placeholder stays literal there** ("{bishop}" on the card). Write "the bishop" in those texts. An unknown placeholder also stays literal. `{erd}` and `{specialist}` read the local roles file beside the pack; with nobody named they say "the Emergency Response Director" and "the Welfare and Self-Reliance Specialist (emergency communications)".
+Templates, and injects with `each: unit`, `each: stake` or `same_as`, get both kinds. **Role cards and injects that fire once get only the once-filled ones: a per-unit placeholder stays literal there** ("{bishop}" on the card). Write "the bishop" in those texts. An unknown placeholder also stays literal. `{erd}` and `{specialist}` read the local roles file beside the pack; with nobody named they say "the Emergency Response Director" and "the stake's Welfare and Self-Reliance Specialist (emergency communications)" (capitalized at the start of a sentence). `{erd_who}` and `{specialist_who}` give the name with the role ("Pat Doe (Emergency Response Director, ERD)"), or the role alone when nobody is named: use them where a text would otherwise say the role twice.
 
 ## 5. Injects by kind
 
@@ -144,7 +144,8 @@ Every inject has `id` (unique), `kind` and a time. Common keys:
 | `to` | Which EOC of the drill: `stake`, `satellite`, `area`, `all`, `unit`. Default: reports follow their unit; notes and cards `all`; work items `stake`; roll-ups `area`. `eoc` is read as `all` |
 | `role` | The role card it is for (`ham`, `stake_president`, `eoc`, …; the ids of step 8) |
 | `note` | For the author and the controller; not sent |
-| `lesson` | One line: the real-disaster failure it rehearses ([SIMULATOR_LESSONS.md](SIMULATOR_LESSONS.md)). Shown with the card and on the debrief's "why it matters" slide |
+| `lesson` | One line: the real-disaster failure it rehearses ([SIMULATOR_LESSONS.md](SIMULATOR_LESSONS.md)). Shown with the card and on the debrief's "why it matters" slide, beside the inject's **own** need only: put it on the card or work item that asks the EOC to act (a report's needs are derived ones and never carry it). A lesson about deaths is shown only beside a `life` or `missionaries` need |
+| `delay` | On a `form`: minutes between writing and delivery (a Winlink message held at a gateway or relayed late). It arrives at `t + delay`, after newer traffic, with a Winlink `Date:` header of minute `t` |
 | `need`, `after` | Step 6 |
 
 **`where`** (all given conditions must hold):
@@ -212,6 +213,7 @@ Change them for the whole scenario in `needs.defaults` (`{"supply": {"owner": 20
 
 - On a `work_item`: overrides its rule: `owner`, `done`, `decision`, `done_states`, `label`, `role`.
 - On a card (`voice`, `prompt`, `paper`, `note`): the EOC must make a work item for it: `cat`, `prio`, `owner`, `done`, `decision`, `title_contains` (the work item's title must contain this text: tell the players in the card, "a work item with 'warming' in the title"), `label`, `role`. Or `form` (`dr`, `so`, `wcl`): the card carries a report to type in.
+- On any of them, `coach`: the one sentence the after-action report and the debrief give when this need is missed ("Decide how members are told within minutes: …"). Without it the category's general line is used.
 - On a `form`: overrides the rule of the needs the report creates (for example `typed`).
 
 **Consequences** (`after` on any inject): the inject waits until a need reaches a state, then fires.
@@ -251,8 +253,11 @@ Write both paths for the important needs: a resolution when the EOC copes (the t
 | `"pct_min": 70` | At least that share of needs met (met late counts half) |
 | `"cat_met": "missionaries"` | Every need of that category met |
 | `"need_met": "<inject id>"` | Every need of that inject met (pending until it fires) |
+| `"rollups_merged": true` | Council / Area EOC: every roll-up this simulator sent for a simulated stake is on file at the EOC |
 
-**`hotwash`** is the checklist read at the end: `{"t": minute, "check": "what should have happened", "how": "where to look"}`. Add an `auto` rule and **Gather evidence** reads the EOC's work items for you; the controller still records ✓ or ✗:
+Add **`to`** to say which EOC level a check is about: `"stake"`, `"satellite"`, `"area"`, `"all"` or a list (`["stake", "satellite"]`). A check without `to` counts at every level; a Council / Area simulator leaves out the stake's checks (the meetings decision, member notification) and scores its own (roll-ups merged, Supply Order totals, the Area's decision on a public shelter).
+
+**`hotwash`** is the checklist read at the end: `{"t": minute, "check": "what should have happened", "how": "where to look"}`. Mark six to eight lines `"core": true`: the Hot wash tab can show only those for a short debrief. `to` works as on a done check. Add an `auto` rule and **Gather evidence** reads the EOC's work items for you and preselects ✓ or ✗ from what it found; the controller confirms or changes it:
 
 ```json
 "auto": {"items": {"title_contains": "meetings"}, "expect": {"min_count": 1, "decision": true}}
