@@ -5,6 +5,7 @@ and a scratch EOC server on port 8085. Nothing from secure data/ is read.
 
     python testing/test_sim.py            # scratch folders in a temp dir, servers stopped at the end
     python testing/test_sim.py --keep     # leave the EOC (8085) and simulator (8095) running for browser checks
+    python testing/test_sim.py --port-base=8150   # every server on 8150-8156 instead (EOC, satellite, area, needs, -, simulator, second simulator)
 
 Checks: pack load and summary; pseudonymization (deterministic, unique, no leaks, last names
 kept); scenario catalog and local binding merge; severity bands; run planning (every unit
@@ -39,8 +40,12 @@ import privacy   # noqa: E402
 FIX = REPO / 'testing' / 'fixtures' / 'orgpack-synthetic.json'
 keep = '--keep' in sys.argv
 SP = pathlib.Path(next((a for a in sys.argv[1:] if not a.startswith('--')), '') or tempfile.mkdtemp(prefix='eoc_sim_test_'))
-EOC_PORT, SIM_PORT = 8085, 8095
+_BASE = int(next((a.split('=', 1)[1] for a in sys.argv[1:] if a.startswith('--port-base=')), '0') or 0)
+# default ports, or a block of seven from --port-base (another suite's servers can then run beside this one)
+EOC_PORT, SAT_PORT, AREA_PORT, NEED_PORT, SIM_PORT, SIM2_PORT = ((_BASE, _BASE + 1, _BASE + 2, _BASE + 3, _BASE + 5, _BASE + 6) if _BASE
+                                                                  else (8085, 8086, 8087, 8088, 8095, 8096))
 res = []
+AREA_WIS = {'wi-area-totals', 'wi-area-shelter'}       # the scenario's work items for the Council / Area EOC only
 
 
 def check(label, ok, detail=''):
@@ -90,7 +95,7 @@ orgpack.apply_local_roles(p2, lroles)
 ps2 = privacy.pseudonymize(p2, 'salt-A'); e2 = orgpack.Index(ps2).erd('S1')
 check('local roles: pseudonymized like everyone else (first name invented, last kept, a 555-01xx fiction phone, sim email), no leak', e2['last'] == 'Tester' and e2['first'] != 'Pat' and re.fullmatch(r'\d{3}-555-01\d\d', e2['mobile']) and e2['email'].endswith('@churchemcomm.sim') and privacy.leaks(ps2, p2) == [], e2)
 ctx2 = engine._Ctx(i2, dict(i2.units['U2'], severity=2), {'eoc': {}, 'id': 'test-run'}, _random.Random(1), '2026-10-30')   # the planner adds severity
-check('engine context names the ERD (and a placeholder specialist when none was added)', ctx2.values['erd'] == 'Pat Tester' and ctx2.values['erd_phone'] == '000-000-0199' and ctx2.values['specialist'].startswith('the Welfare') and 'Lee Radio' not in [c.get('name') for c in ctx2.crew], ctx2.values['specialist'])
+check('engine context names the ERD (and a placeholder specialist when none was added)', ctx2.values['erd'] == 'Pat Tester' and ctx2.values['erd_phone'] == '000-000-0199' and ctx2.values['specialist'].startswith("the stake's Welfare and Self-Reliance Specialist") and 'Lee Radio' not in [c.get('name') for c in ctx2.crew], ctx2.values['specialist'])
 rq = {r['key']: r for r in orgpack.required_status(p2, {'role': 'stake', 'stake': 'S1', 'satellite_units': []})}
 check('required roles (stake): SP and bishops filled from the directory, ERD filled by the local role, specialist missing with an Add hint, HAM filled by the ward operator, operator = room',
       rq['sp']['filled'] and rq['bishop']['filled'] and len(rq['bishop']['who']) == 4 and rq['erd']['filled'] and rq['erd']['who'][0]['who'] == 'Pat Tester'
@@ -380,7 +385,7 @@ for form in ('dr', 'so', 'wcl'):
     mime = eoc._parse_mime_file(tmp)
     tag = eoc._parse_church_tag(mime['body'])
     want = {'dr': {'stake', 'ward', 'miss_safe', 'mem_inj', 'need_hq', 'lat', 'grid'}, 'so': {'stake', 'items', 'contact', 'zip'}, 'wcl': {'chief', 'chief_ward', 'crew', 'total_hrs', 'safety'}}[form]
-    check(f'{form.upper()} .mime: ASCII, parsed by the EOC, tag has the expected keys', all(b < 128 for b in data) and tag and tag[0] == form.upper() and want <= set(tag[1]) and 'SIMULATED' in mime['body'] and mime['from_'].startswith('SIM-'),
+    check(f'{form.upper()} .mime: ASCII, parsed by the EOC, tag has the expected keys', all(b < 128 for b in data) and tag and tag[0] == form.upper() and want <= set(tag[1]) and 'THIS IS AN EXERCISE' in mime['body'] and engine.SIM_MARK in mime['body'] and mime['from_'].startswith('SIM-'),
           sorted(tag[1]) if tag else mime['body'][:200])
     mapped = eoc._map_worker_to_eoc(form.upper(), it['payload'])
     check(f'{form.upper()} Worker payload: detected and mapped by the EOC', eoc._detect_form_type(engine.FORM_FILENAMES[form], it['payload']) == form.upper() and (mapped.get('stake') or mapped.get('chief_stake')) == it['stake'], mapped)
@@ -400,7 +405,7 @@ try:
     log = open(SP / 'eocA.log', 'w', encoding='utf-8')          # a file, not a pipe
     env = dict(os.environ, PYTHONIOENCODING='utf-8', LOCALAPPDATA=str(SP / 'appdata'), EMCOMM_DOCUMENTS=str(SP / 'documents'))   # never the real Drop Folder
     procs.append(subprocess.Popen([sys.executable, '-u', 'eoc_server.py', str(EOC_PORT)], cwd=str(d / 'eoc'), stdout=log, stderr=subprocess.STDOUT, env=env))
-    check('EOC server up on 8085', wait_port(EOC_PORT))
+    check(f'EOC server up on {EOC_PORT}', wait_port(EOC_PORT))
     inc = call(EOC_PORT, 'GET', '/api/incident')
     inc.update({'eocName': 'Alpha Stake EOC', 'eocLevel': 'stake', 'eocLat': '40.33', 'eocLon': '-117.55', 'name': 'DRILL copper-creek test', 'sitrepHrs': '4', 'sitrepBy': 'Stake President', 'pace': 'P'})
     call(EOC_PORT, 'PUT', '/api/incident', inc)
@@ -411,7 +416,7 @@ try:
 
     slog = open(SP / 'sim.log', 'w', encoding='utf-8')
     procs.append(subprocess.Popen([sys.executable, '-u', str(REPO / 'simulation' / 'sim_server.py'), str(SIM_PORT), '--data', str(FIX)], stdout=slog, stderr=subprocess.STDOUT, env=env))
-    check('simulator server up on 8095', wait_port(SIM_PORT))
+    check(f'simulator server up on {SIM_PORT}', wait_port(SIM_PORT))
     br = call(SIM_PORT, 'GET', '/api/browse?path=' + urllib.parse.quote(str(REPO / 'simulation' / 'example')))
     check('simulator: Browse lists this laptop\'s folders and marks the organization pack', br.get('drives') and any(f['name'] == 'juniper-plains' and f['pack'] for f in br.get('folders', [])), br)
     missing = call(SIM_PORT, 'GET', '/api/browse?path=' + urllib.parse.quote(str(REPO / 'no' / 'such' / 'folder')))
@@ -464,7 +469,7 @@ try:
     check('fire a DR at P: delivered by phone upload, filed as new', r['item']['result'].get('via') == 'phone' and r['item']['result'].get('new') == 1, r['item']['result'])
     msgs = call(EOC_PORT, 'GET', '/api/messages')
     m = next((json.loads(x['data_json']) for x in msgs if x['type'] == 'dr'), {})
-    check('EOC filed the simulated DR with the unit name for the roster', m.get('dr', {}).get('ward') == dr['unit'] and m.get('fields', {}).get('sim_mark', '').startswith('SIMULATED'))
+    check('EOC filed the simulated DR with the unit name for the roster', m.get('dr', {}).get('ward') == dr['unit'] and m.get('fields', {}).get('sim_mark', '').startswith('EXERCISE'))
     r = call(SIM_PORT, 'POST', '/api/run/pace', {'level': 'C', 'why': 'test'})
     check('PACE C pushed to the EOC', r['ok'] and call(EOC_PORT, 'GET', '/api/status')['pace'] == 'C')
     call(SIM_PORT, 'POST', '/api/run/eoc')
@@ -508,7 +513,7 @@ try:
     st = call(SIM_PORT, 'GET', '/api/run')
     wis = [i for i in st['items'] if i['kind'] == 'work_item' and not i.get('after')]   # the scripted ones; consequence items wait on a need
     wm = next((i for i in wis if i['inject'] == 'wi-mission-office'), None)
-    check('plan: the scripted work-item injects (all for this Stake EOC except the area one), the mission-office one bound to the missing-missionaries unit', len(wis) >= 9 and all(i['local'] for i in wis if i['inject'] != 'wi-area-totals') and not next(i for i in wis if i['inject'] == 'wi-area-totals')['local'] and wm and wm['unit'] and wm['unit'] in wm['work']['title'] and '{' not in wm['work']['next'], [(i['inject'], i['unit']) for i in wis])
+    check('plan: the scripted work-item injects (all for this Stake EOC except the area one), the mission-office one bound to the missing-missionaries unit', len(wis) >= 9 and all(i['local'] for i in wis if i['to'] != 'area') and {i['inject'] for i in wis if i['to'] == 'area'} == AREA_WIS and not any(i['local'] for i in wis if i['to'] == 'area') and wm and wm['unit'] and wm['unit'] in wm['work']['title'] and '{' not in wm['work']['next'], [(i['inject'], i['unit']) for i in wis])
     before = len(call(EOC_PORT, 'GET', '/api/actions'))
     r = call(SIM_PORT, 'POST', '/api/run/item', {'id': wm['id'], 'action': 'fire'})
     acts = call(EOC_PORT, 'GET', '/api/actions')
@@ -592,10 +597,10 @@ try:
         i2 = call(port, 'GET', '/api/incident')
         i2.update({'eocName': name, 'eocLevel': level, 'name': 'DRILL copper-creek test ' + tag, 'pace': 'P'})
         call(port, 'PUT', '/api/incident', i2)
-    SAT, AREA = 8086, 8087
+    SAT, AREA = SAT_PORT, AREA_PORT
     start_eoc('sat', SAT, 'satellite', 'Alpha West Satellite EOC')
     start_eoc('area', AREA, 'area', 'Alpha Council EOC')
-    check('satellite (8086) and area (8087) EOCs up with their levels', call(SAT, 'GET', '/api/status')['eocLevel'] == 'satellite' and call(AREA, 'GET', '/api/status')['eocLevel'] == 'area')
+    check(f'satellite ({SAT}) and area ({AREA}) EOCs up with their levels', call(SAT, 'GET', '/api/status')['eocLevel'] == 'satellite' and call(AREA, 'GET', '/api/status')['eocLevel'] == 'area')
     st0 = call(EOC_PORT, 'GET', '/api/status')
     check('EOC status carries the drill state (none pushed yet, or the earlier run)', 'drill' in st0)
     # 5a. this simulator plays the Stake EOC; Riverbottom Ward (U3) is covered by a Satellite EOC
@@ -604,13 +609,16 @@ try:
     run = plan['run']; its = run['items']
     u3 = [i for i in its if i['kind'] == 'form' and i['unit_id'] == 'U3']; u1 = [i for i in its if i['kind'] == 'form' and i['unit_id'] == 'U1']
     check('stake role: scope = the stake, the satellite\'s ward\'s reports are elsewhere, the others local', plan['counts']['units'] == 4 and u3 and all(i['to'] == 'satellite' and i['status'] == 'elsewhere' for i in u3) and all(i['to'] == 'stake' and i['local'] for i in u1), plan['counts'])
-    check('stake role: notes and cards everywhere (local), work items here, no roll-ups', all(i['local'] for i in its if i['kind'] in ('note', 'voice', 'prompt')) and all(i['to'] == 'stake' and i['local'] for i in its if i['kind'] == 'work_item' and i['inject'] != 'wi-area-totals') and not any(i['kind'] == 'rollup' for i in its) and run['site']['label'] == 'Alpha Stake EOC', run['site'])
+    # a consequence card about the satellite's ward (it waits on that ward's need) is the satellite's to fire
+    check('stake role: notes and cards everywhere (local) except consequences of the satellite ward\'s needs, work items here, no roll-ups',
+          all(i['local'] or (i.get('after') and i['to'] == 'satellite' and i['unit_id'] == 'U3') for i in its if i['kind'] in ('note', 'voice', 'prompt'))
+          and all(i['to'] == 'stake' and i['local'] for i in its if i['kind'] == 'work_item' and i['inject'] not in AREA_WIS) and not any(i['kind'] == 'rollup' for i in its) and run['site']['label'] == 'Alpha Stake EOC', run['site'])
     wa = next(i for i in its if i['inject'] == 'wi-area-totals')
     check('stake role: the area-only work item is elsewhere', wa['to'] == 'area' and wa['status'] == 'elsewhere')
     r = call(SIM_PORT, 'POST', '/api/run/item', {'id': u3[0]['id'], 'action': 'fire'})
     check('firing an elsewhere item does nothing', r['item']['status'] == 'elsewhere' and not r['item']['result'])
     d = call(EOC_PORT, 'GET', '/api/drill')
-    check('the Stake EOC shows the drill the simulator pushed: role, label, scenario, planned, seed, controller', d.get('active') and d['role'] == 'stake' and d['site_label'] == 'Alpha Stake EOC' and d['scenario'] == run['scenario']['name'] and d['status'] == 'planned' and d['seed'] == 5 and d['controller'].endswith(':8095') and d['ready'] == [], d)
+    check('the Stake EOC shows the drill the simulator pushed: role, label, scenario, planned, seed, controller', d.get('active') and d['role'] == 'stake' and d['site_label'] == 'Alpha Stake EOC' and d['scenario'] == run['scenario']['name'] and d['status'] == 'planned' and d['seed'] == 5 and d['controller'].endswith(f':{SIM_PORT}') and d['ready'] == [], d)
     call(EOC_PORT, 'POST', '/api/drill/ready', {'who': 'Travis'})
     call(EOC_PORT, 'POST', '/api/drill/ready', {'who': 'Op Two'})
     call(EOC_PORT, 'POST', '/api/drill/ready', {'who': 'Op Two', 'ready': False})
@@ -657,7 +665,7 @@ try:
     rolls = [i for i in its if i['kind'] == 'rollup']
     check('area role: all 6 units in scope; the played stake\'s reports are elsewhere; the simulated stake\'s travel in roll-ups', plan['counts']['units'] == 6 and s1f and all(i['status'] == 'elsewhere' for i in s1f) and s2f and all(i['to'] == 'area' and i.get('rollup') and i['status'] == 'pending' for i in s2f), plan['counts'])
     check('area role: two roll-up items for the simulated stake, the area work item local, stake work items elsewhere', [i['stake'] for i in rolls] == ['Bravo Stake', 'Bravo Stake'] and [i['t'] for i in rolls] == [62, 188]
-          and next(i for i in its if i['inject'] == 'wi-area-totals')['local'] and all(i['status'] == 'elsewhere' for i in its if i['kind'] == 'work_item' and i['inject'] != 'wi-area-totals'), [(i['inject'], i['t']) for i in rolls])
+          and all(i['local'] for i in its if i['inject'] in AREA_WIS) and all(i['status'] == 'elsewhere' for i in its if i['kind'] == 'work_item' and i['inject'] not in AREA_WIS), [(i['inject'], i['t']) for i in rolls])
     check('area role: label names the council', run['site']['label'] == 'Council / Area EOC: Alpha Coordinating Council' and call(AREA, 'GET', '/api/drill')['site_label'] == run['site']['label'])
     call(SIM_PORT, 'POST', '/api/run/jump', {'minute': 70})
     due_parts = [i for i in s2f if i['t'] <= 70]
@@ -672,15 +680,15 @@ try:
     msgs_a = call(AREA, 'GET', '/api/messages')
     recs = [json.loads(x['data_json']) for x in msgs_a]
     check('the Area EOC\'s Drop Folder watcher ingested it: the due reports are on file, the file moved to Ingested', len(msgs_a) == before + len(due_parts) and not pathlib.Path(rr['file']).exists() and (drop_area / 'Ingested' / pathlib.Path(rr['file']).name).exists(), (len(msgs_a), before, len(due_parts)))
-    check('merged records carry origin and via = the simulated Stake EOC, summary fields only', recs and all(x.get('via') == 'Bravo Stake EOC (simulated)' and x.get('origin') == 'Bravo Stake EOC (simulated)' and 'fields' not in x for x in recs), recs[0] if recs else None)
+    check('merged records carry origin and via = the simulated Stake EOC, summary fields only', recs and all(x.get('via') == 'Bravo Stake EOC (simulator)' and x.get('origin') == 'Bravo Stake EOC (simulator)' and 'fields' not in x for x in recs), recs[0] if recs else None)
     s3 = call(SIM_PORT, 'GET', '/api/run')
     check('the bundled reports are marked fired via rollup drop; any later ones stay pending for roll-up #2', due_parts and all(i['status'] == 'fired' and i['result']['via'] == 'rollup drop' for i in s3['items'] if i.get('rollup') and i['t'] <= 70) and all(i['status'] == 'pending' for i in s3['items'] if i.get('rollup') and i['t'] > 70), [(i['t'], i['status']) for i in s3['items'] if i.get('rollup')])
     ro = call(AREA, 'GET', '/api/roster')
     check('the Area roster gained the simulated stake\'s units', {x['name'] for x in ro} >= {i['unit'] for i in due_parts}, [x['name'] for x in ro])
     notes_a = call(AREA, 'GET', '/api/notes')
-    check('the roll-up logged a SIM note at the Area EOC, prefixed with the sending EOC', any('SIM: SITREP #1 roll-up from Bravo Stake' in n['text'] and n['text'].startswith('[Bravo Stake EOC (simulated)]') for n in notes_a), [n['text'][:80] for n in notes_a][:3])
+    check('the roll-up logged a SIM note at the Area EOC, prefixed with the sending EOC', any('SIM: SITREP #1 roll-up from Bravo Stake' in n['text'] and n['text'].startswith('[Bravo Stake EOC (simulator)]') for n in notes_a), [n['text'][:80] for n in notes_a][:3])
     acts_a = call(AREA, 'GET', '/api/actions')
-    ups = [a for a in acts_a if a.get('from') == 'Bravo Stake EOC (simulated)']
+    ups = [a for a in acts_a if a.get('from') == 'Bravo Stake EOC (simulator)']
     check('work items waiting on the line above arrived open at the Area EOC naming the simulated stake (if any report asked)', all(a['status'] == 'open' for a in ups), len(ups))
     call(SIM_PORT, 'POST', '/api/run/start'); time.sleep(2.5); call(SIM_PORT, 'POST', '/api/run/pause')
     s4 = call(SIM_PORT, 'GET', '/api/run')
@@ -723,7 +731,7 @@ try:
     call(SIM_PORT, 'POST', '/api/run/stop')
 
     # ── 6. evaluation: the needs ledger, consequences, replies from the line above, scoreboard, after-action report ──
-    NEED = 8088
+    NEED = NEED_PORT
     start_eoc('needs', NEED, 'stake', 'Alpha Stake EOC')
     call(NEED, 'PUT', '/api/drop/config', {'watch_path': str(SP / 'drop_needs'), 'enabled': False})
     plan = call(SIM_PORT, 'POST', '/api/run/plan', {'scenario': 'copper-creek-dam', 'seed': 5, 'speed': 60, 'eoc': {'url': f'http://127.0.0.1:{NEED}'}, 'site': {'role': 'stake', 'stake': 'S1'}})
@@ -875,7 +883,7 @@ try:
     plan = call(SIM_PORT, 'POST', '/api/run/plan', {'scenario': 'copper-creek-dam', 'seed': 5, 'speed': 60, 'eoc': {'url': f'http://127.0.0.1:{NEED}'}, 'site': {'role': 'stake', 'stake': 'S1'}})
     ss = call(SIM_PORT, 'GET', '/api/session')
     check('session: status lists the pack, the EOC, the planned run and the results address', ss['ok'] and ss['pack'] and ss['eoc']['ok'] and ss['run'] and ss['run']['status'] == 'planned'
-          and ss['results_url'].endswith(':8095/results') and not ss['run']['session'], {k: ss.get(k) for k in ('pack', 'eoc')})
+          and ss['results_url'].endswith(f':{SIM_PORT}/results') and not ss['run']['session'], {k: ss.get(k) for k in ('pack', 'eoc')})
     reh = plan['run']['id']
     call(SIM_PORT, 'POST', '/api/run/start'); time.sleep(1.5)                         # a rehearsal: a few drill minutes of traffic
     r = call(SIM_PORT, 'POST', '/api/session/reset', {'event': 'DRILL: session test (THIS IS AN EXERCISE)'})
@@ -950,7 +958,7 @@ try:
           sv.get('ok') and setup.get('kind') == 'church_emcomm_sim_setup' and len(setup['pack']['fingerprint']) == 16 and setup['pack']['counts']['units'] == 6
           and setup['scenario'] == 'copper-creek-dam' and setup['speed'] == 10 and setup['seed'] == 7 and setup['site']['satellite_units'] == ['U3']
           and setup['site']['played_parent'] is True and 'contacts' not in setup and not leaks, (leaks[:3], {k: setup.get(k) for k in ('scenario', 'speed', 'seed')}))
-    SIM2 = 8096
+    SIM2 = SIM2_PORT
     slog2 = open(SP / 'sim2.log', 'w', encoding='utf-8')
     procs.append(subprocess.Popen([sys.executable, '-u', str(REPO / 'simulation' / 'sim_server.py'), str(SIM2), '--data', str(FIX)], stdout=slog2, stderr=subprocess.STDOUT,
                                   env=dict(os.environ, PYTHONIOENCODING='utf-8', LOCALAPPDATA=str(SP / 'appdata_sim2'), EMCOMM_DOCUMENTS=str(SP / 'documents_sim2'))))
@@ -968,8 +976,8 @@ try:
     same = {k: (i1.get(k), i2.get(k)) for k in ('scenario', 'speed', 'seed', 'site', 'sessionEvent') if i1.get(k) != i2.get(k)}
     check('Load simulator setup on a second simulator with the same pack: identical scenario, speed, seed, site and drill event name; its own EOC address kept',
           ap.get('ok') and not same and i2['eocUrl'] != setup['eocUrl'], (ap.get('error'), same, i2.get('eocUrl'), setup.get('eocUrl')))
-    ap_url = call(SIM2, 'POST', '/api/sim-setup/apply', {'setup': dict(setup, eocUrl='http://127.0.0.1:8085'), 'useEocUrl': True})
-    check('Load simulator setup: the file\'s EOC address only when the person ticks it', ap_url.get('ok') and call(SIM2, 'GET', '/api/info')['eocUrl'] == 'http://127.0.0.1:8085')
+    ap_url = call(SIM2, 'POST', '/api/sim-setup/apply', {'setup': dict(setup, eocUrl=f'http://127.0.0.1:{EOC_PORT}'), 'useEocUrl': True})
+    check('Load simulator setup: the file\'s EOC address only when the person ticks it', ap_url.get('ok') and call(SIM2, 'GET', '/api/info')['eocUrl'] == f'http://127.0.0.1:{EOC_PORT}')
     ap_real = call(SIM2, 'POST', '/api/sim-setup/apply', {'setup': dict(setup, privacy='real')})
     i2r = call(SIM2, 'GET', '/api/info')
     check('a setup saved with real contacts does not switch this simulator to real contacts (it needs this laptop\'s own consent)',

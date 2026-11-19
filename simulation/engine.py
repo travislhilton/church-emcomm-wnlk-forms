@@ -40,6 +40,7 @@ import re
 import threading
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 import uuid
 from pathlib import Path
@@ -52,7 +53,8 @@ FORM_FILENAMES = {'dr': 'Church_Disaster_Report_Worker.txt', 'so': 'Church_Suppl
                   'wcl': 'Church_Work_Crew_Log_Worker.txt'}
 FORM_TITLES = {'dr': 'Church Disaster Report', 'so': 'Church Supply Order', 'wcl': 'Church Work Crew Log'}
 CHANNEL_BY_PACE = {'P': 'phone', 'A': 'phone', 'C': 'winlink', 'E': 'paper'}
-SIM_MARK = 'SIMULATED (EMCOMM drill)'
+SIM_MARK = 'EXERCISE: drill report from the EMCOMM simulator'     # the EOC screens say EXERCISE; so does every simulated report
+SIM_EOC = '(simulator)'          # after the name of an EOC the simulator plays (a stake's roll-up, the line above's reply)
 NEED_STATES = ('open', 'met', 'late', 'overdue', 'missed', 'waived')
 # What the EOC is expected to do with a work item of each category, in drill minutes, unless the
 # scenario's `needs.defaults` or the inject's `need` block says otherwise. `owner`: minutes to an
@@ -79,6 +81,12 @@ _PERSON = {'erd': 'Emergency Response Director', 'emergency response director': 
            'eoc': 'EOC operator', 'eoc operator': 'EOC operator', 'ham': 'HAM operator', 'ham operator': 'HAM operator', 'ham at the eoc': 'HAM operator',
            'net control': 'Net control', 'welfare line': 'Welfare line', 'team_leader': 'Team leader', 'county_liaison': 'Stake liaison to the county',
            'stake liaison': 'Stake liaison to the county', 'stake liaison to the county': 'Stake liaison to the county', 'controller': 'Controller'}
+
+
+def simulated_roles(site: dict) -> set:
+    """The people a need's role names whom the simulator itself plays in this run: the welfare line (it approves what
+    goes UP) unless people play the line above. Each role's score leaves them out."""
+    return set() if _parent_played(site or {}) else {'Welfare line'}
 
 
 def role_people(role: str) -> list:
@@ -186,7 +194,7 @@ def load_scenario(sid: str, scenarios_dir=SCENARIOS_DIR, local_path=None, extra_
         raise FileNotFoundError(f'no scenario {sid!r}')
     p = next((Path(d) / f'{sid}.json' for d in list(extra_dirs or ()) if (Path(d) / f'{sid}.json').is_file()), Path(scenarios_dir) / f'{sid}.json')
     if not p.is_file():
-        raise FileNotFoundError(f'no scenario {sid!r} in {scenarios_dir}')
+        raise FileNotFoundError(f'no scenario {sid!r} (no {sid}.json beside the catalog)')     # never a full path: the page shows it
     sc = json.loads(p.read_text(encoding='utf-8-sig'))
     if local_path and Path(local_path).is_file():
         sc = merge_local(sc, json.loads(Path(local_path).read_text(encoding='utf-8-sig')))
@@ -284,14 +292,42 @@ class _Ctx:
             'unit_call': unit_call(unit), 'today': today, 'tomorrow': (_dt.date.fromisoformat(today) + _dt.timedelta(days=1)).isoformat(),
             'eoc_call': run['eoc'].get('call') or 'the EOC station', 'eoc_winlink': run['eoc'].get('winlink') or 'the EOC Winlink address',
             'eoc_email': run['eoc'].get('email') or 'the EOC drop address', 'eoc': run['eoc'].get('name') or 'the EOC',
-            'severity': str(unit['severity']),
-            'erd': erd.get('name') or 'the Emergency Response Director', 'erd_phone': erd.get('mobile') or erd.get('phone', ''),
-            'specialist': spec.get('name') or 'the Welfare and Self-Reliance Specialist (emergency communications)', 'specialist_phone': spec.get('mobile') or spec.get('phone', ''),
+            'severity': str(unit['severity']), 'unit_misspelled': misspell(unit['name']),
         }
+        self.values.update(role_values(erd, spec))
         self.values.update(agency_values(run.get('agencies') or {}, self.values['city']))
 
     def fill(self, s: str) -> str:
-        return re.sub(r'\{([a-z_]+)\}', lambda m: str(self.values.get(m.group(1), m.group(0))), s)
+        return fill_text(s, self.values)
+
+
+# What {erd} and {specialist} say when nobody holds the role (docs/SCENARIO_AUTHORING.md step 4), and the
+# {erd_who} / {specialist_who} forms that name the person with the role, or the role alone, never both twice
+ERD_FALLBACK = 'the Emergency Response Director'
+SPECIALIST_FALLBACK = "the stake's Welfare and Self-Reliance Specialist (emergency communications)"
+
+
+def role_values(erd: dict, spec: dict) -> dict:
+    """{erd}, {erd_phone}, {erd_who}, {specialist}, {specialist_phone}, {specialist_who} from the local roles
+    (beside the pack). With a holder: 'Pat Doe' and 'Pat Doe (Emergency Response Director, ERD)'; with nobody:
+    the role name, once ('the Emergency Response Director (ERD)')."""
+    en, sn = (erd or {}).get('name') or '', (spec or {}).get('name') or ''
+    return {'erd': en or ERD_FALLBACK, 'erd_phone': (erd or {}).get('mobile') or (erd or {}).get('phone', ''),
+            'erd_who': f'{en} (Emergency Response Director, ERD)' if en else 'the Emergency Response Director (ERD)',
+            'specialist': sn or SPECIALIST_FALLBACK, 'specialist_phone': (spec or {}).get('mobile') or (spec or {}).get('phone', ''),
+            'specialist_who': f'{sn} (Welfare and Self-Reliance Specialist, emergency communications)' if sn else SPECIALIST_FALLBACK}
+
+
+def fill_text(s: str, values: dict) -> str:
+    """Fill {placeholders}; a value that starts with 'the ' (a role name standing in for a person) is capitalized
+    where it starts a sentence. An unknown placeholder stays literal."""
+    def sub(m):
+        v = str(values.get(m.group(1), m.group(0)))
+        before = s[:m.start()].rstrip()
+        if v.startswith('the ') and (not before or before[-1] in '.!?:\'"\u2019\u201d'):
+            v = 'T' + v[1:]
+        return v
+    return re.sub(r'\{([a-z_]+)\}', sub, s)
 
 
 def agency_values(agencies: dict, city: str = '') -> dict:
@@ -306,6 +342,20 @@ def agency_values(agencies: dict, city: str = '') -> dict:
                 if a.get(f):
                     out[f'{k}_{f}'] = a[f]
     return out
+
+
+def misspell(name: str) -> str:
+    """A unit name as a hurried runner or a phone keyboard writes it ('Larkspur 5th Ward' -> 'Larksur 5th Wd'): one letter
+    of the first word dropped and Ward / Branch shortened, so the EOC has to work out which unit sent it."""
+    words = str(name or '').split()
+    if not words:
+        return name
+    w = words[0]
+    if len(w) > 4:
+        k = len(w) // 2 + 1
+        words[0] = w[:k] + w[k + 1:]
+    words = [{'Ward': 'Wd', 'Branch': 'Br'}.get(x, x) for x in words]
+    return ' '.join(words)
 
 
 def unit_call(unit: dict) -> str:
@@ -433,6 +483,14 @@ def _minute(t, rng) -> float:
 
 
 ROLES = ('stake', 'satellite', 'area')
+
+
+def check_applies(check: dict, role: str) -> bool:
+    """A done check (or hot-wash line) with `to` (one level or a list of stake, satellite, area, all) applies to this
+    simulator's EOC level; one without `to` applies everywhere."""
+    to = check.get('to', 'all') if isinstance(check, dict) else 'all'
+    to = [to] if isinstance(to, str) else list(to or ['all'])
+    return 'all' in to or role in to
 # Where an inject goes when its scenario entry says nothing: reports follow their unit; notes and
 # cards go to every EOC in the drill (each simulator posts them to its own EOC); work items land at
 # the Stake EOC; roll-ups exist only at a Council / Area EOC.
@@ -539,12 +597,17 @@ def plan(pack: dict, scenario: dict, options: dict = None) -> dict:
                      'stakes': sorted({u['stake'] for u in units})},
            'pace': copy.deepcopy(scenario.get('pace', [{'t': 0, 'level': 'P'}])),
            'phases': copy.deepcopy(scenario.get('phases', [])),
-           'roles': copy.deepcopy(scenario.get('roles', [])), 'hotwash': [dict(h, result='', note='') for h in scenario.get('hotwash', [])],
+           'roles': copy.deepcopy(scenario.get('roles', [])), 'hotwash': [dict(h, result='', note='') for h in scenario.get('hotwash', []) if check_applies(h, site['role'])],
            'clock': {'speed': float(options.get('speed') or scenario.get('clock', {}).get('default_speed', 1)),
                      'duration_min': scenario.get('clock', {}).get('duration_min', 240), 't0_label': scenario.get('clock', {}).get('t0', ''),
                      'status': 'planned', 'started_wall': None, 'elapsed_min': 0.0, 'paused_at': None, 'start_at_wall': None},
            'items': [], 'tags': {}, 'log': [], 'needs': [], 'need_defaults': _need_defaults(scenario), 'score_hist': [],
            'done': copy.deepcopy(scenario.get('done') or {}), 'agencies': copy.deepcopy(scenario.get('agencies') or {})}
+    # each done check names the EOC level it grades (`to`: stake, satellite, area, all or a list; default all): a
+    # Council / Area EOC is never graded on the stake's own decisions (audit 2026-11-18: an Area run scored 0 %)
+    checks = run['done'].get('checks') or []
+    run['done']['checks'] = [c for c in checks if check_applies(c, site['role'])]
+    run['done']['not_here'] = len(checks) - len(run['done']['checks'])
     ctxs = {u['id']: _Ctx(idx, u, run, rng, today) for u in units}
     # placeholders for items that are not about one unit (net openings, prompts): the stake(s) in scope and the EOC
     s0 = next((s for s in run['scope']['stakes'] if s in idx.stakes), None)
@@ -552,12 +615,11 @@ def plan(pack: dict, scenario: dict, options: dict = None) -> dict:
     once_values = {'stake': ' / '.join(idx.stakes[s]['name'] for s in run['scope']['stakes'] if s in idx.stakes) or 'stake',
                    'eoc_call': eoc.get('call') or 'the EOC station', 'eoc_winlink': eoc.get('winlink') or 'the EOC Winlink address',
                    'eoc_email': eoc.get('email') or 'the EOC drop address', 'eoc': eoc.get('name') or 'the EOC', 'today': today,
-                   # the stake's emergency roles (local-roles.json beside the pack), so prompts, notes and role cards can name them
-                   'erd': erd0.get('name') or 'the Emergency Response Director', 'erd_phone': erd0.get('mobile') or erd0.get('phone', ''),
-                   'specialist': spec0.get('name') or 'the Welfare and Self-Reliance Specialist (emergency communications)',
-                   'specialist_phone': spec0.get('mobile') or spec0.get('phone', '')}
+                   }
+    # the stake's emergency roles (local-roles.json beside the pack), so prompts, notes and role cards can name them
+    once_values.update(role_values(erd0, spec0))
     once_values.update(agency_values(run['agencies'], (idx.stakes.get(s0) or {}).get('city', '') if s0 else ''))
-    once_fill = lambda s: re.sub(r'\{([a-z_]+)\}', lambda m: str(once_values.get(m.group(1), m.group(0))), s)
+    once_fill = lambda s: fill_text(s, once_values)
     for role in run['roles']:                      # role cards are hand-outs: fill them once, for the stake in scope
         role['title'] = once_fill(str(role.get('title', '')))
         for c in role.get('cards', []):
@@ -605,6 +667,12 @@ def plan(pack: dict, scenario: dict, options: dict = None) -> dict:
                     'severity': u['severity'] if u else None, 'note': inj.get('note', ''), 'role': inj.get('role', '')}
             if inj.get('lesson'):
                 item['lesson'] = inj['lesson']          # the real-disaster reason behind the inject (the debrief's "why it matters")
+            if inj.get('delay') and kind == 'form':
+                # written at its minute, delivered `delay` drill minutes later (a Winlink message held at a gateway or
+                # relayed late): it arrives after newer traffic, with its own sent time (the Winlink Date header)
+                item['sent_t'] = item['t']
+                item['t'] = round(item['t'] + float(inj['delay']), 1)
+                item['delay'] = float(inj['delay'])
             if inj.get('after'):
                 # a consequence: fires when another inject's need reaches a state (met / overdue / missed)
                 a = inj['after']
@@ -625,6 +693,11 @@ def plan(pack: dict, scenario: dict, options: dict = None) -> dict:
             item['local'] = to == 'all' or to == site['role']
             if u and site['role'] == 'area' and u.get('stake') in site['played_stakes']:
                 item['local'] = False              # that stake has its own EOC laptop and simulator: it delivers the unit's traffic
+            elif (u and site['role'] == 'area' and kind in ('voice', 'prompt', 'paper', 'note') and to in ('all', 'stake')):
+                # a card about one ward of a stake this Council / Area simulator plays: that stake's EOC handles it inside the
+                # simulation (its net, its Stake President); it reaches this EOC only as part of the roll-up
+                item['local'] = False
+                item['in_sim_stake'] = True
             if kind == 'reply':
                 # the line above answering: simulated unless people play that EOC in this drill
                 item['local'] = not _parent_played(site)
@@ -678,6 +751,23 @@ def plan(pack: dict, scenario: dict, options: dict = None) -> dict:
                 item['need_spec'] = dict(inj['need'])          # the inject's own need (a card to act on) or overrides for its derived needs
             run['items'].append(item)
     run['items'].sort(key=lambda i: (i['t'], i['id']))
+    # a consequence follows its need's EOC: when every item of the inject it waits for is played elsewhere (another EOC's
+    # simulator, inside a simulated stake, or a report that only travels in a roll-up), it is not this EOC's to fire
+    by_inj = {}
+    for x in run['items']:
+        by_inj.setdefault(x['inject'], []).append(x)
+    for it in run['items']:
+        if not it.get('after') or not it.get('local', True):
+            continue
+        tgt = by_inj.get(it['after']['need'].split('#')[0]) or []
+        same = [x for x in tgt if it.get('unit_id') and x.get('unit_id') == it['unit_id']]
+        tgt = same or tgt
+        if tgt and not any(x.get('local', True) and not x.get('rollup') for x in tgt):
+            it['local'], it['status'], it['to'] = False, 'elsewhere', tgt[0].get('to', it.get('to'))
+            if any(x.get('in_sim_stake') or x.get('rollup') for x in tgt):
+                it['in_sim_stake'] = True
+    for it in run['items']:
+        it['label'] = item_label(it)            # what the Run tab and the Session tab call it ('Net card → HAM (Larkspur 2nd Ward)')
     _settle_missionaries(run, scenario, ctxs)
     for it in run['items']:
         if it.get('status') == 'elsewhere' or not it.get('local', True):
@@ -773,7 +863,8 @@ def need_for_work_item(run: dict, it: dict) -> dict:
     cat = w.get('cat') or 'other'
     rule = _need_rule(run, cat, it.get('need_spec'))
     return {'id': 'need:' + it['id'], 'kind': 'item', 'cat': cat, 'prio': int(w.get('prio') or 2), 'label': rule.get('label') or w.get('title', ''),
-            'match': {'key': w.get('key', '')}, 'rule': rule, 'role': rule.get('role') or NEED_ROLE.get(cat, NEED_ROLE['other'])}
+            'match': {'key': w.get('key', '')}, 'rule': rule, 'role': rule.get('role') or NEED_ROLE.get(cat, NEED_ROLE['other']),
+            'coach': str((it.get('need_spec') or {}).get('coach') or '')}
 
 
 def need_for_card(run: dict, it: dict) -> dict:
@@ -793,7 +884,8 @@ def need_for_card(run: dict, it: dict) -> dict:
         if spec.get('title_contains'):
             match['title_contains'] = spec['title_contains']
         return {'id': 'need:' + it['id'], 'kind': 'item', 'cat': cat, 'prio': int(spec.get('prio') or 2),
-                'label': spec.get('label') or it.get('text', '')[:80], 'match': match, 'rule': rule, 'role': rule.get('role') or NEED_ROLE.get(cat, NEED_ROLE['other'])}
+                'label': spec.get('label') or cut(it.get('text', ''), 80), 'match': match, 'rule': rule, 'role': rule.get('role') or NEED_ROLE.get(cat, NEED_ROLE['other']),
+                'coach': str(spec.get('coach') or '')}
     if spec.get('form'):
         match['form'] = spec['form']
         cat = 'report'
@@ -803,7 +895,16 @@ def need_for_card(run: dict, it: dict) -> dict:
         if spec.get('title_contains'):
             match['title_contains'] = spec['title_contains']
     return {'id': 'need:' + it['id'], 'kind': 'report' if spec.get('form') else 'item', 'cat': cat, 'prio': int(spec.get('prio') or 2),
-            'label': spec.get('label') or it.get('text', '')[:80], 'match': match, 'rule': rule, 'role': rule.get('role') or NEED_ROLE.get(cat, NEED_ROLE['other'])}
+            'label': spec.get('label') or cut(it.get('text', ''), 80), 'match': match, 'rule': rule, 'role': rule.get('role') or NEED_ROLE.get(cat, NEED_ROLE['other']),
+            'coach': str(spec.get('coach') or '')}
+
+
+def cut(text, n: int) -> str:
+    """At most n characters, cut at a word (never mid-word), with an ellipsis when cut."""
+    t = ' '.join(str(text or '').split())
+    if len(t) <= n:
+        return t
+    return t[:n].rsplit(' ', 1)[0].rstrip(',;:(') + ' …'
 
 
 def needs_for_form(run: dict, it: dict, delivered_via: str) -> list:
@@ -820,7 +921,7 @@ def needs_for_form(run: dict, it: dict, delivered_via: str) -> list:
         rule = _need_rule(run, 'report', spec)
         out.append({'id': f"need:{it['id']}#report", 'kind': 'report', 'cat': 'report', 'prio': 2,
                     'label': f"{FORM_TITLES[form]} from {it.get('unit', '')} typed in from the {'card' if delivered_via == 'paper' else 'net'}",
-                    'match': {'form': form, 'unit': it.get('unit', '')}, 'rule': rule,
+                    'match': {'form': form, 'unit': it.get('unit', '')}, 'rule': rule, 'coach': str(spec.get('coach') or ''),
                     'role': rule.get('role') or NEED_ROLE['report'], 'truth': {k: str(v) for k, v in rec[form].items() if k in TRUTH_FIELDS.get(form, ())}})
     for a in eoc._derive_actions(rec):
         cat = a.get('cat') or 'other'
@@ -883,26 +984,105 @@ def _tag(form: str, pairs: list) -> str:
     return f"[Church-{form.upper()}|exercise=YES|" + '|'.join(f'{k}={_ascii(v)}' for k, v in pairs if k != 'exercise') + ']'
 
 
+_SO_CATALOG = None
+
+
+def so_catalog() -> tuple:
+    """([(field id, description, Church item number, unit)], [(section name, id prefix)]) read from the Supply Order
+    Initial template, the one list the real form sends from; empty lists when the templates are not beside the program."""
+    global _SO_CATALOG
+    if _SO_CATALOG is None:
+        items, sections = [], []
+        try:
+            t = (Path(__file__).resolve().parent.parent / 'templates' / 'supply-order' /
+                 'Church_of_Jesus_Christ_Supply_Order_Initial.html').read_text(encoding='utf-8')
+            block = t.split('var ITEMS = [', 1)[1].split('];', 1)[0]
+            items = re.findall(r"\[\s*'([a-z]{2}\d{2})'\s*,\s*'((?:[^'\\]|\\.)*)'\s*,\s*'([^']*)'\s*,\s*'([^']*)'\s*\]", block)
+            items = [(i, dsc.replace("\\'", "'"), num, unit) for i, dsc, num, unit in items]
+            sblock = t.split('var SECTIONS = [', 1)[1].split('];', 1)[0]
+            sections = re.findall(r"name\s*:\s*'([^']*)'\s*,\s*prefix\s*:\s*'([a-z]{2})'", sblock)
+        except (OSError, IndexError):
+            pass
+        _SO_CATALOG = (items, sections)
+    return _SO_CATALOG
+
+
+_ASCII_MAP = {'—': '-', '–': '-', '×': 'x', '‘': "'", '’': "'", '“': '"', '”': '"', '½': '1/2',
+              '¼': '1/4', '¾': '3/4', '°': ' deg', '…': '...', ' ': ' '}
+
+
+def _plain(v) -> str:
+    """Body text as the template's asciiClean leaves it: the usual typographic characters as ASCII, the rest '?'."""
+    v = str(v if v is not None else '')
+    for a, b in _ASCII_MAP.items():
+        v = v.replace(a, b)
+    return v.encode('ascii', 'replace').decode('ascii').replace('\r', ' ').replace('\n', ' ').strip()
+
+
+def _cq(v) -> str:
+    """One CSV value, quoted as the templates write it (a comma in an address keeps every later column in place)."""
+    return '"' + _plain(v).replace('"', '""') + '"'
+
+
 def body_text(form: str, d: dict, unit_name: str = '') -> str:
-    """A readable report followed by the machine tag and CSV line, as a Winlink template sends it."""
-    g = lambda k: _ascii(d.get(k, ''))
-    L = ['=' * 60, f'     {FORM_TITLES[form]}', '     The Church of Jesus Christ of Latter-day Saints', '=' * 60, '',
-         '     *** THIS IS AN EXERCISE ***', f'     *** {SIM_MARK} ***', '']
+    """The message body as the real Winlink template's buildMsg() writes it (same sections, order, labels and
+    blanks; templates/*/..._Initial.html), with the EXERCISE banner first and the simulator's mark under it,
+    then the CSV line and the [Church-XX|exercise=YES|...] tag the EOC server parses."""
+    g = lambda k: _plain(d.get(k, ''))
+
+    def yn(k):          # a radio button: its value, or what the template writes when none is chosen
+        return g(k) or '(not selected)'
+
+    def pad(v, w):
+        return str(v).ljust(w)
+
+    def row(label, val):
+        return pad(label + ':', 38) + ' ' + (val or '(blank)')
+
+    dash = lambda n: '-' * n
+    sender = unit_call({'name': unit_name}) if unit_name else ''
+    L = ['*** THIS IS AN EXERCISE *** THIS IS AN EXERCISE *** THIS IS AN EXERCISE ***', f'*** {SIM_MARK} ***', '']
+
+    def location_and_operator():
+        out = []
+        lat, lon, grid = g('stn_lat_d'), g('stn_lon_d'), g('stn_grid_d')
+        # each template lays its location rows out its own way: the Disaster Report as its other rows, the Supply
+        # Order with fixed labels, the Work Crew Log padded to 30
+        lab = {'dr': lambda k, v: row('  ' + k, v), 'so': lambda k, v: pad('  ' + k + ':', 15) + v}.get(form, lambda k, v: pad('  ' + k + ':', 30) + v)
+        if lat or lon:
+            out += [dash(60), 'SENDER LOCATION'] + ([lab('Latitude', lat)] if lat else []) + ([lab('Longitude', lon)] if lon else []) \
+                + ([lab('Grid Square', grid)] if grid else []) + ([lab('Source', g('loc_src'))] if g('loc_src') else []) + ['']
+        out += [dash(60), 'SUBMITTED BY']
+        for k, lab in (('op_callsign', 'Callsign:     '), ('op_name', 'Name:         '), ('op_position', 'Position:     ')):
+            if g(k):
+                out.append('  ' + lab + g(k))
+        return out + ['']
+
     if form == 'dr':
-        L += ['INCIDENT', f"  Stake: {g('inc_stake')}", f"  Ward / Branch: {g('inc_ward')}", f"  Date: {_fmt_date(g('inc_date'))}",
-              f"  Type: {g('inc_type')}", f"  Location: {g('inc_location')}", f"  Stake President: {g('sp_name')}",
-              f"  Submitted by: {g('sub_name')}  {g('sub_phone')}  {g('sub_email')}", '',
-              'MISSIONARIES', f"  All safe and accounted for: {g('miss_safe')}", f"  {g('miss_details')}", '',
-              'MEMBERS', f"  Injuries: {g('mem_injuries')}   Deaths: {g('mem_deaths')}",
-              f"  Homes damaged: {g('mem_damaged')}   Homes destroyed: {g('mem_destroyed')}", f"  {g('mem_details')}", '',
-              'CHURCH BUILDINGS', f"  {g('bldg_damage')}", '', 'COMMUNITY', f"  {g('community')}", '',
-              'NEEDS', f"  Local: {g('need_local')}   Neighboring stakes: {g('need_neighbor')}   Church headquarters: {g('need_hq')}",
-              f"  {g('needs_details')}", '', 'VOLUNTEERS', f"  Count: {g('vol_count')}   Hours: {g('vol_hours')}",
-              f"  Activities: {g('vol_activities')}", f"  Volunteer injuries: {g('vol_injuries')}  {g('vol_inj_details')}", '']
-        csv_line = 'CSV,' + ','.join(_ascii(x).replace(',', ';') for x in [
-            g('inc_stake'), _fmt_date(g('inc_date')), g('inc_location'), g('inc_type'), g('miss_safe'), g('mem_injuries'),
+        L += ['=' * 60, '     Church Disaster Report', '     The Church of Jesus Christ of Latter-day Saints', '=' * 60, '',
+              'REPORTING PERIOD', row('  From', _fmt_date(g('period_from'))), row('  To', _fmt_date(g('period_to'))), '',
+              dash(60), 'INCIDENT', row('  Date', _fmt_date(g('inc_date'))), row('  Location', g('inc_location')), row('  Type', g('inc_type')),
+              row('  Stake', g('inc_stake'))] + ([row('  Ward', g('inc_ward'))] if g('inc_ward') else []) + [
+              '', row('  Stake President', g('sp_name')), row('    Phone', g('sp_phone')), row('    Email', g('sp_email')), '',
+              row('  Person Submitting Report', g('sub_name')), row('    Phone', g('sub_phone')), row('    Email', g('sub_email')), '',
+              dash(60), 'REPORT DETAILS', '', 'Full-Time Missionaries', row('  All missionaries safe and accounted for', yn('miss_safe'))]
+        L += ([f"  Additional details: {g('miss_details')}"] if g('miss_details') else []) + ['', 'Church Members',
+              row('  Member injuries', g('mem_injuries') or '(not reported)'), row('  Member deaths', g('mem_deaths') or '(not reported)'),
+              row('  Member homes damaged', g('mem_damaged') or '(not reported)'), row('  Member homes destroyed', g('mem_destroyed') or '(not reported)')]
+        L += ([f"  Additional details: {g('mem_details')}"] if g('mem_details') else []) + [
+              '', 'Church Buildings', '  Damage to facilities:', '  ' + (g('bldg_damage') or '(none reported)'), '',
+              'Community', '  ' + (g('community') or '(not provided)'), '',
+              'Volunteers', row('  Number of volunteers', g('vol_count') or '(not reported)'), row('  Total volunteer hours', g('vol_hours') or '(not reported)')]
+        L += ([f"  Activities: {g('vol_activities')}"] if g('vol_activities') else []) + [row('  Volunteer injuries or accidents', yn('vol_injuries'))]
+        L += ([f"  Additional details: {g('vol_inj_details')}"] if g('vol_inj_details') else []) + [
+              '', 'Anticipated Needs', row('  Local Church facilities needed', yn('need_local')),
+              row('  Assistance from neighboring units needed', yn('need_neighbor')), row('  Assistance from Church HQ needed', yn('need_hq'))]
+        L += ([f"  Additional details: {g('needs_details')}"] if g('needs_details') else []) + ['']
+        L += location_and_operator() + [dash(60), f'Sender: {sender} | Form: PD60000184 | Via Winlink', '=' * 60]
+        csv_line = 'CSV,' + ','.join(_cq(x) for x in [
+            g('inc_stake'), _fmt_date(g('inc_date')), g('inc_location'), g('inc_type'), yn('miss_safe'), g('mem_injuries'),
             g('mem_deaths'), g('mem_damaged'), g('mem_destroyed'), g('vol_count'), g('vol_hours'),
-            g('need_local'), g('need_neighbor'), g('need_hq'), g('sub_name'), g('sub_phone')])
+            yn('need_local'), yn('need_neighbor'), yn('need_hq'), g('sub_name'), g('sub_phone')])
         pairs = [('stake', g('inc_stake'))] + ([('ward', g('inc_ward'))] if g('inc_ward') else []) + [
             ('date', _fmt_date(g('inc_date'))), ('location', g('inc_location')), ('type', g('inc_type')), ('miss_safe', g('miss_safe')),
             ('mem_inj', g('mem_injuries')), ('mem_dead', g('mem_deaths')), ('homes_dmg', g('mem_damaged')),
@@ -910,25 +1090,63 @@ def body_text(form: str, d: dict, unit_name: str = '') -> str:
             ('vol_inj', g('vol_injuries')), ('need_local', g('need_local')), ('need_neighbor', g('need_neighbor')), ('need_hq', g('need_hq')),
             ('submitter', g('sub_name')), ('phone', g('sub_phone')), ('sp', g('sp_name'))]
     elif form == 'so':
-        items = [f'{k}:{v}' for k, v in d.items() if len(k) == 4 and k[:2].isalpha() and k[2:].isdigit() and str(v).strip() not in ('', '0')]
+        catalog, sections = so_catalog()
+        known = {c[0] for c in catalog}
+        L += ['=' * 60, '     Church Emergency Response Supply Order', '     The Church of Jesus Christ of Latter-day Saints', '     Form PD10052205',
+              '=' * 60, '', 'DELIVERY INFORMATION', dash(60),
+              'Requesting Stake:   ' + g('req_stake'), 'Stake President:    ' + g('stake_pres'), 'Delivery Contact:   ' + g('del_contact'),
+              'Phone:              ' + g('del_phone'), 'Order Date:         ' + _fmt_date(g('order_date')),
+              'Delivery Address:   ' + g('del_addr'), 'City / State / Zip: ' + g('del_city') + ', ' + g('del_state') + ' ' + g('del_zip'), '',
+              'SUPPLIES ORDERED', dash(60), pad('ITEM', 52) + pad('ITEM#', 9) + pad('UNIT', 10) + 'QTY', dash(75)]
+        items, any_item = [], False
+
+        def qty(k):
+            v = str(d.get(k, '') or '').strip()
+            return v if v not in ('', '0') else ''
+        for name, prefix in sections:
+            rows = [(dsc, num, unit, qty(i)) for i, dsc, num, unit in catalog if i.startswith(prefix) and qty(i)]
+            if rows:
+                L.append('  ' + name.upper())
+                for dsc, num, unit, q in rows:
+                    L.append('  ' + pad(_plain(dsc), 50) + pad(num, 9) + pad(unit, 10) + q)
+                    items.append(f'{num}:{q}')
+                L.append('')
+                any_item = True
+        # a catalog field the template list does not have (or no template here): its field id, as the phone path files it
+        for k in sorted(d):
+            if len(k) == 4 and k[:2].isalpha() and k[2:].isdigit() and k not in known and qty(k):
+                items.append(f'{k}:{qty(k)}')
+                any_item = True
+        if not any_item:
+            L += ['  (No items ordered)', '']
+        others = []
         for i in range(1, 6):
-            od, oq = str(d.get(f'other_desc{i}', '') or '').strip(), str(d.get(f'other_qty{i}', '') or '').strip()
+            od, oq = g(f'other_desc{i}'), g(f'other_qty{i}')
             if od and oq:
-                items.append(f'LOCAL-{_ascii(od)[:20]}:{oq}')
-        L += ['ORDER', f"  Stake: {g('req_stake')}", f"  Order date: {_fmt_date(g('order_date'))}   Needed by: {_fmt_date(g('req_del_date'))}",
-              f"  Deliver to: {g('del_contact')}  {g('del_phone')}", f"  {g('del_addr')}, {g('del_city')}, {g('del_state')} {g('del_zip')}", '',
-              'ITEMS'] + [f'  {it}' for it in items] + ['']
-        csv_line = 'CSV,' + ','.join(_ascii(x).replace(',', ';') for x in [g('req_stake'), _fmt_date(g('order_date')), g('del_contact'), g('del_phone'),
-                                                                            g('del_city'), g('del_state'), _fmt_date(g('req_del_date')), ';'.join(items)])
+                others.append((od, g(f'other_num{i}') or 'LOCAL', g(f'other_unit{i}'), oq))
+                items.append('LOCAL-' + re.sub(r'[;:,]', ' ', _ascii(od)) + ':' + oq)      # the whole description, as the template
+        if others:
+            L.append('  OTHER ITEMS (not in catalog - contact the area welfare manager)')
+            L += ['  ' + pad(od, 50) + pad(on, 9) + pad(ou, 10) + oq for od, on, ou, oq in others] + ['']
+        L += [dash(60), 'SIGNATURES', 'Requester:              ' + g('req_sig'), 'Date:                   ' + _fmt_date(g('req_sig_date')),
+              'Requested Delivery:     ' + _fmt_date(g('req_del_date')), 'Area Welfare Mgr:       ' + g('awm_sig'), '',
+              dash(60), 'INTERNAL USE ONLY', 'Project Number:         ' + g('proj_num'), 'Project Name:           ' + g('proj_name'), '']
+        L += location_and_operator() + [dash(60), f'Sender: {sender} | Form PD10052205 | Via Winlink', '=' * 60]
+        csv_line = 'CSV,' + ','.join(_cq(x) for x in [g('req_stake'), _fmt_date(g('order_date')), g('del_contact'), g('del_phone'),
+                                                      g('del_city'), g('del_state'), _fmt_date(g('req_del_date')), ';'.join(items)])
         pairs = [('stake', g('req_stake')), ('contact', g('del_contact')), ('phone', g('del_phone')), ('city', g('del_city')), ('state', g('del_state')),
                  ('zip', g('del_zip')), ('addr', g('del_addr')), ('order_date', _fmt_date(g('order_date'))), ('del_date', _fmt_date(g('req_del_date'))),
                  ('items', ';'.join(items))]
     else:
         crew, total, count = [], 0.0, 0
-        L += ['LOG', f"  Date: {_fmt_date(g('log_date'))}   Location: {g('log_location')}",
-              f"  Crew chief: {g('chief_name')}  {g('chief_stake')} / {g('chief_ward')}  {g('chief_hrs')} h  {g('chief_phone')}", '', 'CREW']
+        safe = str(d.get('safety_cert', '')).lower() in ('true', 'yes', 'on', '1')
+        L += ['=' * 60, '     Cleanup Work Crew Volunteer Hours', '     The Church of Jesus Christ of Latter-day Saints', '     Form PD10052209',
+              '=' * 60, '', 'Date:     ' + _fmt_date(g('log_date')), 'Location: ' + g('log_location'), '', dash(60), 'CREW CHIEF', '',
+              pad('Name:', 22) + g('chief_name'), pad('Stake:', 22) + g('chief_stake'), pad('Ward:', 22) + g('chief_ward'),
+              pad('Hours Worked:', 22) + (g('chief_hrs') or '0'), pad('Cell Phone:', 22) + g('chief_phone'), '', dash(60), 'CREW MEMBERS', '',
+              pad('#', 3) + pad('Name', 25) + pad('Stake', 22) + pad('Ward', 18) + pad('Hrs', 5) + pad('WO#', 8) + 'Address', dash(90)]
         for i in range(1, 21):
-            cn = g(f'crew_name{i}').strip()
+            cn = g(f'crew_name{i}')
             if not cn:
                 continue
             count += 1
@@ -937,29 +1155,36 @@ def body_text(form: str, d: dict, unit_name: str = '') -> str:
                 total += float(hrs)
             except ValueError:
                 pass
-            row = [cn, g(f'crew_stake{i}'), g(f'crew_ward{i}'), hrs, g(f'crew_wo{i}'), g(f'crew_addr{i}')]
-            L.append('  ' + '  '.join(row))
-            crew.append(':'.join(x.replace(':', ';') for x in row))
+            row_ = [cn, g(f'crew_stake{i}'), g(f'crew_ward{i}'), hrs, g(f'crew_wo{i}'), g(f'crew_addr{i}')]
+            L.append(pad(str(i), 3) + pad(row_[0], 25) + pad(row_[1], 22) + pad(row_[2], 18) + pad(row_[3], 5) + pad(row_[4], 8) + row_[5])
+            crew.append(':'.join(x.replace(':', ';') for x in row_))
         try:
             total += float(g('chief_hrs') or 0)
         except ValueError:
             pass
-        L += ['', f"  Safety acknowledgment: {'YES' if str(d.get('safety_cert', '')).lower() in ('true', 'yes', 'on', '1') else 'NO'}", '']
-        csv_line = 'CSV,' + ','.join(_ascii(x).replace(',', ';') for x in [_fmt_date(g('log_date')), g('log_location'), g('chief_name'), g('chief_stake'),
-                                                                            g('chief_ward'), str(count), str(total)])
+        tot = f'{total:g}'
+        L += ['', dash(60), pad('Crew members reported:', 30) + str(count), pad('Total volunteer hours:', 30) + tot, '',
+              'Safety certification: ' + ('YES - All crew members received safety orientation' if safe else 'NOT CONFIRMED'), '']
+        L += location_and_operator() + [dash(60), f'Submitted by: {sender} | Form PD10052209 | Via Winlink', '=' * 60]
+        csv_line = 'CSV,' + ','.join(_cq(x) for x in [_fmt_date(g('log_date')), g('log_location'), g('chief_name'), g('chief_stake'),
+                                                      g('chief_ward'), str(count), tot])
         pairs = [('date', _fmt_date(g('log_date'))), ('location', g('log_location')), ('chief', g('chief_name')), ('chief_stake', g('chief_stake')),
                  ('chief_ward', g('chief_ward')), ('chief_hrs', g('chief_hrs') or '0'), ('chief_phone', g('chief_phone')), ('crew_count', str(count)),
-                 ('total_hrs', str(total)), ('safety', 'YES' if str(d.get('safety_cert', '')).lower() in ('true', 'yes', 'on', '1') else 'NO'),
-                 ('crew', ';'.join(crew)), ('submitter', unit_call({'name': unit_name}) if unit_name else '')]
+                 ('total_hrs', tot), ('safety', 'YES' if safe else 'NO'),
+                 ('crew', ';'.join(crew)), ('submitter', sender)]
     for k in ('stn_lat_d', 'stn_lon_d', 'stn_grid_d'):
         if d.get(k):
             pairs.append(({'stn_lat_d': 'lat', 'stn_lon_d': 'lon', 'stn_grid_d': 'grid'}[k], d[k]))
+    for k, t in (('op_callsign', 'op_call'), ('op_name', 'op_name'), ('op_position', 'op_pos')):
+        if d.get(k):
+            pairs.append((t, d[k]))
     L += ['', csv_line, '', _tag(form, pairs), '']
     return '\r\n'.join(L)
 
 
-def winlink_mime(item: dict, run: dict) -> tuple:
-    """(filename, bytes) of a Winlink-style .mime message for the EOC's Received-folder watcher."""
+def winlink_mime(item: dict, run: dict, sent: '_dt.datetime' = None) -> tuple:
+    """(filename, bytes) of a Winlink-style .mime message for the EOC's Received-folder watcher. `sent` (default now) is
+    the Date header: a message delayed on its way carries the time it was written, as Winlink does."""
     form, d, unit = item['form'], item['payload'], item.get('unit', '')
     call = unit_call({'name': unit})
     stake = d.get('inc_stake') or d.get('req_stake') or d.get('chief_stake') or ''
@@ -967,7 +1192,7 @@ def winlink_mime(item: dict, run: dict) -> tuple:
                'so': f"Church Supply Order: {stake} ({d.get('order_date', '')})",
                'wcl': f"Church Work Crew Log: {stake} / {d.get('chief_ward', '')} ({d.get('log_date', '')})"}[form]
     msg = email.message.EmailMessage()
-    msg['Date'] = email.utils.format_datetime(_dt.datetime.now(_dt.timezone.utc))
+    msg['Date'] = email.utils.format_datetime(sent or _dt.datetime.now(_dt.timezone.utc))
     msg['From'] = f'{call}@winlink.org'
     msg['To'] = run['eoc'].get('winlink') or 'EOC@winlink.org'
     msg['Subject'] = _ascii(subject)
@@ -1338,9 +1563,23 @@ class Runner:
 
     def hotwash(self, n: int, result: str, note: str):
         with self.lock:
-            self.run['hotwash'][n]['result'] = result
-            self.run['hotwash'][n]['note'] = note
+            h = self.run['hotwash'][n]
+            if result != h.get('result'):
+                h['result_from'] = 'controller'
+            h['result'] = result
+            h['note'] = note
         self.save()
+
+    def set_handed(self, item_id: str, on: bool = True) -> dict:
+        """Tick a card on the Run tab as handed out (kept in the run file, so a resumed session keeps the ticks)."""
+        with self.lock:
+            it = self.item(item_id)
+            if on:
+                it['handed'] = {'t': round(self.elapsed(), 1), 'wall': _dt.datetime.now().strftime('%H:%M:%S')}
+            else:
+                it.pop('handed', None)
+        self.save()
+        return {'ok': True, 'handed': bool(on)}
 
     def gather_evidence(self) -> dict:
         """Evaluate every hot-wash check that carries an `auto` rule against the EOC's work
@@ -1361,6 +1600,9 @@ class Runner:
                     continue
                 n_auto += 1
                 h['evidence'], h['suggest'] = evaluate_rule(rule, acts, speed, to_t=self.drill_minute)
+                if not h.get('result') or h.get('result_from') == 'evidence':
+                    # preselected from the evidence; the controller's own press always wins and is never overwritten
+                    h['result'], h['result_from'] = h['suggest'], 'evidence'
             self._log(f'Evidence gathered from the EOC for {n_auto} hot-wash checks ({len(acts)} work items on file)')
         self.save()
         return {'ok': True, 'checks': n_auto, 'items': len(acts)}
@@ -1413,7 +1655,12 @@ class Runner:
                     atomic_write(p, '﻿' + json.dumps(it['payload'], indent=2, ensure_ascii=False))
                     res = {'ok': True, 'via': 'drop', 'file': str(p)}
                 elif ch == 'winlink':
-                    name, data = winlink_mime(it, self.run)
+                    sent = None
+                    if it.get('sent_t') is not None:
+                        # written at sent_t, arriving now: the Date header goes back by the drill minutes in between
+                        back = max(0.0, self.elapsed() - float(it['sent_t'])) * 60 / max(0.1, float(self.run['clock'].get('speed') or 1))
+                        sent = _dt.datetime.now(_dt.timezone.utc) - _dt.timedelta(seconds=back)
+                    name, data = winlink_mime(it, self.run, sent)
                     p = Path(self.received_dir) / name
                     atomic_write(p, data)
                     res = {'ok': True, 'via': 'winlink', 'file': str(p)}
@@ -1460,18 +1707,28 @@ class Runner:
                 if it.get('ics_key') and isinstance(n.get('match'), dict) and n['match'].get('agency'):
                     n['match']['key_pref'] = it['ics_key']
 
-    def set_need(self, need_id: str, action: str) -> dict:
-        """The controller waives a need (not played in this drill: out of the score) or reopens it."""
+    def set_need(self, need_id: str, action: str, who: str = '') -> dict:
+        """The controller waives a need (not played in this drill: out of the score), marks it met (the room did it
+        another way the EOC records cannot show: met on time at this minute, with who and when), or reopens it."""
         with self.lock:
             n = next((x for x in self.run['needs'] if x['id'] == need_id), None)
             if not n:
                 return {'ok': False, 'error': 'no such need'}
+            who = ' '.join(str(who or '').split())[:60] or 'the controller'
             if action == 'waive':
                 n['state'], n['evidence'] = 'waived', 'waived by the controller'
+            elif action == 'met':
+                now = round(self.elapsed(), 1)
+                n['state'], n['met_t'] = 'met', now
+                n['marked'] = {'by': who, 't': now, 'wall': _dt.datetime.now().strftime('%H:%M:%S')}
+                n['evidence'] = f"marked met by {who} at {_fmt_t(now)} ({n['marked']['wall']})"
+                if n.get('arose_t') is None:
+                    n['arose_t'], n['arose_ms'] = now, int(time.time() * 1000)
             elif action == 'reopen':
                 n['state'], n['evidence'] = 'open', ''
+                n.pop('marked', None)
             else:
-                return {'ok': False, 'error': 'action must be waive or reopen'}
+                return {'ok': False, 'error': 'action must be waive, met or reopen'}
             self._log(f"need {n['state'].upper()} by the controller: {n['label'][:60]}")
         self.save()
         return {'ok': True, 'need': n}
@@ -1510,7 +1767,7 @@ class Runner:
             if rp.get('unit') and rp['unit'].lower() not in (str(a.get('unit', '')) + ' ' + str(a.get('title', '')) + ' ' + hay.get((a.get('src') or {}).get('id'), '')).lower():
                 continue
             sel.append(a)
-        frm = {'name': f"{rp.get('from') or 'the line above'} (simulated)", 'level': 'area' if (self.run.get('site') or {}).get('role') != 'satellite' else 'stake', 'sim': True}
+        frm = {'name': f"{rp.get('from') or 'the line above'} {SIM_EOC}", 'level': 'area' if (self.run.get('site') or {}).get('role') != 'satellite' else 'stake', 'sim': True}
         text = it.get('text') or rp.get('decision') or 'reply'
         bundle = {'kind': 'church_eoc_reply', 'v': 1, 'sim': True, 'from': frm, 'to': self.run['eoc'].get('name') or '', 'exportedAt': int(time.time() * 1000),
                   'replies': [{'id': a['id'], 'key': a.get('key', ''), 'title': a.get('title', ''), 'status': rp.get('status', 'done'), 'decision': rp.get('decision', ''), 'text': text} for a in sel],
@@ -1546,6 +1803,15 @@ class Runner:
                 self.run['needs_error'] = f'EOC not reachable: {e}'
             return
         acts = acts if isinstance(acts, list) else []
+        if self.run.get('rollup_msgs'):
+            try:
+                if self.settle_rollup_items(acts):
+                    acts = _http(self.eoc_url + '/api/actions', timeout=5) or acts
+            except Exception:
+                pass
+            on_file = {str(r.get('id')) for r in rows if isinstance(r, dict)} if isinstance(rows, list) else set()
+            with self.lock:
+                self.run['rollup_onfile'] = sum(1 for i in self.run['rollup_msgs'] if i in on_file)
         msgs = []
         for r in rows if isinstance(rows, list) else []:
             try:
@@ -1587,6 +1853,8 @@ class Runner:
                     n['evidence'] = (n.get('evidence') or 'nothing matching on the EOC') + ' · run ended'
                 if n['state'] != before:
                     changed.append(n)
+                    if n['state'] == 'overdue' and n.get('overdue_t') is None:
+                        n['overdue_t'] = round(now, 1)        # the debrief's timeline puts a miss here, not at the end
             # consequences: items waiting for a need to reach a state
             for it in self.run['items']:
                 if it.get('status') != 'waiting':
@@ -1644,7 +1912,14 @@ class Runner:
         age = now - t0
         if not a:
             n['state'] = 'overdue' if age > float(rule.get('owner', 30)) else 'open'
-            n['evidence'] = f"no matching work item on the EOC after {age:.0f} min" if age > 2 else ''
+            m = n.get('match') or {}
+            if m.get('title_contains'):
+                why = f"No work item with '{m['title_contains']}' in its title was recorded."
+            elif m.get('key'):
+                why = 'The work item the simulator posted is not on the EOC: removed there, or another drill event is open.'
+            else:
+                why = ' '.join(f"No {n.get('cat') or ''} work item".split()) + (f" for {m['unit']}" if m.get('unit') else '') + ' was recorded.'
+            n['evidence'] = why if age > 2 else ''
             return
         tm = n.setdefault('times', {})
         # never before the need arose: an item the EOC already had (a duplicate from an earlier run) would otherwise read T+0
@@ -1786,8 +2061,27 @@ class Runner:
                 if n['cat'] == ck['cat_met'] and n.get('arose_t') is not None and n['state'] != 'waived':
                     d[n['state']] = d.get(n['state'], 0) + 1
             tot = sum(d.values())
-            ok = tot > 0 and d.get('met', 0) + d.get('late', 0) == tot
+            if not tot:
+                return None, f"no {ck['cat_met']} need has arisen in this run"
+            ok = d.get('met', 0) + d.get('late', 0) == tot
             return ok, f"{d.get('met', 0) + d.get('late', 0)} of {tot} {ck['cat_met']} needs met"
+        if ck.get('rollups_merged'):
+            # every roll-up this simulator sent for a stake it plays is on file at this EOC (the Drop Folder watcher or a merge)
+            rolls = [i for i in self.run['items'] if i['kind'] == 'rollup' and i.get('local', True)]
+            if not rolls:
+                return None, 'not in this run: no stake is simulated here (not applicable)'
+            sent = self.run.get('rollup_msgs') or {}
+            onfile = int(self.run.get('rollup_onfile') or 0)
+            waiting = [i for i in rolls if i['status'] in ('pending', 'held')]
+            bad = [i for i in rolls if i['status'] == 'error']
+            ended = self.run['clock']['status'] in ('stopped', 'finished')
+            if bad:
+                return False, f"{len(bad)} roll-up(s) could not be delivered"
+            if onfile < len(sent):
+                return (False if ended else None), f"{onfile} of {len(sent)} rolled-up reports on file at this EOC"
+            if waiting and not ended:
+                return None, f"{len(rolls) - len(waiting)} of {len(rolls)} roll-ups merged so far ({onfile} reports on file)"
+            return bool(sent) or None, f"{len(rolls) - len(waiting)} roll-up(s) merged: {onfile} reports on file"
         if ck.get('need_met'):
             # the needs of one inject (every unit it expanded to): all met or met late; pending until they arise
             ns = [n for n in self.run['needs'] if n['inject'] == ck['need_met'] and n['state'] != 'waived']
@@ -1828,7 +2122,7 @@ class Runner:
         for n in needs:
             role, cat = n.get('role') or NEED_ROLE.get(n['cat'], ''), n['cat']
             if n['state'] in ('met',):
-                well.append({'role': role, 'text': f"{n['label'][:90]}: {n['evidence']}"})
+                well.append({'role': role, 'text': f"{n['label']}: {n['evidence']}", 'need': n['label']})
                 continue
             fails = []
             tm, rule, t0 = n.get('times', {}), n['rule'], n['arose_t']
@@ -1845,34 +2139,45 @@ class Runner:
                 if rule.get('decision') and 'no decision' in (n.get('evidence') or ''):
                     fails.append('decision')
             coach = []
-            for f in fails or ['done']:
+            if n.get('coach'):
+                coach.append(n['coach'])         # the scenario's own line for this need (its `need.coach`)
+            for f in ([] if coach else fails or ['done']):
                 line = NEED_COACH.get((cat, f)) or NEED_COACH.get(('other', f)) or NEED_COACH[('other', 'done')]
                 if line not in coach:
                     coach.append(line)
-            better.append({'role': role, 'cat': cat, 'state': n['state'], 'need': n['label'][:90], 'what': n['evidence'] or 'nothing matching on the EOC',
-                           'coach': ' '.join(coach), 'fails': fails})
+            better.append({'role': role, 'cat': cat, 'state': n['state'], 'need': n['label'], 'what': n['evidence'] or 'nothing matching on the EOC',
+                           'coach': ' '.join(coach), 'coach_lines': coach, 'fails': fails})
         by_role = {}
         for b in better:
             by_role.setdefault(b['role'], []).append(b)
         # each person's own score (a need two roles share counts for both), the overall rule per role: met on time,
         # half for late, open needs inside their time not counted
         roles_score = {}
+        simulated = simulated_roles(run.get('site') or {})
         for n in needs:
             for person in role_people(n.get('role') or NEED_ROLE.get(n['cat'], '')):
+                if person in simulated:
+                    continue                     # the simulator played this role: nobody in the room to score
                 d = roles_score.setdefault(person, {'total': 0, 'met': 0, 'late': 0, 'open': 0, 'overdue': 0, 'missed': 0})
                 d['total'] += 1
                 d[n['state']] = d.get(n['state'], 0) + 1
         for d in roles_score.values():
             counted = d['total'] - d['open']
             d['pct'] = round(100 * (d['met'] + 0.5 * d['late']) / counted) if counted else None
-        # why it matters: the real-disaster lesson behind each need's inject (need id = need:<item id>[#part])
+        # why it matters: the real-disaster lesson behind each need's inject (need id = need:<item id>[#part]). Only the
+        # inject's own need carries its lesson: the items the EOC derives from a report (injuries, buildings...) are about
+        # something else, so a care-centre transport lesson never lands on its injured count (audit 2026-11-18)
         items_by_id = {it['id']: it for it in run['items']}
         why, seen_lessons = [], set()
         for n in needs:
-            it = items_by_id.get(n['id'][5:].split('#')[0])
+            if '#' in n['id']:
+                continue
+            it = items_by_id.get(n['id'][5:])
+            if it and it.get('lesson') and re.search(r'\b(died|deaths?|dead|killed)\b', it['lesson'], re.I) and n['cat'] not in ('life', 'missionaries'):
+                continue                       # a lesson about deaths never sits beside a miss that is not about life safety
             if it and it.get('lesson') and it['lesson'] not in seen_lessons:
                 seen_lessons.add(it['lesson'])
-                why.append({'state': n['state'], 'need': n['label'][:90], 'lesson': it['lesson'], 'role': n.get('role') or NEED_ROLE.get(n['cat'], '')})
+                why.append({'state': n['state'], 'need': n['label'], 'lesson': it['lesson'], 'role': n.get('role') or NEED_ROLE.get(n['cat'], '')})
         hw = [{'t': h.get('t', 0), 'check': h['check'], 'result': h.get('result', ''), 'note': h.get('note', ''), 'evidence': h.get('evidence', ''), 'suggest': h.get('suggest', '')} for h in run.get('hotwash', [])]
         segs = run['clock'].get('segments') or []
         speeds = sorted({s['speed'] for s in segs if s['speed']})
@@ -1881,7 +2186,7 @@ class Runner:
                         'status': run['clock']['status'], 'elapsed_min': round(min(self.elapsed(), float(run['clock']['duration_min'] or 1e9)), 1), 'duration_min': run['clock']['duration_min'], 'speeds': speeds,
                         'units': len(run['scope']['units']), 'seed': run['seed'], 'generated': _dt.datetime.now().isoformat(timespec='seconds')},
                 'score': sc, 'timeline': timeline, 'needs': needs, 'hotwash': hw, 'better': better, 'better_by_role': by_role, 'well': well,
-                'roles_score': roles_score, 'why': why, 'phases': run.get('phases', []), 'pace': run['pace'], 'items': counts(run)}
+                'roles_score': roles_score, 'roles_simulated': sorted(simulated), 'why': why, 'phases': run.get('phases', []), 'pace': run['pace'], 'items': counts(run)}
 
     def _fire_rollup(self, it: dict) -> dict:
         """Bundle the reports of one simulated stake that are due by now into a church_eoc_rollup
@@ -1911,7 +2216,56 @@ class Runner:
                 x['result'] = {'ok': True, 'via': res['via'], 'bundle': it['id']}
                 x['fired_wall'] = _dt.datetime.now().strftime('%H:%M:%S')
                 x['fired_t'] = round(now_t, 1)
+            # the records it carried (their ids are fixed per run): the needs tick checks they reached the EOC and settles
+            # the work items the EOC derives from them (settle_rollup_items)
+            sent = self.run.setdefault('rollup_msgs', {})
+            for m in bundle['msgs']:
+                sent[m['id']] = it['stake']
+        if res.get('via') == 'rollup merge':
+            try:
+                self.settle_rollup_items(_http(self.eoc_url + '/api/actions', timeout=5))
+            except Exception:
+                pass
         return res
+
+    def settle_rollup_items(self, acts: list) -> int:
+        """The EOC derives work items from every record a roll-up carries (injuries, missionaries, buildings, Supply
+        Orders...). For a stake this simulator plays, its own EOC has already handled those: they arrive owned and closed
+        by the simulated Stake EOC, and only what it set UP (Church headquarters assistance, Supply Order approval) stays
+        open here, from that EOC, waiting on this one. One item per unit and kind: the EOC keys them by ward. Returns how
+        many items were changed (audit 2026-11-18: 182 open items and 55 duplicate titles after two roll-ups)."""
+        sent = self.run.get('rollup_msgs') or {}
+        if not sent or not isinstance(acts, list):
+            return 0
+        with self.lock:
+            done = set(self.run.setdefault('rollup_settled', []))
+        changed = []
+        for a in acts:
+            src = str((a.get('src') or {}).get('id') or '')
+            if src not in sent or not a.get('id'):
+                continue
+            tag = f"{a['id']}:{src}"
+            if tag in done:
+                continue
+            frm = f'{sent[src]} EOC {SIM_EOC}'
+            if a.get('cat') in ('upward', 'supply'):
+                body = {'from': frm, 'fromEoc': True, 'who': 'SIM', 'log': f'Sent up by {frm} with its roll-up: they are waiting on this EOC'}
+            elif a.get('status') == 'done':
+                body = None
+            else:
+                body = {'owner': frm, 'status': 'done', 'who': 'SIM', 'decision': f'Handled at {frm}; the roll-up carries it for the record.'}
+            if body:
+                try:
+                    _http(self.eoc_url + '/api/actions/' + urllib.parse.quote(str(a['id'])), 'PATCH', body, timeout=5)
+                except Exception:
+                    continue
+            done.add(tag)
+            changed.append(tag)
+        if changed:
+            with self.lock:
+                self.run['rollup_settled'] = sorted(done)[-5000:]
+                self._log(f'Roll-up work items settled at this EOC: {len(changed)} (the simulated stakes handled theirs; what they set UP stays open here)')
+        return len(changed)
 
     def _loop(self):
         while not self._stop.is_set():
@@ -2005,8 +2359,8 @@ def rollup_bundle(run: dict, it: dict, parts: list, now_t: float) -> dict:
     eoc = _eoc_module()
     speed = float(run['clock'].get('speed') or 1)
     now_ms = int(time.time() * 1000)
-    frm = f"{it['stake']} EOC (simulated)"
-    msgs, roster, actions = [], {}, []
+    frm = f"{it['stake']} EOC {SIM_EOC}"
+    msgs, roster = [], {}
     for x in parts:
         ft = x['form'].upper()
         ts = int(now_ms - max(0.0, now_t - x['t']) * 60000 / speed)
@@ -2015,16 +2369,16 @@ def rollup_bundle(run: dict, it: dict, parts: list, now_t: float) -> dict:
                x['form']: eoc._map_worker_to_eoc(ft, x['payload'])}
         msgs.append(rec)
         roster.setdefault(x['unit_id'], {'id': 'sim-' + x['unit_id'], 'name': x['unit'], 'status': 'reported', 'lastTs': ts})
-        for a in eoc._derive_actions(rec):
-            if a.get('cat') in ('upward', 'supply'):
-                actions.append(dict(a, id=str(uuid.uuid5(uuid.NAMESPACE_URL, 'sim-action:' + a['key'])), ts=ts, status='up', owner='', unit=x['unit'],
-                                    decision='', due='', next=a.get('next', ''), log=[{'ts': ts, 'who': 'SIM', 'text': f'Status: up (sent with the roll-up from {frm})'}]))
+    # The work items waiting on the line above (what this stake set UP) are not sent as separate actions: the receiving EOC
+    # derives one item per unit and kind from the records themselves (keyed by ward), and a separate copy made every one
+    # of them twice. Runner.settle_rollup_items marks the derived ones: UP items stay open from this EOC, the rest closed.
+    n_up = sum(1 for m in msgs for a in eoc._derive_actions(m) if a.get('cat') in ('upward', 'supply'))
     return {'kind': 'church_eoc_rollup', 'v': 1, 'sim': True,
             'from': {'name': frm, 'level': 'stake', 'op': 'SIM', 'units': ', '.join(r['name'] for r in roster.values())},
-            'to': run['eoc'].get('name') or 'Council / Area EOC', 'incident': {'name': 'SIMULATED ' + run['scenario']['name'], 'type': run['scenario'].get('hazard', '')},
+            'to': run['eoc'].get('name') or 'Council / Area EOC', 'incident': {'name': 'EXERCISE ' + run['scenario']['name'], 'type': run['scenario'].get('hazard', '')},
             'exportedAt': now_ms, 'since': 0, 'msgs': msgs, 'roster': list(roster.values()),
-            'notes': [{'id': str(uuid.uuid4()), 'ts': now_ms, 'text': f"SIM: {it.get('text') or 'SITREP roll-up'} - {len(msgs)} report(s), {len(actions)} item(s) waiting on this EOC"}],
-            'actions': actions}
+            'notes': [{'id': str(uuid.uuid4()), 'ts': now_ms, 'text': f"SIM: {it.get('text') or 'SITREP roll-up'} - {len(msgs)} report(s), {n_up} item(s) waiting on this EOC"}],
+            'actions': []}
 
 
 def _log_minutes_abs(a: dict, prefix: str, to_t):
@@ -2162,6 +2516,46 @@ def evaluate_rule(rule: dict, acts: list, speed: float = 1.0, to_t=None):
     return '; '.join(lines), ('✓' if ok else '✗')
 
 
+# The role a card is for, as the room says it (the scenario's role ids)
+ROLE_WORDS = {'stake_president': 'Stake President', 'specialist': 'Specialist', 'erd': 'Emergency Response Director', 'ham': 'HAM',
+              'eoc': 'EOC operator', 'controller': 'Controller', 'team_leader': 'Team leader', 'county_liaison': 'County liaison',
+              'bishop': 'Bishop', 'satellite_eoc': 'Satellite EOC', 'receiving_stake': 'Receiving stake', 'area_eoc': 'Council / Area EOC',
+              'awsrm': 'Welfare line', 'area_seventy': 'Area Seventy'}
+
+
+def role_word(role: str) -> str:
+    r = str(role or '')
+    return ROLE_WORDS.get(r) or (r.replace('_', ' ')[:1].upper() + r.replace('_', ' ')[1:])
+
+
+def item_label(it: dict) -> str:
+    """What a planned item is, in words for the controller ('Net card → HAM', 'Disaster Report from Larkspur 2nd Ward')."""
+    k = it.get('kind', '')
+    if k == 'form':
+        return f"{FORM_TITLES.get(it.get('form'), 'Report').replace('Church ', '')} from {it.get('unit') or 'a unit'}"
+    if k == 'note':
+        return 'Note to the EOC log'
+    if k == 'voice':
+        return 'Net card → ' + (role_word(it.get('role')) if it.get('role') else 'HAM') + (f" ({it['unit']})" if it.get('unit') else '')
+    if k == 'prompt':
+        return 'Prompt card → ' + role_word(it.get('role') or 'controller')
+    if k == 'paper':
+        return 'Paper card' + (f" from {it['unit']}" if it.get('unit') else '')
+    if k == 'work_item':
+        return 'Work item: ' + ((it.get('work') or {}).get('title') or '')
+    if k == 'reply':
+        return 'Reply from ' + ((it.get('reply') or {}).get('from') or 'the line above')
+    if k == 'ics':
+        ics = it.get('ics') or {}
+        return f"{'ICS 213RR' if ics.get('form') == 'ics213rr' else 'ICS 213'} from {ics.get('agency') or 'a partner agency'}"
+    if k == 'rollup':
+        return f"Roll-up from {it.get('stake') or 'a stake'}"
+    return k
+
+
+# What the room sees for a score band (the run keeps its plain ids): kind words for volunteers, never "overwhelmed"
+SCORE_WORDS = {'strong': 'Strong', 'steady': 'Steady', 'struggling': 'Room to grow', 'overwhelmed': 'Baseline: first run'}
+
 STATE_WORD = {'open': 'open', 'met': 'met', 'late': 'met late', 'overdue': 'OVERDUE', 'missed': 'MISSED', 'waived': 'not played'}
 
 
@@ -2274,6 +2668,8 @@ def report_text(rep: dict) -> str:
         for role, d in sorted(rep['roles_score'].items(), key=lambda kv: -kv[1]['total']):
             L.append(f"  {role}: {d['met'] + d['late']} of {d['total']} met ({d['late']} late), {d['overdue'] + d['missed']} overdue or missed"
                      + (f" - {d['pct']}%" if d.get('pct') is not None else ''))
+        if rep.get('roles_simulated'):
+            L.append(f"  Played by the simulator (not scored): {', '.join(rep['roles_simulated'])}")
     L += ['', 'DO BETTER (by role)']
     if not rep['better']:
         L.append('  Nothing missed: every need that arose was met on time.')
@@ -2304,7 +2700,7 @@ def report_html(rep: dict) -> str:
     pct = sc['pct']
     tiles = [('Needs met', f"{sc['met'] + sc['late']}<small>/{sc['total']}</small>", f"{sc['met']} on time · {sc['late']} late"),
              ('Overdue or missed', str(sc['overdue'] + sc['missed']), f"{sc['open']} still open"),
-             ('Score', f"{pct if pct is not None else '—'}<small>%</small>", sc['label'] or 'no needs arose'),
+             ('Score', f"{pct if pct is not None else '—'}<small>%</small>", SCORE_WORDS.get(sc['label'] or '', 'no needs arose')),
              ('Minutes to an owner', str(sc['median_owner_min'] if sc['median_owner_min'] is not None else '—'), 'median, drill minutes'),
              ('Reports', f"{sc['reports']['sent']}<small>/{sc['reports']['expected']}</small>", f"{sc['reports']['typed_ok']} of {sc['reports']['typed']} hand-outs typed" + (f" · {sc['accuracy']}% accurate" if sc['accuracy'] is not None else '')),
              ('SITREPs', str(len(sc['sitreps'])), ', '.join(_fmt_t(t) for t in sc['sitreps']) or 'none generated')]
@@ -2313,9 +2709,10 @@ def report_html(rep: dict) -> str:
          ".sub{color:#5b6b7a;font-size:13px}.tiles{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:14px 0}.tile{border:1px solid #d5dde5;border-radius:8px;padding:10px 12px}.tile .k{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#5b6b7a}.tile .v{font-size:30px;font-weight:700;line-height:1.1}.tile .v small{font-size:15px;color:#5b6b7a;font-weight:600}.tile .s{font-size:11px;color:#5b6b7a}",
          ".st{display:inline-block;font-size:11px;font-weight:700;color:#fff;border-radius:4px;padding:0 6px;min-width:52px;text-align:center}table{border-collapse:collapse;width:100%;font-size:13px}td,th{text-align:left;vertical-align:top;padding:4px 6px;border-top:1px solid #e3e8ee}th{color:#5b6b7a;font-size:11px;text-transform:uppercase}",
          ".coach{background:#fff8ec;border-left:3px solid #e67800;padding:6px 10px;margin:6px 0}.well{background:#e3f5ea;border-left:3px solid #1f8a4c;padding:4px 10px;margin:4px 0}.mono{font-family:ui-monospace,Consolas,monospace;font-size:12px;white-space:pre-wrap}.chk{list-style:none;padding:0}.chk li{padding:2px 0}",
+         ".tw{overflow-x:auto;max-width:100%}.sub,.coach,.well,td{overflow-wrap:anywhere}@media (max-width:700px){body{padding:12px}.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}"
          "@media print{body{padding:0}h2{break-after:avoid}}.bar{height:10px;border-radius:5px;background:#eceff2;overflow:hidden;display:flex}.bar i{display:block;height:100%}</style></head><body>",
          f"<h1>After-action report · {e(r['scenario']['name'])}</h1><div class='sub'>EMCOMM drill · {e(r['eoc'].get('name', ''))} plays <b>{e(r['site'].get('label', ''))}</b> · {r['units']} units · run {e(r['id'])} · seed {r['seed']} · privacy {e(r['privacy'])}{e(consent_line(r.get('consent')))} · clock {e(r['status'])} at {_fmt_t(r['elapsed_min'])} of {_fmt_t(r['duration_min'])} · speeds {', '.join(f'{x:g}×' for x in r['speeds']) or '—'} · report {e(r['generated'])}</div>",
-         "<div class='sub'>Independent volunteer project, not an official Church product. Every simulated report said SIMULATED.</div>",
+         "<div class='sub'>Independent volunteer project, not an official Church product. Every simulated report said THIS IS AN EXERCISE.</div>",
          "<div class='tiles'>" + ''.join(f"<div class='tile'><div class='k'>{e(k)}</div><div class='v'>{v}</div><div class='s'>{e(s)}</div></div>" for k, v, s in tiles) + '</div>']
     tot = max(1, sc['total'])
     H.append("<div class='bar'>" + ''.join(f"<i style='width:{100 * sc[k] / tot:.1f}%;background:{col[k]}' title='{k}: {sc[k]}'></i>" for k in ('met', 'late', 'open', 'overdue', 'missed')) + "</div><div class='sub'>"
@@ -2329,7 +2726,8 @@ def report_html(rep: dict) -> str:
         H.append("<h2>Each role's score</h2><table><tr><th>Role</th><th>Needs</th><th>Met on time</th><th>Late</th><th>Overdue or missed</th><th>Still open</th><th>Score</th></tr>"
                  + ''.join(f"<tr><td>{e(role)}</td><td>{d['total']}</td><td>{d['met']}</td><td>{d['late']}</td><td>{d['overdue'] + d['missed']}</td><td>{d['open']}</td>"
                            f"<td>{'' if d.get('pct') is None else str(d['pct']) + '%'}</td></tr>"
-                           for role, d in sorted(rep['roles_score'].items(), key=lambda kv: -kv[1]['total'])) + '</table>')
+                           for role, d in sorted(rep['roles_score'].items(), key=lambda kv: -kv[1]['total'])) + '</table>'
+                 + (f"<div class='sub'>Played by the simulator, not scored: {e(', '.join(rep['roles_simulated']))}</div>" if rep.get('roles_simulated') else ''))
     H.append('<h2>Do better, by role</h2>')
     if not rep['better']:
         H.append("<div class='well'>Nothing missed: every need that arose was met on time.</div>")
@@ -2346,7 +2744,8 @@ def report_html(rep: dict) -> str:
     H.append('<h2>Timeline</h2><div class="mono">' + '\n'.join(f"{e(x['wall'])} {_fmt_t(x['t'])}  {e(x['text'])}" for x in rep['timeline']) + '</div>')
     H.append('<h2>PACE</h2><div class="mono">' + '\n'.join(f"{_fmt_t(s['t'])} {e(s['level'])}  {e(s.get('why', ''))}" for s in rep['pace']) + '</div>')
     H.append('</body></html>')
-    return '\n'.join(H)
+    # a phone (the room's /results) scrolls a wide table inside its own box, never the whole page sideways
+    return '\n'.join(H).replace('<table>', "<div class='tw'><table>").replace('</table>', '</table></div>')
 
 
 _WELL_TAIL = re.compile(r':\s*appeared T\+\d+.*$')   # the evidence tail of a 'went well' line
@@ -2362,17 +2761,13 @@ def debrief_html(rep: dict, history: list = None, next_scenarios: list = None, r
     history, next_scenarios = history or [], next_scenarios or []
     r, sc = rep['run'], rep['score']
     pct = sc.get('pct')
-    word = {'strong': 'Strong', 'steady': 'Steady', 'struggling': 'Struggling', 'overwhelmed': 'Overwhelmed'}.get(sc.get('label') or '', 'Not scored yet')
+    word = SCORE_WORDS.get(sc.get('label') or '', 'Not scored yet')
     tone = 'good' if pct is not None and pct >= 65 else 'warn' if pct is not None and pct >= 40 else 'bad' if pct is not None else 'muted'
     site = (r.get('site') or {}).get('label', '')
     when = (r.get('created') or '')[:10]
     fmt_t = lambda t: f"T+{int(round(float(t or 0)))}"
     dur = r.get('duration_min', 240)
     elapsed = min(float(r.get('elapsed_min') or 0), float(dur))      # a finished run stops a few seconds past its end: never 'T+241 of 240'
-
-    def trim(s, n=110):        # cut at a word, never mid-word
-        s = ' '.join(str(s or '').split())
-        return s if len(s) <= n else s[:n].rsplit(' ', 1)[0].rstrip(',;:(') + ' …'
 
     def role_name(s):          # one name per role in the room
         return re.sub(r'\bERD\b', 'Emergency Response Director', str(s or '').strip()) or 'EOC team'
@@ -2384,7 +2779,7 @@ def debrief_html(rep: dict, history: list = None, next_scenarios: list = None, r
     # 1 cover
     slides.append(f"""<section class="cover"><p class="kick">Drill debrief · THIS WAS AN EXERCISE</p><h1>{e(r['scenario'].get('name', ''))}</h1>
 <p class="lead">{e(site)}{' · ' + e(when) if when else ''} · {r.get('units', 0)} units · {fmt_t(elapsed)} of {dur} drill minutes</p>
-<p class="note">Every report in this drill said SIMULATED. {names_note}</p></section>""")
+<p class="note">Every report in this drill said THIS IS AN EXERCISE. {names_note}</p></section>""")
     # 2 what you faced
     phases = ''.join(f"<li><b>{fmt_t(p.get('from'))}</b> {e(p.get('title', ''))}</li>" for p in rep.get('phases') or [])
     pace = ' → '.join(f"<span class='chip pace-{e(p.get('level', 'P'))}'>{e(p.get('level', 'P'))} <small>{fmt_t(p.get('t'))}</small></span>" for p in rep.get('pace') or [])
@@ -2420,9 +2815,11 @@ def debrief_html(rep: dict, history: list = None, next_scenarios: list = None, r
             segs = ''.join(f"<i class='s-{k}' style='width:{100 * d.get(k, 0) / tot:.1f}%'></i>" for k in ('met', 'late', 'open', 'overdue', 'missed'))
             rows += (f"<div class='cat'><span>{e(role)}</span><div class='bar'>{segs}</div><b>{d['met'] + d['late']}/{d['total']}"
                      f"{'' if p is None else f' · {p}%'}</b></div>")
+        played = rep.get('roles_simulated') or []
         slides.append(f"<section><h2>Each role's score</h2><p class='sub'>The needs each person owns (a shared need counts for each): met on time, late, still open, overdue, missed.</p>"
                       f"<div class='cats roles-score'>{rows}</div><p class='legend'><i class='s-met'></i>met <i class='s-late'></i>late <i class='s-open'></i>open "
-                      f"<i class='s-overdue'></i>overdue <i class='s-missed'></i>missed</p></section>")
+                      f"<i class='s-overdue'></i>overdue <i class='s-missed'></i>missed</p>"
+                      + (f"<p class='small'>Played by the simulator, not scored: {e(', '.join(played))}.</p>" if played else '') + "</section>")
     # 4 done when (the internal inject ids in the reasons mean nothing to the room)
     checks = sc.get('checks') or []
     if checks:
@@ -2431,10 +2828,8 @@ def debrief_html(rep: dict, history: list = None, next_scenarios: list = None, r
                        f"<span><b>{e(c.get('label', ''))}</b><br><small>{e(clean(c.get('why', '')))}</small></span></li>" for c in checks)
         got = sum(1 for c in checks if c.get('ok'))
         slides.append(f"<section><h2>Done when <small>{got} of {len(checks)}</small></h2><ul class='checks'>{rows}</ul></section>")
-    # 5 how it unfolded: PACE steps, SITREPs, and the high-priority needs that were missed, in plain words
-    labels = {n['id']: n.get('label', '') for n in rep.get('needs') or []}
-    prio = {n['label'][:60]: n.get('prio', 2) for n in rep.get('needs') or [] if n.get('label')}
-    full = {n['label'][:60]: n['label'] for n in rep.get('needs') or [] if n.get('label')}
+    # 5 how it unfolded: PACE steps, SITREPs, and the high-priority needs that were missed, in plain words, each at the
+    # minute it went overdue (a miss is final only when the run ends, which once stamped every one of them T+240)
     events = []
     for t in rep.get('timeline') or []:
         x = t['text']
@@ -2443,10 +2838,20 @@ def debrief_html(rep: dict, history: list = None, next_scenarios: list = None, r
             events.append((t['t'], f"Now on {pace_word.get(m.group(1), m.group(1))}"))
         elif x.startswith('SITREP generated'):
             events.append((t['t'], f"SITREP #{sum(1 for v in events if v[1].startswith('SITREP')) + 1} sent"))
+    for n in rep.get('needs') or []:
+        if n.get('prio') != 1 or n.get('state') not in ('missed', 'overdue'):
+            continue
+        rule, tm, t0 = n.get('rule') or {}, n.get('times') or {}, float(n.get('arose_t') or 0)
+        if n.get('overdue_t') is not None:
+            at = float(n['overdue_t'])
+        elif n.get('kind') == 'report':
+            at = t0 + float(rule.get('typed', 25))
+        elif tm.get('owner') is None:
+            at = t0 + float(rule.get('owner', 30))
         else:
-            m = re.match(r'need MISSED: (.*?) \(', x)
-            if m and prio.get(m.group(1)[:60], 2) == 1:
-                events.append((t['t'], 'Missed: ' + trim(full.get(m.group(1)[:60], m.group(1)), 90)))
+            at = t0 + float(rule.get('done', 120))
+        events.append((min(at, float(dur)), 'Overdue: ' + n.get('label', '')))
+    events.sort(key=lambda v: v[0])
     if events:
         rows = ''.join(f"<li><b>{fmt_t(t)}</b> {e(x)}</li>" for t, x in events[:10])
         slides.append(f"<section><h2>How it unfolded</h2><ol class='tl'>{rows}</ol></section>")
@@ -2458,7 +2863,14 @@ def debrief_html(rep: dict, history: list = None, next_scenarios: list = None, r
             by.setdefault(role_name(w['role']), []).append(w)
         cards = ''
         for role, ws in sorted(by.items(), key=lambda kv: -len(kv[1]))[:4]:
-            ex = ''.join(f"<li>{e(trim(_WELL_TAIL.sub('', w['text']), 90))}</li>" for w in ws[:2])
+            keys, seen = set(), []
+            for w in ws:                 # one line per kind of need: ten units' injured counts are one thing done well
+                x = w.get('need') or _WELL_TAIL.sub('', w['text'])
+                k = re.sub(r'\d+', '#', re.sub(r':\s[^:]*$', '', x))
+                if k not in keys:
+                    keys.add(k)
+                    seen.append(x)
+            ex = ''.join(f"<li>{e(x)}</li>" for x in seen[:2])
             cards += f"<div class='role'><h3>{e(role)} <small>{len(ws)} met on time</small></h3><ul>{ex}</ul></div>"
         slides.append(f"<section class='well'><h2>What went well <small>{len(well)} needs met on time</small></h2><div class='roles'>{cards}</div></section>")
     else:
@@ -2466,7 +2878,7 @@ def debrief_html(rep: dict, history: list = None, next_scenarios: list = None, r
     # 7 why it matters
     why = sorted(rep.get('why') or [], key=lambda w: w['state'] in ('met',))
     if why:
-        rows = ''.join(f"<li><p class='lesson'>{e(w['lesson'])}</p><p class='small'>In this drill: {e(trim(w['need'], 100))} · <b class='st-{e(w['state'])}'>{e(STATE_WORD.get(w['state'], w['state']))}</b></p></li>" for w in why[:4])
+        rows = ''.join(f"<li><p class='lesson'>{e(w['lesson'])}</p><p class='small'>In this drill: {e(w['need'])} · <b class='st-{e(w['state'])}'>{e(STATE_WORD.get(w['state'], w['state']))}</b></p></li>" for w in why[:4])
         slides.append(f"<section class='why'><h2>Why it matters</h2><p class='sub'>These injects come from real disasters of the last few years.</p><ul class='list'>{rows}</ul></section>")
     # 8 do better, by role (one name per role; at most two coaching lines each)
     br = {}
@@ -2476,9 +2888,10 @@ def debrief_html(rep: dict, history: list = None, next_scenarios: list = None, r
         cards = ''
         for role, items in sorted(br.items(), key=lambda kv: -len(kv[1]))[:4]:   # four roles fit one slide
             lines = []
-            for b in items:
-                if b['coach'] not in lines:
-                    lines.append(b['coach'])
+            for b in items:                    # each sentence once: two needs of one role often share a coaching line
+                for x in b.get('coach_lines') or [b['coach']]:
+                    if x not in lines:
+                        lines.append(x)
             cards += f"<div class='role'><h3>{e(role)} <small>{len(items)} need{'s' if len(items) != 1 else ''}</small></h3><ul>{''.join(f'<li>{e(x)}</li>' for x in lines[:2])}</ul></div>"
         slides.append(f"<section><h2>Do better next time</h2><div class='roles'>{cards}</div></section>")
     # 9 progress over this group's runs of the scenario
@@ -2497,8 +2910,9 @@ def debrief_html(rep: dict, history: list = None, next_scenarios: list = None, r
     # 10 next drill
     commits = []
     for b in rep.get('better') or []:
-        if b['coach'] not in commits:
-            commits.append(b['coach'])
+        for x in b.get('coach_lines') or [b['coach']]:
+            if x not in commits:
+                commits.append(x)
     nxt = ''.join(f"<li>{e(n)}</li>" for n in next_scenarios[:3])
     slides.append(f"""<section class="next"><h2>The next drill</h2><div class="two"><div><p class="sub">Three things we will practise before then</p>
 <ol class="commit">{''.join(f'<li>{e(c)}</li>' for c in commits[:3]) or '<li>Keep the habits that worked today.</li>'}</ol></div>

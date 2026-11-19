@@ -8,6 +8,16 @@ import ctypes, string, shutil, email as _email, os, uuid
 
 # Port: 8080 unless given as the first argument or EOC_PORT (practice drills can run
 # a second EOC on the same laptop from another folder: python eoc_server.py 8081).
+if __name__ == '__main__' and any(a in ('-h', '--help', '/?') for a in sys.argv[1:]):
+    # usage only: a request for help never starts a live server on 8080 (simulator audit 2026-11-18, S25)
+    print('Church of Jesus Christ EMCOMM: EOC Message Center server (independent volunteer project, not an official Church product)\n\n'
+          'Usage: python eoc_server.py [PORT] [--port=PORT]\n\n'
+          '  PORT          the port to serve on (default 8080; or the EOC_PORT environment variable)\n'
+          '  --config=FILE --eoc=ID [--manned=ID,ID]   load a drill configuration and act as that EOC\n'
+          '  --winlink-folder=PATH --winlink-callsign=CALL   the Winlink Express folder and call sign to watch\n'
+          '  -h, --help    print this help and exit\n\n'
+          'Then open http://<this laptop\'s LAN address>:PORT/ for the Message Center, /wall for the wall display, /m for phones.')
+    sys.exit(0)
 # the port: EOC_PORT, or the first argument (8180), or --port=8180; a mistyped one stops here instead of quietly taking 8080
 _port_arg = next((a.split('=', 1)[1] for a in sys.argv[1:] if a.startswith('--port=')), None) or (sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith('--') else None)
 try:

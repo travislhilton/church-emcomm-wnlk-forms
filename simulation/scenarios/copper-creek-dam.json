@@ -1788,7 +1788,8 @@
     "decision": true,
     "title_contains": "meetings",
     "role": "Stake President and ERD",
-    "label": "Sunday meetings decided (cancelled or not, which buildings, which channels) and recorded within 20 minutes"
+    "label": "Sunday meetings decided (cancelled or not, which buildings, which channels) and recorded within 20 minutes",
+    "coach": "Before 9:00 the Stake President decides the meetings, with the ERD (Emergency Response Director) and the specialist; record it as a work item with 'meetings' in the title, the decision written in."
    },
    "lesson": "Kerr County 2025 and Valencia 2024: people were on the move toward the water because no one told them to stay away in time."
   },
@@ -1806,7 +1807,8 @@
     "decision": true,
     "title_contains": "notify",
     "role": "Specialist, Stake President, ERD",
-    "label": "Member notification for the order and warning zones recommended, decided and announced (area, action, channels, languages) within 20 minutes"
+    "label": "Member notification for the order and warning zones recommended, decided and announced (area, action, channels, languages) within 20 minutes",
+    "coach": "Decide how members are told within minutes: the specialist recommends, the Stake President decides, the ERD (Emergency Response Director) or the specialist announces it. Record it as a work item with 'notify' in the title."
    },
    "lesson": "Valencia 2024: the public alert came after most of the deaths; Kerr County 2025: no county alert reached many phones; the stake must reach its own members."
   },
@@ -1880,7 +1882,8 @@
     "decision": true,
     "role": "ERD and EOC operator",
     "label": "Transport for the residents of the unit requested through the county within 30 minutes, destination and headcount recorded as the decision"
-   }
+   },
+   "lesson": "Eaton 2025: wheelchair users died after three 911 calls while paratransit stood uncalled; night staff had no recall list; Noto 2024: six in ten deaths were aged 70 or over."
   },
   {
    "id": "n-county-shelter",
@@ -2689,7 +2692,14 @@
    "detail": "The Area Welfare and Self-Reliance Manager (AWSRM) is loading the storehouse truck at Bramble Junction. Totals of water, cleaning kits, blankets and boots per stake, and which building receives.",
    "next": "Total the Supply Orders on file (each stake’s roll-up); reply by Winlink at Contingency or email at Alternate",
    "from": "Welfare line (AWSRM)",
-   "note": "Lands on the Council / Area EOC’s list only."
+   "note": "Lands on the Council / Area EOC’s list only.",
+   "need": {
+    "owner": 15,
+    "done": 40,
+    "decision": true,
+    "role": "Council / Area EOC",
+    "coach": "Total each stake's Supply Orders from the roll-ups on file and send the totals back to the welfare line."
+   }
   },
   {
    "id": "v-family-found",
@@ -3969,6 +3979,209 @@
     "message": "Your teams have checked 96 of the 140 names on the north bench. Eleven needed rides; all are out. Thank you. Please send the remaining teams back to the fire station by 12:00."
    },
    "note": "Resolution: the stake answered Copper Ridge in time."
+  },
+  {
+   "id": "wi-area-shelter",
+   "kind": "work_item",
+   "t": 158,
+   "to": "area",
+   "cat": "facilities",
+   "prio": 1,
+   "due": "11:15",
+   "title": "Stake asks the Area to approve its meetinghouse as a public overnight shelter: decide and answer",
+   "detail": "The Stake President asks through the coordinating council line: the county wants the meetinghouse as a public overnight shelter. A meetinghouse shelters the public only with the Area's approval and a usage agreement with the county.",
+   "next": "Ask the Area Seventy for the decision; answer the stake with it (approved under a usage agreement, or members only) and the minute",
+   "from": "Stake EOC (Stake President)",
+   "need": {
+    "owner": 10,
+    "done": 30,
+    "decision": true,
+    "role": "Council / Area EOC and Area Seventy",
+    "coach": "The Council / Area EOC carries the question to the Area Seventy and writes the answer and the minute on the item."
+   },
+   "note": "Lands on the Council / Area EOC's list only."
+  },
+  {
+   "id": "dr-conflict-a",
+   "kind": "form",
+   "form": "dr",
+   "each": "unit",
+   "t": 118,
+   "template": "dr_conflict_a",
+   "channel": "by_pace",
+   "where": {
+    "severity_min": 2,
+    "flags_none": [
+     "care_facility",
+     "retirement",
+     "language_unit"
+    ],
+    "sample": 1,
+    "tag": "conflict",
+    "tag_not": "missing"
+   },
+   "note": "Two reports from one ward minutes apart, by two leaders, with different counts: the EOC asks the bishop which is right before the SITREP."
+  },
+  {
+   "id": "dr-conflict-b",
+   "kind": "form",
+   "form": "dr",
+   "same_as": "dr-conflict-a",
+   "t": 124,
+   "template": "dr_conflict_b",
+   "channel": "by_pace",
+   "note": "The second report from the same ward, other numbers."
+  },
+  {
+   "id": "p-conflict",
+   "kind": "prompt",
+   "same_as": "dr-conflict-a",
+   "t": 128,
+   "role": "eoc",
+   "text": "Two Disaster Reports from {unit} disagree (homes damaged, injuries). Do not add them up and do not pick one: ask the bishop which counts are right, record it as a work item with \"counts\" in the title, and the bishop's answer as the decision.",
+   "need": {
+    "cat": "other",
+    "prio": 2,
+    "owner": 10,
+    "done": 30,
+    "decision": true,
+    "title_contains": "counts",
+    "role": "EOC operator",
+    "label": "Conflicting counts from one ward checked with the bishop before the SITREP",
+    "coach": "Two reports from one ward that disagree are one question to its bishop, recorded as a work item with \"counts\" in the title."
+   },
+   "lesson": "After every flood the first counts disagree: two leaders count different blocks. One unit, one count, confirmed by the bishop. Messages held at a gateway or relayed late arrive out of order: the time the report was written decides which counts are current, not the time it arrived."
+  },
+  {
+   "id": "dr-misspelled",
+   "kind": "form",
+   "form": "dr",
+   "each": "unit",
+   "t": 72,
+   "template": "dr_misspelled",
+   "channel": "by_pace",
+   "where": {
+    "severity_min": 1,
+    "flags_none": [
+     "care_facility",
+     "retirement",
+     "language_unit"
+    ],
+    "sample": 1,
+    "tag": "misspelled",
+    "tag_not": "missing"
+   },
+   "note": "A report typed in a hurry with the ward name misspelled (\"Wd\", a letter missing): the EOC files it under the right ward, not as a new one."
+  },
+  {
+   "id": "dr-late-new",
+   "kind": "form",
+   "form": "dr",
+   "each": "unit",
+   "t": 125,
+   "template": "dr_late_new",
+   "channel": "winlink",
+   "where": {
+    "severity_min": 2,
+    "flags_none": [
+     "care_facility",
+     "retirement",
+     "language_unit"
+    ],
+    "sample": 1,
+    "tag": "late",
+    "tag_not": "missing"
+   },
+   "note": "The newer Winlink report from a ward arrives first."
+  },
+  {
+   "id": "dr-late-old",
+   "kind": "form",
+   "form": "dr",
+   "same_as": "dr-late-new",
+   "t": 105,
+   "delay": 32,
+   "template": "dr_late_old",
+   "channel": "winlink",
+   "note": "Written at T+105 and held at a gateway: it arrives at T+137, after the same ward's newer report, with its own sent time (the Winlink Date header). The EOC keeps the newer counts."
+  },
+  {
+   "id": "dr-death",
+   "kind": "form",
+   "form": "dr",
+   "each": "unit",
+   "t": 146,
+   "template": "dr_death",
+   "channel": "by_pace",
+   "where": {
+    "severity_min": 3,
+    "flags_none": [
+     "care_facility",
+     "retirement",
+     "language_unit"
+    ],
+    "sample": 1,
+    "tag": "death",
+    "tag_not": "missing"
+   },
+   "note": "A ward reports a member's death."
+  },
+  {
+   "id": "p-death-notice",
+   "kind": "prompt",
+   "same_as": "dr-death",
+   "t": 150,
+   "role": "stake_president",
+   "text": "{unit} reports that a member died in the flood. Decide who tells the family's bishop and the line above, and what is said on the net (no name on the air). Record it as a work item with \"death\" in the title and the decision written in.",
+   "need": {
+    "cat": "life",
+    "prio": 1,
+    "owner": 10,
+    "done": 30,
+    "decision": true,
+    "title_contains": "death",
+    "role": "Stake President",
+    "label": "A member's death handled: bishop and line above told, no name on the net, recorded within 30 minutes",
+    "coach": "A death goes to the bishop and up the line by a leader, never by name on the net; record it as a work item with \"death\" in the title."
+   },
+   "lesson": "Names of the dead on an open radio net reach families before a leader does."
+  },
+  {
+   "id": "p-media",
+   "kind": "prompt",
+   "t": 133,
+   "role": "stake_president",
+   "text": "A television reporter is in the meetinghouse parking lot asking how many members are missing and whether the Church will open a shelter. Decide who speaks for the stake (the Stake President or a named public affairs contact), what may be said, and that EOC volunteers refer every question. Record it as a work item with \"media\" in the title.",
+   "need": {
+    "cat": "other",
+    "prio": 2,
+    "owner": 10,
+    "done": 30,
+    "decision": true,
+    "title_contains": "media",
+    "role": "Stake President",
+    "label": "Media inquiry: one spokesperson named, volunteers refer every question, recorded within 30 minutes",
+    "coach": "One named person speaks to the media; everyone else refers the question. Record it as a work item with \"media\" in the title."
+   },
+   "to": "stake"
+  },
+  {
+   "id": "n-eoc-power",
+   "kind": "note",
+   "t": 172,
+   "to": "eoc",
+   "text": "11:42 The EOC laptop's battery warning: the meetinghouse generator stalled and the power strip is dark. You have about 15 minutes. Decide: move to the second laptop or paper, who restarts the generator, and print what you need now. Record it as a work item with \"power\" in the title.",
+   "need": {
+    "cat": "facilities",
+    "prio": 2,
+    "owner": 10,
+    "done": 20,
+    "decision": true,
+    "title_contains": "power",
+    "role": "EOC operator",
+    "label": "EOC power or laptop failure: fallback decided (second laptop or paper) and recorded within 20 minutes",
+    "coach": "Plan for the EOC laptop failing: a second laptop or paper, a printed copy, and who restarts the generator. Record it as a work item with \"power\" in the title."
+   }
   }
  ],
  "templates": {
@@ -5114,6 +5327,931 @@
     }
    },
    "safety_cert": "false"
+  },
+  "dr_conflict_a": {
+   "inc_type": "Flood (dam failure)",
+   "inc_date": "{today}",
+   "inc_location": "{building}, {city}",
+   "sp_name": "{stake_president}",
+   "sub_name": "{bishop}",
+   "sub_phone": "{bishop_phone}",
+   "sub_email": "{bishop_email}",
+   "miss_safe": {
+    "yes": {
+     "1": 1.0,
+     "2": 1.0,
+     "3": 1.0
+    }
+   },
+   "miss_details": "Missionaries accounted for.",
+   "mem_injuries": "2",
+   "mem_deaths": {
+    "range": {
+     "1": [
+      0,
+      0
+     ],
+     "2": [
+      0,
+      0
+     ],
+     "3": [
+      0,
+      1
+     ]
+    }
+   },
+   "mem_damaged": "14",
+   "mem_destroyed": "1",
+   "mem_details": "{unit} (from the elders quorum president, by phone): 14 homes with water inside, 1 off its foundation; 2 hurt.",
+   "bldg_damage": {
+    "pick": {
+     "1": [
+      "None"
+     ],
+     "2": [
+      "Meetinghouse at {building}: water in the parking lot; building dry."
+     ],
+     "3": [
+      "Meetinghouse at {building}: water inside, about 40 cm; closed."
+     ]
+    }
+   },
+   "community": {
+    "pick": {
+     "1": [
+      "Power out south of Center Street; cell down; boil-water order."
+     ],
+     "2": [
+      "Power and cell out; boil-water order; streets closed by the police."
+     ],
+     "3": [
+      "Power and cell out; boil-water order; mud and debris in the streets; bridge out."
+     ]
+    }
+   },
+   "need_local": "YES",
+   "need_neighbor": {
+    "yes": {
+     "1": 0.0,
+     "2": 0.5,
+     "3": 0.8
+    }
+   },
+   "need_hq": {
+    "yes": {
+     "1": 0.0,
+     "2": 0.1,
+     "3": 0.5
+    }
+   },
+   "needs_details": {
+    "pick": {
+     "1": [
+      "Pumps for basements."
+     ],
+     "2": [
+      "Water, cleaning kits, boots, gloves; pumps; a dry place for families tonight."
+     ],
+     "3": [
+      "Water, cleaning kits, boots, gloves, wet/dry vacuums; mud-out crews tomorrow; a dry heated place for 60 people tonight."
+     ]
+    }
+   },
+   "vol_count": "9",
+   "vol_hours": {
+    "range": {
+     "1": [
+      10,
+      30
+     ],
+     "2": [
+      30,
+      90
+     ],
+     "3": [
+      60,
+      180
+     ]
+    }
+   },
+   "vol_activities": "Block checks complete; moving belongings; sandbags; warming centre.",
+   "vol_injuries": {
+    "yes": {
+     "1": 0.0,
+     "2": 0.1,
+     "3": 0.2
+    }
+   },
+   "vol_inj_details": {
+    "pick": {
+     "1": [
+      ""
+     ],
+     "2": [
+      ""
+     ],
+     "3": [
+      "One volunteer slipped in mud and twisted an ankle."
+     ]
+    }
+   }
+  },
+  "dr_conflict_b": {
+   "inc_type": "Flood (dam failure)",
+   "inc_date": "{today}",
+   "inc_location": "{building}, {city}",
+   "sp_name": "{stake_president}",
+   "sub_name": "{bishop}",
+   "sub_phone": "{bishop_phone}",
+   "sub_email": "{bishop_email}",
+   "miss_safe": {
+    "yes": {
+     "1": 1.0,
+     "2": 1.0,
+     "3": 1.0
+    }
+   },
+   "miss_details": "Missionaries accounted for.",
+   "mem_injuries": "0",
+   "mem_deaths": {
+    "range": {
+     "1": [
+      0,
+      0
+     ],
+     "2": [
+      0,
+      0
+     ],
+     "3": [
+      0,
+      1
+     ]
+    }
+   },
+   "mem_damaged": "31",
+   "mem_destroyed": "0",
+   "mem_details": "{unit} (from the Relief Society president, after her own block checks): 31 homes with water inside, none destroyed, nobody hurt.",
+   "bldg_damage": {
+    "pick": {
+     "1": [
+      "None"
+     ],
+     "2": [
+      "Meetinghouse at {building}: water in the parking lot; building dry."
+     ],
+     "3": [
+      "Meetinghouse at {building}: water inside, about 40 cm; closed."
+     ]
+    }
+   },
+   "community": {
+    "pick": {
+     "1": [
+      "Power out south of Center Street; cell down; boil-water order."
+     ],
+     "2": [
+      "Power and cell out; boil-water order; streets closed by the police."
+     ],
+     "3": [
+      "Power and cell out; boil-water order; mud and debris in the streets; bridge out."
+     ]
+    }
+   },
+   "need_local": "YES",
+   "need_neighbor": {
+    "yes": {
+     "1": 0.0,
+     "2": 0.5,
+     "3": 0.8
+    }
+   },
+   "need_hq": {
+    "yes": {
+     "1": 0.0,
+     "2": 0.1,
+     "3": 0.5
+    }
+   },
+   "needs_details": {
+    "pick": {
+     "1": [
+      "Pumps for basements."
+     ],
+     "2": [
+      "Water, cleaning kits, boots, gloves; pumps; a dry place for families tonight."
+     ],
+     "3": [
+      "Water, cleaning kits, boots, gloves, wet/dry vacuums; mud-out crews tomorrow; a dry heated place for 60 people tonight."
+     ]
+    }
+   },
+   "vol_count": "22",
+   "vol_hours": {
+    "range": {
+     "1": [
+      10,
+      30
+     ],
+     "2": [
+      30,
+      90
+     ],
+     "3": [
+      60,
+      180
+     ]
+    }
+   },
+   "vol_activities": "Block checks complete; moving belongings; sandbags; warming centre.",
+   "vol_injuries": {
+    "yes": {
+     "1": 0.0,
+     "2": 0.1,
+     "3": 0.2
+    }
+   },
+   "vol_inj_details": {
+    "pick": {
+     "1": [
+      ""
+     ],
+     "2": [
+      ""
+     ],
+     "3": [
+      "One volunteer slipped in mud and twisted an ankle."
+     ]
+    }
+   }
+  },
+  "dr_misspelled": {
+   "inc_type": "Flood (dam failure)",
+   "inc_date": "{today}",
+   "inc_location": "{building}, {city}",
+   "sp_name": "{stake_president}",
+   "sub_name": "{bishop}",
+   "sub_phone": "{bishop_phone}",
+   "sub_email": "{bishop_email}",
+   "miss_safe": {
+    "yes": {
+     "1": 1.0,
+     "2": 1.0,
+     "3": 1.0
+    }
+   },
+   "miss_details": "Missionaries accounted for.",
+   "mem_injuries": {
+    "range": {
+     "1": [
+      0,
+      1
+     ],
+     "2": [
+      1,
+      4
+     ],
+     "3": [
+      2,
+      8
+     ]
+    }
+   },
+   "mem_deaths": {
+    "range": {
+     "1": [
+      0,
+      0
+     ],
+     "2": [
+      0,
+      0
+     ],
+     "3": [
+      0,
+      1
+     ]
+    }
+   },
+   "mem_damaged": {
+    "range": {
+     "1": [
+      2,
+      10
+     ],
+     "2": [
+      12,
+      40
+     ],
+     "3": [
+      35,
+      90
+     ]
+    }
+   },
+   "mem_destroyed": {
+    "range": {
+     "1": [
+      0,
+      0
+     ],
+     "2": [
+      0,
+      3
+     ],
+     "3": [
+      3,
+      12
+     ]
+    }
+   },
+   "mem_details": "{unit_misspelled}: typed in a hurry at a neighbour's house; counts after the first block checks.",
+   "bldg_damage": {
+    "pick": {
+     "1": [
+      "None"
+     ],
+     "2": [
+      "Meetinghouse at {building}: water in the parking lot; building dry."
+     ],
+     "3": [
+      "Meetinghouse at {building}: water inside, about 40 cm; closed."
+     ]
+    }
+   },
+   "community": {
+    "pick": {
+     "1": [
+      "Power out south of Center Street; cell down; boil-water order."
+     ],
+     "2": [
+      "Power and cell out; boil-water order; streets closed by the police."
+     ],
+     "3": [
+      "Power and cell out; boil-water order; mud and debris in the streets; bridge out."
+     ]
+    }
+   },
+   "need_local": "YES",
+   "need_neighbor": {
+    "yes": {
+     "1": 0.0,
+     "2": 0.5,
+     "3": 0.8
+    }
+   },
+   "need_hq": {
+    "yes": {
+     "1": 0.0,
+     "2": 0.1,
+     "3": 0.5
+    }
+   },
+   "needs_details": {
+    "pick": {
+     "1": [
+      "Pumps for basements."
+     ],
+     "2": [
+      "Water, cleaning kits, boots, gloves; pumps; a dry place for families tonight."
+     ],
+     "3": [
+      "Water, cleaning kits, boots, gloves, wet/dry vacuums; mud-out crews tomorrow; a dry heated place for 60 people tonight."
+     ]
+    }
+   },
+   "vol_count": {
+    "range": {
+     "1": [
+      4,
+      12
+     ],
+     "2": [
+      12,
+      30
+     ],
+     "3": [
+      20,
+      45
+     ]
+    }
+   },
+   "vol_hours": {
+    "range": {
+     "1": [
+      10,
+      30
+     ],
+     "2": [
+      30,
+      90
+     ],
+     "3": [
+      60,
+      180
+     ]
+    }
+   },
+   "vol_activities": "Block checks complete; moving belongings; sandbags; warming centre.",
+   "vol_injuries": {
+    "yes": {
+     "1": 0.0,
+     "2": 0.1,
+     "3": 0.2
+    }
+   },
+   "vol_inj_details": {
+    "pick": {
+     "1": [
+      ""
+     ],
+     "2": [
+      ""
+     ],
+     "3": [
+      "One volunteer slipped in mud and twisted an ankle."
+     ]
+    }
+   },
+   "inc_ward": "{unit_misspelled}"
+  },
+  "dr_late_old": {
+   "inc_type": "Flood (dam failure)",
+   "inc_date": "{today}",
+   "inc_location": "{building}, {city}",
+   "sp_name": "{stake_president}",
+   "sub_name": "{bishop}",
+   "sub_phone": "{bishop_phone}",
+   "sub_email": "{bishop_email}",
+   "miss_safe": {
+    "yes": {
+     "1": 1.0,
+     "2": 1.0,
+     "3": 1.0
+    }
+   },
+   "miss_details": "Missionaries accounted for.",
+   "mem_injuries": {
+    "range": {
+     "1": [
+      0,
+      1
+     ],
+     "2": [
+      1,
+      4
+     ],
+     "3": [
+      2,
+      8
+     ]
+    }
+   },
+   "mem_deaths": {
+    "range": {
+     "1": [
+      0,
+      0
+     ],
+     "2": [
+      0,
+      0
+     ],
+     "3": [
+      0,
+      1
+     ]
+    }
+   },
+   "mem_damaged": "6",
+   "mem_destroyed": "0",
+   "mem_details": "{unit} at 09:45: 6 homes with water in the basement; water still rising on the south side.",
+   "bldg_damage": {
+    "pick": {
+     "1": [
+      "None"
+     ],
+     "2": [
+      "Meetinghouse at {building}: water in the parking lot; building dry."
+     ],
+     "3": [
+      "Meetinghouse at {building}: water inside, about 40 cm; closed."
+     ]
+    }
+   },
+   "community": {
+    "pick": {
+     "1": [
+      "Power out south of Center Street; cell down; boil-water order."
+     ],
+     "2": [
+      "Power and cell out; boil-water order; streets closed by the police."
+     ],
+     "3": [
+      "Power and cell out; boil-water order; mud and debris in the streets; bridge out."
+     ]
+    }
+   },
+   "need_local": "YES",
+   "need_neighbor": {
+    "yes": {
+     "1": 0.0,
+     "2": 0.5,
+     "3": 0.8
+    }
+   },
+   "need_hq": {
+    "yes": {
+     "1": 0.0,
+     "2": 0.1,
+     "3": 0.5
+    }
+   },
+   "needs_details": {
+    "pick": {
+     "1": [
+      "Pumps for basements."
+     ],
+     "2": [
+      "Water, cleaning kits, boots, gloves; pumps; a dry place for families tonight."
+     ],
+     "3": [
+      "Water, cleaning kits, boots, gloves, wet/dry vacuums; mud-out crews tomorrow; a dry heated place for 60 people tonight."
+     ]
+    }
+   },
+   "vol_count": {
+    "range": {
+     "1": [
+      4,
+      12
+     ],
+     "2": [
+      12,
+      30
+     ],
+     "3": [
+      20,
+      45
+     ]
+    }
+   },
+   "vol_hours": {
+    "range": {
+     "1": [
+      10,
+      30
+     ],
+     "2": [
+      30,
+      90
+     ],
+     "3": [
+      60,
+      180
+     ]
+    }
+   },
+   "vol_activities": "Block checks complete; moving belongings; sandbags; warming centre.",
+   "vol_injuries": {
+    "yes": {
+     "1": 0.0,
+     "2": 0.1,
+     "3": 0.2
+    }
+   },
+   "vol_inj_details": {
+    "pick": {
+     "1": [
+      ""
+     ],
+     "2": [
+      ""
+     ],
+     "3": [
+      "One volunteer slipped in mud and twisted an ankle."
+     ]
+    }
+   }
+  },
+  "dr_late_new": {
+   "inc_type": "Flood (dam failure)",
+   "inc_date": "{today}",
+   "inc_location": "{building}, {city}",
+   "sp_name": "{stake_president}",
+   "sub_name": "{bishop}",
+   "sub_phone": "{bishop_phone}",
+   "sub_email": "{bishop_email}",
+   "miss_safe": {
+    "yes": {
+     "1": 1.0,
+     "2": 1.0,
+     "3": 1.0
+    }
+   },
+   "miss_details": "Missionaries accounted for.",
+   "mem_injuries": {
+    "range": {
+     "1": [
+      0,
+      1
+     ],
+     "2": [
+      1,
+      4
+     ],
+     "3": [
+      2,
+      8
+     ]
+    }
+   },
+   "mem_deaths": {
+    "range": {
+     "1": [
+      0,
+      0
+     ],
+     "2": [
+      0,
+      0
+     ],
+     "3": [
+      0,
+      1
+     ]
+    }
+   },
+   "mem_damaged": "19",
+   "mem_destroyed": "2",
+   "mem_details": "{unit} at 10:05 (replaces our 09:45 report): 19 homes with water inside, 2 destroyed; south side under water.",
+   "bldg_damage": {
+    "pick": {
+     "1": [
+      "None"
+     ],
+     "2": [
+      "Meetinghouse at {building}: water in the parking lot; building dry."
+     ],
+     "3": [
+      "Meetinghouse at {building}: water inside, about 40 cm; closed."
+     ]
+    }
+   },
+   "community": {
+    "pick": {
+     "1": [
+      "Power out south of Center Street; cell down; boil-water order."
+     ],
+     "2": [
+      "Power and cell out; boil-water order; streets closed by the police."
+     ],
+     "3": [
+      "Power and cell out; boil-water order; mud and debris in the streets; bridge out."
+     ]
+    }
+   },
+   "need_local": "YES",
+   "need_neighbor": {
+    "yes": {
+     "1": 0.0,
+     "2": 0.5,
+     "3": 0.8
+    }
+   },
+   "need_hq": {
+    "yes": {
+     "1": 0.0,
+     "2": 0.1,
+     "3": 0.5
+    }
+   },
+   "needs_details": {
+    "pick": {
+     "1": [
+      "Pumps for basements."
+     ],
+     "2": [
+      "Water, cleaning kits, boots, gloves; pumps; a dry place for families tonight."
+     ],
+     "3": [
+      "Water, cleaning kits, boots, gloves, wet/dry vacuums; mud-out crews tomorrow; a dry heated place for 60 people tonight."
+     ]
+    }
+   },
+   "vol_count": {
+    "range": {
+     "1": [
+      4,
+      12
+     ],
+     "2": [
+      12,
+      30
+     ],
+     "3": [
+      20,
+      45
+     ]
+    }
+   },
+   "vol_hours": {
+    "range": {
+     "1": [
+      10,
+      30
+     ],
+     "2": [
+      30,
+      90
+     ],
+     "3": [
+      60,
+      180
+     ]
+    }
+   },
+   "vol_activities": "Block checks complete; moving belongings; sandbags; warming centre.",
+   "vol_injuries": {
+    "yes": {
+     "1": 0.0,
+     "2": 0.1,
+     "3": 0.2
+    }
+   },
+   "vol_inj_details": {
+    "pick": {
+     "1": [
+      ""
+     ],
+     "2": [
+      ""
+     ],
+     "3": [
+      "One volunteer slipped in mud and twisted an ankle."
+     ]
+    }
+   }
+  },
+  "dr_death": {
+   "inc_type": "Flood (dam failure)",
+   "inc_date": "{today}",
+   "inc_location": "{building}, {city}",
+   "sp_name": "{stake_president}",
+   "sub_name": "{bishop}",
+   "sub_phone": "{bishop_phone}",
+   "sub_email": "{bishop_email}",
+   "miss_safe": {
+    "yes": {
+     "1": 1.0,
+     "2": 1.0,
+     "3": 1.0
+    }
+   },
+   "miss_details": "Missionaries accounted for.",
+   "mem_injuries": "3",
+   "mem_deaths": "1",
+   "mem_damaged": {
+    "range": {
+     "1": [
+      2,
+      10
+     ],
+     "2": [
+      12,
+      40
+     ],
+     "3": [
+      35,
+      90
+     ]
+    }
+   },
+   "mem_destroyed": {
+    "range": {
+     "1": [
+      0,
+      0
+     ],
+     "2": [
+      0,
+      3
+     ],
+     "3": [
+      3,
+      12
+     ]
+    }
+   },
+   "mem_details": "{unit}: one member died: an older brother found in his flooded home on the south side; the family is with the bishop. The county coroner is informed. Three members injured.",
+   "bldg_damage": {
+    "pick": {
+     "1": [
+      "None"
+     ],
+     "2": [
+      "Meetinghouse at {building}: water in the parking lot; building dry."
+     ],
+     "3": [
+      "Meetinghouse at {building}: water inside, about 40 cm; closed."
+     ]
+    }
+   },
+   "community": {
+    "pick": {
+     "1": [
+      "Power out south of Center Street; cell down; boil-water order."
+     ],
+     "2": [
+      "Power and cell out; boil-water order; streets closed by the police."
+     ],
+     "3": [
+      "Power and cell out; boil-water order; mud and debris in the streets; bridge out."
+     ]
+    }
+   },
+   "need_local": "YES",
+   "need_neighbor": {
+    "yes": {
+     "1": 0.0,
+     "2": 0.5,
+     "3": 0.8
+    }
+   },
+   "need_hq": {
+    "yes": {
+     "1": 0.0,
+     "2": 0.1,
+     "3": 0.5
+    }
+   },
+   "needs_details": {
+    "pick": {
+     "1": [
+      "Pumps for basements."
+     ],
+     "2": [
+      "Water, cleaning kits, boots, gloves; pumps; a dry place for families tonight."
+     ],
+     "3": [
+      "Water, cleaning kits, boots, gloves, wet/dry vacuums; mud-out crews tomorrow; a dry heated place for 60 people tonight."
+     ]
+    }
+   },
+   "vol_count": {
+    "range": {
+     "1": [
+      4,
+      12
+     ],
+     "2": [
+      12,
+      30
+     ],
+     "3": [
+      20,
+      45
+     ]
+    }
+   },
+   "vol_hours": {
+    "range": {
+     "1": [
+      10,
+      30
+     ],
+     "2": [
+      30,
+      90
+     ],
+     "3": [
+      60,
+      180
+     ]
+    }
+   },
+   "vol_activities": "Block checks complete; moving belongings; sandbags; warming centre.",
+   "vol_injuries": {
+    "yes": {
+     "1": 0.0,
+     "2": 0.1,
+     "3": 0.2
+    }
+   },
+   "vol_inj_details": {
+    "pick": {
+     "1": [
+      ""
+     ],
+     "2": [
+      ""
+     ],
+     "3": [
+      "One volunteer slipped in mud and twisted an ankle."
+     ]
+    }
+   }
   }
  },
  "roles": [
@@ -5157,7 +6295,7 @@
    "cards": [
     {
      "t": 0,
-     "text": "You are at home getting ready for church. Your phone works but calls fail one in three. {specialist} (Welfare and Self-Reliance Specialist, emergency communications) and {erd} (Emergency Response Director, ERD) will reach you."
+     "text": "You are at home getting ready for church. Your phone works but calls fail one in three. {specialist_who} and {erd_who} will reach you."
     },
     {
      "t": 3,
@@ -5443,7 +6581,8 @@
      "min_count": 1,
      "decision": true
     }
-   }
+   },
+   "core": true
   },
   {
    "t": 25,
@@ -5457,12 +6596,14 @@
      "min_count": 1,
      "decision": true
     }
-   }
+   },
+   "core": true
   },
   {
    "t": 30,
    "check": "Missionaries Not Accounted For alert seen within 5 minutes and reported to the Stake President; the call logged as a note.",
-   "how": "Notes log times."
+   "how": "Notes log times.",
+   "core": true
   },
   {
    "t": 45,
@@ -5477,7 +6618,8 @@
      "decision": true,
      "done_within_min": 30
     }
-   }
+   },
+   "core": true
   },
   {
    "t": 50,
@@ -5494,7 +6636,8 @@
      "min_count": 1,
      "owner_within_min": 10
     }
-   }
+   },
+   "core": true
   },
   {
    "t": 52,
@@ -5547,7 +6690,8 @@
   {
    "t": 75,
    "check": "SITREP #1 generated and sent up both lines as soon as possible (first assessment); the line above acknowledged it.",
-   "how": "SITREP header time; Council / Area EOC notes."
+   "how": "SITREP header time; Council / Area EOC notes.",
+   "core": true
   },
   {
    "t": 76,
@@ -5572,7 +6716,8 @@
   {
    "t": 85,
    "check": "Step-down to Contingency tied to an observed trigger (two failed attempts), recommended by the specialist, decided by the Stake President, announced on the net; the EOC header showed C.",
-   "how": "Notes log; EOC header; who said what."
+   "how": "Notes log; EOC header; who said what.",
+   "core": true
   },
   {
    "t": 90,
@@ -5619,7 +6764,8 @@
      ],
      "decision": true
     }
-   }
+   },
+   "core": true
   },
   {
    "t": 145,
@@ -5829,19 +6975,27 @@
   }
  },
  "done": {
-  "note": "The run finishes at T+240 (or Stop). These are the checks the scoreboard shows under \"Done when\"; the after-action report lists them.",
+  "note": "The run finishes at T+240 (or Stop). These are the checks the scoreboard shows under \"Done when\"; the after-action report lists them. A check with \"to\" counts only at that EOC level (stake, satellite, area); one without it counts at every level.",
   "checks": [
    {
     "id": "sitrep1",
     "label": "SITREP #1 generated by T+75 (first assessment as soon as possible)",
     "sitrep": 1,
-    "by": 75
+    "by": 75,
+    "to": [
+     "stake",
+     "satellite"
+    ]
    },
    {
     "id": "sitrep2",
     "label": "SITREP #2 generated by T+210 (the interval leadership set)",
     "sitrep": 2,
-    "by": 210
+    "by": 210,
+    "to": [
+     "stake",
+     "satellite"
+    ]
    },
    {
     "id": "missionaries",
@@ -5861,17 +7015,38 @@
    {
     "id": "meetings",
     "label": "Sunday meetings decided and recorded before members left for church (T+3 card)",
-    "need_met": "p-meetings"
+    "need_met": "p-meetings",
+    "to": "stake"
    },
    {
     "id": "notify",
     "label": "Member notification for the order and warning zones recommended, decided and announced in time (T+5 card)",
-    "need_met": "p-alert-members"
+    "need_met": "p-alert-members",
+    "to": "stake"
    },
    {
     "id": "rumour",
     "label": "The Pine Hollow rumour verified with the county before relay (T+125 card)",
-    "need_met": "v-rumour-dam"
+    "need_met": "v-rumour-dam",
+    "to": "stake"
+   },
+   {
+    "id": "area-rollups",
+    "to": "area",
+    "label": "Every stake roll-up merged at the Council / Area EOC (each simulated stake's reports on file)",
+    "rollups_merged": true
+   },
+   {
+    "id": "area-totals",
+    "to": "area",
+    "label": "Supply Order totals by stake given to the welfare line (AWSRM) (T+132 work item)",
+    "need_met": "wi-area-totals"
+   },
+   {
+    "id": "area-shelter",
+    "to": "area",
+    "label": "The public-shelter request from a stake decided at the Council / Area EOC and answered (T+158 work item)",
+    "need_met": "wi-area-shelter"
    }
   ]
  },
