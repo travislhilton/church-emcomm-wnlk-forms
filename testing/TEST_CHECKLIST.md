@@ -11,7 +11,7 @@ This file is the single source of truth for what has and has not been verified.
 
 **Three levels** (maintainer, 2026-11-06): any browser on any device, one Windows host laptop per EOC, and the Windows Winlink station. A platform that cannot run Winlink Express cannot host. Hosting and Winlink are tested on Windows; every browser client is in scope.
 
-## Current status (2026-11-19: 2026-11-19.2 is the release, tag v1.0 on `14bd390`, on both live EOC laptops)
+## Current status (2026-11-19: 2026-11-19.3 is the release, tag v1.0 on `834b11b`, on both live EOC laptops)
 
 | State | Rows |
 |---|---|
@@ -471,6 +471,7 @@ Automated: `python testing/test_phone_api.py` (two scratch EOC servers, 17 check
 
 | Date | Who | Sections | Notes |
 |---|---|---|---|
+| 2026-11-19 (release 2026-11-19.3, both laptops reinstalled) | Claude | A18, H16, H17, Q27 | Travis: "update the release and install on both laptops". The white business card (with HAM Sidekick's VARA chat line) and its alignment test released as 2026-11-19.3 (tag on `834b11b`, installer 3df30ae9…); every suite green on the Mac and W9TLH-7 (install 78/78). Both laptops reinstalled with `fulltest_eoc_laptop.ps1`: install 11/11, verify 4/4, smoke 27/27 + 3/3, example drill 10/10 each, W9TLH-7 own pack 12/12, resettle 10/10; each serves 15 printables. Q27 on W9TLH-8 only this time (W9TLH-7 clean). |
 | 2026-11-19 (business card, third pass) | Claude | H16 | Travis: the cards printed quite dark on both sides; asked for something other than full dark backgrounds that pops on Avery white matte. Both sides now white: navy, blue and red type and icons on the front, teal and orange on the back, a light tinted panel behind each QR code, nothing coloured touching a cut line (a shifted print shows nothing on the next card). The back gains a fourth line for HAM Sidekick's VARA keyboard chat and file exchange. Grid checked against Travis's Avery 5371 template PDF (same to the line width). Not released. |
 | 2026-11-19 (business card, second pass) | Claude | H16 | Travis printed the cards on Avery 5371: close but not exact, the small type washed out on an inkjet. The PDF already matched Avery's published grid (measured); added `Business_Cards_Avery_5371_Alignment_Test.pdf` (1/32 in scales across every cut line, a 5 in ruler) and front/back Nudge boxes on the HTML page (remembered, or ?fx=&fy=&bx=&by= in inches); small type 6.3–7.6 pt, heavier; wording shortened to fit. Travis's own Avery template on Google Drive could not be read (Drive for desktop: "Resource deadlock avoided"). Not released. |
 | 2026-11-19 (printables; release 2026-11-19.2, both laptops reinstalled) | Claude | A18, H17, Q27, README | Travis: "Do both, release and install on both laptops". README *Handouts to print* line; the Message Center's Help *13. Printables*; the installer puts the handouts in `Field Worker Forms\Handouts (PDF)`; the EOC server serves cards and handouts at `/print/` (`/api/printables`). Every suite green on the Mac and W9TLH-7 (install 78/78; test_example's H17 link fixed and rerun 45/45). Released as 2026-11-19.2 (tag on `14bd390`, installer 7b87fc06…). Both laptops reinstalled with `fulltest_eoc_laptop.ps1`: install 11/11, verify 4/4, smoke 27/27 + 3/3, example drill 10/10 each, W9TLH-7 own pack 12/12, resettle 10/10; each serves 15 printables. Q27 on both laptops this time. |
