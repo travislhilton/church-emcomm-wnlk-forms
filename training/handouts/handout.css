@@ -12,19 +12,19 @@ html, body { background: #e9edf2; font-family: var(--sans); color: var(--navy); 
 @media print { html, body { background: #fff; } .page { margin: 0; box-shadow: none; } .noprint { display: none; } }
 
 /* header */
-.hero { flex: none; position: relative; border-radius: 14px; overflow: hidden; color: #fff; padding: 14pt 16pt 10pt;
-        background: radial-gradient(120% 160% at 100% 0%, #2c4580 0%, var(--navy) 60%, #121c33 100%); }
-.hero.teal { background: radial-gradient(120% 160% at 100% 0%, #1a6b74 0%, #0C3A41 60%, #072328 100%); }
-.hero.plum { background: radial-gradient(120% 160% at 100% 0%, #5b3f8c 0%, #2e1f4f 60%, #1b1230 100%); }
-.brand { display: flex; justify-content: space-between; align-items: center; font-size: 7.5pt; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; opacity: .92; }
+/* White header (inkjet friendly): the accent colour is only in the outline, a top bar, the brand line and the title's
+   second half; the drawing is outlined on white. --acc: navy, teal or plum. */
+.hero { --acc: var(--navy); --acc-em: var(--red); flex: none; position: relative; border-radius: 14px; overflow: hidden; color: var(--navy); padding: 10pt 16pt 7pt;
+        background: #fff; border: 1.5pt solid var(--acc); border-top-width: 6pt; }
+.hero.teal { --acc: #0C5560; --acc-em: var(--amber); }
+.hero.plum { --acc: #5b3f8c; --acc-em: #6d28d9; }
+.brand { display: flex; justify-content: space-between; align-items: center; font-size: 7.5pt; letter-spacing: .14em; text-transform: uppercase; font-weight: 800; color: var(--acc); }
 .badge { display: inline-flex; align-items: center; gap: 5pt; font-size: 8pt; letter-spacing: .06em; padding: 3pt 9pt; border-radius: 99px; font-weight: 800; text-transform: uppercase; }
-.badge.ready { background: #2fbf71; color: #062b16; }
-.badge.exp { background: #FFC24B; color: #3a2400; }
+.badge.ready { background: #fff; color: var(--green); border: 1.4pt solid var(--green); }
+.badge.exp { background: #fff; color: var(--amber); border: 1.4pt solid var(--amber); }
 .hero h1 { font-size: 23pt; line-height: 1.05; margin-top: 7pt; letter-spacing: -.01em; }
-.hero h1 em { font-style: normal; color: #FF8A8A; }
-.hero.teal h1 em { color: #FFD089; }
-.hero.plum h1 em { color: #FFC24B; }
-.hero .sub { font-size: 9.6pt; line-height: 1.35; margin-top: 4pt; color: #D7E0EE; max-width: 6.9in; }
+.hero h1 em { font-style: normal; color: var(--acc-em); }
+.hero .sub { font-size: 9.6pt; line-height: 1.35; margin-top: 4pt; color: var(--muted); max-width: 6.9in; }
 .hero .art { display: block; width: 100%; height: 1.72in; margin-top: 6pt; }
 
 /* body */
@@ -33,10 +33,11 @@ html, body { background: #e9edf2; font-family: var(--sans); color: var(--navy); 
 .box.span { grid-column: 1 / -1; }
 .box h2 { font-size: 11.5pt; display: flex; align-items: center; gap: 6pt; margin-bottom: 4pt; }
 .box h2 .n { flex: none; width: 17pt; height: 17pt; border-radius: 50%; display: inline-grid; place-items: center; color: #fff; font-size: 9pt; background: var(--navy); }
-.box.sky { background: var(--sky); border-color: #c9d9f0; }
-.box.mint { background: var(--mint); border-color: #bfe3cf; }
-.box.sand { background: var(--sand); border-color: #f1d9a8; }
-.box.rose { background: var(--rose); border-color: #f3c6cc; }
+/* section colours as a left edge on white, not a tinted panel */
+.box.sky { border-color: #c9d9f0; border-left: 4pt solid var(--blue); }
+.box.mint { border-color: #bfe3cf; border-left: 4pt solid var(--green); }
+.box.sand { border-color: #f1d9a8; border-left: 4pt solid var(--amber); }
+.box.rose { border-color: #f3c6cc; border-left: 4pt solid var(--red); }
 .box p, .box li { font-size: 8.6pt; line-height: 1.34; }
 .box p + p { margin-top: 3pt; }
 .box ol, .box ul { margin-left: 13pt; }
@@ -53,7 +54,7 @@ html, body { background: #e9edf2; font-family: var(--sans); color: var(--navy); 
 .paths p { font-size: 8.6pt; line-height: 1.32; }
 
 /* QR row */
-.qrs { flex: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10pt; margin-top: 8pt; padding: 6pt 10pt; border-radius: 12px; background: #F3F6FA; border: 1px solid var(--line); }
+.qrs { flex: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10pt; margin-top: 8pt; padding: 6pt 10pt; border-radius: 12px; background: #fff; border: 1px solid var(--line); }
 .qrs.three { grid-template-columns: repeat(3, 1fr); }
 .q { display: flex; gap: 7pt; align-items: center; }
 .q .qr { flex: none; width: 0.78in; height: 0.78in; display: block; }

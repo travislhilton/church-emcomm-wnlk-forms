@@ -159,16 +159,17 @@ h1 {
 .step-text b { color: var(--navy); }
 .step-text small { color: var(--muted); font-size: 15px; display: block; }
 
-.note-box {
-  background: #F0F4F8;
+.note-box {   /* white with a coloured left edge: big tinted panels drink inkjet ink */
+  background: #fff;
+  border: 1px solid #D5DCE5;
   border-left: 4px solid var(--blue);
   border-radius: 0 8px 8px 0;
   padding: 12px 16px;
   font-size: 17px;
   line-height: 1.5;
 }
-.note-box.warning { border-color: var(--amber); background: #FFF8E1; }
-.note-box.tip { border-color: var(--green); background: #E8F8F0; }
+.note-box.warning { border-left-color: var(--amber); }
+.note-box.tip { border-left-color: var(--green); }
 
 .checklist { list-style: none; display: flex; flex-direction: column; gap: 8px; }
 .checklist li {
@@ -187,8 +188,9 @@ h1 {
 
 .tier-table { width: 100%; border-collapse: collapse; font-size: 16px; }
 .tier-table th {
-  background: var(--navy);
-  color: #fff;
+  background: #fff;
+  color: var(--navy);
+  border-bottom: 2px solid var(--navy);
   padding: 8px 12px;
   text-align: left;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
@@ -197,18 +199,18 @@ h1 {
   letter-spacing: 0.06em;
 }
 .tier-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
-.tier-table tr:nth-child(even) td { background: #F7F9FC; }
 .tier-label { font-weight: 600; white-space: nowrap; }
 
-.phrase-box {
-  background: var(--navy);
-  color: #BFD8D5;
+.phrase-box {   /* outlined, not a dark panel (inkjet friendly) */
+  background: #fff;
+  border: 2px solid var(--navy);
+  color: var(--navy);
   border-radius: 8px;
   padding: 14px 18px;
   font-size: 17px;
   line-height: 1.5;
 }
-.phrase-box b { color: #fff; }
+.phrase-box b { color: var(--navy); }
 
 .divider { height: 1px; background: var(--border); margin: 4px 0; }
 
@@ -221,8 +223,9 @@ h1 {
 }
 .bishop-flow .bishop-arrow { align-self: center; }
 .bishop-node {
-  background: var(--navy);
-  color: #BFD8D5;
+  background: #fff;
+  border: 2px solid var(--navy);
+  color: var(--navy);
   border-radius: 8px;
   padding: 10px 16px;
   text-align: center;
@@ -588,7 +591,7 @@ if (/^https?:$/.test(location.protocol) && /\/training\/[^/]*$/.test(location.pa
             <div><span style="font-weight:600">Messages</span> &#8212; every record, <b>Via</b> = the EOC it came through &#183; <span style="font-weight:600">Notes</span> &#8212; shift log</div>
           </div>
         </div>
-        <div style="background:#e8f5e9;border-left:3px solid #1b7a47;border-radius:4px;padding:10px 14px;font-size:15px">
+        <div style="background:#fff;border:1px solid #D5DCE5;border-left:3px solid #1b7a47;border-radius:4px;padding:10px 14px;font-size:15px">
           <b>Status badges</b> (click one to move it on): <span style="background:#475569;color:#fff;padding:1px 6px;border-radius:3px;font-size:13.5px">NEW</span> just arrived &#183; <span style="background:#1d5fa8;color:#fff;padding:1px 6px;border-radius:3px;font-size:13.5px">ACK</span> someone read it &#183; <span style="background:#5b21b6;color:#fff;padding:1px 6px;border-radius:3px;font-size:13.5px">ASSIGNED</span> someone is on it &#183; <span style="background:#1b7a47;color:#fff;padding:1px 6px;border-radius:3px;font-size:13.5px">DONE</span> handled.
         </div>
         <div class="note-box">
@@ -686,9 +689,9 @@ if (/^https?:$/.test(location.protocol) && /\/training\/[^/]*$/.test(location.pa
     <div class="note-box" style="font-size:15px">
       <b>The Stake President decides:</b> the PACE level (on the specialist&#8217;s recommendation); the SITREP (situation report) interval; opening a Satellite EOC; moving to the backup EOC; approving the stake PACE sheet and the voice-net read-out; consent before a drill uses real contacts. Ask the EOC for <b>Decisions to make</b>.
     </div>
-    <div style="background:var(--navy);border-radius:8px;padding:14px 20px;display:flex;gap:24px;align-items:center">
-      <p style="font-size:16px;color:#BFD8D5;font-weight:600">Forms align with the Church PDF (Portable Document Format) forms:</p>
-      <p style="font-size:15px;color:#8BA8C4">PD60000184 Disaster Report &nbsp;&#8226;&nbsp; PD10052205 Supply Order &nbsp;&#8226;&nbsp; PD10052209 Work Crew Log</p>
+    <div style="border:2px solid var(--navy);border-radius:8px;padding:14px 20px;display:flex;gap:24px;align-items:center">
+      <p style="font-size:16px;color:var(--navy);font-weight:600">Forms align with the Church PDF (Portable Document Format) forms:</p>
+      <p style="font-size:15px;color:var(--muted)">PD60000184 Disaster Report &nbsp;&#8226;&nbsp; PD10052205 Supply Order &nbsp;&#8226;&nbsp; PD10052209 Work Crew Log</p>
     </div>
     <p class="card-disclaimer">Church of Jesus Christ EMCOMM is an independent volunteer project created by Travis Hilton (W9TLH), not an official product of The Church of Jesus Christ of Latter-day Saints.</p>
   </div>
