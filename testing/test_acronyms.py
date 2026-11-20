@@ -139,6 +139,7 @@ ACRONYMS = {
     'UTF': r'Unicode',
     'UX': r'user experience',
     'VARA': r'modem',
+    'AI': r'artificial intelligence',
     'VHF': r'very\W{1,3}(ultra\W{1,3})?high',
     'VIPER': r'Voice Interoperability Plan for Emergency Responders',
     'VM': r'virtual machine',
