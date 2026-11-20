@@ -6,7 +6,7 @@
 Needs Playwright with Chromium (python -m pip install playwright; python -m playwright install chromium).
 For every page it checks: Letter size, the expected page count (one per handout, two for the card sheet),
 nothing running past the page, on the business card no text touching the QR panel or within 0.12 in
-of a cut line, and every QR (Quick Response) code decoding (forms/vendor/jsQR.js) to the
+of a cut line, every page under INK_MAX % ink coverage (no large colour blocks: inkjet friendly), and every QR (Quick Response) code decoding (forms/vendor/jsQR.js) to the
 address written in its data-url. Exit 1 on any failure.
 """
 import pathlib
@@ -56,6 +56,15 @@ CARD_CLEAR = """() => {   // business card: no text or drawing outside the QR pa
   return [...new Set(bad)];
 }"""
 
+INK_MAX = 12   # % of a page covered in ink (the inkjet budget: no large colour blocks); the QR codes count too
+INK = """async (b64) => {   // average ink coverage of a page screenshot: 0 = white, 100 = solid black everywhere
+  const img = new Image(); img.src = 'data:image/png;base64,' + b64; await img.decode();
+  const w = 340, h = Math.round(w * img.height / img.width), c = document.createElement('canvas'); c.width = w; c.height = h;
+  const x = c.getContext('2d'); x.drawImage(img, 0, 0, w, h); const d = x.getImageData(0, 0, w, h).data; let t = 0;
+  for (let i = 0; i < d.length; i += 4) t += 765 - d[i] - d[i + 1] - d[i + 2];
+  return Math.round(1000 * t / (765 * w * h)) / 10;
+}"""
+
 OVERFLOW = """() => [...document.querySelectorAll('.page')].map(p => {
   const r = p.getBoundingClientRect(); let m = 0;
   p.querySelectorAll('*').forEach(e => { const b = e.getBoundingClientRect(); if (b.height) m = Math.max(m, b.bottom); });
@@ -80,13 +89,18 @@ def main():
             clash = pg.evaluate(CARD_CLEAR)
             bad = [u for u, got in qrs if got != u]
             pg.emulate_media(media='print')
+            import base64
+            ink = [pg.evaluate(INK, base64.b64encode(el.screenshot()).decode()) for el in pg.query_selector_all('.page, .card-sheet')
+                   if el.is_visible()]
+            heavy = [v for v in ink if v > INK_MAX]
             data = pg.pdf(path=str(OUT / pdf), prefer_css_page_size=True, print_background=True)
             pg.emulate_media(media='screen')
             pages = data.count(b'/Type /Page') - data.count(b'/Type /Pages')
-            ok = not over and not bad and not clash and pages == want
+            ok = not over and not bad and not clash and not heavy and pages == want
             fails += not ok
             print(f"{'PASS' if ok else 'FAIL'}  {pdf}: {pages} page(s) (want {want}), {len(qrs)} QR codes"
-                  + (f", {len(bad)} do not decode: {bad}" if bad else '') + (f", runs {over} px past the page" if over else '') + (f", card layout: {clash}" if clash else ''))
+                  + (f", {len(bad)} do not decode: {bad}" if bad else '') + (f", runs {over} px past the page" if over else '') + (f", card layout: {clash}" if clash else '')
+                  + (f", ink {max(ink)}% of the page" if ink else '') + (f" (over {INK_MAX}%: large colour blocks?)" if heavy else ''))
         b.close()
     print('\nAll handouts built.' if not fails else f'\n{fails} to fix.')
     return 1 if fails else 0

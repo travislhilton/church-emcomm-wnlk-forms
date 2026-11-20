@@ -159,16 +159,17 @@ h1 {
 .step-text b { color: var(--navy); }
 .step-text small { color: var(--muted); font-size: 15px; display: block; }
 
-.note-box {
-  background: #F0F4F8;
+.note-box {   /* white with a coloured left edge: big tinted panels drink inkjet ink */
+  background: #fff;
+  border: 1px solid #D5DCE5;
   border-left: 4px solid var(--blue);
   border-radius: 0 8px 8px 0;
   padding: 12px 16px;
   font-size: 17px;
   line-height: 1.5;
 }
-.note-box.warning { border-color: var(--amber); background: #FFF8E1; }
-.note-box.tip { border-color: var(--green); background: #E8F8F0; }
+.note-box.warning { border-left-color: var(--amber); }
+.note-box.tip { border-left-color: var(--green); }
 
 .checklist { list-style: none; display: flex; flex-direction: column; gap: 8px; }
 .checklist li {
@@ -187,8 +188,9 @@ h1 {
 
 .tier-table { width: 100%; border-collapse: collapse; font-size: 16px; }
 .tier-table th {
-  background: var(--navy);
-  color: #fff;
+  background: #fff;
+  color: var(--navy);
+  border-bottom: 2px solid var(--navy);
   padding: 8px 12px;
   text-align: left;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
@@ -197,18 +199,18 @@ h1 {
   letter-spacing: 0.06em;
 }
 .tier-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
-.tier-table tr:nth-child(even) td { background: #F7F9FC; }
 .tier-label { font-weight: 600; white-space: nowrap; }
 
-.phrase-box {
-  background: var(--navy);
-  color: #BFD8D5;
+.phrase-box {   /* outlined, not a dark panel (inkjet friendly) */
+  background: #fff;
+  border: 2px solid var(--navy);
+  color: var(--navy);
   border-radius: 8px;
   padding: 14px 18px;
   font-size: 17px;
   line-height: 1.5;
 }
-.phrase-box b { color: #fff; }
+.phrase-box b { color: var(--navy); }
 
 .divider { height: 1px; background: var(--border); margin: 4px 0; }
 
@@ -221,8 +223,9 @@ h1 {
 }
 .bishop-flow .bishop-arrow { align-self: center; }
 .bishop-node {
-  background: var(--navy);
-  color: #BFD8D5;
+  background: #fff;
+  border: 2px solid var(--navy);
+  color: var(--navy);
   border-radius: 8px;
   padding: 10px 16px;
   text-align: center;
@@ -265,12 +268,14 @@ h1 {
   .card-title { font-size: 22px; }
   .step-text { font-size: 15px; line-height: 1.45; }
   .step-text small { font-size: 13.5px; }
-  .note-box { font-size: 15px; line-height: 1.45; }
+  .note-box { font-size: 15px; line-height: 1.45; padding: 9px 14px; }
   .checklist li { font-size: 15px; }
   .tier-table { font-size: 14.5px; }
   .tier-table td { padding: 6px 10px; }
-  .phrase-box { font-size: 15px; }
-  .bishop-node { font-size: 14.5px; padding: 8px 10px; }
+  .phrase-box { font-size: 15px; padding: 10px 16px; }
+  .bishop-node { font-size: 14.5px; padding: 5px 5px; }
+  .bishop-flow { gap: 3px; }
+  .bishop-arrow { font-size: 15px; }
   .steps { gap: 5px; }
   .step-text { line-height: 1.38; }
 }
