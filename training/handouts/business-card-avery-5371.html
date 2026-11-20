@@ -32,12 +32,12 @@ html, body { background: #e9edf2; font-family: var(--sans); }
 
 /* ── FRONT: Church of Jesus Christ EMCOMM ── */
 .front { background: #fff; }
-.front .blob { position: absolute; right: 0.08in; top: 0.08in; width: 1.42in; height: 1.62in; border-radius: 0.14in; background: var(--tint); }
+.front .blob { position: absolute; right: 0.08in; top: 0.08in; width: 1.24in; height: 1.47in; border-radius: 0.14in; background: var(--tint); }
 .front .title { color: var(--navy); }
 .front .title b { color: var(--blue); }
 .front .title b::after { content: ""; display: block; width: 0.5in; height: 0.045in; background: var(--red); border-radius: 2px; margin-top: 2.5pt; }
-.front .txt { position: absolute; left: 0.19in; top: 0.17in; width: 2.0in; }
-.kicker { font-size: 6.8pt; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.front .txt { position: absolute; left: 0.19in; top: 0.17in; width: 1.88in; }
+.kicker { font-size: 6.8pt; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
 .front .kicker { color: var(--red); }
 .title { font-size: 11.6pt; line-height: 1.02; font-weight: 800; margin-top: 2.5pt; letter-spacing: -.01em; }
 .title b { display: block; font-size: 16pt; letter-spacing: .02em; }
@@ -45,24 +45,25 @@ html, body { background: #e9edf2; font-family: var(--sans); }
 .paths { display: flex; gap: 8pt; margin-top: 5pt; }
 .path { display: flex; flex-direction: column; align-items: center; gap: 1pt; font-size: 6.6pt; font-weight: 800; letter-spacing: .03em; color: var(--ink); text-transform: uppercase; }
 .path svg { width: 0.22in; height: 0.22in; }
-.qrbox { position: absolute; right: 0.18in; top: 0.17in; width: 1.08in; text-align: center; }
-.qr { display: block; width: 1.08in; height: 1.08in; background: #fff; border-radius: 6px; overflow: hidden; box-shadow: 0 0 0 1.2pt var(--navy); }
+.qrbox { position: absolute; right: 0.2in; top: 0.16in; width: 1.0in; text-align: center; }
+.qr { display: block; width: 1.0in; height: 1.0in; background: #fff; border-radius: 6px; overflow: hidden; box-shadow: 0 0 0 1.2pt var(--navy); }
 .back .qr { box-shadow: 0 0 0 1.2pt var(--teal); }
 .qr svg { display: block; width: 100%; height: 100%; }
 .scan { font-size: 7.4pt; font-weight: 800; margin-top: 4pt; letter-spacing: .01em; color: var(--navy); }
 .back .scan { color: var(--teal); }
 .scan small { display: block; font-size: 6.6pt; font-weight: 600; color: var(--mute); margin-top: 1pt; letter-spacing: 0; }
 .foot { position: absolute; left: 0.19in; right: 0.18in; bottom: 0.15in; font-size: 6.3pt; line-height: 1.2; font-weight: 600; color: var(--mute); display: flex; justify-content: space-between; align-items: flex-end; }
-.foot .who { font-weight: 800; color: var(--navy); font-size: 7.2pt; }
+.foot .call { font-weight: 800; color: var(--navy); font-size: 8.4pt; letter-spacing: .04em; line-height: 1; margin-left: 6pt; }
+.back .foot .call { color: var(--teal); }
 
 /* ── BACK: HAM Sidekick Station ── */
 .back { background: #fff; }
-.back .blob { position: absolute; left: 0.08in; top: 0.08in; width: 1.42in; height: 1.62in; border-radius: 0.14in; background: var(--tint2); }
+.back .blob { position: absolute; left: 0.08in; top: 0.08in; width: 1.24in; height: 1.47in; border-radius: 0.14in; background: var(--tint2); }
 .back .title { color: var(--teal); }
-.back .txt { position: absolute; left: 1.42in; top: 0.17in; width: 1.9in; }
+.back .txt { position: absolute; left: 1.44in; top: 0.17in; width: 1.88in; }
 .back .kicker { color: var(--teal-2); }
 .back .title b { color: var(--orange); font-size: 15pt; }
-.back .qrbox { left: 0.19in; right: auto; }
+.back .qrbox { left: 0.2in; right: auto; }
 .back .foot { left: 0.19in; right: 0.18in; }
 .wave2txt { display: block; width: 1.7in; height: 0.3in; margin-top: 4pt; }
 .feat { list-style: none; margin-top: 2.5pt; font-size: 7.1pt; line-height: 1.28; font-weight: 600; color: var(--ink); }
@@ -138,9 +139,9 @@ body.testmode .test-sheet { display: block; }
     </div>
     <div class="qrbox">
       <span class="qr" data-url="https://github.com/travislhilton/church-emcomm-wnlk-forms"></span>
-      <div class="scan">Scan for the guide<small>forms · Winlink · EOC</small></div>
+      <div class="scan">Scan for the guide<small>free · open source</small></div>
     </div>
-    <div class="foot"><span><span class="who">Travis Hilton · W9TLH</span><br>Independent volunteer project · not an official Church product</span></div>
+    <div class="foot"><span>Independent volunteer project<br>not an official Church product</span><span class="call">W9TLH</span></div>
   </div>
 </template>
 
@@ -164,10 +165,10 @@ body.testmode .test-sheet { display: block; }
         <li>Every transmission written down</li>
         <li>Callsigns looked up</li>
         <li>Net log and Winlink for the EOC</li>
-        <li>Chat and files by VARA radio modem</li>
+        <li>Chat and files over VARA modem</li>
       </ul>
     </div>
-    <div class="foot"><span>Companion to Church of Jesus Christ EMCOMM</span><span>W9TLH</span></div>
+    <div class="foot"><span>Stands alone, or pairs with<br>Church of Jesus Christ EMCOMM</span><span class="call">W9TLH</span></div>
   </div>
 </template>
 

@@ -5,7 +5,8 @@
 
 Needs Playwright with Chromium (python -m pip install playwright; python -m playwright install chromium).
 For every page it checks: Letter size, the expected page count (one per handout, two for the card sheet),
-nothing running past the page, and every QR (Quick Response) code decoding (forms/vendor/jsQR.js) to the
+nothing running past the page, on the business card no text touching the QR panel or within 0.12 in
+of a cut line, and every QR (Quick Response) code decoding (forms/vendor/jsQR.js) to the
 address written in its data-url. Exit 1 on any failure.
 """
 import pathlib
@@ -38,6 +39,23 @@ CHECK_QR = """async () => {
   return out;
 }"""
 
+CARD_CLEAR = """() => {   // business card: no text or drawing outside the QR panel touches it; all of it 0.12 in inside the cut
+  const bad = [], IN = 96;
+  for (const card of document.querySelectorAll('.card-sheet .card')) {
+    if (!card.offsetParent) continue;
+    const c = card.getBoundingClientRect(), blob = card.querySelector('.blob').getBoundingClientRect(), qb = card.querySelector('.qrbox');
+    const boxes = [], w = document.createTreeWalker(card, NodeFilter.SHOW_TEXT); let n;
+    while ((n = w.nextNode())) { if (!n.textContent.trim()) continue; const r = document.createRange(); r.selectNodeContents(n);
+      for (const b of r.getClientRects()) boxes.push([n.textContent.trim(), b, qb.contains(n)]); }
+    for (const s of card.querySelectorAll('svg')) if (!qb.contains(s)) boxes.push(['(drawing)', s.getBoundingClientRect(), false]);
+    for (const [t, b, inPanel] of boxes) {
+      if (!inPanel && b.right > blob.left - 4 && b.left < blob.right + 4 && b.top < blob.bottom + 4 && b.bottom > blob.top - 4) bad.push(t + ': touches the QR panel');
+      if (Math.min(b.left - c.left, c.right - b.right, b.top - c.top, c.bottom - b.bottom) < 0.12 * IN) bad.push(t + ': closer than 0.12 in to the cut');
+    }
+  }
+  return [...new Set(bad)];
+}"""
+
 OVERFLOW = """() => [...document.querySelectorAll('.page')].map(p => {
   const r = p.getBoundingClientRect(); let m = 0;
   p.querySelectorAll('*').forEach(e => { const b = e.getBoundingClientRect(); if (b.height) m = Math.max(m, b.bottom); });
@@ -59,15 +77,16 @@ def main():
             pg.wait_for_timeout(300)
             over = [o for o in pg.evaluate(OVERFLOW) if o > 0]
             qrs = pg.evaluate(CHECK_QR)
+            clash = pg.evaluate(CARD_CLEAR)
             bad = [u for u, got in qrs if got != u]
             pg.emulate_media(media='print')
             data = pg.pdf(path=str(OUT / pdf), prefer_css_page_size=True, print_background=True)
             pg.emulate_media(media='screen')
             pages = data.count(b'/Type /Page') - data.count(b'/Type /Pages')
-            ok = not over and not bad and pages == want
+            ok = not over and not bad and not clash and pages == want
             fails += not ok
             print(f"{'PASS' if ok else 'FAIL'}  {pdf}: {pages} page(s) (want {want}), {len(qrs)} QR codes"
-                  + (f", {len(bad)} do not decode: {bad}" if bad else '') + (f", runs {over} px past the page" if over else ''))
+                  + (f", {len(bad)} do not decode: {bad}" if bad else '') + (f", runs {over} px past the page" if over else '') + (f", card layout: {clash}" if clash else ''))
         b.close()
     print('\nAll handouts built.' if not fails else f'\n{fails} to fix.')
     return 1 if fails else 0
