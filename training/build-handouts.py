@@ -19,11 +19,13 @@ PAGES = [  # (source, PDF name, pages)
     ('handout-2-eoc-flow.html', 'Handout_2_The_EOC_Flow.pdf', 1),
     ('handout-3-simulator.html', 'Handout_3_The_Simulator.pdf', 1),
     ('business-card-avery-5371.html', 'Business_Cards_Avery_5371.pdf', 2),
+    ('business-card-avery-5371.html?test=1', 'Business_Cards_Avery_5371_Alignment_Test.pdf', 2),  # plain paper, held over a card sheet
 ]
 
 CHECK_QR = """async () => {
   const out = [];
   for (const el of document.querySelectorAll('.qr[data-url]')) {
+    if (!el.offsetParent) continue;   // not shown (the alignment test hides the cards)
     const svg = el.querySelector('svg'); if (!svg) { out.push([el.dataset.url, null]); continue; }
     const img = new Image(); const n = 400;
     img.src = 'data:image/svg+xml;base64,' + btoa(new XMLSerializer().serializeToString(svg));
@@ -51,7 +53,8 @@ def main():
         b = p.chromium.launch()
         pg = b.new_page(viewport={'width': 1000, 'height': 1200})
         for src, pdf, want in PAGES:
-            pg.goto((SRC / src).as_uri())
+            name, _, query = src.partition('?')
+            pg.goto((SRC / name).as_uri() + ('?' + query if query else ''))
             pg.add_script_tag(path=str(REPO / 'forms' / 'vendor' / 'jsQR.js'))
             pg.wait_for_timeout(300)
             over = [o for o in pg.evaluate(OVERFLOW) if o > 0]

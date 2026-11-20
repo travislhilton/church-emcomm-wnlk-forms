@@ -9,20 +9,24 @@
   2 columns x 5 rows, 0.75 in side margins, 0.5 in top and bottom, no gaps between cards.
   Page 1 = fronts (Church of Jesus Christ EMCOMM), page 2 = backs (HAM Sidekick Station).
   Print at Actual size (100 %), two-sided, flip on long edge. The grid is symmetric, so the backs line up.
-  Each sheet's colour runs 0.1 in past the cut lines, so a slightly shifted print shows colour, not a white edge.
+  Each sheet's colour runs 0.15 in past the outer cut lines, and the text keeps 0.17 in inside them, so a slightly
+  shifted print shows colour, not a white edge, and cuts no words. Printers and card stock each sit a little off:
+  the alignment page (Test sheet button) measures it, and the Nudge boxes move the fronts and backs separately
+  (remembered in this browser, or in the address as ?fx=&fy=&bx=&by= in inches).
 -->
 <style>
 @page { size: letter; margin: 0; }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 :root {
-  --navy: #1A2744; --navy-2: #24366A; --red: #C8102E; --coral: #FF6B6B; --ink: #F7F8FA; --mute: #B9C6DA;
+  --navy: #1A2744; --navy-2: #24366A; --red: #C8102E; --coral: #FF6B6B; --ink: #FFFFFF; --mute: #E1E8F3;
   --teal: #0C3A41; --teal-2: #13606A; --amber: #F2A33A; --amber-2: #FFD089;
   --sans: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
 }
 html, body { background: #e9edf2; font-family: var(--sans); }
 .sheet { position: relative; width: 8.5in; height: 11in; background: #fff; margin: 0 auto 24px; overflow: hidden; break-after: page; }
 .sheet:last-of-type { break-after: auto; }
-.bleed { position: absolute; left: 0.65in; top: 0.4in; width: 7.2in; height: 10.2in; }
+.bleed { position: absolute; left: 0.6in; top: 0.35in; width: 7.3in; height: 10.3in; }
+.shift { position: absolute; inset: 0; }
 .front-sheet .bleed { background: var(--navy); }
 .back-sheet .bleed { background: var(--teal); }
 .card { position: absolute; width: 3.5in; height: 2in; overflow: hidden; color: var(--ink); }
@@ -32,32 +36,32 @@ html, body { background: #e9edf2; font-family: var(--sans); }
 .front { background: radial-gradient(120% 140% at 100% 0%, #2c4580 0%, var(--navy) 55%, #121c33 100%); }
 .front .title b::after { content: ""; display: block; width: 0.42in; height: 0.035in; background: var(--red); border-radius: 2px; margin-top: 2.5pt; }
 .front .waves { position: absolute; right: -0.25in; top: -0.25in; width: 2.1in; height: 2.1in; opacity: .16; }
-.front .txt { position: absolute; left: 0.17in; top: 0.15in; width: 2.05in; }
-.kicker { font-size: 5.6pt; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+.front .txt { position: absolute; left: 0.19in; top: 0.17in; width: 2.0in; }
+.kicker { font-size: 6.8pt; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
 .front .kicker { color: var(--coral); }
-.title { font-size: 12.2pt; line-height: 1.02; font-weight: 800; margin-top: 3pt; letter-spacing: -.01em; }
-.title b { display: block; font-size: 17pt; letter-spacing: .02em; }
-.tag { font-size: 6.6pt; line-height: 1.28; color: var(--mute); margin-top: 4pt; }
-.paths { display: flex; gap: 5pt; margin-top: 6pt; }
-.path { display: flex; flex-direction: column; align-items: center; gap: 1.5pt; font-size: 5.4pt; font-weight: 700; letter-spacing: .04em; color: var(--ink); text-transform: uppercase; }
-.path svg { width: 0.25in; height: 0.25in; }
-.qrbox { position: absolute; right: 0.15in; top: 0.17in; width: 1.16in; text-align: center; }
-.qr { display: block; width: 1.16in; height: 1.16in; background: #fff; border-radius: 6px; overflow: hidden; }
+.title { font-size: 11.6pt; line-height: 1.02; font-weight: 800; margin-top: 2.5pt; letter-spacing: -.01em; }
+.title b { display: block; font-size: 16pt; letter-spacing: .02em; }
+.tag { font-size: 7.6pt; line-height: 1.22; font-weight: 600; color: var(--mute); margin-top: 3.5pt; }
+.paths { display: flex; gap: 8pt; margin-top: 5pt; }
+.path { display: flex; flex-direction: column; align-items: center; gap: 1pt; font-size: 6.6pt; font-weight: 800; letter-spacing: .03em; color: var(--ink); text-transform: uppercase; }
+.path svg { width: 0.22in; height: 0.22in; }
+.qrbox { position: absolute; right: 0.18in; top: 0.17in; width: 1.08in; text-align: center; }
+.qr { display: block; width: 1.08in; height: 1.08in; background: #fff; border-radius: 6px; overflow: hidden; }
 .qr svg { display: block; width: 100%; height: 100%; }
-.scan { font-size: 6.2pt; font-weight: 800; margin-top: 3.5pt; letter-spacing: .02em; }
-.scan small { display: block; font-size: 5.3pt; font-weight: 500; color: var(--mute); margin-top: 1pt; letter-spacing: 0; }
-.foot { position: absolute; left: 0.17in; right: 0.15in; bottom: 0.1in; font-size: 5.2pt; color: var(--mute); display: flex; justify-content: space-between; align-items: flex-end; }
-.foot .who { font-weight: 700; color: var(--ink); font-size: 6pt; }
+.scan { font-size: 7.4pt; font-weight: 800; margin-top: 3pt; letter-spacing: .01em; }
+.scan small { display: block; font-size: 6.6pt; font-weight: 600; color: var(--mute); margin-top: 1pt; letter-spacing: 0; }
+.foot { position: absolute; left: 0.19in; right: 0.18in; bottom: 0.15in; font-size: 6.3pt; line-height: 1.2; font-weight: 600; color: var(--mute); display: flex; justify-content: space-between; align-items: flex-end; }
+.foot .who { font-weight: 800; color: var(--ink); font-size: 7.2pt; }
 
 /* ── BACK: HAM Sidekick Station ── */
 .back { background: radial-gradient(130% 140% at 0% 100%, var(--teal-2) 0%, var(--teal) 55%, #082a30 100%); }
-.back .txt { position: absolute; left: 1.47in; top: 0.15in; width: 1.88in; }
+.back .txt { position: absolute; left: 1.42in; top: 0.17in; width: 1.9in; }
 .back .kicker { color: var(--amber); }
-.back .title b { color: var(--amber-2); font-size: 15.5pt; }
-.back .qrbox { left: 0.16in; right: auto; }
-.back .foot { left: 0.16in; right: 0.17in; }
-.wave2txt { display: block; width: 1.88in; height: 0.36in; margin-top: 6pt; }
-.feat { list-style: none; margin-top: 3pt; font-size: 6.1pt; line-height: 1.33; color: var(--ink); }
+.back .title b { color: var(--amber-2); font-size: 15pt; }
+.back .qrbox { left: 0.19in; right: auto; }
+.back .foot { left: 0.19in; right: 0.18in; }
+.wave2txt { display: block; width: 1.7in; height: 0.3in; margin-top: 4pt; }
+.feat { list-style: none; margin-top: 2.5pt; font-size: 7.1pt; line-height: 1.28; font-weight: 600; color: var(--ink); }
 .feat li::before { content: "▸ "; color: var(--amber); }
 
 /* on screen only */
@@ -66,6 +70,25 @@ html, body { background: #e9edf2; font-family: var(--sans); }
 .howto ol { margin: 8px 0 0 20px; }
 .howto button { margin-top: 10px; font: 600 14px var(--sans); background: #1A2744; color: #fff; border: 0; border-radius: 6px; padding: 8px 16px; cursor: pointer; }
 .sheet { box-shadow: 0 2px 10px #0003; }
+.nudge { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 10px; align-items: center; }
+.nudge label { font-size: 13px; }
+.nudge input { width: 4.2em; font: 14px var(--sans); padding: 2px 4px; margin-left: 4px; }
+.nudge .sum { font-size: 12px; color: #4a5872; }
+.howto .row { display: flex; flex-wrap: wrap; gap: 10px; }
+.howto .secondary { background: #fff; color: #1A2744; border: 1.5px solid #1A2744; }
+/* alignment test sheets: thin cut lines with 1/32 in scales across them, a 5 in ruler for the scale */
+.test-sheet { display: none; }
+body.testmode .card-sheet { display: none; }
+body.testmode .test-sheet { display: block; }
+.tcard { position: absolute; width: 3.5in; height: 2in; border-left: 0.5pt solid #000; border-top: 0.5pt solid #000; }
+.tcard.r { border-right: 0.5pt solid #000; } .tcard.b { border-bottom: 0.5pt solid #000; }
+.tcard .lbl { position: absolute; left: 0; right: 0; top: 0.78in; text-align: center; font: 700 9pt var(--sans); color: #000; }
+.tcard .lbl small { display: block; font-weight: 500; font-size: 7pt; }
+.scale { position: absolute; }
+.scale i { position: absolute; background: #000; }
+.ruler { position: absolute; left: 1.75in; top: 9.9in; width: 5in; height: 0.16in; border-left: 0.6pt solid #000; border-right: 0.6pt solid #000; }
+.ruler::before { content: ""; position: absolute; left: 0; right: 0; top: 0.08in; border-top: 0.6pt solid #000; }
+.ruler span { position: absolute; left: 0; right: 0; top: -0.16in; text-align: center; font: 7pt var(--sans); color: #000; }
 @media print { html, body { background: #fff; } .howto { display: none; } .sheet { margin: 0; box-shadow: none; } }
 </style>
 </head>
@@ -75,11 +98,25 @@ html, body { background: #e9edf2; font-family: var(--sans); }
   <h1>Business cards: Avery 5371 (2 × 3.5 in, 10 per sheet)</h1>
   Page 1 is the front (Church of Jesus Christ EMCOMM: emergency communications), page 2 the back (HAM Sidekick Station: for amateur radio nets). Each QR (Quick Response) code opens that project's guide on GitHub.
   <ol>
-    <li>Print one test on plain paper first: <b>Actual size / 100 %</b> (never "Fit to page"), Letter, <b>two-sided, flip on long edge</b>. Hold it over a card sheet against a window: the cards should sit inside the perforations.</li>
+    <li><b>Line it up once.</b> Click <i>Print the alignment test</i> and print it on plain paper: <b>Actual size / 100 %</b> (never "Fit to page" or "Scale to fit"), Letter, <b>two-sided, flip on long edge</b>, from this page in Chrome or Edge.</li>
+    <li>Check the 5 in line at the bottom with a ruler. Shorter or longer means the printer scaled the page: fix the scale setting first.</li>
+    <li>Lay the test over an Avery sheet, the same side up, and hold both against a window. Where a perforation crosses a scale, read how far the printed line is from it (each tick is 1/32 in, the long ticks 1/8 in). Line too far right or low: enter a negative number. Too far left or high: positive. Do it for the front, then turn both over for the back.</li>
+    <li>Print the test again until the lines sit on the perforations. The numbers stay in this browser.</li>
     <li>Then load the Avery sheet as your printer's manual asks (often face down in the rear or manual tray), paper type <b>Cardstock / Heavy</b>, and print.</li>
     <li>No two-sided printer? Print page 1, put the sheet back in the tray turned over (top edge first, as for your printer), print page 2.</li>
   </ol>
-  <button onclick="window.print()">Print the cards</button>
+  <div class="nudge">
+    <label>Front, right <input type="number" step="1" id="n-fx" value="0"></label>
+    <label>Front, down <input type="number" step="1" id="n-fy" value="0"></label>
+    <label>Back, right <input type="number" step="1" id="n-bx" value="0"></label>
+    <label>Back, down <input type="number" step="1" id="n-by" value="0"></label>
+    <span class="sum" id="n-sum">in 1/32 in steps</span>
+  </div>
+  <div class="row">
+    <button onclick="printCards(false)">Print the cards</button>
+    <button class="secondary" onclick="printCards(true)">Print the alignment test</button>
+    <button class="secondary" onclick="setNudge({fx:0,fy:0,bx:0,by:0})">Reset to 0</button>
+  </div>
 </div>
 
 <template id="tpl-front">
@@ -88,7 +125,7 @@ html, body { background: #e9edf2; font-family: var(--sans); }
     <div class="txt">
       <div class="kicker">Emergency communications</div>
       <div class="title">Church of Jesus Christ <b>EMCOMM</b></div>
-      <div class="tag">Disaster Reports, Supply Orders and Work Crew Logs that get through — with signal or without.</div>
+      <div class="tag">Church disaster forms that get through, with signal or without.</div>
       <div class="paths">
         <div class="path"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2" width="11" height="20" rx="2.2" fill="none" stroke="#fff" stroke-width="1.6"/><rect x="8.6" y="5" width="6.8" height="9" rx=".6" fill="#FF6B6B"/><path d="M9.6 8h4.8M9.6 10.2h3.4" stroke="#fff" stroke-width="1"/><circle cx="12" cy="18.4" r="1.1" fill="#fff"/></svg>Phone</div>
         <div class="path"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v13M8 22h8" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="8" r="1.8" fill="#FF6B6B"/><path d="M7.6 4.2a6 6 0 0 0 0 7.6M16.4 4.2a6 6 0 0 1 0 7.6M4.6 1.8a10 10 0 0 0 0 12.4M19.4 1.8a10 10 0 0 1 0 12.4" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg>Radio</div>
@@ -110,7 +147,7 @@ html, body { background: #e9edf2; font-family: var(--sans); }
       <div class="scan">Scan for the guide<small>free · open source</small></div>
     </div>
     <div class="txt">
-      <div class="kicker">For amateur radio voice nets</div>
+      <div class="kicker">Amateur radio nets</div>
       <div class="title">HAM Sidekick <b>Station</b></div>
       <svg class="wave2txt" viewBox="0 0 180 34" aria-hidden="true">
         <path d="M2 17h8l3-9 4 18 4-24 4 30 4-22 3 14 3-7h6" fill="none" stroke="#F2A33A" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
@@ -119,21 +156,23 @@ html, body { background: #e9edf2; font-family: var(--sans); }
         <path d="M80 11h40M124 11h26M80 17h58M80 23h30M114 23h34" stroke="#F7F8FA" stroke-width="2.4" stroke-linecap="round"/>
       </svg>
       <ul class="feat">
-        <li>Every transmission written down as it ends</li>
-        <li>Callsigns looked up; check-ins coached</li>
-        <li>Net log and Winlink messages for the EOC</li>
+        <li>Every transmission written down</li>
+        <li>Callsigns looked up</li>
+        <li>Net log and Winlink for the EOC</li>
       </ul>
     </div>
     <div class="foot"><span>Companion to Church of Jesus Christ EMCOMM</span><span>W9TLH</span></div>
   </div>
 </template>
 
-<div class="sheet front-sheet" id="fronts"><div class="bleed"></div></div>
-<div class="sheet back-sheet" id="backs"><div class="bleed"></div></div>
+<div class="sheet card-sheet front-sheet"><div class="shift" id="fronts"><div class="bleed"></div></div></div>
+<div class="sheet card-sheet back-sheet"><div class="shift" id="backs"><div class="bleed"></div></div></div>
+<div class="sheet test-sheet"><div class="shift" id="test-front"></div></div>
+<div class="sheet test-sheet"><div class="shift" id="test-back"></div></div>
 
 <script src="qr.js"></script>
 <script>
-// Lay out 10 cards per sheet: 2 columns x 5 rows from (0.75 in, 0.5 in), no gaps (Avery 5371).
+// Lay out 10 cards per sheet: 2 columns x 5 rows from (0.75 in, 0.5 in), no gaps (Avery 5371's published grid).
 (function () {
   function fill(sheetId, tplId) {
     var sheet = document.getElementById(sheetId), tpl = document.getElementById(tplId);
@@ -146,6 +185,67 @@ html, body { background: #e9edf2; font-family: var(--sans); }
   }
   fill('fronts', 'tpl-front');
   fill('backs', 'tpl-back');
+
+  // Alignment test: the same grid as thin lines, a 1/32 in scale across the middle of every cut line, a 5 in ruler.
+  function scale(parent, x, y, vertical) {
+    var s = document.createElement('div'); s.className = 'scale';
+    for (var k = -8; k <= 8; k++) {
+      var i = document.createElement('i'), len = k === 0 ? 0.22 : (k % 4 === 0 ? 0.16 : 0.09);
+      var at = k / 32;
+      if (vertical) { i.style.cssText = 'left:' + (x - len / 2) + 'in;top:' + (y + at) + 'in;width:' + len + 'in;height:0.5pt'; }
+      else { i.style.cssText = 'left:' + (x + at) + 'in;top:' + (y - len / 2) + 'in;width:0.5pt;height:' + len + 'in'; }
+      s.appendChild(i);
+    }
+    parent.appendChild(s);
+  }
+  function testSheet(id, side) {
+    var sh = document.getElementById(id);
+    for (var r = 0; r < 5; r++) for (var c = 0; c < 2; c++) {
+      var x = 0.75 + c * 3.5, y = 0.5 + r * 2, d = document.createElement('div');
+      d.className = 'tcard' + (c === 1 ? ' r' : '') + (r === 4 ? ' b' : ''); d.style.left = x + 'in'; d.style.top = y + 'in';
+      d.innerHTML = '<div class="lbl">' + side + ' · card ' + (r * 2 + c + 1) + '<small>each tick 1/32 in · long tick 1/8 in</small></div>';
+      sh.appendChild(d);
+      scale(sh, x, y + 1, false);           // across the left cut line
+      scale(sh, x + 1.75, y, true);         // across the top cut line
+      if (c === 1) scale(sh, x + 3.5, y + 1, false);
+      if (r === 4) scale(sh, x + 1.75, y + 2, true);
+    }
+    var ru = document.createElement('div'); ru.className = 'ruler';
+    ru.innerHTML = '<span>This line is 5 in long at Actual size</span>'; sh.appendChild(ru);
+  }
+  testSheet('test-front', 'FRONT');
+  testSheet('test-back', 'BACK');
+})();
+
+// Nudge: move the fronts and the backs separately, in 1/32 in steps (the address can carry inches: ?fx=0.0625).
+var NUDGE = {fx: 0, fy: 0, bx: 0, by: 0};
+function setNudge(n) {
+  ['fx', 'fy', 'bx', 'by'].forEach(function (k) {
+    var v = Math.max(-16, Math.min(16, Math.round(+n[k] || 0)));
+    NUDGE[k] = v; var el = document.getElementById('n-' + k); if (el && +el.value !== v) el.value = v;
+  });
+  var f = 'translate(' + NUDGE.fx / 32 + 'in,' + NUDGE.fy / 32 + 'in)', b = 'translate(' + NUDGE.bx / 32 + 'in,' + NUDGE.by / 32 + 'in)';
+  document.getElementById('fronts').style.transform = f; document.getElementById('test-front').style.transform = f;
+  document.getElementById('backs').style.transform = b; document.getElementById('test-back').style.transform = b;
+  document.getElementById('n-sum').textContent = 'in 1/32 in steps (front ' + (NUDGE.fx / 32).toFixed(3) + ', ' + (NUDGE.fy / 32).toFixed(3)
+    + ' in; back ' + (NUDGE.bx / 32).toFixed(3) + ', ' + (NUDGE.by / 32).toFixed(3) + ' in)';
+  try { localStorage.setItem('avery5371-nudge', JSON.stringify(NUDGE)); } catch (e) {}
+}
+function printCards(test) {
+  document.body.classList.toggle('testmode', !!test);
+  window.print();
+}
+window.addEventListener('afterprint', function () { document.body.classList.remove('testmode'); });
+(function () {
+  var n = {fx: 0, fy: 0, bx: 0, by: 0};
+  try { var s = JSON.parse(localStorage.getItem('avery5371-nudge') || 'null'); if (s) n = s; } catch (e) {}
+  var q = new URLSearchParams(location.search);
+  ['fx', 'fy', 'bx', 'by'].forEach(function (k) { if (q.has(k)) n[k] = parseFloat(q.get(k)) * 32; });
+  if (q.has('test')) document.body.classList.add('testmode');
+  setNudge(n);
+  ['fx', 'fy', 'bx', 'by'].forEach(function (k) {
+    document.getElementById('n-' + k).addEventListener('input', function () { var m = {}; for (var j in NUDGE) m[j] = NUDGE[j]; m[k] = this.value; setNudge(m); });
+  });
 })();
 </script>
 </body>
