@@ -413,7 +413,10 @@ def main():
         (old / 'EOC Drop Folder' / 'Ingested' / 'report.txt').write_text('{}', encoding='utf-8')
         rc, out, secs = run_installer(['cmd', '/c', str(bat)], rs, '1\n')
         (scratch / 'synced.out.txt').write_text(out, encoding='utf-8')
-        clean_output('synced Documents (%.0f s)' % secs, rc, out)
+        # its Desktop is in the same synced folder: the shortcuts reach every computer on that account (Q27)
+        clean_output('synced Documents (%.0f s)' % secs, rc, out, warnings=('Desktop syncs to the cloud', 'computer signed in to the same account', 'turn off Desktop backup'))
+        check('synced Desktop: the installer says its shortcuts appear on every computer on the account, and how to stop it',
+              'Your Desktop syncs to the cloud' in out and 'uninstalling on one removes them from all' in out and 'Manage back up' in out)
         new = rs / 'SystemDrive' / NAME
         check('synced Documents: the install goes to the system drive, and says why', (new / 'Field Worker Forms').is_dir()
               and 'syncs to the cloud' in out and 'Install location: ' + str(new) in out)

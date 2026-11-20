@@ -64,6 +64,15 @@ function Get-UserFolder([string]$name) {
     if (-not (Test-Path -LiteralPath $p)) { New-Item -ItemType Directory -Force $p | Out-Null }
     return $p
 }
+# A folder that OneDrive (or another sync service) keeps in the cloud. Every computer signed in to the same account
+# shares it: the Desktop of two such laptops is one folder.
+function Test-SyncedFolder([string]$path) {
+    if ($path -match '\\(OneDrive|Dropbox|Google Drive|iCloudDrive)( - [^\\]+)?(\\|$)') { return $true }
+    foreach ($root in @($env:OneDrive, $env:OneDriveConsumer, $env:OneDriveCommercial)) {
+        if ($root -and $path.StartsWith($root.TrimEnd('\') + '\', [StringComparison]::OrdinalIgnoreCase)) { return $true }
+    }
+    return $false
+}
 $SystemDriveRoot = if ($TestRoot) { Join-Path $TestRoot 'SystemDrive' } else { $env:SystemDrive + '\' }
 $WinlinkHome     = if ($TestRoot) { Join-Path $TestRoot 'RMS Express' } else { 'C:\RMS Express' }
 $WinlinkHomes    = if ($TestRoot) { @($WinlinkHome) } else { @('C:\RMS Express', 'C:\Winlink Express') }
@@ -271,6 +280,11 @@ function Invoke-Uninstall {
     $targets | ForEach-Object { Write-Info "  $_" }
     Write-Host ""
     Write-Info "Python, your browser and Winlink Express are not touched."
+    if (Test-SyncedFolder $desk) {
+        Write-Warn "Your Desktop syncs to the cloud ($desk): its EMCOMM items also go from every other computer"
+        Write-Warn "signed in to the same account, and that computer may put back an empty folder. On an EOC laptop,"
+        Write-Warn "turn off Desktop backup in OneDrive (Settings, Sync and backup, Manage back up)."
+    }
     if ($keptPrivate.Count) { Write-Info "Kept (a private training set): $($keptPrivate -join '; ')" }
 
     # the EOC's records: the database, its backups, the Drop Folder, the settings (not the saved maps: download again)
@@ -334,12 +348,6 @@ function Invoke-Uninstall {
 
     Write-Step "Removing..."
     foreach ($t in $targets) { Remove-Item -LiteralPath $t -Recurse -Force -ErrorAction SilentlyContinue }
-    # A Desktop synced by OneDrive puts a deleted folder back, empty, a few seconds later (seen on both EOC laptops,
-    # 2026-11-18: 4 to 7 s after the uninstall). Watch for 15 s and remove whatever comes back.
-    for ($i = 0; $i -lt 15; $i++) {
-        Start-Sleep -Seconds 1
-        foreach ($t in @($targets | Where-Object { Test-Path -LiteralPath $_ })) { Remove-Item -LiteralPath $t -Recurse -Force -ErrorAction SilentlyContinue }
-    }
     $left = @($targets | Where-Object { Test-Path -LiteralPath $_ })
     Write-Host ""
     if ($left.Count) {
@@ -370,13 +378,6 @@ $installEOC     = $choice -eq '3'
 # with the EOC database while the server writes it. Then the install goes to a plain folder on the system drive.
 $docsDir     = (Get-UserFolder 'MyDocuments')
 $docsInstall = Join-Path $docsDir 'Church of Jesus Christ EMCOMM'
-function Test-SyncedFolder([string]$path) {
-    if ($path -match '\\(OneDrive|Dropbox|Google Drive|iCloudDrive)( - [^\\]+)?(\\|$)') { return $true }
-    foreach ($root in @($env:OneDrive, $env:OneDriveConsumer, $env:OneDriveCommercial)) {
-        if ($root -and $path.StartsWith($root.TrimEnd('\') + '\', [StringComparison]::OrdinalIgnoreCase)) { return $true }
-    }
-    return $false
-}
 $docsSynced = Test-SyncedFolder $docsDir
 if ($docsSynced) {
     $installBase = Join-Path $SystemDriveRoot 'Church of Jesus Christ EMCOMM'
@@ -388,6 +389,11 @@ Write-Host "  Install location: $installBase" -ForegroundColor White
 if ($docsSynced) {
     Write-Info "  Your Documents folder syncs to the cloud ($docsDir),"
     Write-Info "  so the EOC files and database go to a plain folder on this computer instead."
+}
+if (Test-SyncedFolder (Get-UserFolder 'Desktop')) {
+    Write-Warn "  Your Desktop syncs to the cloud ($(Get-UserFolder 'Desktop')): the EMCOMM shortcuts appear on every"
+    Write-Warn "  computer signed in to the same account, and uninstalling on one removes them from all. On an EOC"
+    Write-Warn "  laptop, turn off Desktop backup in OneDrive (Settings, Sync and backup, Manage back up)."
 }
 Write-Host ""
 

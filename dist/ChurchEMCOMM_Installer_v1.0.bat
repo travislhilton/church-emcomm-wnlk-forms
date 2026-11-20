@@ -12348,7 +12348,7 @@ $EmbeddedFiles = @(
             'ciBzaGlwcyAoQVBQX1ZFUlNJT04gaW4gdGVtcGxhdGVzL19zaGFyZWQvZW1jb21tLWFwcC5qcyku'
             'CiMgUGhvbmVzIHdob3NlIGFwcCBpcyBvbGRlciBzdGlsbCBzZW5kIGZpbmU7IHRoZSByZWNlaXZl'
             'IHBhZ2UganVzdCB0ZWxscyB0aGVtIHRvIHVwZGF0ZSB3aGVuIHRoZXkgaGF2ZSBpbnRlcm5ldC4K'
-            'Rk9STVNfVkVSU0lPTiA9ICcyMDI2LTExLTIwLjMnCkJBU0UgPSBwYXRobGliLlBhdGgoX19maWxl'
+            'Rk9STVNfVkVSU0lPTiA9ICcyMDI2LTExLTIwLjQnCkJBU0UgPSBwYXRobGliLlBhdGgoX19maWxl'
             'X18pLnJlc29sdmUoKS5wYXJlbnQgICAjIHJlc29sdmU6IGJlZm9yZSBQeXRob24gMy45IF9fZmls'
             'ZV9fIGlzIHJlbGF0aXZlIHdoZW4gc3RhcnRlZCBmcm9tIHRoaXMgZm9sZGVyCkRCX0ZJTEUgICA9'
             'IEJBU0UgLyAnZW9jX2RhdGEuZGInCkhUTUxfRklMRSA9IEJBU0UgLyAnRU9DX01lc3NhZ2VfQ2Vu'
@@ -17657,7 +17657,7 @@ $EmbeddedFiles = @(
             'bSBkaXNrOiBzYW1lIGFzIHBvcnRhbCwgd2l0aG91dCB0aGUgb2ZmbGluZSBhcHAuCiAgIFBob25l'
             'cyBhcmUgY2xpZW50cyBvbmx5OyB0aGUgRU9DIHNlcnZlciBvbiB0aGUgbGFwdG9wIGlzIHRoZSBv'
             'bmx5IHNlcnZlci4gKi8KKGZ1bmN0aW9uICgpIHsKICB2YXIgQVBQX1ZFUlNJT04gPSAnMjAyNi0x'
-            'MS0yMC4zJzsgICAvLyBidW1wIHdpdGggYW55IGNoYW5nZSB0aGUgRU9DIHNlcnZlciBtdXN0IGtu'
+            'MS0yMC40JzsgICAvLyBidW1wIHdpdGggYW55IGNoYW5nZSB0aGUgRU9DIHNlcnZlciBtdXN0IGtu'
             'b3cgYWJvdXQgKHNlZSBGT1JNU19WRVJTSU9OIGluIGVvY19zZXJ2ZXIucHkpCiAgdmFyIE9VVEJP'
             'WF9LRVkgPSAnY2h1cmNoX291dGJveF92MScsIEVPQ1NfS0VZID0gJ2NodXJjaF9lb2NzX3YxJywg'
             'UEVORElOR19LRVkgPSAnY2h1cmNoX291dGJveF9wZW5kaW5nX3YxJzsKICB2YXIgRk9STV9OQU1F'
@@ -57328,7 +57328,7 @@ $EmbeddedFiles = @(
             'biB0aGUgcmVwb3NpdG9yeSAodGVzdGluZy90ZXN0X29mZmxpbmVfd2Via2l0LnB5IGNoZWNrcyBp'
             'dCk6IGFuIHVwZGF0ZQogICB0aGF0IGNhbm5vdCBnZXQgYSBmaWxlLCBhbmQgaGFzIG5vIG9sZGVy'
             'IGNvcHkgb2YgaXQsIGRvZXMgbm90IGluc3RhbGwgYW5kIHRoZSBvbGQgdmVyc2lvbiBzdGF5cy4g'
-            'Ki8KdmFyIENBQ0hFID0gJ2VtY29tbS1hcHAtMjAyNi0xMS0yMC4zJzsKdmFyIEZJTEVTID0gWwog'
+            'Ki8KdmFyIENBQ0hFID0gJ2VtY29tbS1hcHAtMjAyNi0xMS0yMC40JzsKdmFyIEZJTEVTID0gWwog'
             'ICdmb3Jtcy9pbmRleC5odG1sJywKICAnZm9ybXMvY29tbXMuaHRtbCcsCiAgJ2Zvcm1zL21hbmlm'
             'ZXN0LndlYm1hbmlmZXN0JywKICAnZm9ybXMvaWNvbnMvaWNvbi0xODAucG5nJywKICAnZm9ybXMv'
             'aWNvbnMvaWNvbi0xOTIucG5nJywKICAnZm9ybXMvaWNvbnMvaWNvbi01MTIucG5nJywKICAnZm9y'
@@ -58705,7 +58705,7 @@ $EmbeddedFiles = @(
             'LgogICAgICdmaWxlJyAgIGFuIGluc3RhbGxlZCBjb3B5IG9wZW5lZCBmcm9tIGRpc2s6IHNhbWUg'
             'YXMgcG9ydGFsLCB3aXRob3V0IHRoZSBvZmZsaW5lIGFwcC4KICAgUGhvbmVzIGFyZSBjbGllbnRz'
             'IG9ubHk7IHRoZSBFT0Mgc2VydmVyIG9uIHRoZSBsYXB0b3AgaXMgdGhlIG9ubHkgc2VydmVyLiAq'
-            'LwooZnVuY3Rpb24gKCkgewogIHZhciBBUFBfVkVSU0lPTiA9ICcyMDI2LTExLTIwLjMnOyAgIC8v'
+            'LwooZnVuY3Rpb24gKCkgewogIHZhciBBUFBfVkVSU0lPTiA9ICcyMDI2LTExLTIwLjQnOyAgIC8v'
             'IGJ1bXAgd2l0aCBhbnkgY2hhbmdlIHRoZSBFT0Mgc2VydmVyIG11c3Qga25vdyBhYm91dCAoc2Vl'
             'IEZPUk1TX1ZFUlNJT04gaW4gZW9jX3NlcnZlci5weSkKICB2YXIgT1VUQk9YX0tFWSA9ICdjaHVy'
             'Y2hfb3V0Ym94X3YxJywgRU9DU19LRVkgPSAnY2h1cmNoX2VvY3NfdjEnLCBQRU5ESU5HX0tFWSA9'
@@ -61884,7 +61884,7 @@ $EmbeddedFiles = @(
             'cm9tIGRpc2s6IHNhbWUgYXMgcG9ydGFsLCB3aXRob3V0IHRoZSBvZmZsaW5lIGFwcC4KICAgUGhv'
             'bmVzIGFyZSBjbGllbnRzIG9ubHk7IHRoZSBFT0Mgc2VydmVyIG9uIHRoZSBsYXB0b3AgaXMgdGhl'
             'IG9ubHkgc2VydmVyLiAqLwooZnVuY3Rpb24gKCkgewogIHZhciBBUFBfVkVSU0lPTiA9ICcyMDI2'
-            'LTExLTIwLjMnOyAgIC8vIGJ1bXAgd2l0aCBhbnkgY2hhbmdlIHRoZSBFT0Mgc2VydmVyIG11c3Qg'
+            'LTExLTIwLjQnOyAgIC8vIGJ1bXAgd2l0aCBhbnkgY2hhbmdlIHRoZSBFT0Mgc2VydmVyIG11c3Qg'
             'a25vdyBhYm91dCAoc2VlIEZPUk1TX1ZFUlNJT04gaW4gZW9jX3NlcnZlci5weSkKICB2YXIgT1VU'
             'Qk9YX0tFWSA9ICdjaHVyY2hfb3V0Ym94X3YxJywgRU9DU19LRVkgPSAnY2h1cmNoX2VvY3NfdjEn'
             'LCBQRU5ESU5HX0tFWSA9ICdjaHVyY2hfb3V0Ym94X3BlbmRpbmdfdjEnOwogIHZhciBGT1JNX05B'
@@ -64772,7 +64772,7 @@ $EmbeddedFiles = @(
             'IGNvcHkgb3BlbmVkIGZyb20gZGlzazogc2FtZSBhcyBwb3J0YWwsIHdpdGhvdXQgdGhlIG9mZmxp'
             'bmUgYXBwLgogICBQaG9uZXMgYXJlIGNsaWVudHMgb25seTsgdGhlIEVPQyBzZXJ2ZXIgb24gdGhl'
             'IGxhcHRvcCBpcyB0aGUgb25seSBzZXJ2ZXIuICovCihmdW5jdGlvbiAoKSB7CiAgdmFyIEFQUF9W'
-            'RVJTSU9OID0gJzIwMjYtMTEtMjAuMyc7ICAgLy8gYnVtcCB3aXRoIGFueSBjaGFuZ2UgdGhlIEVP'
+            'RVJTSU9OID0gJzIwMjYtMTEtMjAuNCc7ICAgLy8gYnVtcCB3aXRoIGFueSBjaGFuZ2UgdGhlIEVP'
             'QyBzZXJ2ZXIgbXVzdCBrbm93IGFib3V0IChzZWUgRk9STVNfVkVSU0lPTiBpbiBlb2Nfc2VydmVy'
             'LnB5KQogIHZhciBPVVRCT1hfS0VZID0gJ2NodXJjaF9vdXRib3hfdjEnLCBFT0NTX0tFWSA9ICdj'
             'aHVyY2hfZW9jc192MScsIFBFTkRJTkdfS0VZID0gJ2NodXJjaF9vdXRib3hfcGVuZGluZ192MSc7'
@@ -150530,6 +150530,15 @@ function Get-UserFolder([string]$name) {
     if (-not (Test-Path -LiteralPath $p)) { New-Item -ItemType Directory -Force $p | Out-Null }
     return $p
 }
+# A folder that OneDrive (or another sync service) keeps in the cloud. Every computer signed in to the same account
+# shares it: the Desktop of two such laptops is one folder.
+function Test-SyncedFolder([string]$path) {
+    if ($path -match '\\(OneDrive|Dropbox|Google Drive|iCloudDrive)( - [^\\]+)?(\\|$)') { return $true }
+    foreach ($root in @($env:OneDrive, $env:OneDriveConsumer, $env:OneDriveCommercial)) {
+        if ($root -and $path.StartsWith($root.TrimEnd('\') + '\', [StringComparison]::OrdinalIgnoreCase)) { return $true }
+    }
+    return $false
+}
 $SystemDriveRoot = if ($TestRoot) { Join-Path $TestRoot 'SystemDrive' } else { $env:SystemDrive + '\' }
 $WinlinkHome     = if ($TestRoot) { Join-Path $TestRoot 'RMS Express' } else { 'C:\RMS Express' }
 $WinlinkHomes    = if ($TestRoot) { @($WinlinkHome) } else { @('C:\RMS Express', 'C:\Winlink Express') }
@@ -150719,6 +150728,11 @@ function Invoke-Uninstall {
     $targets | ForEach-Object { Write-Info "  $_" }
     Write-Host ""
     Write-Info "Python, your browser and Winlink Express are not touched."
+    if (Test-SyncedFolder $desk) {
+        Write-Warn "Your Desktop syncs to the cloud ($desk): its EMCOMM items also go from every other computer"
+        Write-Warn "signed in to the same account, and that computer may put back an empty folder. On an EOC laptop,"
+        Write-Warn "turn off Desktop backup in OneDrive (Settings, Sync and backup, Manage back up)."
+    }
     if ($keptPrivate.Count) { Write-Info "Kept (a private training set): $($keptPrivate -join '; ')" }
 
     # the EOC's records: the database, its backups, the Drop Folder, the settings (not the saved maps: download again)
@@ -150782,12 +150796,6 @@ function Invoke-Uninstall {
 
     Write-Step "Removing..."
     foreach ($t in $targets) { Remove-Item -LiteralPath $t -Recurse -Force -ErrorAction SilentlyContinue }
-    # A Desktop synced by OneDrive puts a deleted folder back, empty, a few seconds later (seen on both EOC laptops,
-    # 2026-11-18: 4 to 7 s after the uninstall). Watch for 15 s and remove whatever comes back.
-    for ($i = 0; $i -lt 15; $i++) {
-        Start-Sleep -Seconds 1
-        foreach ($t in @($targets | Where-Object { Test-Path -LiteralPath $_ })) { Remove-Item -LiteralPath $t -Recurse -Force -ErrorAction SilentlyContinue }
-    }
     $left = @($targets | Where-Object { Test-Path -LiteralPath $_ })
     Write-Host ""
     if ($left.Count) {
@@ -150818,13 +150826,6 @@ $installEOC     = $choice -eq '3'
 # with the EOC database while the server writes it. Then the install goes to a plain folder on the system drive.
 $docsDir     = (Get-UserFolder 'MyDocuments')
 $docsInstall = Join-Path $docsDir 'Church of Jesus Christ EMCOMM'
-function Test-SyncedFolder([string]$path) {
-    if ($path -match '\\(OneDrive|Dropbox|Google Drive|iCloudDrive)( - [^\\]+)?(\\|$)') { return $true }
-    foreach ($root in @($env:OneDrive, $env:OneDriveConsumer, $env:OneDriveCommercial)) {
-        if ($root -and $path.StartsWith($root.TrimEnd('\') + '\', [StringComparison]::OrdinalIgnoreCase)) { return $true }
-    }
-    return $false
-}
 $docsSynced = Test-SyncedFolder $docsDir
 if ($docsSynced) {
     $installBase = Join-Path $SystemDriveRoot 'Church of Jesus Christ EMCOMM'
@@ -150836,6 +150837,11 @@ Write-Host "  Install location: $installBase" -ForegroundColor White
 if ($docsSynced) {
     Write-Info "  Your Documents folder syncs to the cloud ($docsDir),"
     Write-Info "  so the EOC files and database go to a plain folder on this computer instead."
+}
+if (Test-SyncedFolder (Get-UserFolder 'Desktop')) {
+    Write-Warn "  Your Desktop syncs to the cloud ($(Get-UserFolder 'Desktop')): the EMCOMM shortcuts appear on every"
+    Write-Warn "  computer signed in to the same account, and uninstalling on one removes them from all. On an EOC"
+    Write-Warn "  laptop, turn off Desktop backup in OneDrive (Settings, Sync and backup, Manage back up)."
 }
 Write-Host ""
 
