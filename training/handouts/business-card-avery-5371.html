@@ -9,8 +9,9 @@
   2 columns x 5 rows, 0.75 in side margins, 0.5 in top and bottom, no gaps between cards.
   Page 1 = fronts (Church of Jesus Christ EMCOMM), page 2 = backs (HAM Sidekick Station).
   Print at Actual size (100 %), two-sided, flip on long edge. The grid is symmetric, so the backs line up.
-  Each sheet's colour runs 0.15 in past the outer cut lines, and the text keeps 0.17 in inside them, so a slightly
-  shifted print shows colour, not a white edge, and cuts no words. Printers and card stock each sit a little off:
+  White cards (they print clean on matte card stock with little ink): colour only in the type, icons and a few
+  tinted shapes, none of it touching a cut line, so a slightly shifted print shows nothing on the next card; the
+  text keeps 0.17 in inside the cut lines. Printers and card stock each sit a little off:
   the alignment page (Test sheet button) measures it, and the Nudge boxes move the fronts and backs separately
   (remembered in this browser, or in the address as ?fx=&fy=&bx=&by= in inches).
 -->
@@ -18,27 +19,26 @@
 @page { size: letter; margin: 0; }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 :root {
-  --navy: #1A2744; --navy-2: #24366A; --red: #C8102E; --coral: #FF6B6B; --ink: #FFFFFF; --mute: #E1E8F3;
-  --teal: #0C3A41; --teal-2: #13606A; --amber: #F2A33A; --amber-2: #FFD089;
+  --navy: #14254F; --blue: #2459B8; --red: #C8102E; --ink: #14254F; --mute: #3C4A63; --tint: #D5E3FA;
+  --teal: #0B4F57; --teal-2: #0F7480; --orange: #D9581B; --amber: #F2A33A; --tint2: #CDEBE8;
   --sans: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
 }
 html, body { background: #e9edf2; font-family: var(--sans); }
 .sheet { position: relative; width: 8.5in; height: 11in; background: #fff; margin: 0 auto 24px; overflow: hidden; break-after: page; }
 .sheet:last-of-type { break-after: auto; }
-.bleed { position: absolute; left: 0.6in; top: 0.35in; width: 7.3in; height: 10.3in; }
 .shift { position: absolute; inset: 0; }
-.front-sheet .bleed { background: var(--navy); }
-.back-sheet .bleed { background: var(--teal); }
 .card { position: absolute; width: 3.5in; height: 2in; overflow: hidden; color: var(--ink); }
 .cut { position: absolute; inset: 0; pointer-events: none; }
 
 /* ── FRONT: Church of Jesus Christ EMCOMM ── */
-.front { background: radial-gradient(120% 140% at 100% 0%, #2c4580 0%, var(--navy) 55%, #121c33 100%); }
-.front .title b::after { content: ""; display: block; width: 0.42in; height: 0.035in; background: var(--red); border-radius: 2px; margin-top: 2.5pt; }
-.front .waves { position: absolute; right: -0.25in; top: -0.25in; width: 2.1in; height: 2.1in; opacity: .16; }
+.front { background: #fff; }
+.front .blob { position: absolute; right: 0.08in; top: 0.08in; width: 1.42in; height: 1.62in; border-radius: 0.14in; background: var(--tint); }
+.front .title { color: var(--navy); }
+.front .title b { color: var(--blue); }
+.front .title b::after { content: ""; display: block; width: 0.5in; height: 0.045in; background: var(--red); border-radius: 2px; margin-top: 2.5pt; }
 .front .txt { position: absolute; left: 0.19in; top: 0.17in; width: 2.0in; }
 .kicker { font-size: 6.8pt; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
-.front .kicker { color: var(--coral); }
+.front .kicker { color: var(--red); }
 .title { font-size: 11.6pt; line-height: 1.02; font-weight: 800; margin-top: 2.5pt; letter-spacing: -.01em; }
 .title b { display: block; font-size: 16pt; letter-spacing: .02em; }
 .tag { font-size: 7.6pt; line-height: 1.22; font-weight: 600; color: var(--mute); margin-top: 3.5pt; }
@@ -46,23 +46,27 @@ html, body { background: #e9edf2; font-family: var(--sans); }
 .path { display: flex; flex-direction: column; align-items: center; gap: 1pt; font-size: 6.6pt; font-weight: 800; letter-spacing: .03em; color: var(--ink); text-transform: uppercase; }
 .path svg { width: 0.22in; height: 0.22in; }
 .qrbox { position: absolute; right: 0.18in; top: 0.17in; width: 1.08in; text-align: center; }
-.qr { display: block; width: 1.08in; height: 1.08in; background: #fff; border-radius: 6px; overflow: hidden; }
+.qr { display: block; width: 1.08in; height: 1.08in; background: #fff; border-radius: 6px; overflow: hidden; box-shadow: 0 0 0 1.2pt var(--navy); }
+.back .qr { box-shadow: 0 0 0 1.2pt var(--teal); }
 .qr svg { display: block; width: 100%; height: 100%; }
-.scan { font-size: 7.4pt; font-weight: 800; margin-top: 3pt; letter-spacing: .01em; }
+.scan { font-size: 7.4pt; font-weight: 800; margin-top: 4pt; letter-spacing: .01em; color: var(--navy); }
+.back .scan { color: var(--teal); }
 .scan small { display: block; font-size: 6.6pt; font-weight: 600; color: var(--mute); margin-top: 1pt; letter-spacing: 0; }
 .foot { position: absolute; left: 0.19in; right: 0.18in; bottom: 0.15in; font-size: 6.3pt; line-height: 1.2; font-weight: 600; color: var(--mute); display: flex; justify-content: space-between; align-items: flex-end; }
-.foot .who { font-weight: 800; color: var(--ink); font-size: 7.2pt; }
+.foot .who { font-weight: 800; color: var(--navy); font-size: 7.2pt; }
 
 /* ── BACK: HAM Sidekick Station ── */
-.back { background: radial-gradient(130% 140% at 0% 100%, var(--teal-2) 0%, var(--teal) 55%, #082a30 100%); }
+.back { background: #fff; }
+.back .blob { position: absolute; left: 0.08in; top: 0.08in; width: 1.42in; height: 1.62in; border-radius: 0.14in; background: var(--tint2); }
+.back .title { color: var(--teal); }
 .back .txt { position: absolute; left: 1.42in; top: 0.17in; width: 1.9in; }
-.back .kicker { color: var(--amber); }
-.back .title b { color: var(--amber-2); font-size: 15pt; }
+.back .kicker { color: var(--teal-2); }
+.back .title b { color: var(--orange); font-size: 15pt; }
 .back .qrbox { left: 0.19in; right: auto; }
 .back .foot { left: 0.19in; right: 0.18in; }
 .wave2txt { display: block; width: 1.7in; height: 0.3in; margin-top: 4pt; }
 .feat { list-style: none; margin-top: 2.5pt; font-size: 7.1pt; line-height: 1.28; font-weight: 600; color: var(--ink); }
-.feat li::before { content: "▸ "; color: var(--amber); }
+.feat li::before { content: "▸ "; color: var(--orange); }
 
 /* on screen only */
 .howto { max-width: 8.5in; margin: 24px auto; background: #fff; border-radius: 10px; padding: 18px 22px; font: 14px/1.5 var(--sans); color: #1A2744; box-shadow: 0 1px 4px #0002; }
@@ -121,15 +125,15 @@ body.testmode .test-sheet { display: block; }
 
 <template id="tpl-front">
   <div class="card front">
-    <svg class="waves" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="2.2"><circle cx="80" cy="20" r="16"/><circle cx="80" cy="20" r="30"/><circle cx="80" cy="20" r="44"/><circle cx="80" cy="20" r="58"/></g></svg>
+    <div class="blob"></div>
     <div class="txt">
       <div class="kicker">Emergency communications</div>
       <div class="title">Church of Jesus Christ <b>EMCOMM</b></div>
       <div class="tag">Church disaster forms that get through, with signal or without.</div>
       <div class="paths">
-        <div class="path"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2" width="11" height="20" rx="2.2" fill="none" stroke="#fff" stroke-width="1.6"/><rect x="8.6" y="5" width="6.8" height="9" rx=".6" fill="#FF6B6B"/><path d="M9.6 8h4.8M9.6 10.2h3.4" stroke="#fff" stroke-width="1"/><circle cx="12" cy="18.4" r="1.1" fill="#fff"/></svg>Phone</div>
-        <div class="path"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v13M8 22h8" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="8" r="1.8" fill="#FF6B6B"/><path d="M7.6 4.2a6 6 0 0 0 0 7.6M16.4 4.2a6 6 0 0 1 0 7.6M4.6 1.8a10 10 0 0 0 0 12.4M19.4 1.8a10 10 0 0 1 0 12.4" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg>Radio</div>
-        <div class="path"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8.5L19 6.5V22H6z" fill="none" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 2v5h5" fill="none" stroke="#fff" stroke-width="1.4"/><path d="M8.6 11h7.8M8.6 14h7.8M8.6 17h5" stroke="#FF6B6B" stroke-width="1.5"/></svg>Paper</div>
+        <div class="path"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2" width="11" height="20" rx="2.2" fill="none" stroke="#14254F" stroke-width="1.8"/><rect x="8.6" y="5" width="6.8" height="9" rx=".6" fill="#C8102E"/><path d="M9.6 8h4.8M9.6 10.2h3.4" stroke="#fff" stroke-width="1"/><circle cx="12" cy="18.4" r="1.1" fill="#14254F"/></svg>Phone</div>
+        <div class="path"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v13M8 22h8" stroke="#14254F" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="8" r="1.9" fill="#C8102E"/><path d="M7.6 4.2a6 6 0 0 0 0 7.6M16.4 4.2a6 6 0 0 1 0 7.6M4.6 1.8a10 10 0 0 0 0 12.4M19.4 1.8a10 10 0 0 1 0 12.4" fill="none" stroke="#2459B8" stroke-width="1.6" stroke-linecap="round"/></svg>Radio</div>
+        <div class="path"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8.5L19 6.5V22H6z" fill="none" stroke="#14254F" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 2v5h5" fill="none" stroke="#14254F" stroke-width="1.5"/><path d="M8.6 11h7.8M8.6 14h7.8M8.6 17h5" stroke="#C8102E" stroke-width="1.6"/></svg>Paper</div>
       </div>
     </div>
     <div class="qrbox">
@@ -142,6 +146,7 @@ body.testmode .test-sheet { display: block; }
 
 <template id="tpl-back">
   <div class="card back">
+    <div class="blob"></div>
     <div class="qrbox">
       <span class="qr" data-url="https://github.com/travislhilton/hamsidekick"></span>
       <div class="scan">Scan for the guide<small>free · open source</small></div>
@@ -150,10 +155,10 @@ body.testmode .test-sheet { display: block; }
       <div class="kicker">Amateur radio nets</div>
       <div class="title">HAM Sidekick <b>Station</b></div>
       <svg class="wave2txt" viewBox="0 0 180 34" aria-hidden="true">
-        <path d="M2 17h8l3-9 4 18 4-24 4 30 4-22 3 14 3-7h6" fill="none" stroke="#F2A33A" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-        <path d="M54 17h12m-5-5 5 5-5 5" fill="none" stroke="#FFD089" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <rect x="74" y="4" width="104" height="26" rx="4" fill="#ffffff1f" stroke="#ffffff55"/>
-        <path d="M80 11h40M124 11h26M80 17h58M80 23h30M114 23h34" stroke="#F7F8FA" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M2 17h8l3-9 4 18 4-24 4 30 4-22 3 14 3-7h6" fill="none" stroke="#D9581B" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+        <path d="M54 17h12m-5-5 5 5-5 5" fill="none" stroke="#0F7480" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="74" y="4" width="104" height="26" rx="4" fill="#fff" stroke="#0F7480" stroke-width="1.4"/>
+        <path d="M80 11h40M124 11h26M80 17h58M80 23h30M114 23h34" stroke="#0B4F57" stroke-width="2.4" stroke-linecap="round"/>
       </svg>
       <ul class="feat">
         <li>Every transmission written down</li>
@@ -165,8 +170,8 @@ body.testmode .test-sheet { display: block; }
   </div>
 </template>
 
-<div class="sheet card-sheet front-sheet"><div class="shift" id="fronts"><div class="bleed"></div></div></div>
-<div class="sheet card-sheet back-sheet"><div class="shift" id="backs"><div class="bleed"></div></div></div>
+<div class="sheet card-sheet front-sheet"><div class="shift" id="fronts"></div></div>
+<div class="sheet card-sheet back-sheet"><div class="shift" id="backs"></div></div>
 <div class="sheet test-sheet"><div class="shift" id="test-front"></div></div>
 <div class="sheet test-sheet"><div class="shift" id="test-back"></div></div>
 
