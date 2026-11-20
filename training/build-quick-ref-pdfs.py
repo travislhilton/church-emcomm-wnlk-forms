@@ -8,6 +8,10 @@ and press Print if you cannot use the PDF) and an all-cards PDF.
 Needs Google Chrome (headless print-to-PDF). No internet: the cards use system
 fonts and the QR codes are drawn by an inline encoder.
 
+Checks (exit 1 on a failure): every card PDF is two pages (front and back, one page each; the all-cards PDF
+twice the number of cards), and with Playwright installed, no card side has more than INK_MAX % of its area
+in ink (no large colour blocks: many people print these on inkjets).
+
     python training/build-quick-ref-pdfs.py
 """
 import os, re, shutil, subprocess, sys, pathlib, time
@@ -65,12 +69,14 @@ html, body { background: #fff; padding: 0; margin: 0; }
 .card-title { font-size: 22px; }
 .step-text { font-size: 15px; line-height: 1.45; }
 .step-text small { font-size: 13.5px; }
-.note-box { font-size: 15px; line-height: 1.45; }
+.note-box { font-size: 15px; line-height: 1.45; padding: 9px 14px; }
 .checklist li { font-size: 15px; }
 .tier-table { font-size: 14.5px; }
 .tier-table td { padding: 6px 10px; }
-.phrase-box { font-size: 15px; }
-.bishop-node { font-size: 14.5px; padding: 8px 10px; }
+.phrase-box { font-size: 15px; padding: 10px 16px; }
+.bishop-node { font-size: 14.5px; padding: 5px 5px; }
+.bishop-flow { gap: 3px; }
+.bishop-arrow { font-size: 15px; }
 .steps { gap: 5px; }
 .step-text { line-height: 1.38; }
 """
@@ -139,6 +145,35 @@ def page_count(pdf_path):
     return max(counts) if counts else -1
 
 
+INK_MAX = 12   # % of a card side covered in ink (inkjet budget: no large colour blocks); QR codes count too
+INK_JS = """async (b64) => {   // average ink coverage of a screenshot: 0 = white, 100 = solid black everywhere
+  const img = new Image(); img.src = 'data:image/png;base64,' + b64; await img.decode();
+  const w = 340, h = Math.round(w * img.height / img.width), c = document.createElement('canvas'); c.width = w; c.height = h;
+  const x = c.getContext('2d'); x.drawImage(img, 0, 0, w, h); const d = x.getImageData(0, 0, w, h).data; let t = 0;
+  for (let i = 0; i < d.length; i += 4) t += 765 - d[i] - d[i + 1] - d[i + 2];
+  return Math.round(1000 * t / (765 * w * h)) / 10;
+}"""
+
+
+def ink_per_side(html_paths):
+    """{file name: [ink % of each card side]} from the print layout in Chrome, or None without Playwright."""
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        return None
+    import base64
+    out = {}
+    with sync_playwright() as p:
+        b = p.chromium.launch(executable_path=CHROME) if CHROME else p.chromium.launch()
+        pg = b.new_page(viewport={'width': 696, 'height': 1000})   # the printable width of a Letter page
+        pg.emulate_media(media='print')
+        for path in html_paths:
+            pg.goto(path.as_uri()); pg.wait_for_timeout(300)
+            out[path.name] = [pg.evaluate(INK_JS, base64.b64encode(el.screenshot()).decode()) for el in pg.query_selector_all('.card')]
+        b.close()
+    return out
+
+
 def main():
     html = SRC.read_text(encoding='utf-8')
     head, rows, script = split_cards(html)
@@ -166,9 +201,22 @@ def main():
         all_pdf.unlink()
     print_pdf(all_html, all_pdf)
     results.append((all_pdf.name, all_pdf.stat().st_size, page_count(all_pdf)))
+    fails = 0
+    ink = ink_per_side([OUT / f'Quick_Reference_Card_{no}_{name}.html' for no, name in CARDS])
     for name, size, pages in results:
-        print(f'{name}: {size} bytes, {pages} pages')
+        want = 2 * len(CARDS) if name == all_pdf.name else 2   # every card: a front and a back, one page each
+        sides = (ink or {}).get(name.replace('.pdf', '.html'), [])
+        heavy = [v for v in sides if v > INK_MAX]
+        ok = pages == want and not heavy
+        fails += not ok
+        print(f"{'PASS' if ok else 'FAIL'}  {name}: {size} bytes, {pages} pages (want {want})"
+              + (f", ink {'/'.join(f'{v}%' for v in sides)}" if sides else '')
+              + (f" (over {INK_MAX}%: large colour blocks?)" if heavy else ''))
+    if ink is None:
+        print(f'NOTE  ink not measured: install Playwright (python -m pip install playwright) to check each side stays under {INK_MAX}%')
+    print('\nAll cards built.' if not fails else f'\n{fails} to fix.')
+    return 1 if fails else 0
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
