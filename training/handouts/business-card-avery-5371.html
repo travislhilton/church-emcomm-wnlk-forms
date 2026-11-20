@@ -43,8 +43,6 @@ html, body { background: #e9edf2; font-family: var(--sans); }
 .title b { display: block; font-size: 16pt; letter-spacing: .02em; }
 .tag { font-size: 7.6pt; line-height: 1.22; font-weight: 600; color: var(--mute); margin-top: 3.5pt; }
 .paths { display: flex; gap: 8pt; margin-top: 5pt; }
-.path { display: flex; flex-direction: column; align-items: center; gap: 1pt; font-size: 6.6pt; font-weight: 800; letter-spacing: .03em; color: var(--ink); text-transform: uppercase; }
-.path svg { width: 0.22in; height: 0.22in; }
 .qrbox { position: absolute; right: 0.2in; top: 0.16in; width: 1.0in; text-align: center; }
 .qr { display: block; width: 1.0in; height: 1.0in; background: #fff; border-radius: 6px; overflow: hidden; box-shadow: 0 0 0 1.2pt var(--navy); }
 .back .qr { box-shadow: 0 0 0 1.2pt var(--teal); }
@@ -68,7 +66,10 @@ html, body { background: #e9edf2; font-family: var(--sans); }
 .wave2txt { display: block; width: 1.7in; height: 0.3in; margin-top: 4pt; }
 .feat { list-style: none; margin-top: 2.5pt; font-size: 7.1pt; line-height: 1.28; font-weight: 600; color: var(--ink); }
 .feat li::before { content: "▸ "; color: var(--orange); }
-.front .feat { margin-top: 4pt; }
+.front .feat { margin-top: 2.5pt; }
+.icons { display: flex; gap: 7pt; margin-top: 4pt; }
+.ic { display: flex; align-items: center; gap: 2pt; font-size: 6.6pt; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; color: var(--ink); }
+.ic svg { width: 0.15in; height: 0.15in; }
 .front .feat li::before { color: var(--red); }
 
 /* on screen only */
@@ -133,8 +134,12 @@ body.testmode .test-sheet { display: block; }
       <div class="kicker">Emergency communications</div>
       <div class="title">Church of Jesus Christ <b>EMCOMM</b></div>
       <div class="tag">Disaster forms that get through, with signal or without.</div>
+      <div class="icons">
+        <div class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2" width="11" height="20" rx="2.2" fill="none" stroke="#14254F" stroke-width="1.8"/><rect x="8.6" y="5" width="6.8" height="9" rx=".6" fill="#C8102E"/><path d="M9.6 8h4.8M9.6 10.2h3.4" stroke="#fff" stroke-width="1"/><circle cx="12" cy="18.4" r="1.1" fill="#14254F"/></svg>Phone</div>
+        <div class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v13M8 22h8" stroke="#14254F" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="8" r="1.9" fill="#C8102E"/><path d="M7.6 4.2a6 6 0 0 0 0 7.6M16.4 4.2a6 6 0 0 1 0 7.6M4.6 1.8a10 10 0 0 0 0 12.4M19.4 1.8a10 10 0 0 1 0 12.4" fill="none" stroke="#2459B8" stroke-width="1.6" stroke-linecap="round"/></svg>Radio</div>
+        <div class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8.5L19 6.5V22H6z" fill="none" stroke="#14254F" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 2v5h5" fill="none" stroke="#14254F" stroke-width="1.5"/><path d="M8.6 11h7.8M8.6 14h7.8M8.6 17h5" stroke="#C8102E" stroke-width="1.6"/></svg>Paper</div>
+      </div>
       <ul class="feat">
-        <li>Phone, radio or paper</li>
         <li>Stake and Area EOC support</li>
         <li>Automated disaster drills</li>
       </ul>
