@@ -7,6 +7,18 @@
 
 ## Start here
 
+## Next session (state at 2026-11-24)
+
+- **Clean state:** `main` is pushed and the working tree is clean. The Mac and W9TLH-7 suites all pass (Windows install 79/79 at `114c3d0`).
+- **Live:** release 2026-11-20.3 (tag `v1.0` on `105b88e`). Both EOC laptops run it, every full-test step passed on 2026-11-21, and the servers were left running.
+- **Waiting on Travis:** whether to release **2026-11-20.4** (`114c3d0`, installer SHA-256 36b15a2e…: the installer and uninstaller warn when the Desktop syncs to the cloud). On his word: move tag `v1.0` to the release commit, `gh release upload v1.0 dist/ChurchEMCOMM_Installer_v1.0.bat dist/ChurchEMCOMM_Forms_v1.0.zip --clobber`, add a "New in 2026-11-20.4" paragraph to the release notes, then reinstall both laptops with `-WantSha` set to the new installer. Cards, handouts and the business card did not change.
+- **Q27 is fixed** (the shared OneDrive Desktop). OneDrive Desktop backup is now off on both EOC laptops, and each Desktop is `C:\Users\travi\Desktop`. If the empty Forms folder ever comes back, first check `reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" /v Desktop` on both laptops.
+- **Reinstalling both laptops:** run them in parallel (independent machines, about 30 minutes in all) with `testing/fulltest_eoc_laptop.ps1`. The steps are pre, uninstall, install, verify, smoke, simulate, cleanup and resettle, plus W9TLH-7's own pack (Travis: keep the drills on both). Stop a stray job by its PID, never with `pkill -f`, which matches other jobs' command lines.
+- **Open work, nothing in progress:**
+  - the audit items under *Audit items not done* below;
+  - the firewall warning, which so far shows only in the console;
+  - HAM Sidekick's docs link this repo's business card (its session did that on 2026-11-20).
+
 - **Read [CLAUDE.md](CLAUDE.md) first** (standing rules, map, change routine, gotchas) and [CONTRIBUTING.md](CONTRIBUTING.md) for how to run and test. Every test and its last result is in [testing/TEST_CHECKLIST.md](testing/TEST_CHECKLIST.md).
 - **This file is public.** Nothing about the maintainer's own community goes here. Private notes and the full history of earlier sessions are in `secure data/handoff/` on the maintainer's computers.
 - **The repository is public** and started fresh on 2026-11-05. A clone from before that date must be deleted and cloned again.
