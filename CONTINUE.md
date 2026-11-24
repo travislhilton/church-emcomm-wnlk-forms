@@ -10,7 +10,7 @@
 ## Next session (state at 2026-11-24, evening)
 
 - **Live:** release **2026-11-24.1** (Travis: "Release", 2026-11-24): tag `v1.0` on `ab75bcc`, installer SHA-256 a88ed706…, Forms ZIP re-uploaded, release notes "New in 2026-11-24.1". The cards, handouts and deck did not change. **The two EOC laptops still run 2026-11-20.3**: Travis said release, not install.
-- **Built, not released: 2026-11-24.2** (Travis: "Fix remaining"), every audit item left from 2026-11-18:
+- **Built, not released: 2026-11-24.2** (`db242a7`, installer SHA-256 3a25feee…; Mac and W9TLH-7 suites all pass, install 79/79) (Travis: "Fix remaining"), every audit item left from 2026-11-18:
   - **G15:** an indexed `report_key` column; the same-report lookup is one indexed query, not a read of every report in the event; keys recomputed at each start (Q30).
   - **G17:** python.org's download is now the **Python install manager** (26.4; the standalone installer ends with Python 3.16, 2027). The installer, both launchers, the ZIP read-me, the README, the PACE plan and CONTRIBUTING give its steps; `install.ps1` also searches `%LOCALAPPDATA%\Python`. Not yet tried with a real install-manager Python on a laptop (Q31).
   - **U14:** with no map boundaries, the Map tab shows the street map with this EOC and each report that has a GPS fix, labelled (Q32).
