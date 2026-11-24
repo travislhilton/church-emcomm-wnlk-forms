@@ -48,7 +48,7 @@ PAGES = {
     'Work Crew Log form': (f'{EOC}/forms/wcl', ('phone', 'tablet', 'laptop')),
     'Message Center': (f'{EOC}/', ('phone', 'tablet', 'laptop')),
     'wall display': (f'{EOC}/wall', ()),
-    'simulator console': (f'{SIM}/', ('tablet', 'laptop')),
+    'simulator console': (f'{SIM}/', ('phone', 'tablet', 'laptop')),
     'drill results /results': (f'{SIM}/results', ('phone', 'tablet', 'laptop')),
 }
 res = []

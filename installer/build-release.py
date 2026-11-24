@@ -129,7 +129,7 @@ def installer_body() -> str:
 def powershell_script(files: list) -> str:
     L = ['#Requires -Version 5.1', '<#', '.SYNOPSIS', f'    Church of Jesus Christ EMCOMM -- Single-File Installer v{VERSION}', '.DESCRIPTION',
          '    All form files are embedded. No ZIP to extract.', f'    Double-click ChurchEMCOMM_Installer_v{VERSION}.bat to run.', '',
-         '    No internet required. No admin rights required.', '#>', '', "$ErrorActionPreference = 'Stop'", '',
+         '    No internet required. No administrator needed to install. The first time', '    the EOC Server starts, an administrator presses Allow access (Windows Firewall).', '#>', '', "$ErrorActionPreference = 'Stop'", '',
          '# ---- Embedded files (base64, 76-char chunks) ---------------------------', '$EmbeddedFiles = @(']
     for rel in files:
         folder, _, name = rel.rpartition('/')

@@ -16,7 +16,7 @@
   Independent volunteer project, not an official Church product.
 -->
 <style>
-  :root { --ink:#1d2a36; --mute:#5b6b7a; --line:#d5dde5; --bg:#f4f6f8; --panel:#fff; --acc:#1b4f8a; --sel:#e67800; --ok:#1f8a4c; --err:#b03a2e; --warn:#b7791f; }
+  :root { --ink:#1d2a36; --mute:#5b6b7a; --line:#d5dde5; --bg:#f4f6f8; --panel:#fff; --acc:#1b4f8a; --sel:#e67800; --ok:#1a7a43; --err:#b03a2e; --warn:#8a5a00; }
   * { box-sizing:border-box; }
   html, body { height:100%; margin:0; }
   body { font:14px/1.4 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color:var(--ink); background:var(--bg); display:flex; flex-direction:column; }
@@ -36,7 +36,7 @@
   .tabs { display:flex; border-bottom:1px solid var(--line); }
   .tabs button { flex:1; border:0; background:none; padding:9px 2px; font:inherit; font-size:13px; color:var(--mute); cursor:pointer; border-bottom:2px solid transparent; }
   .tabs button.on { color:var(--acc); border-bottom-color:var(--acc); font-weight:600; }
-  .tabs button .n { display:inline-block; min-width:18px; padding:0 5px; border-radius:9px; background:var(--sel); color:#fff; font-size:10px; margin-left:3px; }
+  .tabs button .n { display:inline-block; min-width:18px; padding:0 5px; border-radius:9px; background:#b45309; color:#fff; font-size:10px; margin-left:3px; }
   .pane { display:none; overflow:auto; padding:10px 12px; flex:1 1 auto; min-height:0; }
   .pane.on { display:block; }
   .pane h3 { font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--mute); margin:12px 0 6px; }
@@ -45,11 +45,12 @@
   label.row input[type=range] { flex:1; }
   input[type=text], input[type=url], input[type=number], select, textarea { width:100%; padding:6px 8px; border:1px solid var(--line); border-radius:6px; font:inherit; background:#fff; }
   input[type=number] { width:80px; }
+  ::placeholder { color:var(--mute); opacity:1; }
   button.b { padding:6px 10px; border:1px solid var(--line); border-radius:6px; background:#fff; font:inherit; cursor:pointer; }
   button.b.p { background:var(--acc); color:#fff; border-color:var(--acc); }
-  button.b.w { background:var(--sel); color:#fff; border-color:var(--sel); }
+  button.b.w { background:#b45309; color:#fff; border-color:#b45309; }
   button.b.s { padding:2px 7px; font-size:12px; }
-  button.b:disabled { opacity:.5; cursor:default; }
+  button.b:disabled { color:var(--mute); background:var(--bg); border-style:dashed; cursor:default; }
   .btns { display:flex; gap:6px; flex-wrap:wrap; margin:6px 0; align-items:center; }
   .muted { color:var(--mute); } .small { font-size:12px; } .ok { color:var(--ok); } .err { color:var(--err); } .warn { color:var(--warn); }
   .box { border:1px solid var(--line); border-radius:6px; padding:6px 8px; margin:4px 0; background:#fafbfc; }
@@ -99,16 +100,16 @@
   #items { list-style:none; margin:0; padding:0; }
   #items li { border-top:1px solid var(--line); padding:5px 0; display:grid; grid-template-columns:52px 1fr auto; gap:2px 8px; align-items:start; }
   #items li.due { background:#fff8ec; }
-  #items li.fired { opacity:.75; }
-  #items li.handed { opacity:.5; }
+  #items li.handed, #items li.skipped, #items li.held, #items li.elsewhere, #items li.waiting, #needs li.waived { color:var(--mute); }
+  #items li.handed .k, #items li.skipped .k, #items li.held .k, #items li.elsewhere .k { background:transparent !important; color:var(--mute); box-shadow:inset 0 0 0 1px var(--line); }
   #items li.error { background:#fdecea; }
-  #items li.skipped, #items li.held { opacity:.5; }
   #items .t { font-variant-numeric:tabular-nums; font-weight:600; color:var(--mute); }
-  #items .k { font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:#fff; background:#7f8c8d; padding:0 5px; border-radius:3px; margin-right:4px; }
-  #items .k.form { background:var(--acc); } #items .k.voice { background:#8e44ad; } #items .k.prompt { background:var(--sel); } #items .k.note { background:#5b6b7a; } #items .k.paper { background:#6d4c41; } #items .k.work_item { background:#1b7f5a; } #items .k.rollup { background:#0b6e99; } #items li.elsewhere { opacity:.45; } .to { display:inline-block; font-size:10px; font-weight:700; background:#eceff2; color:var(--mute); border-radius:8px; padding:0 6px; margin-left:4px; vertical-align:middle; }
+  #items .k { font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:#fff; background:#5b6b7a; padding:0 5px; border-radius:3px; margin-right:4px; }
+  #items .k.form { background:var(--acc); } #items .k.voice { background:#8e44ad; } #items .k.prompt { background:#b45309; } #items .k.note { background:#5b6b7a; } #items .k.paper { background:#6d4c41; } #items .k.work_item { background:#1b7f5a; } #items .k.rollup { background:#0b6e99; } .to { display:inline-block; font-size:10px; font-weight:700; background:#eceff2; color:var(--mute); border-radius:8px; padding:0 6px; margin-left:4px; vertical-align:middle; }
   #board table { border-collapse:collapse; width:100%; } #board td { padding:2px 6px; border-top:1px solid var(--line); vertical-align:top; } #board tr.self td { background:#f3f7fb; } #board .bad { color:#b03a2e; font-weight:600; }
   #hw .ev { font-size:12px; margin-top:4px; padding:4px 8px; border-radius:6px; background:#eef3f8; } #hw .ev.y { background:#e3f5ea; } #hw .ev.n { background:#fbe7e7; }
   #items .card { grid-column:1 / -1; background:#fff; border:1px dashed #b9c9dd; border-radius:6px; padding:6px 8px; font-size:13px; white-space:pre-wrap; }
+  #items .sev { display:inline-block; width:10px; height:10px; border-radius:5px; vertical-align:0; box-shadow:0 0 0 1px rgba(0,0,0,.35); }
   #items .res { grid-column:2; font-size:12px; }
   .role h4 { margin:8px 0 2px; font-size:13px; }
   .role ol { margin:0 0 6px 18px; padding:0; }
@@ -131,11 +132,11 @@
   .sbar { height:7px; border-radius:4px; background:#eceff2; overflow:hidden; display:flex; margin:4px 0 2px; } .sbar i { display:block; height:100%; }
   .chips { display:flex; flex-wrap:wrap; gap:4px; margin:4px 0; } .chip { font-size:11px; border-radius:9px; padding:1px 8px; background:#eceff2; color:var(--mute); } .chip.y { background:#e3f5ea; color:#145c33; } .chip.n { background:#fbe7e7; color:#8a1f12; }
   .nst { display:inline-block; font-size:10px; font-weight:700; color:#fff; border-radius:4px; padding:0 6px; min-width:50px; text-align:center; vertical-align:middle; }
-  .nst.open { background:#5b6b7a; } .nst.met { background:#1f8a4c; } .nst.late { background:#b7791f; } .nst.overdue { background:#b03a2e; } .nst.missed { background:#7a1f16; } .nst.waived { background:#9aa5b1; }
+  .nst.open { background:#5b6b7a; } .nst.met { background:#1f8a4c; } .nst.late { background:#8a5a00; } .nst.overdue { background:#b03a2e; } .nst.missed { background:#7a1f16; } .nst.waived { background:#5b6b7a; }
   #needs { list-style:none; margin:0; padding:0; } #needs li { border-top:1px solid var(--line); padding:5px 0; display:grid; grid-template-columns:52px 1fr auto; gap:2px 8px; align-items:start; font-size:13px; }
-  #needs li.overdue { background:#fdecea; } #needs li.open.soon { background:#fff8ec; } #needs li.met, #needs li.late { opacity:.8; } #needs li.missed { background:#fbe7e7; } #needs li.waived { opacity:.5; }
+  #needs li.overdue { background:#fdecea; } #needs li.open.soon { background:#fff8ec; }  #needs li.missed { background:#fbe7e7; } 
   #needs .ev { grid-column:2 / -1; font-size:12px; color:var(--mute); } #needs .due { font-size:11px; color:var(--warn); } #needs .due.over { color:var(--err); font-weight:600; }
-  #items li.waiting { opacity:.6; border-left:3px dashed #b9c9dd; padding-left:5px; } #items .k.reply { background:#0b6e99; } #items .trig { font-size:11px; color:var(--acc); }
+  #items li.waiting { border-left:3px dashed #b9c9dd; padding-left:5px; } #items .k.reply { background:#0b6e99; } #items .trig { font-size:11px; color:var(--acc); }
   #hdr-score { font-size:12px; } #hdr-score b { color:var(--ink); }
   /* the trainer's session */
   .ss { list-style:none; margin:0; padding:0; counter-reset:ss; }
@@ -144,9 +145,47 @@
   .ss h4 { margin:0 0 4px; font-size:14px; } .ss h4 .tick { color:var(--ok); margin-right:4px; }
   .ss .chk { font-size:13px; margin:2px 0; } .ss .chk .y { color:var(--ok); font-weight:700; } .ss .chk .n { color:var(--err); font-weight:700; }
   button.go { font-size:20px; font-weight:700; padding:10px 28px; background:var(--ok); color:#fff; border:0; border-radius:8px; cursor:pointer; }
-  button.go:disabled { background:#9aa5b1; cursor:default; }
+  button.go:disabled { background:#cfd6dd; color:#3d4a57; cursor:default; }
   .ss .live { font-variant-numeric:tabular-nums; } .ss .live .clk { font-size:26px; font-weight:700; }
   #ss-sessions li { font-size:12px; border-top:1px solid var(--line); padding:4px 0; list-style:none; } #ss-sessions { margin:0; padding:0; }
+  /* U22: a phone stacks the console above the map; the page scrolls instead of the panes */
+  @media (max-width: 760px) {
+    html, body { height:auto; }
+    #wrap { flex-direction:column; }
+    aside { width:auto; flex:0 0 auto; border-right:0; border-bottom:1px solid var(--line); }
+    .pane { overflow:visible; }
+    #insp { max-height:none; }
+    main { flex:0 0 auto; height:70vh; }
+    header .st { margin-left:0; }
+    .tabs { overflow-x:auto; } .tabs button { flex:1 0 auto; padding:9px 8px; }
+    .score { grid-template-columns:repeat(3, minmax(0, 1fr)); }
+    #items li, #needs li { grid-template-columns:44px 1fr; } #items li > span:nth-child(3), #needs li > span:nth-child(3) { grid-column:2; }
+  }
+  /* U22: dark mode for the console; the map keeps its light paper colours (its drawing and overlays are set for them) */
+  @media (prefers-color-scheme: dark) {
+    :root { --ink:#e5edf5; --mute:#9fb0c0; --line:#3a4a5f; --bg:#0f172a; --panel:#1e293b; --acc:#60a5fa; --sel:#f59e0b; --ok:#4ade80; --err:#fb7185; --warn:#fbbf24; color-scheme:dark; }
+    main { --ink:#1d2a36; --mute:#5b6b7a; --line:#d5dde5; --bg:#f4f6f8; --panel:#fff; --acc:#1b4f8a; --sel:#e67800; --ok:#1a7a43; --err:#b03a2e; --warn:#8a5a00; color:var(--ink); color-scheme:light; background:#e9eef3; }
+    main code { background:#eef1f4; }
+    input[type=text], input[type=url], input[type=number], input[type=time], select, textarea, button.b { background:#0f172a; color:var(--ink); }
+    button.b.p, button.b.w, #hw .chk button.on, button.go, .tabs button .n { color:#0b1220; }
+    button.go:disabled { background:#475569; color:#cbd5e1; }
+    .box, .score .tile, #bx-list .row:hover, #orglist li:hover, #board tr.self td, #hw .ev { background:#162033; }
+    #log, .mono, code, .sbar, .chip, .to, .badge.none { background:#243247; }
+    #bx, #items .card, .ss > li { background:var(--panel); }
+    #bx-list .row.zip { color:var(--mute); }
+    #orglist li.sel, .subtabs button.on { background:#1e3a5f; border-color:#3b5b85; }
+    #items li.due, .role li.due, #needs li.open.soon, .score .tile.warnt { background:#2a1f08; }
+    #items li.error, #needs li.overdue, #needs li.missed, .score .tile.bad, #hw .ev.n { background:#2a1215; }
+    .score .tile.good, .ss > li.done, #hw .ev.y { background:#0f2a1a; }
+    #dc-offer { background:#0f2a1a !important; } #consent-box { background:#2a1215 !important; }
+    .ss > li.now { box-shadow:0 0 0 2px #1e3a5f; }
+    #board .bad { color:var(--err); } .chip.y { color:#86efac; } .chip.n { color:#fda4af; }
+    #items .k.form { background:#1b4f8a; }
+    .badge.pace { color:#1b4f8a; }
+    #items li.waiting { border-left-color:#3b5b85; }
+    button.b.w { color:#fff; }
+    .tabs button .n { background:var(--sel); }
+  }
 </style>
 </head>
 <body>
@@ -342,6 +381,7 @@
       <label class="small">Speed <select id="r-speed" style="width:auto"><option value="1">1×</option><option value="2">2×</option><option value="4">4×</option><option value="10">10×</option><option value="60">60×</option></select></label>
       <label class="small">Jump to T+<input type="number" id="r-jump" min="0" max="600" style="width:60px"></label><button class="b s" id="r-jumpb">Go</button>
     </div>
+    <div id="r-why" class="small muted"></div>
     <div class="btns small"><label>Or start every simulator together at <input type="time" id="r-at" step="1" style="width:auto"></label><button class="b s" id="r-sched">Schedule</button><button class="b s" id="r-unsched">Cancel</button><span id="r-countdown" class="warn"></span></div>
     <div class="box" id="score-box" style="display:none"><div class="btns" style="margin:0"><b>Scoreboard</b> <span id="score-sum" class="small muted"></span><button class="b s" id="b-needs" style="margin-left:auto">Needs tab</button></div>
       <div class="score" id="score-tiles"></div><div class="sbar" id="score-bar"></div><div class="chips" id="score-checks"></div></div>
@@ -473,7 +513,7 @@ async function loadInfo() {
   if (S.info.ok && !S.dataset) await loadDataset();
   else if (!S.info.ok) { $('nodata-msg').textContent = S.info.error || ''; $('nodata').style.display = S.pack ? 'none' : 'flex'; }
   await loadScenarios();
-  if (S.info.run) { await pollRun(); }
+  if (S.info.run) { await pollRun(); } else renderRun();   // no run yet: Start, Pause and Stop are off and say why
   updateHeader();
 }
 function showPackInfo() {
@@ -1140,6 +1180,10 @@ async function pollRun() {
 function renderRun() {
   const r = S.run;
   $('r-start').disabled = !r || r.clock.status === 'running' || r.clock.status === 'finished'; $('r-pause').disabled = !r || r.clock.status !== 'running'; $('r-stop').disabled = !r || ['stopped', 'finished', 'planned'].includes(r.clock.status);
+  // say why the clock buttons are greyed out (U22): a phone shows no tooltip
+  $('r-why').textContent = !r ? 'Start is off until a run is planned: Setup, step 4, Plan the run.'
+    : r.clock.status === 'finished' ? 'This run has finished. Plan the run again (Setup, step 4) to play it once more.'
+    : r.clock.status === 'running' ? '' : r.clock.status === 'stopped' ? 'Stopped. Start continues from this minute.' : '';
   if (!r) { $('clock').textContent = 'T+000:00'; $('clockst').textContent = 'no run planned'; $('clocklbl').textContent = ''; $('items').innerHTML = ''; $('r-log').textContent = ''; $('n-due').style.display = 'none'; return; }
   const now = r.clock.elapsed_min;
   $('clock').textContent = fmtT(now); $('clockst').innerHTML = `<b>${esc(r.clock.status)}</b> · ${r.clock.speed}× · run ${esc(r.id)}`; $('clocklbl').textContent = (r.clock.t0_label ? 'T0 = ' + r.clock.t0_label + ' · ' : '') + `${r.scope.units.length} units · ${r.site && r.site.label ? r.site.label + ' · ' : ''}EOC ${r.eoc.name || r.eoc.url || ''}`;
@@ -1166,14 +1210,16 @@ function renderRun() {
     const isDue = it.status === 'pending' && it.t <= now;
     const res = it.result ? (it.result.ok ? `<span class="ok">✓ ${esc(it.result.via)}${it.result.new != null ? ` · new ${it.result.new}, dup ${it.result.dup}` : ''}${it.result.file ? ' · ' + esc(it.result.file.split(/[\\/]/).pop()) : ''}</span>` : `<span class="err">✗ ${esc(it.result.error)}</span>`) : '';
     const toBadge = it.local === false ? ` <span class="to">→ ${esc(it.to)} EOC's simulator</span>` : it.rollup ? ' <span class="to">in a roll-up</span>' : '';
-    const what = (it.kind === 'form' ? `<b>${esc(it.label || it.form.toUpperCase() + ' from ' + it.unit)}</b>${it.severity != null ? ` <span style="color:${SEVC[it.severity]}">●</span>` : ''}${it.sent_t != null ? ` <span class="muted small">(written ${fmtT(it.sent_t)}, arrives late)</span>` : ''}` : it.kind === 'rollup' ? `Roll-up to the Council / Area EOC from <b>${esc(it.stake)}</b> (simulated stake)` : it.kind === 'reply' ? `<b>${esc(it.label || 'Reply')}</b>${it.unit ? ' about <b>' + esc(it.unit) + '</b>' : ''} · closes the matching UP items with the decision` : `<b>${esc(it.label || it.kind)}</b>`) + toBadge
+    const what = (it.kind === 'form' ? `<b>${esc(it.label || it.form.toUpperCase() + ' from ' + it.unit)}</b>${it.severity != null ? ` <i class="sev" style="background:${SEVC[it.severity]}" title="severity ${it.severity}"></i>` : ''}${it.sent_t != null ? ` <span class="muted small">(written ${fmtT(it.sent_t)}, arrives late)</span>` : ''}` : it.kind === 'rollup' ? `Roll-up to the Council / Area EOC from <b>${esc(it.stake)}</b> (simulated stake)` : it.kind === 'reply' ? `<b>${esc(it.label || 'Reply')}</b>${it.unit ? ' about <b>' + esc(it.unit) + '</b>' : ''} · closes the matching UP items with the decision` : `<b>${esc(it.label || it.kind)}</b>`) + toBadge
       + (it.after ? ` <span class="trig">${it.status === 'elsewhere' ? 'after' : it.status === 'waiting' ? '⏳ waits until' : it.triggered ? '⚡ triggered:' : 'after'} <i>${esc(afterLabel(r, it))}</i> is ${esc(it.after.is)}${it.triggered ? ` (at ${fmtT(it.triggered.at)})` : ''}</span>` : '');
     // a card to hand out stays open from the minute it is due until 20 drill minutes after it fired (the clock
     // fires it within a second of being due, so "due" alone would close it at once); Show / Hide override that
     const recent = it.status === 'fired' && it.fired_t != null && now - it.fired_t < 20;
     const open = openCards.has(it.id) || (card && !closedCards.has(it.id) && (isDue || recent));
     const text = it.kind === 'form' ? (it.delivered_via === 'paper' ? it.text : '') : it.text;
-    const btns = it.status === 'elsewhere' ? '' : it.rollup && it.status === 'pending' ? '' : it.status === 'waiting' ? `<button class="b s" data-act="fire" data-id="${esc(it.id)}" data-force="1" title="Fire it now without waiting for the need">Force now</button><button class="b s" data-act="skip" data-id="${esc(it.id)}">Skip</button>` : it.status === 'pending' || it.status === 'held' ? `<button class="b s" data-act="fire" data-id="${esc(it.id)}">${it.kind === 'form' || it.kind === 'note' || it.kind === 'work_item' || it.kind === 'rollup' ? 'Send now' : 'Hand out'}</button><button class="b s" data-act="skip" data-id="${esc(it.id)}">Skip</button>${it.status === 'pending' ? `<button class="b s" data-act="hold" data-id="${esc(it.id)}">Hold</button>` : `<button class="b s" data-act="pending" data-id="${esc(it.id)}">Release</button>`}` : it.status === 'skipped' ? `<button class="b s" data-act="pending" data-id="${esc(it.id)}">Unskip</button>` : it.status === 'error' ? `<button class="b s" data-act="fire" data-id="${esc(it.id)}" data-force="1">Retry</button>` : (text ? `<button class="b s" data-show="${esc(it.id)}" data-open="${open ? 1 : 0}">${open ? 'Hide' : 'Show'}</button>` : '');
+    // a card not handed out yet can be read before it is due (S12): Show / Hide sits beside Hand out
+    const showBtn = text ? `<button class="b s" data-show="${esc(it.id)}" data-open="${open ? 1 : 0}">${open ? 'Hide' : 'Show'}</button>` : '';
+    const btns = it.status === 'elsewhere' ? '' : it.rollup && it.status === 'pending' ? '' : it.status === 'waiting' ? `<button class="b s" data-act="fire" data-id="${esc(it.id)}" data-force="1" title="Fire it now without waiting for the need">Force now</button><button class="b s" data-act="skip" data-id="${esc(it.id)}">Skip</button>${card ? showBtn : ''}` : it.status === 'pending' || it.status === 'held' ? `<button class="b s" data-act="fire" data-id="${esc(it.id)}">${it.kind === 'form' || it.kind === 'note' || it.kind === 'work_item' || it.kind === 'rollup' ? 'Send now' : 'Hand out'}</button><button class="b s" data-act="skip" data-id="${esc(it.id)}">Skip</button>${it.status === 'pending' ? `<button class="b s" data-act="hold" data-id="${esc(it.id)}">Hold</button>` : `<button class="b s" data-act="pending" data-id="${esc(it.id)}">Release</button>`}${card ? showBtn : ''}` : it.status === 'skipped' ? `<button class="b s" data-act="pending" data-id="${esc(it.id)}">Unskip</button>` : it.status === 'error' ? `<button class="b s" data-act="fire" data-id="${esc(it.id)}" data-force="1">Retry</button>` : showBtn;
     const handed = card && it.status === 'fired' ? `<label class="small" style="margin-left:6px"><input type="checkbox" data-hand="${esc(it.id)}"${it.handed ? ' checked' : ''}> Handed out</label>` : '';
     return `<li class="${esc(it.status)}${isDue ? ' due' : ''}${it.handed ? ' handed' : ''}"><span class="t">${it.status === 'waiting' || (it.after && !it.triggered) ? 'after' : fmtT(it.t)}</span><span><span class="k ${esc(it.kind)}">${esc(it.kind)}</span>${what}${it.note ? ` <span class="muted small">— ${esc(it.note)}</span>` : ''}${it.status === 'fired' ? ` <span class="muted small">${esc(it.fired_wall || '')}</span>` : ''}</span><span>${btns}${handed}</span>${res ? `<span class="res">${res}</span>` : ''}${open && text ? `<div class="card">${esc(text)}</div>` : ''}</li>`;
   }).join('');
@@ -1321,10 +1367,14 @@ function renderSession() {
   $('ss-2-msg').innerHTML = liveSession ? '<span class="warn">The session is running. Pause it (step 4) before you reset it.</span>'
     : r && r.session ? `<span class="ok">Ready${r.event ? ': fresh drill event <i>' + esc(r.event) + '</i>' : ''}.</span>${r.ready.length ? ' Ready at the EOC: ' + esc(r.ready.join(', ')) : ''}`
     : running ? '<span class="warn">A rehearsal is running. Reset stops it and keeps it as a rehearsal.</span>'
-    : (r && r.rehearsal ? '<span class="warn">The last run was a rehearsal.</span>' : '');
+    : (r && r.rehearsal ? '<span class="warn">The last run was a rehearsal.</span>'
+    : !s.pack ? '<span class="muted">Reset is off until an organization pack is loaded (step 1).</span>'
+    : !(r || s.planned_before) ? '<span class="muted">Reset is off until a run is planned (Setup, step 4: Plan the run).</span>' : '');
   $('ss-go').disabled = !r || running || over;
   $('ss-go').textContent = paused ? 'CONTINUE' : 'GO';
-  $('ss-3-msg').innerHTML = sched && r.start_at_ms ? `Starts at <b>${new Date(r.start_at_ms).toTimeString().slice(0, 8)}</b> on this laptop.` : (r && !r.session && st === 'planned' ? '<span class="warn">Not reset for the session yet: GO would start the planned run as it is.</span>' : '');
+  $('ss-3-msg').innerHTML = sched && r.start_at_ms ? `Starts at <b>${new Date(r.start_at_ms).toTimeString().slice(0, 8)}</b> on this laptop.` : (r && !r.session && st === 'planned' ? '<span class="warn">Not reset for the session yet: GO would start the planned run as it is.</span>'
+    : !r ? '<span class="muted">GO is off until a run is planned and reset (steps 1 and 2).</span>'
+    : over ? '<span class="muted">This run has ended. Reset for the session (step 2) to run it again.</span>' : '');
   if (r && (running || paused || over)) {
     const sc = r.score || {};
     $('ss-live').className = 'live small';

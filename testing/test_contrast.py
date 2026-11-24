@@ -4,11 +4,12 @@
 Runs a scratch EOC server with a little content (an event, four Disaster Reports in each status, work items at each
 priority, a roster) and a static server for the portal, then opens every page people use (each Message Center tab and
 its help, the wall, the phone page, the EOC's forms, the portal, the comms sheet, the QR posters, the Worker forms, the
-Winlink templates and the quick reference cards) in Chromium, Firefox and WebKit, in the light and the dark color
+Winlink templates, the quick reference cards, and the simulator console's tabs with a planned run of the invented
+example) in Chromium, Firefox and WebKit, in the light and the dark color
 scheme. For each visible text element (and each empty input's placeholder) it takes the computed text color, blends in
 any opacity, finds the first opaque background behind it and measures the ratio. Text over a gradient is skipped.
 
-    python testing/test_contrast.py [--engines=chromium,firefox,webkit] [--ports=8580,8581]
+    python testing/test_contrast.py [--engines=chromium,firefox,webkit] [--ports=8580,8581,8582]
 
 Needs Playwright (python -m pip install playwright; python -m playwright install firefox webkit), with Chrome installed.
 """
@@ -36,9 +37,9 @@ if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(errors='replace')   # a Windows console (cp1252) cannot print every character a page shows
 REPO = pathlib.Path(__file__).resolve().parent.parent
 ARGS = dict(a[2:].split('=', 1) for a in sys.argv[1:] if a.startswith('--') and '=' in a)
-PE, PW = (int(x) for x in ARGS.get('ports', '8580,8581').split(','))
+PE, PW, PS = (int(x) for x in (ARGS.get('ports', '8580,8581') + ',' + str(int(ARGS.get('ports', '8580,8581').split(',')[1]) + 1)).split(',')[:3])
 ENGINES = ARGS.get('engines', 'chromium,firefox,webkit').split(',')
-E, W = f'http://127.0.0.1:{PE}', f'http://127.0.0.1:{PW}'
+E, W, S = f'http://127.0.0.1:{PE}', f'http://127.0.0.1:{PW}', f'http://127.0.0.1:{PS}'
 VP = {'laptop': {'width': 1366, 'height': 900}, 'phone': {'width': 390, 'height': 844}, 'wall': {'width': 1920, 'height': 1080}}
 
 JS = r"""() => {
@@ -83,7 +84,12 @@ PAGES = [('Message Center overview', E + '/', 'laptop', None), ('MC work items',
          ('Winlink DR template', W + '/templates/disaster-report/Church_of_Jesus_Christ_Disaster_Report_Initial.html', 'laptop', None),
          ('Winlink SO template', W + '/templates/supply-order/Church_of_Jesus_Christ_Supply_Order_Initial.html', 'laptop', None),
          ('Winlink WCL template', W + '/templates/work-crew-log/Church_of_Jesus_Christ_Work_Crew_Log.html', 'laptop', None),
-         ('Quick reference cards', W + '/training/quick-ref-cards.html', 'laptop', None)]
+         ('Quick reference cards', W + '/training/quick-ref-cards.html', 'laptop', None),
+         ('Simulator session', S + '/', 'laptop', None), ('Simulator on a phone', S + '/', 'phone', None),
+         ('Simulator setup', S + '/', 'laptop', "showPane('setup')"),
+         ('Simulator run', S + '/', 'laptop', "showPane('run'); document.getElementById('r-filter').value = 'all'; renderRun(); document.querySelector('#items button[data-show]').click()"),
+         ('Simulator needs', S + '/', 'laptop', "showPane('needs')"), ('Simulator roles', S + '/', 'laptop', "showPane('roles')"),
+         ('Simulator hot wash', S + '/', 'laptop', "showPane('hotwash')")]
 
 
 def api(path, method='GET', body=None):
@@ -104,6 +110,10 @@ def main():
     shutil.copytree(REPO / 'templates', site / 'templates')
     srv = subprocess.Popen([sys.executable, '-u', 'eoc_server.py', str(PE)], cwd=str(site / 'eoc'), env=env,
                            stdout=open(tmp / 'eoc.log', 'w'), stderr=subprocess.STDOUT)
+    # the simulator console, on a scratch copy of the invented example (a run writes beside its pack)
+    shutil.copytree(REPO / 'simulation', site / 'simulation', ignore=shutil.ignore_patterns('__pycache__', 'runs', 'local-roles.json'))
+    sim = subprocess.Popen([sys.executable, '-u', 'sim_server.py', str(PS), '--data', str(site / 'simulation' / 'example' / 'juniper-plains')],
+                           cwd=str(site / 'simulation'), env=env, stdout=open(tmp / 'sim.log', 'w'), stderr=subprocess.STDOUT)
 
     class Quiet(http.server.SimpleHTTPRequestHandler):
         def log_message(self, *a):
@@ -127,6 +137,14 @@ def main():
             'actions': [{'id': f'cx{i}', 'title': f'Item {i}', 'status': st, 'prio': p}
                         for i, (st, p) in enumerate((('open', 1), ('progress', 2), ('up', 2), ('done', 3)), 1)]})
         with sync_playwright() as p:
+            b = p.chromium.launch()      # plan a run of the invented example, so the Run, Needs and Roles tabs have rows
+            pg = b.new_page()
+            pg.goto(S + '/', wait_until='load')
+            pg.wait_for_function("document.getElementById('scen') && document.getElementById('scen').value", timeout=20000)
+            pg.evaluate("showPane('setup')")
+            pg.click('#b-plan')
+            pg.wait_for_function("document.getElementById('planinfo').textContent.includes('items for')", timeout=20000)
+            b.close()
             launchers = {'chromium': lambda: p.chromium.launch(channel='chrome'), 'firefox': p.firefox.launch, 'webkit': p.webkit.launch}
             for eng in ENGINES:
                 try:
@@ -162,6 +180,7 @@ def main():
                 b.close()
     finally:
         srv.terminate()
+        sim.terminate()
         web.shutdown()
         shutil.rmtree(tmp, ignore_errors=True)
     n = len(ENGINES) * 2 * len(PAGES)
