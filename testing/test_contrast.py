@@ -137,7 +137,10 @@ def main():
             'actions': [{'id': f'cx{i}', 'title': f'Item {i}', 'status': st, 'prio': p}
                         for i, (st, p) in enumerate((('open', 1), ('progress', 2), ('up', 2), ('done', 3)), 1)]})
         with sync_playwright() as p:
-            b = p.chromium.launch()      # plan a run of the invented example, so the Run, Needs and Roles tabs have rows
+            try:                          # plan a run of the invented example, so the Run, Needs and Roles tabs have rows
+                b = p.chromium.launch(channel='chrome')
+            except Exception:
+                b = p.chromium.launch()
             pg = b.new_page()
             pg.goto(S + '/', wait_until='load')
             pg.wait_for_function("document.getElementById('scen') && document.getElementById('scen').value", timeout=20000)
