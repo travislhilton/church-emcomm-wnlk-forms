@@ -296,10 +296,33 @@ def build():
     out['simulator/buildings.geojson'] = json.dumps({'type': 'FeatureCollection', 'note': note, 'features': bfeats}, indent=1)
     out['simulator/organization_locations.geojson'] = json.dumps({'type': 'FeatureCollection', 'note': note, 'features': locs}, indent=1)
     out['simulation/building-names.json'] = json.dumps(names, ensure_ascii=False, indent=1)
+    out['simulation/local-roles.json'] = json.dumps(local_roles(P, orgs), ensure_ascii=False, indent=1)
     out['simulation/drill-spec.json'] = json.dumps(drill_spec(), ensure_ascii=False, indent=1)
     out['simulation/salt.txt'] = 'juniper-plains-invented-example\n'      # fixed: the same pseudonyms on every laptop (all invented anyway)
     out['README.txt'] = README.replace('{people}', str(len(contacts))).replace('{units}', str(len(units_meta) + sum(len(s.get('special', [])) for s in WORLD['stakes'])))
     return out, units_meta
+
+
+def local_roles(P, orgs):
+    """The emergency callings a directory export never carries (S14): an Emergency Response Director, the
+    specialist and a HAM operator in every stake, a HAM operator for each coordinating council. All invented,
+    drawn after everyone else so the directory's own names stay as they were. The same file a drill director
+    writes on the simulator's Setup, step 1 (orgpack.LOCAL_ROLES_KIND)."""
+    roles = []
+    def add(org, role, woman=False):
+        name, _ = P.person(woman=woman)
+        first, last = name.split(' ', 1)
+        roles.append({'org': org, 'role': role, 'first': first, 'last': last, 'mobile': P.phone(),
+                      'email': f'{first.lower()}.{last.lower()}@churchemcomm.sim', 'note': 'Invented example.'})
+    for o in orgs:
+        if o['org_type'] == 'Stake':
+            add(o['org_id'], 'Emergency Response Director')
+            add(o['org_id'], 'Welfare and Self-Reliance Specialist (emergency communications)', woman=True)
+            add(o['org_id'], 'Amateur Radio Operator')
+    for o in orgs:
+        if o['org_type'] == 'Area Coordinating Council':
+            add(o['org_id'], 'Amateur Radio Operator', woman=True)
+    return {'kind': 'church_emcomm_local_roles', 'v': 1, 'roles': roles}
 
 
 def drill_spec():

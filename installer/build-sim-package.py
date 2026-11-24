@@ -31,7 +31,7 @@ Layout of the zip (<CODE> participant package/):
   README.txt                      what is inside, how to load it, keep it private
   1 Reference cards/              the set's cards (PDF)
   2 Organization pack/            export-style folder: csv/, simulator/ (maps), simulation/ (scenario, local
-                                  binding, drill spec and configuration, building names, salt)
+                                  binding, drill spec and configuration, building names, local roles, salt)
   3 Winlink training set/<CODE>/  filled forms ready to copy into Winlink Express (ICS 213RR forms built from this
                                   station's standard form when it has one)
 """
@@ -115,6 +115,9 @@ def pseudonymized_csv(export: Path, dest: Path, salt: str) -> dict:
     """Copy the directory tables with the contacts pseudonymized and their directory ids hashed.
     Returns what the leak check looks for."""
     real = orgpack.read_export(export)
+    # with the local roles (ERD, specialist, HAM), as the controller laptop's own drill pseudonymizes the pack: the same
+    # names, and no invented value can equal a local role's real one
+    orgpack.apply_local_roles(real, orgpack.read_local_roles(orgpack.local_roles_path(export)))
     pseudo = privacy.pseudonymize(real, salt)
     P = {c['id']: c for c in pseudo['contacts']}
     orgphone = {o['id']: o.get('phone', '') for o in pseudo['stakes'] + pseudo['units']}
@@ -329,6 +332,18 @@ def build(set_path: Path, out_dir: Path = None, maps: str = None) -> Path:
             if (export / 'simulation' / f).is_file():
                 shutil.copy2(export / 'simulation' / f, ps / f)
         (ps / 'salt.txt').write_text(salt + '\n', encoding='utf-8')
+        # the local roles (ERD, specialist, HAM: callings the directory export does not carry, S14) go along
+        # pseudonymized with the same salt, so the package's cards and injects can name them
+        lroles = orgpack.read_local_roles(orgpack.local_roles_path(export))
+        if lroles:
+            pl = {c['id']: c for c in pack['contacts'] if c.get('local')}
+            kept = []
+            for i, r in enumerate(lroles):      # apply_local_roles names the i-th role local-<i + 1>
+                c = pl.get(f'local-{i + 1}')
+                if c:
+                    kept.append({'org': c['org'], 'role': c['role'], 'first': c.get('first', ''), 'last': c.get('last', ''),
+                                 'mobile': c.get('mobile', ''), 'email': c.get('email', ''), 'note': '', 'packaged': True})
+            orgpack.write_local_roles(ps / 'local-roles.json', kept)
         # the marker keeps the names of this package when it loads (no second pseudonymization), so write it
         # before the drill configuration below takes its names from the pack
         (ps / orgpack.PACKAGE_MARKER).write_text(json.dumps({'kind': 'emcomm-pseudonymized-package', 'v': 1}) + '\n', encoding='utf-8')

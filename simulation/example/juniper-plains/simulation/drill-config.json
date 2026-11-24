@@ -75,6 +75,10 @@
       "name": "Chris Rasband",
       "phone": "353-555-0190"
      },
+     "erd": {
+      "name": "Michelle Bingham",
+      "phone": "303-555-0186"
+     },
      "ham": {
       "name": "Larkspur Stake EOC Winlink station",
       "phone": "SIM-LKS"
@@ -160,6 +164,10 @@
       "name": "Elijah Stucki",
       "phone": "948-555-0187"
      },
+     "erd": {
+      "name": "Noah Warby",
+      "phone": "576-555-0198"
+     },
      "ham": {
       "name": "Copper Ridge Stake EOC Winlink station",
       "phone": "SIM-CRS"
@@ -243,6 +251,10 @@
       "name": "Darin Jeppson",
       "phone": "973-555-0105"
      },
+     "erd": {
+      "name": "Kari Renshaw",
+      "phone": "638-555-0148"
+     },
      "ham": {
       "name": "Alder Flat Stake EOC Winlink station",
       "phone": "SIM-AFS"
@@ -316,6 +328,10 @@
      "sp": {
       "name": "Byron Barlow",
       "phone": "418-555-0134"
+     },
+     "erd": {
+      "name": "Susan Halverson",
+      "phone": "526-555-0143"
      }
     },
     "agencies": [
@@ -393,6 +409,10 @@
      "sp": {
       "name": "Lorin Sumsion",
       "phone": "453-555-0155"
+     },
+     "erd": {
+      "name": "Deborah Chadwick",
+      "phone": "705-555-0188"
      }
     },
     "agencies": [
@@ -470,6 +490,10 @@
      "sp": {
       "name": "Albert Garff",
       "phone": "631-555-0100"
+     },
+     "erd": {
+      "name": "Vance Keddington",
+      "phone": "459-555-0112"
      }
     },
     "agencies": []
@@ -538,6 +562,10 @@
      "sp": {
       "name": "Shane Fenn",
       "phone": "919-555-0179"
+     },
+     "erd": {
+      "name": "John Sumsion",
+      "phone": "685-555-0117"
      }
     },
     "agencies": []
@@ -606,6 +634,10 @@
      "sp": {
       "name": "Wade Trane",
       "phone": "446-555-0125"
+     },
+     "erd": {
+      "name": "Jason Yardley",
+      "phone": "512-555-0109"
      }
     },
     "agencies": []

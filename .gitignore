@@ -25,7 +25,6 @@ reports/
 
 # Simulator runtime files written beside the invented example community when it is loaded from the repository
 simulation/example/juniper-plains/simulation/runs/
-simulation/example/juniper-plains/simulation/local-roles.json
 
 # The Church's PDFs: never committed (CLAUDE.md rule 9); the README links to the official copies
 /forms-source/
@@ -51,4 +50,3 @@ building-names.json
 !testing/fixtures/**
 # Runtime files beside the invented example: listed again AFTER the !simulation/example/** line above, which would otherwise un-ignore them
 simulation/example/juniper-plains/simulation/runs/
-simulation/example/juniper-plains/simulation/local-roles.json

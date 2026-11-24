@@ -107,9 +107,12 @@ DEPENDENCIES
 - Winlink Express  ([2] and [3]; if it is missing, the installer offers to open the download page.
   Install it, then run this installer again so the templates go into Winlink.)
   Download: https://downloads.winlink.org/User%20Programs/
-- Python 3.8 or later  ([3] networked server mode and simulator only). Install it from
-  https://www.python.org/downloads/ before it is needed ("Add python.exe to PATH") and keep
-  the Python installer on the USB kit with this package.
+- Python 3.8 or later  ([3] networked server mode and simulator only). Install it before it is
+  needed: download the Python install manager from https://www.python.org/downloads/,
+  double-click it, choose Install, then type python --version in Command Prompt once (it
+  finishes installing; answer yes if it asks to add Python to your PATH). The older standalone
+  installer also works ("Add python.exe to PATH"). Keep the downloaded file on the USB kit with
+  this package: it holds Python itself and installs with no internet.
 
 TROUBLESHOOTING
 ---------------

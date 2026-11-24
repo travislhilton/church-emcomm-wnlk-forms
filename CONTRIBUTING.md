@@ -19,7 +19,7 @@ contributor, whether you write code yourself or with Claude Code.
 | Tool | Why |
 |---|---|
 | [Git for Windows](https://git-scm.com/download/win) (a Mac has git with the Xcode command line tools) | version control (includes Git Bash) |
-| [Python 3.8 or later](https://www.python.org/downloads/windows/) (tick *Add python.exe to PATH*; any current 3.x works) | EOC (Emergency Operations Center) server, simulator, build and test scripts (standard library only, nothing to `pip install`). Keep the code 3.8-compatible: the README tells EOC operators 3.8 or later |
+| [Python 3.8 or later](https://www.python.org/downloads/) (python.org's Python install manager, or the standalone installer with *Add python.exe to PATH* ticked; any current 3.x works) | EOC (Emergency Operations Center) server, simulator, build and test scripts (standard library only, nothing to `pip install`). Keep the code 3.8-compatible: the README tells EOC operators 3.8 or later |
 | Google Chrome | testing pages; headless Chrome builds the card PDFs (Portable Document Format) and icons |
 | [GitHub CLI](https://cli.github.com/) (`gh`) | pull requests, releases |
 | [Claude Code](https://docs.claude.com/en/docs/claude-code) | optional, recommended: see section 6 |

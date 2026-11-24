@@ -176,9 +176,11 @@ function Find-Python {
             if ($ver) { return "$ver ($($app.Source))" }
         }
     }
-    # Also check common install locations (Python installed without "Add python.exe to PATH")
+    # Also check common install locations (Python not on the PATH): the standalone installer's folders and the
+    # Python install manager's runtimes (%LOCALAPPDATA%\Python\pythoncore-*)
     $pyPaths = @(
         (Join-Path $env:LOCALAPPDATA 'Programs\Python'),
+        (Join-Path $env:LOCALAPPDATA 'Python'),
         'C:\Python3',
         (Join-Path $env:PROGRAMFILES 'Python3')
     )
@@ -186,7 +188,7 @@ function Find-Python {
         if (-not $base -or -not (Test-Path $base)) { continue }
         foreach ($exe in @(Get-ChildItem $base -Filter 'python.exe' -Recurse -ErrorAction SilentlyContinue)) {
             $ver = Test-PythonExe $exe.FullName
-            if ($ver) { return "$ver (found at $($exe.FullName); not on PATH: reinstall with 'Add python.exe to PATH' ticked so the EOC Server finds it)" }
+            if ($ver) { return "$ver (found at $($exe.FullName); not on the PATH: the EOC Server still finds it there)" }
         }
     }
     return $null
@@ -502,11 +504,15 @@ if ($installEOC) {
         Write-Warn "Python is required for the EOC network server (multi-operator mode) and the drill simulator."
         Write-Warn "The EOC standalone mode still works without Python."
         Write-Host ""
-        Write-Host "  Install Python 3 now, before the EOC laptop is needed (free, no admin rights needed):" -ForegroundColor White
-        Write-Info "  1. Download the Windows installer from https://www.python.org/downloads/"
-        Write-Info "  2. Run it and tick 'Add python.exe to PATH' on the first screen"
-        Write-Info "  3. Keep that Python installer on the EOC USB kit next to this installer:"
-        Write-Info "     in a disaster there may be no internet to download it."
+        Write-Host "  Install Python 3 now, before the EOC laptop is needed (free, no administrator needed):" -ForegroundColor White
+        Write-Info "  1. Download the Python install manager from https://www.python.org/downloads/"
+        Write-Info "     Double-click it and choose Install."
+        Write-Info "  2. Open Command Prompt and type: python --version"
+        Write-Info "     The first time, it finishes installing Python; if it asks to add Python to"
+        Write-Info "     your PATH, answer yes. A version number means it is ready."
+        Write-Info "     (The older standalone installer also works: tick 'Add python.exe to PATH'.)"
+        Write-Info "  3. Keep that downloaded file on the EOC USB kit next to this installer:"
+        Write-Info "     it holds Python itself, and in a disaster there may be no internet."
         Write-Host ""
         $ans = Read-Host "  Open Python download page now? (y/n)"
         if ($ans -match '^[Yy]') { Start-Process "https://www.python.org/downloads/" }
@@ -718,8 +724,8 @@ if ($installEOC) {
             $exBase = (Get-Item $exSrc).FullName      # the long form: a short TEMP path (TRAVIS~1) would cut the names wrong
             foreach ($ef in Get-ChildItem $exSrc -Recurse -File) {
                 $rel = $ef.FullName.Substring($exBase.Length).TrimStart('\')
-                # same filter as the build scripts: no Python cache, no drill runs or local role choices (git-ignored)
-                if ($rel -like '*__pycache__*' -or ('\' + $rel) -match '\\simulation\\(runs|local-roles\.json)') { continue }
+                # same filter as the build scripts: no Python cache, no drill runs (the example's invented local roles do ship)
+                if ($rel -like '*__pycache__*' -or ('\' + $rel) -match '\\simulation\\runs\\') { continue }
                 $t = Join-Path (Join-Path $simDest 'example') $rel
                 $td = Split-Path $t -Parent
                 if (-not (Test-Path $td)) { New-Item -ItemType Directory -Force $td | Out-Null }
@@ -1006,7 +1012,7 @@ if ($installEOC) {
         Write-OK "Python ready: $pythonVer"
     } else {
         Write-Warn "Python 3 not installed -- networked mode will not work until Python is installed."
-        Write-Info "  Install it from https://www.python.org/downloads/ now and keep the Python installer on the USB kit"
+        Write-Info "  Install it from https://www.python.org/downloads/ (the Python install manager) now and keep that file on the USB kit"
     }
     Write-Host ""
     Write-Host "  Receiving reports by email, text, AirDrop or USB:" -ForegroundColor White

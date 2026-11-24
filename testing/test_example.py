@@ -101,11 +101,26 @@ try:
     pk = ex / 'CCD-1 participant package' / '2 Organization pack'
     p2 = orgpack.load(pk)
     salt = (EX / 'simulation' / 'salt.txt').read_text(encoding='utf-8').strip()
-    real = {P.hashed_id(salt, 'position', c['id']): c for c in pack['contacts']}
+    directory = [c for c in pack['contacts'] if not c.get('local')]
+    real = {P.hashed_id(salt, 'position', c['id']): c for c in directory}
     same = [c['id'] for c in p2['contacts'] if c['id'] in real and c['name'] == real[c['id']]['name']]
     check('the package\'s pack loads (51 units) and every leader is pseudonymized (own name replaced)',
-          len(p2['units']) == 51 and len(p2['contacts']) == len(pack['contacts']) and len(real.keys() & {c['id'] for c in p2['contacts']}) == len(pack['contacts']) and not same,
+          len(p2['units']) == 51 and len(p2['contacts']) == len(pack['contacts']) and len(real.keys() & {c['id'] for c in p2['contacts']}) == len(directory) and not same,
           (len(p2['units']), len(p2['contacts']), same[:3]))
+    # S14: the example's invented emergency callings (ERD, specialist, HAM) go along, pseudonymized once
+    ex_local = {c['id']: c for c in pack['contacts'] if c.get('local')}
+    pk_local = [c for c in p2['contacts'] if c.get('local')]
+    lr_pkg = orgpack.read_local_roles(orgpack.local_roles_path(pk))
+    check('the example pack has an ERD, a specialist and a HAM operator in every stake (invented, 555-01xx)',
+          all(any(c['org'] == s['id'] and c['role'] == r for c in ex_local.values()) for s in pack['stakes']
+              for r in ('Emergency Response Director', 'Welfare and Self-Reliance Specialist (emergency communications)', 'Amateur Radio Operator'))
+          and all(c['mobile'].startswith('555-555-01') for c in ex_local.values()), len(ex_local))
+    check('the package carries the local roles pseudonymized (marked packaged; no real name, phone or email of them)',
+          len(pk_local) == len(ex_local) and all(r.get('packaged') is True for r in lr_pkg)
+          and not any(c['name'] == ex_local[c['id']]['name'] or c['mobile'] == ex_local[c['id']]['mobile'] or c['email'] == ex_local[c['id']]['email'] for c in pk_local),
+          [(c['name'], ex_local.get(c['id'], {}).get('name')) for c in pk_local[:3]])
+    check('the package\'s drill configuration names its pseudonymized ERDs', all(c['name'] in (pk / 'simulation' / 'drill-config.json').read_text(encoding='utf-8')
+          for c in pk_local if c['role'] == 'Emergency Response Director' and c['org'] in {s['id'] for s in p2['stakes'] if s['name'] in {e.get('stake') for e in json.loads((pk / 'simulation' / 'drill-spec.json').read_text(encoding='utf-8')).get('eocs', [])}}), '')
     # the package's names are final: the simulator shows the same people the package was built with
     psalt = (pk / 'simulation' / 'salt.txt').read_text(encoding='utf-8').strip()
     again = privacy.pseudonymize(p2, psalt)

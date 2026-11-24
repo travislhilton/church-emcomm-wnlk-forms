@@ -1,0 +1,240 @@
+{
+ "kind": "church_emcomm_local_roles",
+ "v": 1,
+ "roles": [
+  {
+   "org": "SLK",
+   "role": "Emergency Response Director",
+   "first": "Wes",
+   "last": "Bingham",
+   "mobile": "555-555-0145",
+   "email": "wes.bingham@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "SLK",
+   "role": "Welfare and Self-Reliance Specialist (emergency communications)",
+   "first": "Carla",
+   "last": "Keddington",
+   "mobile": "555-555-0102",
+   "email": "carla.keddington@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "SLK",
+   "role": "Amateur Radio Operator",
+   "first": "Walter",
+   "last": "Bowcutt",
+   "mobile": "555-555-0104",
+   "email": "walter.bowcutt@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "SLE",
+   "role": "Emergency Response Director",
+   "first": "Jeff",
+   "last": "Halverson",
+   "mobile": "555-555-0165",
+   "email": "jeff.halverson@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "SLE",
+   "role": "Welfare and Self-Reliance Specialist (emergency communications)",
+   "first": "Abigail",
+   "last": "Harker",
+   "mobile": "555-555-0180",
+   "email": "abigail.harker@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "SLE",
+   "role": "Amateur Radio Operator",
+   "first": "Max",
+   "last": "Staheli",
+   "mobile": "555-555-0109",
+   "email": "max.staheli@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "SLW",
+   "role": "Emergency Response Director",
+   "first": "Caleb",
+   "last": "Chadwick",
+   "mobile": "555-555-0111",
+   "email": "caleb.chadwick@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "SLW",
+   "role": "Welfare and Self-Reliance Specialist (emergency communications)",
+   "first": "Faith",
+   "last": "Colby",
+   "mobile": "555-555-0150",
+   "email": "faith.colby@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "SLW",
+   "role": "Amateur Radio Operator",
+   "first": "Parker",
+   "last": "Halverson",
+   "mobile": "555-555-0112",
+   "email": "parker.halverson@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "SCR",
+   "role": "Emergency Response Director",
+   "first": "Morgan",
+   "last": "Warby",
+   "mobile": "555-555-0126",
+   "email": "morgan.warby@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "SCR",
+   "role": "Welfare and Self-Reliance Specialist (emergency communications)",
+   "first": "Ruth",
+   "last": "Farnes",
+   "mobile": "555-555-0175",
+   "email": "ruth.farnes@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "SCR",
+   "role": "Amateur Radio Operator",
+   "first": "Cole",
+   "last": "Staheli",
+   "mobile": "555-555-0106",
+   "email": "cole.staheli@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "SJS",
+   "role": "Emergency Response Director",
+   "first": "Isaac",
+   "last": "Keddington",
+   "mobile": "555-555-0172",
+   "email": "isaac.keddington@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "SJS",
+   "role": "Welfare and Self-Reliance Specialist (emergency communications)",
+   "first": "Mara",
+   "last": "Lundell",
+   "mobile": "555-555-0147",
+   "email": "mara.lundell@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "SJS",
+   "role": "Amateur Radio Operator",
+   "first": "Ross",
+   "last": "Delong",
+   "mobile": "555-555-0108",
+   "email": "ross.delong@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "SKS",
+   "role": "Emergency Response Director",
+   "first": "Craig",
+   "last": "Sumsion",
+   "mobile": "555-555-0194",
+   "email": "craig.sumsion@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "SKS",
+   "role": "Welfare and Self-Reliance Specialist (emergency communications)",
+   "first": "Holly",
+   "last": "Lindquist",
+   "mobile": "555-555-0191",
+   "email": "holly.lindquist@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "SKS",
+   "role": "Amateur Radio Operator",
+   "first": "Levi",
+   "last": "Thalman",
+   "mobile": "555-555-0149",
+   "email": "levi.thalman@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "SAF",
+   "role": "Emergency Response Director",
+   "first": "Trent",
+   "last": "Renshaw",
+   "mobile": "555-555-0120",
+   "email": "trent.renshaw@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "SAF",
+   "role": "Welfare and Self-Reliance Specialist (emergency communications)",
+   "first": "Sadie",
+   "last": "Driggs",
+   "mobile": "555-555-0178",
+   "email": "sadie.driggs@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "SAF",
+   "role": "Amateur Radio Operator",
+   "first": "Eli",
+   "last": "Chadwick",
+   "mobile": "555-555-0114",
+   "email": "eli.chadwick@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "SSB",
+   "role": "Emergency Response Director",
+   "first": "Clark",
+   "last": "Yardley",
+   "mobile": "555-555-0138",
+   "email": "clark.yardley@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "SSB",
+   "role": "Welfare and Self-Reliance Specialist (emergency communications)",
+   "first": "Laura",
+   "last": "Huish",
+   "mobile": "555-555-0178",
+   "email": "laura.huish@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "SSB",
+   "role": "Amateur Radio Operator",
+   "first": "Dwight",
+   "last": "Barlow",
+   "mobile": "555-555-0159",
+   "email": "dwight.barlow@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "CLK",
+   "role": "Amateur Radio Operator",
+   "first": "Kate",
+   "last": "Madsen",
+   "mobile": "555-555-0187",
+   "email": "kate.madsen@churchemcomm.sim",
+   "note": "Invented example."
+  },
+  {
+   "org": "CKS",
+   "role": "Amateur Radio Operator",
+   "first": "Amy",
+   "last": "Orton",
+   "mobile": "555-555-0184",
+   "email": "amy.orton@churchemcomm.sim",
+   "note": "Invented example."
+  }
+ ]
+}

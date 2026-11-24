@@ -129,7 +129,9 @@ DEAD = free_port()          # nothing listens here: the street map as a browser 
 base_env = dict(os.environ, PYTHONIOENCODING='utf-8', LOCALAPPDATA=str(tmp / 'appdata'), HOME=str(tmp / 'home'), USERPROFILE=str(tmp / 'home'),
                 EMCOMM_DOCUMENTS=str(tmp / 'documents'), EMCOMM_BASEMAP_URL=f'http://127.0.0.1:{FP}/usgs/{{layer}}/{{z}}/{{y}}/{{x}}')
 procs = []
-for name, port, streets in (('srvA', PA, f'http://127.0.0.1:{FP}/streets/{{z}}/{{x}}/{{y}}.png'), ('srvB', PB, f'http://127.0.0.1:{DEAD}/streets/{{z}}/{{x}}/{{y}}.png')):
+PN = free_port()            # a third EOC with no map data folder at all (U14: GPS reports still show)
+for name, port, streets in (('srvA', PA, f'http://127.0.0.1:{FP}/streets/{{z}}/{{x}}/{{y}}.png'), ('srvB', PB, f'http://127.0.0.1:{DEAD}/streets/{{z}}/{{x}}/{{y}}.png'),
+                            ('srvN', PN, f'http://127.0.0.1:{FP}/streets/{{z}}/{{x}}/{{y}}.png')):
     wd = tmp / name / 'eoc'
     wd.mkdir(parents=True)
     for f in ('eoc_server.py', 'EOC_Message_Center.html', 'EOC_Wall_Display.html', 'EOC_Phone.html', 'readout.py'):
@@ -144,7 +146,7 @@ procs.append(subprocess.Popen([sys.executable, '-u', 'sim_server.py', str(PS)], 
                               stderr=subprocess.STDOUT, env=base_env))
 CACHE = tmp / 'appdata' / 'Church of Jesus Christ EMCOMM' / 'basemap'
 try:
-    for port in (PA, PB):
+    for port in (PA, PB, PN):
         for _ in range(80):
             try:
                 call(port, 'GET', '/api/status')
@@ -306,6 +308,21 @@ try:
                 check(f'{name}: street map unreachable -> the saved Topo map, with the note "Street map needs internet"', vis and 'Street map needs internet' in note and pg.evaluate('MAP.basemap().choice') == 'streets', note)
                 check(f'{name}: no retry storm: redraws ask the street map nothing more while it is down', len(failed) == n1 and n1 <= 40, (n1, len(failed), ['/'.join(u.rsplit('/', 3)[-3:]) for u in failed[n1:]][:6]))
                 check(f'{name}: no page error with no street map', not errs, errs[:2])
+                ctx.close()
+                # U14: no boundaries on this laptop, but reports with a GPS fix: the street map with those reports
+                if name == 'Chromium':
+                    for i, (la, lo) in enumerate(((40.761, -111.891), (40.70, -111.95))):
+                        call(PN, 'POST', '/api/messages', {'id': f'gps{i}', 'type': 'dr', 'ts': int(time.time() * 1000),
+                             'dr': {'stake': 'Larkspur Stake', 'ward': f'Larkspur {i + 1}th Ward', 'location': f'{i} Main', 'submitter': 'X', 'lat': str(la), 'lon': str(lo)}})
+                ctx = b.new_context(viewport={'width': 1366, 'height': 768})
+                pg = ctx.new_page()
+                errs = []
+                pg.on('pageerror', lambda e: errs.append(str(e)))
+                pg.goto(f'http://127.0.0.1:{PN}/', wait_until='load')
+                pg.evaluate("switchTab('map')")
+                pg.wait_for_function("MAP && MAP.drawn().pinsOnly && MAP.drawn().markers >= 2 && MAP.basemap().drawn > 0", timeout=15000)
+                check(f'{name}: no map boundaries: the reports with a GPS fix are drawn on the street map (U14)',
+                      not pg.evaluate('MAP.loaded()') and pg.evaluate('MAP.drawn().markers') == 2 and pg.evaluate("MAP.basemap().shown") == 'streets' and not errs, (pg.evaluate('MAP.drawn()'), errs[:2]))
                 ctx.close()
                 ctx = b.new_context(viewport={'width': 1920, 'height': 1080})
                 pg = ctx.new_page()

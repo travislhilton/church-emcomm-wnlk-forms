@@ -517,6 +517,27 @@ try:
     dmsg = {'id': 'WLDUP1', 'type': 'dr', 'dupKey': 'WLDUP1', 'source': 'auto', 'dr': {'stake': 'Alpha Stake', 'ward': 'Alpha 9th Ward', 'location': 'Alpha 9th chapel',
             'submitter': 'Field Worker', 'date': '11/18/2026', 'type': 'flood', 'mem_inj': '3', 'miss_safe': 'YES'}}
     check('the same last report by another path is still one report', call(PA, 'POST', '/api/messages', dmsg).get('duplicate') is True)
+    # G15: the same-report lookup reads an indexed report_key column, set on insert and refreshed at start
+    import sqlite3 as _sq
+    _db = _sq.connect(str(SP / 'srvA' / 'eoc' / 'eoc_data.db')); _db.row_factory = _sq.Row
+    _rows = _db.execute("SELECT type, data_json, report_key FROM messages WHERE type IN ('dr','so','wcl')").fetchall()
+    _plan = ' '.join(str(r[3]) for r in _db.execute("EXPLAIN QUERY PLAN SELECT 1 FROM messages WHERE report_key=? AND event_id=? AND type=? LIMIT 1", ('x', 'y', 'dr')))
+    _db.close()
+    _wrong = [r['report_key'] for r in _rows if r['report_key'] != _es._report_key(r['type'], json.loads(r['data_json']).get(r['type']))]
+    check('every filed report carries its report_key, and the same-report lookup uses the index', _rows and not _wrong and sum(1 for r in _rows if r['report_key']) >= 4 and 'idx_msg_report' in _plan, (len(_rows), _wrong[:2], _plan))
+    _old = SP / 'old-db'; _old.mkdir(exist_ok=True)
+    _c = _sq.connect(str(_old / 'eoc_data.db'))
+    _c.execute("CREATE TABLE messages (id TEXT PRIMARY KEY, received_ms INTEGER NOT NULL, type TEXT NOT NULL DEFAULT '', data_json TEXT NOT NULL DEFAULT '{}', status TEXT NOT NULL DEFAULT 'new', operator_note TEXT NOT NULL DEFAULT '', filename TEXT NOT NULL DEFAULT '', dup_key TEXT NOT NULL DEFAULT '')")
+    _c.execute('INSERT INTO messages (id, received_ms, type, data_json) VALUES (?,?,?,?)', ('old1', 1, 'dr', json.dumps(dmsg)))
+    _c.commit(); _c.close()
+    _keep_db = _es.DB_FILE; _es.DB_FILE = _old / 'eoc_data.db'
+    try:
+        _es.init_db()
+        _c = _sq.connect(str(_old / 'eoc_data.db'))
+        _k = _c.execute("SELECT report_key FROM messages WHERE id='old1'").fetchone()[0]; _c.close()
+    finally:
+        _es.DB_FILE = _keep_db
+    check('a database from before G15 gets the report_key column and its keys at start', _k and _k == _es._report_key('dr', dmsg['dr']), _k)
     # SITREPs: numbered per event by the server, kept whole
     s1 = call(PA, 'POST', '/api/sitreps', {'text': 'SITREP #{NO} first'}); s2 = call(PA, 'POST', '/api/sitreps', {'text': 'SITREP #{NO} second'})
     kept = call(PA, 'GET', '/api/sitreps')

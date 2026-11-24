@@ -407,6 +407,8 @@ def apply_local_roles(pack: dict, roles: list) -> int:
         pack['contacts'].append({'id': cid, 'person': cid, 'role': role, 'org': org['id'], 'name': f'{first} {last}'.strip(),
                                  'first': first, 'last': last, 'mobile': str(r.get('mobile', '')).strip(), 'phone': str(r.get('phone') or r.get('mobile') or '').strip(),
                                  'email': str(r.get('email', '')).strip(), 'note': str(r.get('note', '')).strip(), 'local': True})
+        if r.get('packaged') is True:      # written pseudonymized by build-sim-package.py; any edit on the Setup tab drops the mark
+            pack['contacts'][-1]['packaged'] = True
         org.setdefault('leaders', []).append(cid)
     return n
 

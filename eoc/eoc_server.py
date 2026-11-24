@@ -27,7 +27,7 @@ except ValueError:
 VERSION = '1.0'
 # The Worker forms / Church of Jesus Christ EMCOMM app version this server ships (APP_VERSION in templates/_shared/emcomm-app.js).
 # Phones whose app is older still send fine; the receive page just tells them to update when they have internet.
-FORMS_VERSION = '2026-11-24.1'
+FORMS_VERSION = '2026-11-24.2'
 BASE = pathlib.Path(__file__).resolve().parent   # resolve: before Python 3.9 __file__ is relative when started from this folder
 DB_FILE   = BASE / 'eoc_data.db'
 HTML_FILE = BASE / 'EOC_Message_Center.html'
@@ -368,8 +368,31 @@ def init_db():
             CREATE TRIGGER IF NOT EXISTS msg_del AFTER DELETE ON messages BEGIN
                 INSERT INTO deleted_msgs (id, event_id, ts) VALUES (OLD.id, OLD.event_id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER)); END;
         """)
+        # The same report by another path (a phone upload and the HAM's Winlink message) is found by an indexed
+        # report_key column instead of reading every report of the event on each arrival (G15). The key is set on
+        # insert and recomputed for every row here, at each start, so a changed _report_key() never leaves old keys.
+        try:
+            conn.execute("ALTER TABLE messages ADD COLUMN report_key TEXT NOT NULL DEFAULT ''")
+        except sqlite3.OperationalError:
+            pass
+        conn.execute('CREATE INDEX IF NOT EXISTS idx_msg_report ON messages(report_key, event_id, type)')
+        _refresh_report_keys(conn)
         _ensure_active_event(conn)
         conn.commit()
+
+
+def _refresh_report_keys(conn):
+    """Set report_key on every message from its stored record (no change stamp: the record did not change)."""
+    fix = []
+    for r in conn.execute('SELECT id, type, data_json, report_key FROM messages'):
+        try:
+            d = json.loads(r['data_json'])
+            rk = _report_key(str(r['type'] or '').lower(), d.get(str(r['type'] or '').lower())) if isinstance(d, dict) else ''
+        except Exception:
+            rk = ''
+        if rk != r['report_key']:
+            fix.append((rk, r['id']))
+    conn.executemany('UPDATE messages SET report_key=? WHERE id=?', fix)
 
 
 # ── Emergency Events ──────────────────────────────────────────────────────────
@@ -1396,14 +1419,8 @@ def _report_on_file(conn, eid, mtype: str, sub) -> bool:
     rk = _report_key(mtype, sub)
     if not rk:
         return False
-    for r in conn.execute('SELECT data_json FROM messages WHERE event_id=? AND type=?', (eid, mtype)).fetchall():
-        try:
-            d = json.loads(r['data_json'])
-        except Exception:
-            continue
-        if isinstance(d, dict) and _report_key(mtype, d.get(mtype)) == rk:
-            return True
-    return False
+    return conn.execute('SELECT 1 FROM messages WHERE report_key=? AND event_id=? AND type=? LIMIT 1', (rk, eid, mtype)).fetchone() is not None
+
 
 
 def _looks_like_bundle(data) -> bool:
@@ -1831,7 +1848,7 @@ def _merge_bundle_locked(conn, data: dict, via_label: str = '') -> dict:
     if True:
         try:
             eid = _ensure_active_event(conn)   # a roll-up files under the event we are working
-            rows = conn.execute('SELECT id, dup_key, data_json FROM messages WHERE event_id=?', (eid,)).fetchall()
+            rows = conn.execute('SELECT id, dup_key, data_json, report_key FROM messages WHERE event_id=?', (eid,)).fetchall()
             ids = set(); dups = set(); forms = set(); reports = set()
             for r in rows:
                 ids.add(r['id'])
@@ -1840,9 +1857,9 @@ def _merge_bundle_locked(conn, data: dict, via_label: str = '') -> dict:
                 try:
                     rd = json.loads(r['data_json'])
                     forms.add(_form_key(rd))
-                    reports.add(_report_key(str(rd.get('type') or '').lower(), rd.get(str(rd.get('type') or '').lower())))
                 except Exception:
                     pass
+                reports.add(r['report_key'])
             reports.discard('')
             for m in data.get('msgs') or []:
                 # Only a Disaster Report, Supply Order or Work Crew Log is filed, its fields an object (an older record
@@ -1874,9 +1891,9 @@ def _merge_bundle_locked(conn, data: dict, via_label: str = '') -> dict:
                     m.pop('fields', None)
                 conn.execute(
                     'INSERT OR IGNORE INTO messages '
-                    '(id, received_ms, type, data_json, status, operator_note, filename, dup_key, event_id)'
-                    ' VALUES (?,?,?,?,?,?,?,?,?)',
-                    (mid, ts, m['type'], json.dumps(m), status, note, str(m.get('filename') or '')[:200], dk, eid)
+                    '(id, received_ms, type, data_json, status, operator_note, filename, dup_key, event_id, report_key)'
+                    ' VALUES (?,?,?,?,?,?,?,?,?,?)',
+                    (mid, ts, m['type'], json.dumps(m), status, note, str(m.get('filename') or '')[:200], dk, eid, rk or '')
                 )
                 ids.add(mid); forms.add(fk)
                 if rk:
@@ -2025,9 +2042,9 @@ def _ingest_mime(mime: dict, tag_type: str, tag_fields: dict, filename: str) -> 
                 return False
             conn.execute(
                 'INSERT OR IGNORE INTO messages '
-                '(id, received_ms, type, data_json, status, operator_note, filename, dup_key, event_id)'
-                ' VALUES (?,?,?,?,?,?,?,?,?)',
-                (msg_id, data['ts'], sub_key, json.dumps(data), 'new', '', filename, dup_key, eid)
+                '(id, received_ms, type, data_json, status, operator_note, filename, dup_key, event_id, report_key)'
+                ' VALUES (?,?,?,?,?,?,?,?,?,?)',
+                (msg_id, data['ts'], sub_key, json.dumps(data), 'new', '', filename, dup_key, eid, _report_key(sub_key, data.get(sub_key)))
             )
             _file_actions(conn, eid, data)
             conn.commit()
@@ -2425,9 +2442,9 @@ def _ingest_worker(data: dict, filename: str, source: str = 'internet', saved_at
                 return form_type, False   # the HAM's Winlink message (or a phone) brought it already
             conn.execute(
                 'INSERT OR IGNORE INTO messages '
-                '(id, received_ms, type, data_json, status, operator_note, filename, dup_key, event_id)'
-                ' VALUES (?,?,?,?,?,?,?,?,?)',
-                (msg_id, record['ts'], sub_key, json.dumps(record), 'new', '', filename, dup_key, eid)
+                '(id, received_ms, type, data_json, status, operator_note, filename, dup_key, event_id, report_key)'
+                ' VALUES (?,?,?,?,?,?,?,?,?,?)',
+                (msg_id, record['ts'], sub_key, json.dumps(record), 'new', '', filename, dup_key, eid, _report_key(sub_key, record.get(sub_key)))
             )
             _file_actions(conn, eid, record)
             conn.commit()
@@ -3045,8 +3062,8 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
                     if msg_type in MSG_TYPES and _report_on_file(conn, eid, msg_type, body.get(msg_type)):
                         self.send_json({'duplicate': True}); return
                     conn.execute(
-                        'INSERT OR IGNORE INTO messages (id, received_ms, type, data_json, status, operator_note, filename, dup_key, event_id)'
-                        ' VALUES (?,?,?,?,?,?,?,?,?)',
+                        'INSERT OR IGNORE INTO messages (id, received_ms, type, data_json, status, operator_note, filename, dup_key, event_id, report_key)'
+                        ' VALUES (?,?,?,?,?,?,?,?,?,?)',
                         (
                             body.get('id', ''),
                             _ms(body.get('ts')),
@@ -3056,6 +3073,7 @@ class EOCHandler(http.server.BaseHTTPRequestHandler):
                             body.get('filename', ''),
                             dup_key,
                             eid,
+                            _report_key(msg_type, body.get(msg_type)) if isinstance(body, dict) else '',
                         )
                     )
                     if isinstance(body, dict):

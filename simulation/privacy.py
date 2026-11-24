@@ -204,7 +204,7 @@ def pseudonymize(pack: dict, salt: str) -> dict:
         return cand
 
     for c in out['contacts']:
-        if done and not c.get('local'):
+        if done and (not c.get('local') or c.get('packaged')):   # a package's own local roles were pseudonymized when it was built
             continue
         pid = c.get('person') or c['id']
         if pid not in by_person:

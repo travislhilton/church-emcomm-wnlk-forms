@@ -26,12 +26,18 @@ echo  The simulator needs Python 3.8 or newer. It is free.
 echo  Windows does not include it. Install it BEFORE an emergency:
 echo  the internet may be down when you need it.
 echo.
-echo   1. Run the Python installer from the EMCOMM USB kit,
+echo   1. Run the Python install manager from the EMCOMM USB kit,
 echo      or download it from https://www.python.org/downloads/
-echo   2. In the installer, tick "Add python.exe to PATH".
+echo      Double-click it and choose Install. No administrator needed.
+echo   2. Open Command Prompt and type: python --version
+echo      The first time, it finishes installing Python. If it asks to
+echo      add Python to your PATH, answer yes. Then it prints a version.
+echo      (The older standalone installer also works: tick
+echo      "Add python.exe to PATH" on its first screen.)
 echo   3. Start the simulator again.
 echo.
-echo  Keep a copy of the Python installer on the USB kit.
+echo  Keep a copy of the Python install manager on the USB kit:
+echo  it holds Python itself and installs with no internet.
 echo.
 pause
 exit /b 1

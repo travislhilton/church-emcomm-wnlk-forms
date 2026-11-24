@@ -876,6 +876,8 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
 
     var images = [];   // [{img, b: [w, s, e, n] Web Mercator metres, opacity}]: the directory's own map artwork
     var hatchPat = null;
+    var pinsFitted = -1;   // how many markers the view was last fitted to with no boundaries
+    var drawn = {markers: 0, pinsOnly: false};   // what the last draw put on screen (for the tests)
     function hatch() {
       if (hatchPat) return hatchPat;
       var c = document.createElement('canvas'); c.width = c.height = 10; var x = c.getContext('2d');
@@ -885,13 +887,18 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
     function draw() {
       if (!W) resize();
       ctx.fillStyle = opts.background || '#eef2f6'; ctx.fillRect(0, 0, W, H);
-      if (loaded) drawBasemap();
+      // no boundaries on this laptop, but reports with a GPS fix (or this EOC's own location): show those on the
+      // basemap instead of an empty map (U14)
+      var pinsOnly = !loaded && !!loadError && markers.some(function (m) { return isFinite(parseFloat(m.lon)) && isFinite(parseFloat(m.lat)); });
+      drawn = {markers: 0, pinsOnly: pinsOnly};
+      if (pinsOnly && pinsFitted !== markers.length) { pinsFitted = markers.length; fit(); }   // frame the pins as they arrive
+      if (loaded || pinsOnly) drawBasemap();
       images.forEach(function (im) {
         if (!im.img.complete || !im.img.naturalWidth || !onScreen(im.b)) return;
         var a = toScr(im.b[0], im.b[3]), c = toScr(im.b[2], im.b[1]);
         ctx.globalAlpha = im.opacity; ctx.drawImage(im.img, a[0], a[1], c[0] - a[0], c[1] - a[1]); ctx.globalAlpha = 1;
       });
-      if (!loaded) {
+      if (!loaded && !pinsOnly) {
         ctx.fillStyle = '#64748b'; ctx.font = '13px system-ui, sans-serif'; ctx.textAlign = 'center';
         ctx.fillText(!loadError ? 'Loading map data…' : /404/.test(loadError) ? 'No map boundaries on this laptop yet: Setup, This EOC, Map data folder.' : 'Map data not available: ' + loadError, W / 2, H / 2);
         return;
@@ -943,10 +950,11 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
       markers.forEach(function (m) {
         if (m.lon == null || m.lat == null || isNaN(m.lon) || isNaN(m.lat)) return;
         var xy = merc(+m.lon, +m.lat), s = toScr(xy[0], xy[1]); if (s[0] < -12 || s[0] > W + 12 || s[1] < -12 || s[1] > H + 12) return;
+        drawn.markers++;
         ctx.fillStyle = MARK[m.kind] || MARK.report;
         if (m.kind === 'report') { ctx.fillRect(s[0] - 3.5, s[1] - 3.5, 7, 7); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.strokeRect(s[0] - 3.5, s[1] - 3.5, 7, 7); }
         else { ctx.beginPath(); ctx.arc(s[0], s[1], 7, 0, Math.PI * 2); ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = '#fff'; ctx.stroke(); ctx.beginPath(); ctx.arc(s[0], s[1], 2.5, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill(); }
-        if (labels && m.label) { ctx.font = 'bold ' + minLabel + 'px system-ui, sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.strokeText(m.label, s[0] + 10, s[1]); ctx.fillStyle = MARK[m.kind] || MARK.report; ctx.fillText(m.label, s[0] + 10, s[1]); }
+        if ((labels || pinsOnly) && m.label && (m.kind !== 'report' || pinsOnly)) { ctx.font = 'bold ' + minLabel + 'px system-ui, sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.strokeText(m.label, s[0] + 10, s[1]); ctx.fillStyle = MARK[m.kind] || MARK.report; ctx.fillText(m.label, s[0] + 10, s[1]); }
       });
       // scale bar
       var target = 120 * view.res, step = Math.pow(10, Math.floor(Math.log(target) / Math.LN10)), n = target / step, len = (n >= 5 ? 5 : n >= 2 ? 2 : 1) * step;
@@ -955,6 +963,13 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
       ctx.strokeStyle = '#111827'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(16, H - 12); ctx.lineTo(16 + px, H - 12); ctx.stroke();
       ctx.fillStyle = '#111827'; ctx.font = '11px system-ui, sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'bottom'; ctx.fillText(label, 16, H - 14);
       drawBasemapText();
+      if (pinsOnly) {
+        var note = 'No ward boundaries on this laptop: only reports with a GPS fix and this EOC are shown (Setup, This EOC, Map data folder).';
+        ctx.font = '12px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        var nw = Math.min(W - 16, ctx.measureText(note).width + 16);
+        ctx.fillStyle = 'rgba(255,255,255,.92)'; ctx.fillRect((W - nw) / 2, 8, nw, 22);
+        ctx.fillStyle = '#1f2937'; ctx.fillText(note, W / 2, 19, W - 24);
+      }
     }
 
     function unitAt(sx, sy) {
@@ -1000,6 +1015,7 @@ body.isfs.mouse #fsbtn{opacity:.85;pointer-events:auto}
       select: function (name) { selected = name ? norm(name) : null; draw(); },
       units: function () { return orgs.filter(isUnit).map(function (o) { return {name: o.name, type: o.type, stake: o.stake}; }); },
       loaded: function () { return loaded; },
+      drawn: function () { return drawn; },
       setBasemap: function (c) {
         bm.choice = {streets: 1, topo: 1, imagery: 1, none: 1}[c] ? c : '';
         bmSetChoice(bm.choice); bm.streetsDown = false; bm.failsInRow = 0; bm.backoff = 30000; draw();

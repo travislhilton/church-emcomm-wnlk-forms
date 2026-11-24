@@ -102,7 +102,7 @@ def shared_files() -> list:
     files = list(CORE)
     files += [n for n in tracked('training/practice-forms') if n.count('/') == 2]       # that folder only, as install.ps1 expects
     files += [n for n in tracked('simulation/scenarios') if n.endswith('.json') and n != 'simulation/scenarios/catalog.json' and n.count('/') == 2]
-    files += [n for n in tracked('simulation/example') if not re.search(r'/simulation/(runs|local-roles\.json)', n)]
+    files += [n for n in tracked('simulation/example') if not re.search(r'/simulation/runs/', n)]   # its invented local roles ship (S14)
     files += tracked('forms') + tracked('training/scenario-samples')
     return sorted(set(files))
 
