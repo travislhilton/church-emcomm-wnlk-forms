@@ -124,7 +124,9 @@ switch ($Step) {
      # As the drill controller does (card 5): the pack, then its own drill configuration as this laptop's level.
      # -PackPath: a copy of another laptop's pack (W9TLH-8 has none of its own); resettle puts the settings back.
      $info = G "$SIM/api/info"
-     $pp = if ($PackPath) { $PackPath } else { [string]$info.packPath }
+     # no -PackPath: the pack this laptop's simulator held at -Step pre (the example drill just before loads the example)
+     $prePack = if (Test-Path $preFile) { [string](Get-Content $preFile -Raw | ConvertFrom-Json).pack } else { '' }
+     $pp = if ($PackPath) { $PackPath } elseif ($prePack) { $prePack } else { [string]$info.packPath }
      if ($pp -and $pp -notlike '*\simulation\example\*') {
        $null = Invoke-RestMethod -Method POST -Uri "$SIM/api/pack" -ContentType 'application/json; charset=utf-8' -Body ([Text.Encoding]::UTF8.GetBytes((@{ path = $pp; privacy = 'pseudonymized' } | ConvertTo-Json)))
        # a pack with no drill configuration of its own (a full export): the drill configuration given, whose pack
@@ -138,7 +140,7 @@ switch ($Step) {
        }
        $info = G "$SIM/api/info"
      }
-     $own = $info.pack -and $info.packPath -and $info.packPath -notlike '*\simulation\example\*' -and (-not $PackPath -or $info.packPath -eq $PackPath)
+     $own = $info.pack -and $info.packPath -and $info.packPath -notlike '*\simulation\example\*' -and ($info.packPath -eq $pp)
      C 'the simulator holds this laptop''s own organization pack (not the invented example)' $own
      C 'its contacts are pseudonymized (invented names)' ($info.privacy -eq 'pseudonymized') "privacy $($info.privacy)"
      C 'a scenario and what this simulator plays are set' ([bool]$info.scenario -and [bool]$info.site.role)
